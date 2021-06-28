@@ -16,7 +16,7 @@
 asm("GLOBAL _firmware_flash");
 
 /* Current firmware version. */
-const uint16_t firmware_version = 0x0003;
+const uint16_t firmware_version = 0x0005;
 /* CRC32 checksum of firmware, first 63kb of program memory. */
 uint32_t firmware_checksum;
 

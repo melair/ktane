@@ -40,6 +40,9 @@ uint8_t led_spi_buffer[ARGB_BUFFER_SIZE];
 /* Size of SPI buffer to write, including start and end frames. */
 uint8_t led_spi_size = 9;
 
+/* LED brightness reduction. */
+uint8_t led_brightness_reduction = 3;
+
 /**
  * Initialise the port and configure SPI ready for ARGB.
  */
@@ -149,11 +152,11 @@ void argb_module_leds(uint8_t module_led_count) {
  * @param b blue value
  */
 void argb_set(uint8_t led, uint8_t bri, uint8_t r, uint8_t g, uint8_t b) {
-    if (led >= leds_count) {
+    if (led > leds_count) {
         return;
     }
     
-    leds_buffer[led].brightness = bri & 0x1f;
+    leds_buffer[led].brightness = (bri >> led_brightness_reduction) & 0x1f;
     leds_buffer[led].r = r;
     leds_buffer[led].g = g;
     leds_buffer[led].b = b;
