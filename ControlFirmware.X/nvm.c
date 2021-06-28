@@ -19,8 +19,8 @@ void nvm_initialise(void) {
     uint16_t read_version = 0;
     
     /* Read the current EEPROM version, stored as uint16. */
-    read_version = nvm_read(EEPROM_LOC_VERSION_HIGH) << 8;
-    read_version |= nvm_read(EEPROM_LOC_VERSION_LOW);
+    read_version = (uint16_t) (nvm_read(EEPROM_LOC_VERSION_HIGH) << 8);
+    read_version |= (uint16_t) (nvm_read(EEPROM_LOC_VERSION_LOW));
     
     /* If version is 0xffff, EEPROM is uninitialised. */
     if (read_version == 0xffff) {

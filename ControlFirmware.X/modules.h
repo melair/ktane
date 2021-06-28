@@ -12,7 +12,7 @@ bool modules_no_errors(void);
 
 #define MODULE_ERROR_NONE                       0x0000
 #define MODULE_ERROR_CAN_ID_CONFLICT            0x0010
-0x0010
+
 #define MODULE_ERROR_PROTOCOL_UNKNOWN_PREFIX    0x0020
 #define MODULE_ERROR_PROTOCOL_UNKNOWN_OPCODE    0x0021
 

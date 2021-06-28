@@ -85,7 +85,7 @@ void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *pay
     }              
 
     uint8_t mode = payload[1];    
-    uint16_t fw = (payload[2] << 8) | payload[3];
+    uint16_t fw = (uint16_t) ((payload[2] << 8) | payload[3]);
 
     module_seen(id, mode, fw);  
     
@@ -134,7 +134,7 @@ void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload) {
         return;
     }
     
-    uint16_t code = ((payload[1] << 8) | payload[2]);    
+    uint16_t code = (uint16_t) ((payload[1] << 8) | payload[2]);    
     module_error_record(id, code);
 }
 

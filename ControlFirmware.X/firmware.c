@@ -292,7 +292,7 @@ uint32_t firmware_calculate_checksum(uint24_t base_addr, uint16_t size) {
         NVMCON1bits.CMD = 0;
         
         /* Load address of source firmware. */
-        NVMADR = base_addr + ((uint32_t) addr);
+        NVMADR = base_addr + ((uint24_t) addr);
         
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
