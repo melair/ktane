@@ -22,6 +22,7 @@
 #include "mode.h"
 #include "modules.h"
 #include "firmware.h"
+#include "status.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
@@ -102,6 +103,9 @@ void main(void) {
     /* Beep on start. */
     buzzer_on_timed(10);
     
+    /* Set status led to ready. */
+    status_set(STATUS_READY);
+    
     /* Main loop. */
     while(true) {
         /* Clear watchdog. */
@@ -121,6 +125,9 @@ void main(void) {
         
         /* Service buzzer driver. */
         buzzer_service();
+        
+        /* Service status LED. */
+        status_service();
         
         /* Service the mode. */
         mode_service();                      

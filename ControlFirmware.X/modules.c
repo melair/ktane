@@ -10,6 +10,7 @@
 #include "buzzer.h"
 #include "argb.h"
 #include "lcd.h"
+#include "status.h"
 
 /* Total number of modules that can be part of the network. */
 #define MODULE_COUNT 16
@@ -51,6 +52,11 @@ typedef struct {
 /* Modules in network. */
 module_t modules[MODULE_COUNT];
 
+/* Error state representing error tables. */
+uint8_t error_state = ERROR_NONE;
+/* Previously reported error state. */
+uint8_t error_state_prev = ERROR_NONE;
+
 /* Local function prototypes. */
 uint8_t module_find(uint8_t id);
 uint8_t module_find_or_create(uint8_t id);
@@ -89,19 +95,7 @@ void modules_initialise(void) {
  * @return true if all modules are healthy
  */
 bool modules_no_errors(void) {
-    for (uint8_t i = 0; i < MODULE_COUNT && modules[i].flags.INUSE; i++) {
-        if (modules[i].flags.LOST) {
-            return false;
-        }
-        
-        for (uint8_t j = 0; j < ERROR_COUNT; j++) {
-            if (modules[i].errors[j].code != MODULE_ERROR_NONE) {
-                return false;
-            }
-        }
-    }
-    
-    return true;
+    return error_state == ERROR_NONE;
 }
 
 /**
@@ -132,6 +126,11 @@ void module_service(void) {
                 module_error_raise(MODULE_ERROR_CAN_LOST_BASE | modules[i].id);
             }
         }        
+    }
+    
+    if (error_state_prev != error_state) {
+        status_error(error_state);
+        error_state_prev = error_state;
     }
 }
 
@@ -222,6 +221,12 @@ void module_error_record(uint8_t id, uint16_t code) {
     
     if (idx == 0xff) {
         return;
+    }
+    
+    if (idx == 0) {
+        error_state = ERROR_LOCAL;
+    } else if (error_state != ERROR_LOCAL){
+        error_state = ERROR_REMOTE;
     }
         
     for (uint8_t i = 0; i < ERROR_COUNT; i++) {
