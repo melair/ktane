@@ -106,8 +106,6 @@ void main(void) {
     
     /* Set status led to ready. */
     status_set(STATUS_READY);
-        
-    bool done = false;
     
     /* Main loop. */
     while(true) {
@@ -134,11 +132,6 @@ void main(void) {
         
         /* Service the mode. */
         mode_service();      
-        
-        if (tick_fetch() > 500 && !done) {
-            protocol_module_reset_send();
-            done = true;
-        }
     }
 }
                 

@@ -6,11 +6,13 @@
 #include "firmware.h"
 #include "mode.h"
 #include "can.h"
+#include "status.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_reset_receive(uint8_t id, uint8_t size, uint8_t *payload);
+void protocol_module_identify_receive(uint8_t id, uint8_t size, uint8_t *payload);
 
 #define OPCODE_MODULE_ANNOUNCEMENT 0x00
 #define OPCODE_MODULE_RESET        0x10
@@ -41,6 +43,9 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
             break;
         case OPCODE_MODULE_RESET:
             protocol_module_reset_receive(id, size, payload);
+            break;
+        case OPCODE_MODULE_IDENTIFY:
+            protocol_module_identify_receive(id, size, payload);
             break;
         default:
             /* Alert an unknown opcode has been received. */
@@ -144,7 +149,6 @@ void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     module_error_record(id, code);
 }
 
-
 /*
  * Module - Reset - (0x10)
  * 
@@ -184,5 +188,50 @@ void protocol_module_reset_send(void) {
  */
 void protocol_module_reset_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
     RESET();
+}
+
+/*
+ * Module - Identify - (0x11)
+ * 
+ * Packet Layout:
+ * 
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Op Code      |  CAN Id       |                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+
+/**
+ * Notify a module that it should flash to identify it.
+ * 
+ * @param id can id to flash
+ */
+void protocol_module_identify_send(uint8_t id) {
+    uint8_t payload[2];
+    
+    payload[0] = OPCODE_MODULE_IDENTIFY;
+    payload[1] = id;
+
+    can_send(PREFIX_MODULE, 2, &payload[0]);    
+
+    /* Send packet to self. */
+    protocol_module_identify_receive(0, 2, &payload[0]);
+}
+
+/**
+ * Receive a identify reset packet, turn on/off identify status effect.
+ * 
+ * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
+ * @param size size of CAN payload received
+ * @param payload pointer to payload
+ */
+void protocol_module_identify_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
+    /* Safety check. */
+    if (size < 2) {
+        return;
+    }
+
+    status_identify(payload[1] == can_get_id());    
 }
 
