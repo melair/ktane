@@ -83,7 +83,7 @@ void modules_initialise(void) {
     
     /* Set next module announce time, offsetting with modulus of CAN ID to 
      * attempt to avoid collisions. */
-    next_announce = tick_fetch() + ANNOUNCE_PERIOD + (can_get_id() % 10);
+    next_announce = tick_fetch() + ANNOUNCE_PERIOD + (can_get_id() & 0x0f);
     
     /* Set next lost check. */
     next_lost_check = LOST_CHECK_PERIOD;
