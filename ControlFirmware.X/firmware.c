@@ -96,7 +96,7 @@ void firmware_get_page(uint16_t page, uint8_t *data) {
         
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO);
+        while(NVMCON0bits.GO == 1);
         
         /* Store page data in array. */
         data[addr] = NVMDATH;
@@ -173,7 +173,7 @@ void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
     uint24_t base_addr = FIRMWARE_NEW_BASE + page_offset;
     
     /* For every new page (128 words), perform wipe. */
-    if (base_addr % 256 == 0) {
+    if ((base_addr % 256) == 0) {
         /* Clear Watchdog. */
         CLRWDT();
         
@@ -190,7 +190,7 @@ void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
 
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO);
+        while(NVMCON0bits.GO == 1);
     }
     
     /* Loop through payload and store in PFM. */
@@ -215,7 +215,7 @@ void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
 
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO);       
+        while(NVMCON0bits.GO == 1);       
     }
     
     
@@ -296,17 +296,17 @@ uint32_t firmware_calculate_checksum(uint24_t base_addr, uint16_t size) {
         
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO);
+        while(NVMCON0bits.GO == 1);
         
         /* Loop while buffer full, though shouldn't be. */
-        while(CRCCON0bits.FULL);
+        while(CRCCON0bits.FULL == 1);
         
         /* Pass to CRC. */       
         CRCDATAH = NVMDATH;
         CRCDATAL = NVMDATL;
 
         /* Wait while CRC is running. */
-        while(CRCCON0bits.BUSY);
+        while(CRCCON0bits.BUSY == 1);
     }
     
     /* Stop CRC module. */
@@ -367,7 +367,7 @@ void __section("flasher") firmware_flash(void) {
         CLRWDT();
         
         /* For every new page (128 words), perform wipe. */
-        if (addr % 256 == 0) {
+        if ((addr % 256) == 0) {
             /* Clear NVCON1, and set command to ERASE page. */
             NVMCON1 = 0;
             NVMCON1bits.CMD = 6;
@@ -381,7 +381,7 @@ void __section("flasher") firmware_flash(void) {
 
             /* Execute command, and wait until done. */
             NVMCON0bits.GO = 1;
-            while(NVMCON0bits.GO);
+            while(NVMCON0bits.GO == 1);
         }
         
         /* Clear NVCON1, and set command to READ word. */
@@ -393,7 +393,7 @@ void __section("flasher") firmware_flash(void) {
         
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO);
+        while(NVMCON0bits.GO == 1);
         
         /* Store PFM. */
         high = NVMDATH;
@@ -416,7 +416,7 @@ void __section("flasher") firmware_flash(void) {
 
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO);       
+        while(NVMCON0bits.GO == 1);       
     }
  
     /* Restart the microcontroller, hopefully into new firmware. */

@@ -26,7 +26,7 @@ typedef struct {
 /* Maximum number of ARGBs supported by a control board, effects RAM usage. */
 /* 37 = Status + (6*6 Maze) */
 #define ARGB_MAX_LED (1 + (6*6))
-#define ARGB_BUFFER_SIZE (ARGB_MAX_LED * 4 + 8)
+#define ARGB_BUFFER_SIZE ((ARGB_MAX_LED * 4) + 8)
 
 /* Frame buffer for ARGB LEDs, can be changed during SPI frame output. */
 argb_led_t leds_buffer[ARGB_MAX_LED];
@@ -45,7 +45,7 @@ uint8_t led_spi_size = 9;
  */
 void argb_initialise(void) {
     /* Clear buffer memory, may have LED state from previous boot. */
-    for (uint8_t i = 0; i <= ARGB_MAX_LED; i++) {
+    for (uint8_t i = 0; i < ARGB_MAX_LED; i++) {
         leds_buffer[i].brightness = 0;
         leds_buffer[i].r = 0;
         leds_buffer[i].g = 0;

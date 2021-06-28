@@ -44,7 +44,7 @@ void tick_initialise(void) {
  * Handle Timer1 interrupt to increase tick_period.
  */
 void tick_interrupt(void) {
-    if (PIR3bits.TMR2IF) {
+    if (PIR3bits.TMR2IF == 1) {
         PIR3bits.TMR2IF = 0;
 
         /* Tick will overflow to 0 on it's own. */

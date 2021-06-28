@@ -77,7 +77,7 @@ uint8_t nvm_read(uint16_t addr) {
   
     /* Execute command, and wait until done. */
     NVMCON0bits.GO = 1;
-    while(NVMCON0bits.GO);
+    while(NVMCON0bits.GO == 1);
     
     /* Return read byte. */
     return NVMDATL;
@@ -124,7 +124,7 @@ void nvm_write(uint16_t addr, uint8_t data) {
     __asm(" BSF     NVMCON0, 0");
          
     /* Wait until done, this blocks for update period. */
-    while(NVMCON0bits.GO);
+    while(NVMCON0bits.GO == 1);
     
     /* Re-enable interrupts. */
     INTCON0bits.GIE = 1;

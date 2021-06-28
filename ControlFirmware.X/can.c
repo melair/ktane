@@ -211,7 +211,7 @@ bool can_change_mode(uint8_t mode) {
      * in configuration at power up. */
     while (C1CONUbits.OPMOD != requested_mode) {
         /* If a system error occurred increase the statistic and return false. */
-        if (C1INTHbits.SERRIF) {
+        if (C1INTHbits.SERRIF == 1) {
             stats.can_error++;
             return false;
         }

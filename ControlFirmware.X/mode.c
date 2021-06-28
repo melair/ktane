@@ -113,5 +113,7 @@ void mode_service(void) {
             break;
         case MODE_CONTROLLER_STANDBY:
             break;
+        default:
+            break;
     }
 }

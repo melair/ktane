@@ -134,7 +134,7 @@ void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload) {
         return;
     }
     
-    uint16_t code = (payload[1] << 8 | payload[2]);    
+    uint16_t code = ((payload[1] << 8) | payload[2]);    
     module_error_record(id, code);
 }
 
