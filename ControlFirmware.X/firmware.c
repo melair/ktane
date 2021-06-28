@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "firmware.h"
+#include "modules.h"
 #include "protocol_firmware.h"
 
 /* Location of actual firmware. */
@@ -122,6 +123,10 @@ void firmware_check(uint16_t adv_version) {
         firmware_new_version = adv_version;
         firmware_state = FIRMWARE_PROCESS_HEADER;     
         protocol_firmware_request_send(adv_version);
+        
+        /* Raise an error to alert network this module is firmwaring. Thus locking
+         * the start of a game. */
+        module_error_raise(MODULE_ERROR_FIRMWARE_START);
     }
 }
 
@@ -228,7 +233,10 @@ void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
         }
         
         /* If we hit this, something has failed. */
-        firmware_state = FIRMWARE_PROCESS_FAILED;        
+        firmware_state = FIRMWARE_PROCESS_FAILED;       
+        
+        /* Raise an error to alert network this module has failed to firmware. */
+        module_error_raise(MODULE_ERROR_FIRMWARE_FAILED);
     } else {
         protocol_firmware_page_request_send(firmware_current_page, firmware_source_id);   
     }
