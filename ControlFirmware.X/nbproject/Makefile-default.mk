@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c
+SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c protocol_module.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/modules.p1.d ${OBJECTDIR}/firmware.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/modules.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1
+OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1
 
 # Source Files
-SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c
+SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c protocol_module.c
 
 
 
@@ -198,6 +198,14 @@ ${OBJECTDIR}/firmware.p1: firmware.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/firmware.d ${OBJECTDIR}/firmware.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/firmware.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
+${OBJECTDIR}/protocol_module.p1: protocol_module.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/protocol_module.p1.d 
+	@${RM} ${OBJECTDIR}/protocol_module.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mkeep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/protocol_module.p1 protocol_module.c 
+	@-${MV} ${OBJECTDIR}/protocol_module.d ${OBJECTDIR}/protocol_module.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/protocol_module.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
 else
 ${OBJECTDIR}/modes/blank/blank.p1: modes/blank/blank.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/modes/blank" 
@@ -302,6 +310,14 @@ ${OBJECTDIR}/firmware.p1: firmware.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mkeep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/firmware.p1 firmware.c 
 	@-${MV} ${OBJECTDIR}/firmware.d ${OBJECTDIR}/firmware.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/firmware.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/protocol_module.p1: protocol_module.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/protocol_module.p1.d 
+	@${RM} ${OBJECTDIR}/protocol_module.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mkeep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/protocol_module.p1 protocol_module.c 
+	@-${MV} ${OBJECTDIR}/protocol_module.d ${OBJECTDIR}/protocol_module.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/protocol_module.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 

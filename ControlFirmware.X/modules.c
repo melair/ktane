@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include "protocol.h"
+#include "protocol_module.h"
 #include "modules.h"
 #include "tick.h"
 #include "can.h"
