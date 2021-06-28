@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "firmware.h"
+#include "protocol_firmware.h"
 
 /* Location of actual firmware. */
 #define FIRMWARE_BASE       0x000000 // (0 - 63kb)
@@ -14,9 +15,28 @@
 asm("GLOBAL _firmware_flash");
 
 /* Current firmware version. */
-const uint16_t firmware_version = 0x0000;
+const uint16_t firmware_version = 0x0003;
 /* CRC32 checksum of firmware, first 63kb of program memory. */
 uint32_t firmware_checksum;
+
+/* Firmware state. */
+#define FIRMWARE_PROCESS_IDLE       0
+#define FIRMWARE_PROCESS_HEADER     1
+#define FIRMWARE_PROCESS_PAGES      2
+#define FIRMWARE_PROCESS_FAILED     3
+
+uint8_t firmware_state = FIRMWARE_PROCESS_IDLE;
+
+/* New firmware version being downloaded. */
+uint16_t firmware_new_version = 0;
+/* New firmware checksum. */
+uint32_t firmware_new_checksum = 0xffffffff;
+/* CAN id of source. */
+uint8_t firmware_source_id = 0;
+/* Current waiting for page. */
+uint16_t firmware_current_page = 0;
+/* Total number of pages to fetch. */
+uint16_t firmware_total_pages = 0;
 
 /* Local function prototypes. */
 uint32_t firmware_calculate_checksum(uint24_t base_addr, uint16_t size);
@@ -27,6 +47,191 @@ uint32_t firmware_calculate_checksum(uint24_t base_addr, uint16_t size);
  */
 void firmware_initialise(void) {
     firmware_checksum = firmware_calculate_checksum(FIRMWARE_BASE, FIRMWARE_SIZE);
+}
+
+/**
+ * Get the current firmware version.
+ * 
+ * @return the firmware version
+ */
+uint16_t firmware_get_version(void) {
+    return firmware_version;
+}
+
+/**
+ * Get the number of pages in new firmware.
+ * 
+ * @return the number of firmware pages (16 bytes)
+ */
+uint16_t firmware_get_pages(void) {
+    return FIRMWARE_SIZE / 16;
+}
+
+/**
+ * Get the checksum of the new firmware.
+ * 
+ * @return the firmware checksum
+ */
+uint32_t firmware_get_checksum(void) {
+    return firmware_checksum;
+}
+
+/**
+ * Get a page of firmware and place in data.
+ * 
+ * @param page page to fetch
+ * @param data where to store
+ */
+void firmware_get_page(uint16_t page, uint8_t *data) {
+    uint24_t base_addr = page * 16;
+        
+    for (uint24_t addr = 0; addr < 16; addr += 2) {
+        /* Clear NVCON1, and set command to READ word. */
+        NVMCON1 = 0;
+        NVMCON1bits.CMD = 0;
+        
+        /* Load address of source firmware. */
+        NVMADR = (base_addr + addr);
+        
+        /* Execute command, and wait until done. */
+        NVMCON0bits.GO = 1;
+        while(NVMCON0bits.GO);
+        
+        /* Store page data in array. */
+        data[addr] = NVMDATH;
+        data[addr + 1] = NVMDATL;
+    }
+}
+
+/**
+ * Check to see if an announced version of firmware is more recent than our
+ * current version.
+ * 
+ * @param new version of firmware
+ */
+void firmware_check(uint16_t adv_version) {
+    /* Ignore firmware checks if we are already in the process of a firmware
+     * update. */
+    if (firmware_state != FIRMWARE_PROCESS_IDLE) {
+        return;       
+    }
+    
+    /* If the advertised version is later than ours, start the process and
+     * request a firmware header. */
+    if (adv_version > firmware_version) {
+        firmware_new_version = adv_version;
+        firmware_state = FIRMWARE_PROCESS_HEADER;     
+        protocol_firmware_request_send(adv_version);
+    }
+}
+
+/**
+ * Receive a firmware header, if this matches the version we are expecting
+ * progress to the next stage.
+ * 
+ * @param version firmware version in header
+ * @param pages total number of pages to receive
+ * @param crc expected CRC of firmware
+ */
+void firmware_header_received(uint8_t id, uint16_t version, uint16_t pages, uint32_t crc) {
+    if (firmware_state != FIRMWARE_PROCESS_HEADER || version != firmware_new_version) {
+        return;       
+    }
+    
+    firmware_source_id = id;
+    firmware_total_pages = pages;
+    firmware_current_page = 0;
+    firmware_new_checksum = crc;   
+    firmware_state = FIRMWARE_PROCESS_PAGES;
+    
+    protocol_firmware_page_request_send(firmware_current_page, firmware_source_id);
+}
+
+/**
+ * Receive a page of firmware, if the module is currently firmwaring, the source
+ * CAN id is expected and the page number is where we're up to, store it in 
+ * program flash.
+ * 
+ * @param id source CAN id
+ * @param page page number
+ * @param data 16 byte page
+ */
+void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
+    /* Page not for us if we're not performing a firmware, it's not from out
+     * source or it's not the current page we want. */
+    if (firmware_state != FIRMWARE_PROCESS_PAGES || firmware_source_id != id || firmware_current_page != page) {
+        return;       
+    }
+    
+    /* Calculate base address for new page, in second partition. */
+    uint24_t page_offset = firmware_current_page << 4;
+    uint24_t base_addr = FIRMWARE_NEW_BASE + page_offset;
+    
+    /* For every new page (128 words), perform wipe. */
+    if (base_addr % 256 == 0) {
+        /* Clear Watchdog. */
+        CLRWDT();
+        
+        /* Clear NVCON1, and set command to ERASE page. */
+        NVMCON1 = 0;
+        NVMCON1bits.CMD = 6;
+
+        /* Load address of destination for firmware. */
+        NVMADR = base_addr;
+
+        /* Perform unlock procedure. */
+        NVMLOCK = 0x55;
+        NVMLOCK = 0xaa;
+
+        /* Execute command, and wait until done. */
+        NVMCON0bits.GO = 1;
+        while(NVMCON0bits.GO);
+    }
+    
+    /* Loop through payload and store in PFM. */
+    for (uint24_t addr = 0; addr < 16; addr += 2) {
+        /* Clear Watchdog. */
+        CLRWDT();
+        
+         /* Clear NVCON1, and set command to WRITE word. */
+        NVMCON1 = 0;
+        NVMCON1bits.CMD = 3;
+        
+        /* Load address of destination for firmware. */
+        NVMADR = base_addr + addr;
+        
+        /* Load word into NVMDAT. */
+        NVMDATH = data[addr];
+        NVMDATL = data[addr+1];
+        
+        /* Perform unlock procedure. */
+        NVMLOCK = 0x55;
+        NVMLOCK = 0xaa;
+
+        /* Execute command, and wait until done. */
+        NVMCON0bits.GO = 1;
+        while(NVMCON0bits.GO);       
+    }
+    
+    
+    firmware_current_page++;    
+    /* If the last page has been fetched. */
+    if (firmware_current_page >= firmware_total_pages) {
+        /* Calculate the new CRC. */
+        uint32_t crc = firmware_calculate_checksum(FIRMWARE_NEW_BASE, FIRMWARE_SIZE);
+        
+        /* If the sent checksum matches the calculated checksum, begin the final stage. */
+        if (crc == firmware_new_checksum) {
+            /* This function copies from FIRMWARE_NEW_BASE to FIRMWARE_BASE, it will
+             * not return, it will RESET() the microcontroller upon completion. */
+            firmware_flash();
+        }
+        
+        /* If we hit this, something has failed. */
+        firmware_state = FIRMWARE_PROCESS_FAILED;        
+    } else {
+        protocol_firmware_page_request_send(firmware_current_page, firmware_source_id);   
+    }
 }
 
 /**
@@ -70,7 +275,7 @@ uint32_t firmware_calculate_checksum(uint24_t base_addr, uint16_t size) {
     /* Start CRC module. */
     CRCCON0bits.GO = 1;
     
-    for (uint24_t addr = base_addr; addr < size; addr += 2) {
+    for (uint24_t addr = 0; addr < size; addr += 2) {
         /* Clear watchdog. */
         CLRWDT();
         
@@ -79,7 +284,7 @@ uint32_t firmware_calculate_checksum(uint24_t base_addr, uint16_t size) {
         NVMCON1bits.CMD = 0;
         
         /* Load address of source firmware. */
-        NVMADR = addr;
+        NVMADR = base_addr + ((uint32_t) addr);
         
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;

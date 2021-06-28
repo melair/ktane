@@ -98,6 +98,9 @@ void mode_initialise(void) {
         /* Module is a controller. */
         case MODE_CONTROLLER:
             break;
+        /* Module is a controller, but in stand by mode. */
+        case MODE_CONTROLLER_STANDBY:
+            break;
     }
 }
 
@@ -107,6 +110,8 @@ void mode_initialise(void) {
 void mode_service(void) {
     switch(configured_mode) {
         case MODE_CONTROLLER:
+            break;
+        case MODE_CONTROLLER_STANDBY:
             break;
     }
 }

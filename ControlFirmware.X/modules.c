@@ -41,6 +41,7 @@ typedef struct {
     }               flags;
     uint8_t         id;
     uint8_t         mode;
+    uint16_t        firmware;
     uint24_t        last_seen;
     
     module_error_t  errors[ERROR_COUNT];    
@@ -163,7 +164,7 @@ uint8_t module_find_or_create(uint8_t id) {
  * @param id CAN id
  * @param mode modules mode
  */
-void module_seen(uint8_t id, uint8_t mode) {
+void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
     uint8_t idx = module_find_or_create(id);
     
     if (idx == 0xff) {
@@ -171,6 +172,7 @@ void module_seen(uint8_t id, uint8_t mode) {
     }
     
     modules[idx].mode = mode;
+    modules[idx].firmware = firmware;
     modules[idx].last_seen = tick_fetch();
     modules[idx].flags.LOST = 0;    
 }
