@@ -3,6 +3,7 @@
 
 void status_set(uint8_t);
 void status_error(uint8_t);
+void status_identify(bool on);
 void status_service(void);
 
 #define STATUS_READY        0
