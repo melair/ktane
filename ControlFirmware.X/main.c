@@ -21,6 +21,7 @@
 #include "tick.h"
 #include "mode.h"
 #include "modules.h"
+#include "firmware.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
@@ -58,6 +59,9 @@ void main(void) {
     
     /* Reconfigure system arbiter. */
     arbiter_initialise();
+    
+    /* Initialise firmware. */
+    firmware_initialise();
     
     /* Unlock PPS during initialisation. */
     pps_unlock();
