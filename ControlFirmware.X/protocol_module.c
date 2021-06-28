@@ -10,9 +10,12 @@
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload);
+void protocol_module_reset_receive(uint8_t id, uint8_t size, uint8_t *payload);
 
 #define OPCODE_MODULE_ANNOUNCEMENT 0x00
-#define OPCODE_MODULE_ERROR 0xf0
+#define OPCODE_MODULE_RESET        0x10
+#define OPCODE_MODULE_IDENTIFY     0x11
+#define OPCODE_MODULE_ERROR        0xf0
 
 /**
  * Handle reception of a new packet from CAN that is for the module management
@@ -35,6 +38,9 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
             break;
         case OPCODE_MODULE_ERROR:
             protocol_module_error_receive(id, size, payload);
+            break;
+        case OPCODE_MODULE_RESET:
+            protocol_module_reset_receive(id, size, payload);
             break;
         default:
             /* Alert an unknown opcode has been received. */
@@ -136,5 +142,47 @@ void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     
     uint16_t code = (uint16_t) ((payload[1] << 8) | payload[2]);    
     module_error_record(id, code);
+}
+
+
+/*
+ * Module - Reset - (0x10)
+ * 
+ * Packet Layout:
+ * 
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Op Code      |                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+
+/**
+ * Inform the network it is to reset.
+ * 
+ * @param code error code that has occurred.
+ */
+void protocol_module_reset_send(void) {
+    uint8_t payload[1];
+    
+    payload[0] = OPCODE_MODULE_RESET;
+
+    can_send(PREFIX_MODULE, 1, &payload[0]);    
+    
+    /* Wait until the CAN TX buffer is empty, i.e. the above packet has gone. */
+    while(!C1TXQSTALbits.TXQEIF);
+    /* Reset the MCU. */
+    RESET();
+}
+
+/**
+ * Receive a module reset packet, reset the MCU.
+ * 
+ * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
+ * @param size size of CAN payload received
+ * @param payload pointer to payload
+ */
+void protocol_module_reset_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
+    RESET();
 }
 
