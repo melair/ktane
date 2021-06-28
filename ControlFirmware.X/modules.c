@@ -127,7 +127,7 @@ void module_service(void) {
         /* Check for lost nodes. */
         for (uint8_t i = 1; i < MODULE_COUNT && modules[i].flags.INUSE; i++) {
             uint24_t expiryTime = modules[i].last_seen + LOST_PERIOD;
-            if (modules[i].flags.INUSE && !modules[i].flags.LOST && expiryTime < now) {
+            if (modules[i].flags.INUSE && !modules[i].flags.LOST && (expiryTime < now)) {
                 modules[i].flags.LOST = 1;
                 module_error_raise(MODULE_ERROR_CAN_LOST_BASE | modules[i].id);
             }
