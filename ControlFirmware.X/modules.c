@@ -1,5 +1,6 @@
 #include <xc.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include "protocol.h"
 #include "protocol_module.h"
 #include "modules.h"
@@ -80,6 +81,27 @@ void modules_initialise(void) {
     
     /* Set next lost check. */
     next_lost_check = LOST_CHECK_PERIOD;
+}
+
+/**
+ * Check to see if any modules have errors, or are lost.
+ * 
+ * @return true if all modules are healthy
+ */
+bool modules_no_errors(void) {
+    for (uint8_t i = 0; i < MODULE_COUNT && modules[i].flags.INUSE; i++) {
+        if (modules[i].flags.LOST) {
+            return false;
+        }
+        
+        for (uint8_t j = 0; j < ERROR_COUNT; j++) {
+            if (modules[i].errors[j].code != MODULE_ERROR_NONE) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
 }
 
 /**
