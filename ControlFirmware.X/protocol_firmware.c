@@ -97,7 +97,7 @@ void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payloa
         return;
     }              
      
-    uint16_t fw = (payload[1] << 8) | payload[2];
+    uint16_t fw = (uint16_t) ((payload[1] << 8) | payload[2]);
     
     if (mode_get() != MODE_CONTROLLER || firmware_get_version() != fw) {
         return;
@@ -158,8 +158,8 @@ void protocol_firmware_header_receive(uint8_t id, uint8_t size, uint8_t *payload
         return;
     }              
      
-    uint16_t fw = (payload[1] << 8) | payload[2];
-    uint16_t pages = (payload[3] << 8) | payload[4];
+    uint16_t fw = (uint16_t) ((payload[1] << 8) | payload[2]);
+    uint16_t pages = (uint16_t) ((payload[3] << 8) | payload[4]);
     uint8_t a = payload[5];
     uint8_t b = payload[6];
     uint8_t c = payload[7];
@@ -209,7 +209,7 @@ void protocol_firmware_page_request_receive(uint8_t id, uint8_t size, uint8_t *p
         return;
     }              
      
-    uint16_t page = (payload[1] << 8) | payload[2];
+    uint16_t page = (uint16_t) ((payload[1] << 8) | payload[2]);
     uint8_t source_id = payload[3];
     
     if (source_id != can_get_id()) {
@@ -267,7 +267,7 @@ void protocol_firmware_page_response_receive(uint8_t id, uint8_t size, uint8_t *
         return;
     }              
      
-    uint16_t page = (payload[1] << 8) | payload[2];
+    uint16_t page = (uint16_t) ((payload[1] << 8) | payload[2]);
     
     firmware_page_received(id, page, &payload[4]);
 }

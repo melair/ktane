@@ -59,11 +59,11 @@ void bootstrap_initialise(void) {
 }
 
 uint8_t bootstrap_port_map(uint8_t p) {
-    p = (p & 0x0f) | ((~p) & 0xf0);
+    p = (uint8_t) ((p & 0x0f) | ((~p) & 0xf0));
     
-    p = (p & 0xf0) >> 4 | (p & 0x0f) << 4;
-    p = (p & 0xcc) >> 2 | (p & 0x33) << 2;
-    p = (p & 0xaa) >> 1 | (p & 0x55) << 1;
+    p = (uint8_t) ((p & 0xf0) >> 4 | (p & 0x0f) << 4);
+    p = (uint8_t) ((p & 0xcc) >> 2 | (p & 0x33) << 2);
+    p = (uint8_t) ((p & 0xaa) >> 1 | (p & 0x55) << 1);
     
     return p;
 }
