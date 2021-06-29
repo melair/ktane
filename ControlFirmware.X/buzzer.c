@@ -8,10 +8,15 @@
 #include "buzzer.h"
 #include "tick.h"
 
-#define BUZZER_DEFAULT_VOLUME 255
-#define BUZZER_DEFAULT_FREQUENCY 3200
-
 uint24_t buzzer_off_tick = 0;
+
+#define TOTAL_FREQUENCIES 3
+
+const uint16_t frequencies[TOTAL_FREQUENCIES][2] = {
+    {BUZZER_FREQ_A6_SHARP, 0x010c}, // A#6
+    {BUZZER_FREQ_C7_SHARP, 0x00e1}, // C#7
+    {BUZZER_FREQ_B8, 0x003f}, // B8
+};
 
 /**
  * Initialise buzzer pin, and PWM to support buzzer.
@@ -43,9 +48,21 @@ void buzzer_initialise(void) {
  * @param frequency frequency of buzzer in Hz
  */
 void buzzer_on(uint8_t volume, uint16_t frequency) {
-    /* TODO - Rework to avoid floating point math. Volume currently ignored. */
-    PWM2PR = 150;   
-    PWM2S1P1 = 149;
+    PWM2CONbits.EN = 0;
+    PWM2PR = 0;
+
+    for (uint8_t i = 0; i < TOTAL_FREQUENCIES; i++) {
+        if (frequency <= frequencies[i][0]) {
+            PWM2PR = frequencies[i][1];
+            break;
+        }
+    }
+
+    if (PWM2PR == 0) {
+        return;
+    }
+   
+    PWM2S1P1 = PWM2PR-1;
 
     PWM2CONbits.EN = 1;
     
@@ -57,8 +74,8 @@ void buzzer_on(uint8_t volume, uint16_t frequency) {
  * 
  * @param duration amount of time 
  */
-void buzzer_on_timed(uint16_t duration) {
-    buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY);
+void buzzer_on_timed(uint8_t volume, uint16_t frequency, uint16_t duration) {
+    buzzer_on(volume, frequency);
     buzzer_off_tick = tick_fetch() + duration;
 }
 
