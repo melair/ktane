@@ -25,6 +25,7 @@
       <itemPath>protocol_module.h</itemPath>
       <itemPath>protocol_firmware.h</itemPath>
       <itemPath>status.h</itemPath>
+      <itemPath>protocol_game.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -55,6 +56,7 @@
       <itemPath>protocol_module.c</itemPath>
       <itemPath>protocol_firmware.c</itemPath>
       <itemPath>status.c</itemPath>
+      <itemPath>protocol_game.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

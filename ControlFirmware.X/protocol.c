@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "protocol.h"
+#include "protocol_game.h"
 #include "protocol_module.h"
 #include "protocol_firmware.h"
 #include "can.h"
@@ -32,6 +33,9 @@ void protocol_receive(uint8_t prefix, uint8_t id, uint8_t size, uint8_t *payload
     switch (prefix) {
         case PREFIX_MODULE:
             protocol_module_receive(id, size, payload);
+            break;
+        case PREFIX_GAME:
+            protocol_game_receive(id, size, payload);
             break;
         case PREFIX_FIRMWARE:
             protocol_firmware_receive(id, size, payload);
