@@ -102,11 +102,11 @@ void main(void) {
     lcd_default();
     
     /* Beep on start. */
-    buzzer_on_timed(10);
+    buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
     
     /* Set status led to ready. */
     status_set(STATUS_READY);
-    
+       
     /* Main loop. */
     while(true) {
         /* Clear watchdog. */
@@ -131,7 +131,7 @@ void main(void) {
         status_service();
         
         /* Service the mode. */
-        mode_service();      
+        mode_service();   
     }
 }
                 
