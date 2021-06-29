@@ -44,9 +44,8 @@ void buzzer_initialise(void) {
  */
 void buzzer_on(uint8_t volume, uint16_t frequency) {
     /* TODO - Rework to avoid floating point math. Volume currently ignored. */
-    PWM2PR = 500000 / frequency;
-   
-    PWM2S1P1 = PWM2PR / 8;
+    PWM2PR = 150;   
+    PWM2S1P1 = 149;
 
     PWM2CONbits.EN = 1;
     
