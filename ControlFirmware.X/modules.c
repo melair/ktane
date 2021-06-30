@@ -25,9 +25,9 @@
 #define LOST_PERIOD         40
 
 /* The clock tick that this module should check for lost nodes. */
-uint24_t next_lost_check;
+uint32_t next_lost_check;
 /* The clock tick that this module should next announce. */
-uint24_t next_announce;
+uint32_t next_announce;
 
 /* Structure for an error received from a module. */
 typedef struct {
@@ -44,7 +44,7 @@ typedef struct {
     uint8_t         id;
     uint8_t         mode;
     uint16_t        firmware;
-    uint24_t        last_seen;
+    uint32_t        last_seen;
     
     module_error_t  errors[ERROR_COUNT];    
 } module_t;
@@ -83,7 +83,7 @@ void modules_initialise(void) {
     
     /* Set next module announce time, offsetting with modulus of CAN ID to 
      * attempt to avoid collisions. */
-    next_announce = tick_fetch() + ANNOUNCE_PERIOD + (can_get_id() & 0x0f);
+    next_announce = tick_value + ANNOUNCE_PERIOD + (can_get_id() & 0x0f);
     
     /* Set next lost check. */
     next_lost_check = LOST_CHECK_PERIOD;
@@ -102,26 +102,24 @@ bool modules_no_errors(void) {
  * Service modules needs, including sending announcements and checking for other
  * lost modules.
  */
-void module_service(void) {
-    uint24_t now = tick_fetch();
-    
+void module_service(void) {   
     /* Announce self. */
-    if (now >= next_announce) {
+    if (tick_value >= next_announce) {
         /* Set next announce time. */
-        next_announce = now + ANNOUNCE_PERIOD;
+        next_announce = tick_value + ANNOUNCE_PERIOD;
         
         /* Send module announcement. */
         protocol_module_announcement_send();                              
     }
     
     /* Check for lost nodes frequently. */
-    if (now >= next_lost_check) {
-        next_lost_check = now + LOST_CHECK_PERIOD;
+    if (tick_value >= next_lost_check) {
+        next_lost_check = tick_value + LOST_CHECK_PERIOD;
         
         /* Check for lost nodes. */
         for (uint8_t i = 1; i < MODULE_COUNT && modules[i].flags.INUSE; i++) {
-            uint24_t expiryTime = modules[i].last_seen + LOST_PERIOD;
-            if (modules[i].flags.INUSE && !modules[i].flags.LOST && (expiryTime < now)) {
+            uint32_t expiryTime = modules[i].last_seen + LOST_PERIOD;
+            if (modules[i].flags.INUSE && !modules[i].flags.LOST && (expiryTime < tick_value)) {
                 modules[i].flags.LOST = 1;
                 module_error_raise(MODULE_ERROR_CAN_LOST_BASE | modules[i].id);
             }
@@ -194,7 +192,7 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
     
     modules[idx].mode = mode;
     modules[idx].firmware = firmware;
-    modules[idx].last_seen = tick_fetch();
+    modules[idx].last_seen = tick_value;
     modules[idx].flags.LOST = 0;    
 }
 

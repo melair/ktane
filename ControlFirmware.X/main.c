@@ -112,6 +112,9 @@ void main(void) {
         /* Clear watchdog. */
         CLRWDT();    
         
+        /* Service the tick. */
+        tick_service();
+        
         /* Update ARGB string if needed. */
         argb_service();    
         

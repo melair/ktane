@@ -8,7 +8,7 @@
 #include "buzzer.h"
 #include "tick.h"
 
-uint24_t buzzer_off_tick = 0;
+uint32_t buzzer_off_tick = 0;
 
 #define TOTAL_FREQUENCIES 3
 
@@ -76,7 +76,7 @@ void buzzer_on(uint8_t volume, uint16_t frequency) {
  */
 void buzzer_on_timed(uint8_t volume, uint16_t frequency, uint16_t duration) {
     buzzer_on(volume, frequency);
-    buzzer_off_tick = tick_fetch() + duration;
+    buzzer_off_tick = tick_value + duration;
 }
 
 /**
@@ -93,7 +93,7 @@ void buzzer_off(void) {
  */
 void buzzer_service(void) {
     if (buzzer_off_tick > 0) {
-        if (tick_fetch() > buzzer_off_tick) {
+        if (tick_value > buzzer_off_tick) {
             buzzer_off();
         }
     }
