@@ -9,7 +9,8 @@
 #include "tick.h"
 
 /* Current millisecond of uptime module has, will wrap at roughly 4 hours and 40 minutes. */
-volatile uint24_t tick_value = 0;
+volatile uint32_t tick_value = 0;
+volatile uint8_t tick_interrupts = 0;
 
 /**
  * Initialise the ticker to provide an asynchronous time, uses Timer1 ticking 
@@ -44,24 +45,25 @@ void tick_initialise(void) {
  * Handle Timer1 interrupt to increase tick_period.
  */
 void tick_interrupt(void) {
-    if (PIR3bits.TMR2IF == 1) {
-        PIR3bits.TMR2IF = 0;
-
+    if (PIE3bits.TMR2IE == 1 && PIR3bits.TMR2IF == 1) {
         /* Tick will overflow to 0 on it's own. */
-        tick_value++;
+        tick_interrupts++;
+        
+        PIR3bits.TMR2IF = 0;
     }
 }
 
 /**
- * Get the current millisecond of operation.
- * 
- * @return number of milliseconds module has been running
+ * Service the tick from the timer, this transfers stored interrupt counts and
+ * adds it to the tick value. This ensures that one run of the main service loop
+ * uses the same time and does not change mid flow.
  */
-uint24_t tick_fetch(void) {
+void tick_service(void) {
+    while(PIR3bits.TMR2IF == 1);
     PIE3bits.TMR2IE = 0;
-    uint24_t ret_val = tick_value;
+    tick_value += tick_interrupts;
+    tick_interrupts = 0;
     PIE3bits.TMR2IE = 1;
-    return ret_val;
 }
 
 /**
@@ -70,9 +72,10 @@ uint24_t tick_fetch(void) {
  * @param delay number of milliseconds to wait
  */
 void tick_wait(uint8_t delay) {
-    uint24_t target = tick_value + delay;
+    uint32_t target = tick_value + delay;
     
     while (tick_value < target) {
+        tick_service();
         CLRWDT();
     }
 }

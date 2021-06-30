@@ -23,7 +23,7 @@ bool identify = false;
 /* Phase in error animation. */
 uint8_t phase = 0;
 /* Next tick to update error animation. */
-uint24_t last_tick = 0;
+uint32_t last_tick = 0;
 
 /**
  * Set the status indicator to the new mode.
@@ -58,11 +58,10 @@ void status_identify(bool on) {
  * Service the status indicator and animate error if needed.
  */
 void status_service(void) {
-    uint24_t now = tick_fetch();
-    if ((now - last_tick) < 20) {
+    if ((tick_value - last_tick) < 20) {
         return;
     }
-    last_tick = now;
+    last_tick = tick_value;
 
     if (current_error == ERROR_NONE) {
         switch(phase) {
