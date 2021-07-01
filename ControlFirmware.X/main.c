@@ -24,12 +24,13 @@
 #include "firmware.h"
 #include "status.h"
 #include "protocol_module.h"
+#include "interrupt.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
 #pragma config FEXTOSC = OFF            // External Oscillator Selection (Oscillator not enabled)
 #pragma config RSTOSC = HFINTOSC_64MHZ  // Reset Oscillator Selection (HFINTOSC with HFFRQ = 64 MHz and CDIV = 1:1)
-#pragma config MVECEN = OFF             // Multi-vector enable bit (Interrupt contoller does not use vector table to prioritze interrupts)
+#pragma config MVECEN = ON             // Multi-vector enable bit (Interrupt contoller does use vector table to prioritze interrupts)
 
 #pragma config PWRTS = PWRT_16          // Power-up timer selection bits (PWRT set at 16ms)
 
@@ -49,7 +50,6 @@ void safe_unused_pins(void);
 void pps_unlock(void);
 void pps_lock(void);
 void arbiter_initialise(void);
-void int_initialise(void);
 void oscillator_initialise(void);
 
 /**
@@ -203,30 +203,4 @@ void arbiter_initialise(void) {
     PRLOCK = 0x55;
     PRLOCK = 0xAA;
     PRLOCKbits.PRLOCKED = 1;
-}
-
-/**
- * Initialise interrupt control.
- */
-void int_initialise(void) {
-    /* Enable prioritised interrupts. */
-    INTCON0bits.IPEN = 1;
-    
-    /* Enable global interrupts, high. */
-    INTCON0bits.GIEH = 1;
-    /* Enable global interrupts, low. */
-    INTCON0bits.GIEL = 1;
-}
-
-/**
- * Low priority interrupts.
- */
-void __interrupt(low_priority) low_priority_routine(void) {
-    tick_interrupt();
-}
-
-/**
- * High priority interrupts.
- */
-void __interrupt(high_priority) high_priority_routine(void) {
 }

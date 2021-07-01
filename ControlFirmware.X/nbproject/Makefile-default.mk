@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c
+SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/modules.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/modules.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d ${OBJECTDIR}/interrupt.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1
+OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/modules.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1
 
 # Source Files
-SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c
+SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c modules.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c
 
 
 
@@ -238,6 +238,14 @@ ${OBJECTDIR}/protocol_game.p1: protocol_game.c  nbproject/Makefile-${CND_CONF}.m
 	@-${MV} ${OBJECTDIR}/protocol_game.d ${OBJECTDIR}/protocol_game.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/protocol_game.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
+${OBJECTDIR}/interrupt.p1: interrupt.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/interrupt.p1.d 
+	@${RM} ${OBJECTDIR}/interrupt.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/interrupt.p1 interrupt.c 
+	@-${MV} ${OBJECTDIR}/interrupt.d ${OBJECTDIR}/interrupt.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/interrupt.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
 else
 ${OBJECTDIR}/modes/blank/blank.p1: modes/blank/blank.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/modes/blank" 
@@ -382,6 +390,14 @@ ${OBJECTDIR}/protocol_game.p1: protocol_game.c  nbproject/Makefile-${CND_CONF}.m
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/protocol_game.p1 protocol_game.c 
 	@-${MV} ${OBJECTDIR}/protocol_game.d ${OBJECTDIR}/protocol_game.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/protocol_game.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/interrupt.p1: interrupt.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/interrupt.p1.d 
+	@${RM} ${OBJECTDIR}/interrupt.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O0 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/interrupt.p1 interrupt.c 
+	@-${MV} ${OBJECTDIR}/interrupt.d ${OBJECTDIR}/interrupt.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/interrupt.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 
