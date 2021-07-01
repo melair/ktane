@@ -35,7 +35,7 @@ void tick_initialise(void) {
     /* Enable interrupt. */
     PIE3bits.TMR2IE = 1;
     /* Set interrupt to low priority.*/
-    IPR3bits.TMR2IP = 0;
+    IPR3bits.TMR2IP = 1;
     
     /* Switch on timer. */
     T2CONbits.ON = 1;
@@ -44,13 +44,11 @@ void tick_initialise(void) {
 /**
  * Handle Timer1 interrupt to increase tick_period.
  */
-void tick_interrupt(void) {
-    if (PIE3bits.TMR2IE == 1 && PIR3bits.TMR2IF == 1) {
-        /* Tick will overflow to 0 on it's own. */
-        tick_interrupts++;
-        
-        PIR3bits.TMR2IF = 0;
-    }
+void __interrupt(irq(TMR2),base(8)) tick_interrupt(void) {
+    /* Tick will overflow to 0 on it's own. */
+    tick_interrupts++;
+
+    PIR3bits.TMR2IF = 0;
 }
 
 /**
