@@ -120,7 +120,7 @@ void firmware_get_page(uint16_t page, uint8_t *data) {
 void firmware_check(uint16_t adv_version) {
     /* Ignore firmware checks if we are already in the process of a firmware
      * update. */
-    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION) {
+    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION || firmware_version == INVALID_FIRMWARE_VERSION) {
         return;       
     }
     

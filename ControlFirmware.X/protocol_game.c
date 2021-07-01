@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include "modules.h"
+#include "protocol.h"
 #include "protocol_game.h"
 
 /* Local function prototypes. */
@@ -25,7 +26,7 @@ void protocol_game_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     switch (payload[0]) {
         default:
             /* Alert an unknown opcode has been received. */
-            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN_OPCODE);
+            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (PREFIX_GAME << 8) | payload[0]);
             break;
     }
 }
