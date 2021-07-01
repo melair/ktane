@@ -13,13 +13,13 @@ bool modules_no_errors(void);
 #define MODULE_ERROR_NONE                       0x0000
 #define MODULE_ERROR_CAN_ID_CONFLICT            0x0010
 
-#define MODULE_ERROR_PROTOCOL_UNKNOWN_PREFIX    0x0020
-#define MODULE_ERROR_PROTOCOL_UNKNOWN_OPCODE    0x0021
-
-#define MODULE_ERROR_FIRMWARE_START             0x0030
-#define MODULE_ERROR_FIRMWARE_FAILED            0x0031
+#define MODULE_ERROR_FIRMWARE_START             0x0020
+#define MODULE_ERROR_FIRMWARE_FAILED            0x0021
 
 #define MODULE_ERROR_CAN_LOST_BASE              0xe000 // 0xe000 to 0xe0ff
+
+#define MODULE_ERROR_PROTOCOL_UNKNOWN           0xf800 // 0xf800 to 0xfffe
+
 #define MODULE_ERROR_TOO_MANY_ERRORS            0xffff
 
 #endif	/* MODULES_H */

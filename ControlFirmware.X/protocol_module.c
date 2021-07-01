@@ -49,7 +49,7 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
             break;
         default:
             /* Alert an unknown opcode has been received. */
-            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN_OPCODE);
+            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (PREFIX_MODULE << 8) | payload[0]);
             break;
     }
 }

@@ -42,7 +42,7 @@ void protocol_receive(uint8_t prefix, uint8_t id, uint8_t size, uint8_t *payload
             break;
         default:
             /* Alert an unknown prefix has been received. */
-            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN_PREFIX);
+            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (prefix << 8) | payload[0]);
             break;
     }
 }
