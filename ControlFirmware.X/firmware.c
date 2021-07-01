@@ -93,7 +93,7 @@ uint32_t firmware_get_checksum(void) {
 void firmware_get_page(uint16_t page, uint8_t *data) {
     uint32_t base_addr = page * 16;
         
-    for (uint32_t addr = 0; addr < 16; addr += 2) {
+    for (uint24_t addr = 0; addr < 16; addr += 2) {
         /* Clear NVCON1, and set command to READ word. */
         NVMCON1 = 0;
         NVMCON1bits.CMD = 0;
@@ -176,8 +176,8 @@ void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
     }
     
     /* Calculate base address for new page, in second partition. */
-    uint32_t page_offset = firmware_current_page << 4;
-    uint32_t base_addr = FIRMWARE_NEW_BASE + page_offset;
+    uint24_t page_offset = firmware_current_page << 4;
+    uint24_t base_addr = FIRMWARE_NEW_BASE + page_offset;
     
     /* For every new page (128 words), perform wipe. */
     if ((base_addr % 256) == 0) {
@@ -201,7 +201,7 @@ void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
     }
     
     /* Loop through payload and store in PFM. */
-    for (uint32_t addr = 0; addr < 16; addr += 2) {
+    for (uint24_t addr = 0; addr < 16; addr += 2) {
         /* Clear Watchdog. */
         CLRWDT();
         
@@ -290,7 +290,7 @@ uint32_t firmware_calculate_checksum(uint32_t base_addr, uint16_t size) {
     /* Start CRC module. */
     CRCCON0bits.GO = 1;
     
-    for (uint32_t addr = 0; addr < size; addr += 2) {
+    for (uint24_t addr = 0; addr < size; addr += 2) {
         /* Clear watchdog. */
         CLRWDT();
         
@@ -369,7 +369,7 @@ void __section("flasher") firmware_flash(void) {
     uint8_t low = 0x00;
     
     /* Loop through firmware size until complete. */
-    for (uint32_t addr = 0; addr < FIRMWARE_SIZE; addr += 2) {
+    for (uint24_t addr = 0; addr < FIRMWARE_SIZE; addr += 2) {
         /* Clear watchdog. */
         CLRWDT();
         
