@@ -34,7 +34,7 @@ void tick_initialise(void) {
     
     /* Enable interrupt. */
     PIE3bits.TMR2IE = 1;
-    /* Set interrupt to low priority.*/
+    /* Set interrupt to high priority.*/
     IPR3bits.TMR2IP = 1;
     
     /* Switch on timer. */
