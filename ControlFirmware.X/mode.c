@@ -7,6 +7,7 @@
 #include "tick.h"
 #include "modes/blank/blank.h"
 #include "modes/bootstrap/bootstrap.h"
+#include "modes/controller/controller.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
@@ -97,6 +98,7 @@ void mode_initialise(void) {
             break;
         /* Module is a controller. */
         case MODE_CONTROLLER:
+            controller_initialise();
             break;
         /* Module is a controller, but in stand by mode. */
         case MODE_CONTROLLER_STANDBY:
@@ -110,6 +112,7 @@ void mode_initialise(void) {
 void mode_service(void) {
     switch(configured_mode) {
         case MODE_CONTROLLER:
+            controller_service();
             break;
         case MODE_CONTROLLER_STANDBY:
             break;

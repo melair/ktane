@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 void tick_initialise(void);
-void tick_interrupt(void);
 void tick_wait(uint8_t delay);
 void tick_service(void);
 

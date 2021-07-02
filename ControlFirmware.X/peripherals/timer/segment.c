@@ -42,12 +42,9 @@ const uint8_t characters[24] = {
 
 #define DIGIT_COUNT 5
 
-uint8_t digits[DIGIT_COUNT] = { 0x00, 0x00, 0x00, 0x00, 0xff };
+uint8_t digits[DIGIT_COUNT] = { 0b01011111, 0b00111000, 0b00011001, 0b00010111, 0xff };
 const uint8_t select[DIGIT_COUNT] = { DIGIT0, DIGIT1, DIGIT2, DIGIT3, COLON };
 uint8_t digit = 0;
-
-/* Local function prototypes. */
-void segment_interrupt(void);
 
 /**
  * Initialise the segment display, assumed to be in KPORTA and KPORTB.
@@ -68,26 +65,26 @@ void segment_initialise(void) {
     /* Set timer to software gate, free running. */
     T4HLTbits.MODE = 0;
     
-    /* Enable interrupt. */
-    PIE11bits.TMR4IE = 1;
-    /* Set interrupt to high priority.*/
-    IPR11bits.TMR4IP = 1;
+    /* Disable interrupt. */
+    PIE11bits.TMR4IE = 0;
     
     /* Switch on timer. */
     T4CONbits.ON = 1;
 }
 
 /**
- * Handle update from timing for LED multiplexing.
+ * Service Timer4 to drive multiplexed LED display.
  */
-void __interrupt(irq(TMR4),base(8)) segment_interrupt(void) {
-    PIR11bits.TMR4IF = 0;
+void segment_service(void) {
+    if (PIR11bits.TMR4IF == 1) {
+        PIR11bits.TMR4IF = 0;
 
-    KLATA = digits[digit];
-    KLATB = (KLATB & 0b00000111) | select[digit];
+        KLATA = digits[digit];
+        KLATB = (KLATB & 0b00000111) | select[digit];
 
-    digit++;
-    if (digit >= DIGIT_COUNT) {
-        digit = 0;
-    }        
+        digit++;
+        if (digit >= DIGIT_COUNT) {
+            digit = 0;
+        } 
+    }
 }

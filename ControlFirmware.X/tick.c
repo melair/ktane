@@ -10,7 +10,6 @@
 
 /* Current millisecond of uptime module has, will wrap at roughly 4 hours and 40 minutes. */
 volatile uint32_t tick_value = 0;
-volatile uint8_t tick_interrupts = 0;
 
 /**
  * Initialise the ticker to provide an asynchronous time, uses Timer1 ticking 
@@ -32,36 +31,22 @@ void tick_initialise(void) {
     /* Set timer to software gate, free running. */
     T2HLTbits.MODE = 0;
     
-    /* Enable interrupt. */
-    PIE3bits.TMR2IE = 1;
-    /* Set interrupt to high priority.*/
-    IPR3bits.TMR2IP = 1;
+    /* Disable interrupt. */
+    PIE3bits.TMR2IE = 0;
     
     /* Switch on timer. */
     T2CONbits.ON = 1;
 }
 
 /**
- * Handle Timer1 interrupt to increase tick_period.
- */
-void __interrupt(irq(TMR2),base(8)) tick_interrupt(void) {
-    /* Tick will overflow to 0 on it's own. */
-    tick_interrupts++;
-
-    PIR3bits.TMR2IF = 0;
-}
-
-/**
- * Service the tick from the timer, this transfers stored interrupt counts and
- * adds it to the tick value. This ensures that one run of the main service loop
- * uses the same time and does not change mid flow.
+ * Service the tick from the timer, this checks for the tick interrupt and
+ * increases the counter.
  */
 void tick_service(void) {
-    while(PIR3bits.TMR2IF == 1);
-    PIE3bits.TMR2IE = 0;
-    tick_value += tick_interrupts;
-    tick_interrupts = 0;
-    PIE3bits.TMR2IE = 1;
+    if(PIR3bits.TMR2IF == 1) {
+        PIR3bits.TMR2IF = 0;
+        tick_value++;           
+    }
 }
 
 /**
