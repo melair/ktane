@@ -24,7 +24,7 @@
  * G  = 0b01000000
  * DP = 0b00010000
  */
-const uint8_t characters[24] = { 
+const uint8_t characters[25] = { 
     0b00000000, // SPACE
     0b10101111, // 0
     0b10100000, // 1
