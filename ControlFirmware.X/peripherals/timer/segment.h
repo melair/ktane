@@ -1,10 +1,14 @@
 #ifndef SEGMENT_H
 #define	SEGMENT_H
 
+#include <stdbool.h>
+
 void segment_initialise(void);
 void segment_service(void);
-void segment_set_digit(uint8_t, uint8_t) ;
-void segment_set_colon(bool);
+void segment_set_digit(uint8_t digit, uint8_t value);
+void segment_set_colon(bool on);
+
+const uint8_t characters[25];
 
 #define DIGIT_SPACE         0
 #define DIGIT_0             1
