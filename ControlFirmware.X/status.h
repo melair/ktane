@@ -12,9 +12,10 @@ void status_service(void);
 #define STATUS_IDENTIFY     3
 #define STATUS_UNUSED       4
 
-#define ERROR_NONE   0
-#define ERROR_LOCAL  1
-#define ERROR_REMOTE 2
+#define ERROR_NONE            0
+#define ERROR_LOCAL           1
+#define ERROR_REMOTE_ACTIVE   2
+#define ERROR_REMOTE_INACTIVE 3
 
 #endif	/* STATUS_H */
 
