@@ -20,7 +20,7 @@
 #include "lcd.h"
 #include "tick.h"
 #include "mode.h"
-#include "modules.h"
+#include "module.h"
 #include "firmware.h"
 #include "status.h"
 #include "protocol_module.h"
@@ -91,7 +91,7 @@ void main(void) {
     can_initialise();
         
     /* Initialise modules. */
-    modules_initialise();
+    module_initialise();
             
     /* Initialise Buzzer. */
     buzzer_initialise();

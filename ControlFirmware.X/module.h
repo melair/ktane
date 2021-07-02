@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-void modules_initialise(void);
+void module_initialise(void);
 void module_seen(uint8_t id, uint8_t mode, uint16_t firmware);
 void module_error_record(uint8_t id, uint16_t code, bool active);
 void module_error_raise(uint16_t code, bool active);
