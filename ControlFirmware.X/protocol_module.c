@@ -78,8 +78,8 @@ void protocol_module_announcement_send(void) {
     payload[1] = mode_get();
     payload[2] = (fw >> 8) & 0xff;
     payload[3] = fw & 0xff;
-    
-    can_send(PREFIX_MODULE, 4, &payload[0]);
+
+    can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);
 }
 
 /**
@@ -129,7 +129,7 @@ void protocol_module_error_send(uint16_t code) {
     payload[1] = (code >> 8) & 0xff;
     payload[2] = code & 0xff;
     
-    can_send(PREFIX_MODULE, 3, &payload[0]);    
+    can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);    
 }
 
 /**
@@ -213,10 +213,10 @@ void protocol_module_identify_send(uint8_t id) {
     payload[0] = OPCODE_MODULE_IDENTIFY;
     payload[1] = id;
 
-    can_send(PREFIX_MODULE, 2, &payload[0]);    
+    can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);    
 
     /* Send packet to self. */
-    protocol_module_identify_receive(0, 2, &payload[0]);
+    protocol_module_identify_receive(0, sizeof(payload), &payload[0]);
 }
 
 /**
@@ -234,4 +234,3 @@ void protocol_module_identify_receive(uint8_t id, uint8_t size, uint8_t *payload
 
     status_identify(payload[1] == can_get_id());    
 }
-

@@ -77,7 +77,7 @@ void protocol_firmware_request_send(uint16_t requested_version) {
     payload[1] = (requested_version >> 8) & 0xff;
     payload[2] = requested_version & 0xff;
 
-    can_send(PREFIX_FIRMWARE, 3, &payload[0]);
+    can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
 
 /**
@@ -140,7 +140,7 @@ void protocol_firmware_header_send(void) {
     payload[7] = (crc >> 8) & 0xff;
     payload[8] = crc & 0xff;
         
-    can_send(PREFIX_FIRMWARE, 9, &payload[0]);
+    can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
 
 /**
@@ -191,7 +191,7 @@ void protocol_firmware_page_request_send(uint16_t page, uint8_t source_id) {
     payload[2] = page & 0xff;
     payload[3] = source_id;
 
-    can_send(PREFIX_FIRMWARE, 4, &payload[0]);
+    can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
 
 /**
@@ -249,7 +249,7 @@ void protocol_firmware_page_response_send(uint16_t page) {
 
     firmware_get_page(page, &payload[4]);
         
-    can_send(PREFIX_FIRMWARE, 20, &payload[0]);
+    can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
 
 /**
