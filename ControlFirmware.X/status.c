@@ -102,9 +102,11 @@ void status_service(void) {
             case 6:
                 if (current_error == ERROR_LOCAL) {
                     argb_set(0, 31, 0, 255, 0);
-                } else {
+                } else if (current_error == ERROR_REMOTE_ACTIVE) {
                     argb_set(0, 31, 0, 0, 255);
-                }            
+                } else {
+                    argb_set(0, 31, 255, 0, 255);
+                }
                 break;     
             case 7:
                 argb_set(0, 31, 0, 0, 0);

@@ -19,6 +19,9 @@ void protocol_module_identify_receive(uint8_t id, uint8_t size, uint8_t *payload
 #define OPCODE_MODULE_IDENTIFY     0x11
 #define OPCODE_MODULE_ERROR        0xf0
 
+/* Store if we need to announce our reset. */
+bool announce_reset = true;
+
 /**
  * Handle reception of a new packet from CAN that is for the module management
  * prefix.
@@ -49,7 +52,7 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
             break;
         default:
             /* Alert an unknown opcode has been received. */
-            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (PREFIX_MODULE << 8) | payload[0]);
+            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (PREFIX_MODULE << 8) | payload[0], true);
             break;
     }
 }
@@ -64,13 +67,17 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Op Code      |  Module Mode  |  Firmware Version             |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |R| | | | | | | |                                               |
+   |S| | | | | | | |                                               |
+   |T| | | | | | | |                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 
 /**
  * Send a module announcement packet.
  */
 void protocol_module_announcement_send(void) {
-    uint8_t payload[4];
+    uint8_t payload[5];
     
     uint16_t fw = firmware_get_version();
     
@@ -78,6 +85,12 @@ void protocol_module_announcement_send(void) {
     payload[1] = mode_get();
     payload[2] = (fw >> 8) & 0xff;
     payload[3] = fw & 0xff;
+    payload[4] = 0x00;
+    
+    if (announce_reset) {
+        announce_reset = false;
+        payload[4] |= 0b10000000;
+    }
 
     can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);
 }
@@ -91,13 +104,18 @@ void protocol_module_announcement_send(void) {
  */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
     /* Safety check, if size is < 4 there is no mode. */
-    if (size < 4) {
+    if (size < 5) {
         return;
     }              
 
     uint8_t mode = payload[1];    
     uint16_t fw = (uint16_t) ((payload[2] << 8) | payload[3]);
-
+    bool reset = (payload[4] & 0b10000000);
+    
+    if (reset) {
+        module_errors_clear(id);
+    }
+    
     module_seen(id, mode, fw);  
     
     if (mode == MODE_CONTROLLER) {
@@ -113,7 +131,9 @@ void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *pay
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |  Op Code      |  Error Code                   |               |
+   |  Op Code      |  Error Code                   |A| | | | | | | |
+   |               |                               |C| | | | | | | |
+   |               |                               |T| | | | | | | |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 
@@ -122,12 +142,17 @@ void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *pay
  * 
  * @param code error code that has occurred.
  */
-void protocol_module_error_send(uint16_t code) {
-    uint8_t payload[3];
+void protocol_module_error_send(uint16_t code, bool active) {
+    uint8_t payload[4];
     
     payload[0] = OPCODE_MODULE_ERROR;
     payload[1] = (code >> 8) & 0xff;
     payload[2] = code & 0xff;
+    payload[3] = 0x00;
+    
+    if (active == true) {
+        payload[3] |= 0b10000000;
+    }
     
     can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);    
 }
@@ -141,12 +166,13 @@ void protocol_module_error_send(uint16_t code) {
  */
 void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
     /* Safety check, if size is < 3 there is no error code. */
-    if (size < 3) {
+    if (size < 4) {
         return;
     }
     
-    uint16_t code = (uint16_t) ((payload[1] << 8) | payload[2]);    
-    module_error_record(id, code);
+    uint16_t code = (uint16_t) ((payload[1] << 8) | payload[2]);   
+    bool active = (payload[3] & 0b10000000) != 0;
+    module_error_record(id, code, active);
 }
 
 /*

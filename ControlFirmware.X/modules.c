@@ -32,7 +32,10 @@ uint32_t next_announce;
 /* Structure for an error received from a module. */
 typedef struct {
     uint16_t        code;
-    uint8_t         count;
+    struct {
+        unsigned count  :7;
+        unsigned active :1;
+    };    
 } module_error_t;
 
 /* Structure for a module. */
@@ -60,6 +63,7 @@ uint8_t error_state_prev = ERROR_NONE;
 /* Local function prototypes. */
 uint8_t module_find(uint8_t id);
 uint8_t module_find_or_create(uint8_t id);
+uint8_t module_determine_error_state(void);
 
 /**
  * Initialise the module database, store self and set up next announcement time.
@@ -71,7 +75,8 @@ void modules_initialise(void) {
         
         for (uint8_t j = 0; j < ERROR_COUNT; j++) {
             modules[i].errors[j].code = MODULE_ERROR_NONE;
-            modules[i].errors[j].code = 0;
+            modules[i].errors[j].count = 0;
+            modules[i].errors[j].active = 0;
         }
     }
     
@@ -89,13 +94,18 @@ void modules_initialise(void) {
     next_lost_check = LOST_CHECK_PERIOD;
 }
 
-/**
- * Check to see if any modules have errors, or are lost.
- * 
- * @return true if all modules are healthy
- */
-bool modules_no_errors(void) {
-    return error_state == ERROR_NONE;
+void module_errors_clear(uint8_t id) {
+    uint8_t i = module_find(id);
+    
+    if (i == 0xff) {
+        return;
+    }
+    
+    for (uint8_t j = 0; j < ERROR_COUNT; j++) {
+        modules[i].errors[j].code = MODULE_ERROR_NONE;
+        modules[i].errors[j].count = 0;
+        modules[i].errors[j].active = 0;
+    }
 }
 
 /**
@@ -121,15 +131,42 @@ void module_service(void) {
             uint32_t expiryTime = modules[i].last_seen + LOST_PERIOD;
             if (modules[i].flags.INUSE && !modules[i].flags.LOST && (expiryTime < tick_value)) {
                 modules[i].flags.LOST = 1;
-                module_error_raise(MODULE_ERROR_CAN_LOST_BASE | modules[i].id);
+                module_error_raise(MODULE_ERROR_CAN_LOST_BASE | modules[i].id, true);
             }
         }        
     }
     
+    error_state = module_determine_error_state();
     if (error_state_prev != error_state) {
         status_error(error_state);
         error_state_prev = error_state;
     }
+}
+
+uint8_t module_determine_error_state(void) {    
+    for (uint8_t i = 0; i < ERROR_COUNT; i++) {
+        if (modules[0].errors[i].code != MODULE_ERROR_NONE && modules[0].errors[i].active == 1) {
+            return ERROR_LOCAL;
+        }
+    }
+
+    uint8_t ret = ERROR_NONE;
+    
+    if (mode_get() == MODE_CONTROLLER) {       
+        for (uint8_t i = 1; i < MODULE_COUNT && modules[i].flags.INUSE; i++) {
+            for (uint8_t j = 0; j < ERROR_COUNT; j++) {
+                if (modules[i].errors[j].code != MODULE_ERROR_NONE) {
+                    if (modules[i].errors[j].active) {
+                        return ERROR_REMOTE_ACTIVE;
+                    } else {
+                        ret = ERROR_REMOTE_INACTIVE;
+                    }                
+                }   
+            }
+        }
+    }
+                
+    return ret;
 }
 
 /**
@@ -190,6 +227,10 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
         return;
     }
     
+    if (modules[idx].flags.LOST) {
+        module_error_raise(MODULE_ERROR_CAN_LOST_BASE | id, false);
+    }
+    
     modules[idx].mode = mode;
     modules[idx].firmware = firmware;
     modules[idx].last_seen = tick_value;
@@ -203,9 +244,9 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
  * 
  * @param code error code to raise
  */
-void module_error_raise(uint16_t code) {
-    protocol_module_error_send(code);
-    module_error_record(can_get_id(), code);
+void module_error_raise(uint16_t code, bool active) {
+    protocol_module_error_send(code, active);
+    module_error_record(can_get_id(), code, active);
 }
 
 /**
@@ -214,28 +255,24 @@ void module_error_raise(uint16_t code) {
  * @param id CAN id
  * @param code error code received
  */
-void module_error_record(uint8_t id, uint16_t code) {
+void module_error_record(uint8_t id, uint16_t code, bool active) {
     uint8_t idx = module_find_or_create(id);
     
     if (idx == 0xff) {
         return;
     }
-    
-    if (idx == 0) {
-        error_state = ERROR_LOCAL;
-    } else if (error_state != ERROR_LOCAL){
-        error_state = ERROR_REMOTE;
-    }
-        
+
     for (uint8_t i = 0; i < ERROR_COUNT; i++) {
         if (modules[idx].errors[i].code == code) {
             modules[idx].errors[i].count++;
+            modules[idx].errors[i].active = active;
             return;
         }
         
         if (modules[idx].errors[i].code == MODULE_ERROR_NONE) {
             modules[idx].errors[i].code = code;
             modules[idx].errors[i].count = 1;
+            modules[idx].errors[i].active = active;
             return;
         }
     }
@@ -248,4 +285,6 @@ void module_error_record(uint8_t id, uint16_t code) {
         modules[idx].errors[ovr].code = MODULE_ERROR_TOO_MANY_ERRORS;
         modules[idx].errors[ovr].count = 1;
     }
+    
+    modules[idx].errors[ovr].active = true;
 }
