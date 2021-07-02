@@ -25,6 +25,7 @@
 #include "status.h"
 #include "protocol_module.h"
 #include "interrupt.h"
+#include "peripherals/timer/segment.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
@@ -106,7 +107,7 @@ void main(void) {
     
     /* Set status led to ready. */
     status_set(STATUS_READY);
-       
+           
     /* Main loop. */
     while(true) {
         /* Clear watchdog. */
