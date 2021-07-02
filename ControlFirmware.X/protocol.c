@@ -8,7 +8,7 @@
 #include "can.h"
 #include "mode.h"
 #include "tick.h"
-#include "modules.h"
+#include "module.h"
 #include "buzzer.h"
 #include "argb.h"
 

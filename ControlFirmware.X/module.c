@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "protocol.h"
 #include "protocol_module.h"
-#include "modules.h"
+#include "module.h"
 #include "tick.h"
 #include "can.h"
 #include "mode.h"
@@ -68,7 +68,7 @@ uint8_t module_determine_error_state(void);
 /**
  * Initialise the module database, store self and set up next announcement time.
  */
-void modules_initialise(void) {        
+void module_initialise(void) {        
     /* Init module structure. */
     for (uint8_t i = 0; i < MODULE_COUNT; i++) {
         modules[i].flags.INUSE = 0;

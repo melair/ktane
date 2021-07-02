@@ -1,7 +1,7 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "firmware.h"
-#include "modules.h"
+#include "module.h"
 #include "protocol_firmware.h"
 
 /* Location of actual firmware. */

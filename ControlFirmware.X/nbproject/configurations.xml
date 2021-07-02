@@ -29,13 +29,14 @@
       <itemPath>mode.h</itemPath>
       <itemPath>lcd.h</itemPath>
       <itemPath>protocol.h</itemPath>
-      <itemPath>modules.h</itemPath>
       <itemPath>firmware.h</itemPath>
       <itemPath>protocol_module.h</itemPath>
       <itemPath>protocol_firmware.h</itemPath>
       <itemPath>status.h</itemPath>
       <itemPath>protocol_game.h</itemPath>
       <itemPath>interrupt.h</itemPath>
+      <itemPath>game.h</itemPath>
+      <itemPath>module.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -69,13 +70,14 @@
       <itemPath>mode.c</itemPath>
       <itemPath>lcd.c</itemPath>
       <itemPath>protocol.c</itemPath>
-      <itemPath>modules.c</itemPath>
       <itemPath>firmware.c</itemPath>
       <itemPath>protocol_module.c</itemPath>
       <itemPath>protocol_firmware.c</itemPath>
       <itemPath>status.c</itemPath>
       <itemPath>protocol_game.c</itemPath>
       <itemPath>interrupt.c</itemPath>
+      <itemPath>game.c</itemPath>
+      <itemPath>module.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -261,6 +263,8 @@
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/peter/Desktop/KTANE/GitHubReleased/ControlFirmware.X/debug/default/ControlFirmware_ptg"/>
         <property key="programmerToGoImageName" value="ControlFirmware_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

@@ -1,6 +1,6 @@
 #include <xc.h>
 #include <stdint.h>
-#include "modules.h"
+#include "module.h"
 #include "protocol.h"
 #include "protocol_game.h"
 
