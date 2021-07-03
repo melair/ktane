@@ -9,12 +9,13 @@ const uint8_t led_colors[8][3] = {
     { 0xff, 0x5f, 0x00 },  
     { 0xff, 0x00, 0x00 },
     { 0x00, 0xff, 0x00 },
-    { 0x00, 0x00, 0xff },
+    { 0xff, 0x00, 0x00 },
+    { 0x00, 0xff, 0x00 },
     { 0x00, 0x00, 0x00 }
 };
 
 /* Current status. */
-uint8_t current_status = STATUS_READY;
+uint8_t current_status = STATUS_IDLE;
 /* Current error. */
 uint8_t current_error = ERROR_NONE;
 /* Are we identifying. */
@@ -31,6 +32,10 @@ uint32_t last_tick = 0;
  * @param status new status
  */
 void status_set(uint8_t status) {
+    if (current_status == status) {
+        return;    
+    }
+    
     current_status = status;  
     phase = 0;    
 }
@@ -41,6 +46,10 @@ void status_set(uint8_t status) {
  * @param error error mode
  */
 void status_error(uint8_t error) {
+    if (current_error == error) {
+        return;    
+    }
+        
     current_error = error;   
     phase = 0;    
 }
@@ -69,6 +78,10 @@ void status_service(void) {
                 argb_set(0, 31, led_colors[current_status][0], led_colors[current_status][1], led_colors[current_status][2]);
                 break;
             case 1:
+                if (current_status == 1 || current_status == 2) {
+                    argb_set(0, 31, 0, 0, 0);
+                }
+            case 2:
                 if (identify == true) {
                     argb_set(0, 31, 0, 0, 255);
                 }
@@ -76,7 +89,7 @@ void status_service(void) {
         }
 
         phase++;
-        if (phase > 1) {
+        if (phase > 2) {
             phase = 0;
         }
     } else {   
