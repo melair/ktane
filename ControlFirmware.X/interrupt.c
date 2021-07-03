@@ -27,9 +27,10 @@ void int_initialise(void) {
     IVTLOCK = 0xAA;
     IVTLOCKbits.IVTLOCKED = 0x01;
     
-    /* Enable global interrupts. */
-    INTCON0bits.GIEH = 1;
-    INTCON0bits.GIEL = 1;
+    /* Disable global interrupts, this is required for waking from IDLE mode
+     * without invoking an interrupt handler. */
+    INTCON0bits.GIEH = 0;
+    INTCON0bits.GIEL = 0;
 }
 
 /**

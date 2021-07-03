@@ -40,8 +40,8 @@ void tick_initialise(void) {
     /* Set period to 125. */
     TMR0H = 125;
     
-    /* Disable interrupt. */
-    PIE3bits.TMR0IE = 0;
+    /* Enable interrupt, require to wake us from IDLE mode. */
+    PIE3bits.TMR0IE = 1;
     
     /* Switch on timer. */
     T0CON0bits.EN = 1;
@@ -55,22 +55,17 @@ void tick_service(void) {
     tick_100hz = false;
     tick_1khz = false;
     tick_2khz = false;
-    LATD = 0x00;
     
     if(PIR3bits.TMR0IF == 1) {
         PIR3bits.TMR0IF = 0;
-        
-        LATDbits.LATD5 = 1;
-        
+                
         tick_2khz = true;
         if (internal_tick % 2 == 0) {
-            LATDbits.LATD6 = 1;
             tick_1khz = true;            
             tick_value++;
         }
         
         if (internal_tick % 20 == 0) {
-            LATDbits.LATD7 = 1;
             tick_100hz = true;
             internal_tick = 0;
         }
