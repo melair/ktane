@@ -25,7 +25,7 @@ bool mode_check_if_bootstrap(void) {
     /* Set Port A1 (RA1) to be an input. */
     TRISAbits.TRISA1 = 1;
     
-    tick_wait(1);
+    tick_wait(10);
        
     /* Check to see if the port is high, if so abort. */
     if (PORTAbits.RA1 == 1) {
@@ -36,7 +36,7 @@ bool mode_check_if_bootstrap(void) {
     /* Set Port A1 (RA0) to high. */
     LATAbits.LATA0 = 1;
     
-    tick_wait(1);    
+    tick_wait(10);    
     
     /* Check to see if the port now low, if so abort. */
     if (PORTAbits.RA1 == 0) {
@@ -48,7 +48,7 @@ bool mode_check_if_bootstrap(void) {
     /* Set Port A1 (RA0) to low. */
     LATAbits.LATA0 = 0;
     
-    tick_wait(1);    
+    tick_wait(10);    
     
     /* Check to see if the port is high again, if so abort. */
     if (PORTAbits.RA1 == 1) {

@@ -9,9 +9,9 @@ void blank_initialise(void) {
     while(true) {
         argb_set(0, 31, 0xff, 0x00, 0x00);
         argb_service();
-        tick_wait(25);
+        tick_wait(250);
         argb_set(0, 31, 0x00, 0x00, 0xff);
         argb_service();
-        tick_wait(25);
+        tick_wait(250);
     }
 }

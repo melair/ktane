@@ -35,7 +35,6 @@
       <itemPath>status.h</itemPath>
       <itemPath>protocol_game.h</itemPath>
       <itemPath>interrupt.h</itemPath>
-      <itemPath>game.h</itemPath>
       <itemPath>module.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -76,7 +75,6 @@
       <itemPath>status.c</itemPath>
       <itemPath>protocol_game.c</itemPath>
       <itemPath>interrupt.c</itemPath>
-      <itemPath>game.c</itemPath>
       <itemPath>module.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

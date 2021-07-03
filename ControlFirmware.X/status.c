@@ -58,7 +58,7 @@ void status_identify(bool on) {
  * Service the status indicator and animate error if needed.
  */
 void status_service(void) {
-    if ((tick_value - last_tick) < 20) {
+    if (!tick_1khz || (tick_value - last_tick) < 200) {
         return;
     }
     last_tick = tick_value;
