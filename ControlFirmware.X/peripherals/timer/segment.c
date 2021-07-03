@@ -25,7 +25,7 @@
  * G  = 0b01000000
  * DP = 0b00010000
  */
-const uint8_t characters[25] = { 
+const uint8_t characters[28] = { 
     0b00000000, // SPACE
     0b10101111, // 0
     0b10100000, // 1
@@ -43,6 +43,9 @@ const uint8_t characters[25] = {
     0b11100101, // d
     0b01001111, // E
     0b01001011, // F
+    0b11101001, // H
+    0b00001101, // L
+    0b11001011, // P
     0b00000010, // OverScore
     0b01000000, // Dash
     0b00000100, // Underscore
