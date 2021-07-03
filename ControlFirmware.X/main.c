@@ -52,6 +52,7 @@ void pps_unlock(void);
 void pps_lock(void);
 void arbiter_initialise(void);
 void oscillator_initialise(void);
+void pmd_initialise(void);
 
 /**
  * Main function, initialise and main loop.
@@ -63,15 +64,21 @@ void main(void) {
     /* Reconfigure system arbiter. */
     arbiter_initialise();
     
+    /* Configure sleep behaviour, put CPU in IDLE. */
+    CPUDOZEbits.IDLEN = 1;
+    
+    /* Disable unused peripherals. */
+    pmd_initialise();
+    
+    /* Initialise interrupts. */
+    int_initialise();   
+          
     /* Initialise firmware. */
     firmware_initialise();
     
     /* Unlock PPS during initialisation. */
     pps_unlock();
-               
-    /* Initialise interrupts. */
-    int_initialise();   
-                   
+                                  
     /* Initialise tick. */
     tick_initialise();
     
@@ -136,6 +143,19 @@ void main(void) {
         
         /* Service the mode. */
         mode_service();   
+        
+        /* Put MCU into IDLE mode, no CPU instructions but peripherals continue.
+         * 
+         * Full SLEEP would be ideal, but is incompatible with the CAN peripheral
+         * as SLEEP disables the memory controller. CAN can wake upon start of
+         * message but the packet would likely be lost. This behaviour would be
+         * suitable for a device that comes on once every few seconds, but for
+         * something that needs to wake up at least every 200ms, it wont work.
+         * 
+         * CPU will wake from the tick timer. This doesn't save much power, but 
+         * it prevents functions spinning that don't need to operate faster than 
+         * the tick refresh. */
+        SLEEP();
     }
 }
                 
@@ -204,4 +224,19 @@ void arbiter_initialise(void) {
     PRLOCK = 0x55;
     PRLOCK = 0xAA;
     PRLOCKbits.PRLOCKED = 1;
+}
+
+/**
+ * Disable peripherals not used, this saves some power. 
+ */
+void pmd_initialise(void) {
+    PMD0 = 0b01101111; // Keep FOSC and CRC
+    PMD1 = 0b10000000; // Keep Timers
+    PMD2 = 0b01111111; // Keep CAN
+    PMD3 = 0b11011111; // Keep ADC
+    PMD4 = 0b11111111; // Keep Nothing
+    PMD5 = 0b00001111; // Keep PWM1-4
+    PMD6 = 0b00000001; // Keep UART1-5 and SPI1/1
+    PMD7 = 0b11111111; // Keep Nothing
+    PMD8 = 0b11111110; // Keep DMA1
 }
