@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "segment.h"
 #include "../ports.h"
+#include "../../tick.h"
 
 /*
  * Character Bank
@@ -71,33 +72,13 @@ bool colon = false;
 void segment_initialise(void) {
     KTRISA = 0x00;
     KTRISB &= 0b00000111;
-    
-    /* Set clock to 500kHz source. */
-    T4CLKCONbits.CS = 0b00101;
-    
-    /* Set prescaler to 2, to 250kHz. */
-    T4CONbits.CKPS = 0b001;
-    
-    /* Set period to 125, 2kHz. */
-    T4PR = 125;
-    
-    /* Set timer to software gate, free running. */
-    T4HLTbits.MODE = 0;
-    
-    /* Disable interrupt. */
-    PIE11bits.TMR4IE = 0;
-    
-    /* Switch on timer. */
-    T4CONbits.ON = 1;
 }
 
 /**
  * Service Timer4 to drive multiplexed LED display.
  */
 void segment_service(void) {
-    if (PIR11bits.TMR4IF == 1) {
-        PIR11bits.TMR4IF = 0;
-
+    if (tick_2khz) {
         /* Inverse the digit bits, as a high switches off the low side switch. */
         KLATA = ~digits[digit];
         

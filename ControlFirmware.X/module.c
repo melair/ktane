@@ -18,11 +18,11 @@
 #define ERROR_COUNT  8
 
 /* How frequent should lost modules be checked for, in 10ms units. */
-#define LOST_CHECK_PERIOD   10
+#define LOST_CHECK_PERIOD   100
 /* How frequent should module announcements be, in 10ms units. */
-#define ANNOUNCE_PERIOD     20
+#define ANNOUNCE_PERIOD     200
 /* How long should it be before we declare a module missing, in 10ms units. */
-#define LOST_PERIOD         40
+#define LOST_PERIOD         400
 
 /* The clock tick that this module should check for lost nodes. */
 uint32_t next_lost_check;

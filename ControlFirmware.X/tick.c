@@ -8,44 +8,74 @@
 #include <stdbool.h>
 #include "tick.h"
 
-/* Current millisecond of uptime module has, will wrap at roughly 4 hours and 40 minutes. */
+/* Current millisecond of uptime module has, will wrap at roughly 50 days,
+ * long enough not to care. */
 volatile uint32_t tick_value = 0;
 
+/* 100Hz tick flag. */
+volatile bool tick_100hz = false;
+/* 1kHz tick flag. */
+volatile bool tick_1khz = false;
+/* 2kHz tick flag. */
+volatile bool tick_2khz = false;
+
+/* Internal tick counter, used to maintain above tick flags. */
+volatile uint8_t internal_tick = 0;
+
+
 /**
- * Initialise the ticker to provide an asynchronous time, uses Timer1 ticking 
- * at 100.0Hz.
+ * Initialise the ticker to provide an asynchronous time, uses Timer0 ticking 
+ * at 2kHz.
  */
 void tick_initialise(void) {
     /* Set clock to 500kHz source. */
-    T2CLKCONbits.CS = 0b00101;
+    T0CON1bits.CS = 0b101;
     
     /* Set prescaler to 2, to 250kHz. */
-    T2CONbits.CKPS = 0b001;
+    T0CON1bits.CKPS = 0b0001;
     
-    /* Set postscaler to 10, as timer rolls ever 1ms. */
-    T2CONbits.OUTPS = 0b1001;
+    /* Set to 8 bit timer with period. */
+    T0CON0bits.MD16 = 0;
     
-    /* Set period to 250. */
-    T2PR = 250;
-    
-    /* Set timer to software gate, free running. */
-    T2HLTbits.MODE = 0;
+    /* Set period to 125. */
+    TMR0H = 125;
     
     /* Disable interrupt. */
-    PIE3bits.TMR2IE = 0;
+    PIE3bits.TMR0IE = 0;
     
     /* Switch on timer. */
-    T2CONbits.ON = 1;
+    T0CON0bits.EN = 1;
 }
 
 /**
  * Service the tick from the timer, this checks for the tick interrupt and
- * increases the counter.
+ * increments internal counter, maintains ticks and main time source.
  */
 void tick_service(void) {
-    if(PIR3bits.TMR2IF == 1) {
-        PIR3bits.TMR2IF = 0;
-        tick_value++;           
+    tick_100hz = false;
+    tick_1khz = false;
+    tick_2khz = false;
+    LATD = 0x00;
+    
+    if(PIR3bits.TMR0IF == 1) {
+        PIR3bits.TMR0IF = 0;
+        
+        LATDbits.LATD5 = 1;
+        
+        tick_2khz = true;
+        if (internal_tick % 2 == 0) {
+            LATDbits.LATD6 = 1;
+            tick_1khz = true;            
+            tick_value++;
+        }
+        
+        if (internal_tick % 20 == 0) {
+            LATDbits.LATD7 = 1;
+            tick_100hz = true;
+            internal_tick = 0;
+        }
+        
+        internal_tick++;                   
     }
 }
 

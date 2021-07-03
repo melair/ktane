@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c modes/controller/controller.c game.c module.c
+SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/module.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d ${OBJECTDIR}/interrupt.p1.d ${OBJECTDIR}/modes/controller/controller.p1.d ${OBJECTDIR}/game.p1.d ${OBJECTDIR}/module.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/modes/controller/controller.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d ${OBJECTDIR}/interrupt.p1.d ${OBJECTDIR}/module.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/module.p1
+OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1
 
 # Source Files
-SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c modes/controller/controller.c game.c module.c
+SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c
 
 
 
@@ -109,6 +109,14 @@ ${OBJECTDIR}/modes/bootstrap/bootstrap.p1: modes/bootstrap/bootstrap.c  nbprojec
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 modes/bootstrap/bootstrap.c 
 	@-${MV} ${OBJECTDIR}/modes/bootstrap/bootstrap.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/controller/controller.p1: modes/controller/controller.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/controller" 
+	@${RM} ${OBJECTDIR}/modes/controller/controller.p1.d 
+	@${RM} ${OBJECTDIR}/modes/controller/controller.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/controller/controller.p1 modes/controller/controller.c 
+	@-${MV} ${OBJECTDIR}/modes/controller/controller.d ${OBJECTDIR}/modes/controller/controller.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/controller/controller.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 ${OBJECTDIR}/peripherals/timer/segment.p1: peripherals/timer/segment.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/peripherals/timer" 
@@ -238,22 +246,6 @@ ${OBJECTDIR}/interrupt.p1: interrupt.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/interrupt.d ${OBJECTDIR}/interrupt.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/interrupt.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
-${OBJECTDIR}/modes/controller/controller.p1: modes/controller/controller.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/controller" 
-	@${RM} ${OBJECTDIR}/modes/controller/controller.p1.d 
-	@${RM} ${OBJECTDIR}/modes/controller/controller.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/controller/controller.p1 modes/controller/controller.c 
-	@-${MV} ${OBJECTDIR}/modes/controller/controller.d ${OBJECTDIR}/modes/controller/controller.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/controller/controller.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/game.p1: game.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/game.p1.d 
-	@${RM} ${OBJECTDIR}/game.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/game.p1 game.c 
-	@-${MV} ${OBJECTDIR}/game.d ${OBJECTDIR}/game.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/game.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
 ${OBJECTDIR}/module.p1: module.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/module.p1.d 
@@ -278,6 +270,14 @@ ${OBJECTDIR}/modes/bootstrap/bootstrap.p1: modes/bootstrap/bootstrap.c  nbprojec
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 modes/bootstrap/bootstrap.c 
 	@-${MV} ${OBJECTDIR}/modes/bootstrap/bootstrap.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/controller/controller.p1: modes/controller/controller.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/controller" 
+	@${RM} ${OBJECTDIR}/modes/controller/controller.p1.d 
+	@${RM} ${OBJECTDIR}/modes/controller/controller.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/controller/controller.p1 modes/controller/controller.c 
+	@-${MV} ${OBJECTDIR}/modes/controller/controller.d ${OBJECTDIR}/modes/controller/controller.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/controller/controller.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 ${OBJECTDIR}/peripherals/timer/segment.p1: peripherals/timer/segment.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/peripherals/timer" 
@@ -406,22 +406,6 @@ ${OBJECTDIR}/interrupt.p1: interrupt.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/interrupt.p1 interrupt.c 
 	@-${MV} ${OBJECTDIR}/interrupt.d ${OBJECTDIR}/interrupt.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/interrupt.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/controller/controller.p1: modes/controller/controller.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/controller" 
-	@${RM} ${OBJECTDIR}/modes/controller/controller.p1.d 
-	@${RM} ${OBJECTDIR}/modes/controller/controller.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/controller/controller.p1 modes/controller/controller.c 
-	@-${MV} ${OBJECTDIR}/modes/controller/controller.d ${OBJECTDIR}/modes/controller/controller.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/controller/controller.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/game.p1: game.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/game.p1.d 
-	@${RM} ${OBJECTDIR}/game.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=default,-01f800-01fffe -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/game.p1 game.c 
-	@-${MV} ${OBJECTDIR}/game.d ${OBJECTDIR}/game.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/game.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 ${OBJECTDIR}/module.p1: module.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}" 
