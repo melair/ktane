@@ -14,6 +14,9 @@
         <logicalFolder name="f3" displayName="controller" projectFiles="true">
           <itemPath>modes/controller/controller.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f4" displayName="debug" projectFiles="true">
+          <itemPath>modes/debug/debug.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
         <logicalFolder name="f1" displayName="timer" projectFiles="true">
@@ -36,6 +39,7 @@
       <itemPath>protocol_game.h</itemPath>
       <itemPath>interrupt.h</itemPath>
       <itemPath>module.h</itemPath>
+      <itemPath>game.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -53,6 +57,9 @@
         </logicalFolder>
         <logicalFolder name="f3" displayName="controller" projectFiles="true">
           <itemPath>modes/controller/controller.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f4" displayName="debug" projectFiles="true">
+          <itemPath>modes/debug/debug.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
@@ -76,6 +83,7 @@
       <itemPath>protocol_game.c</itemPath>
       <itemPath>interrupt.c</itemPath>
       <itemPath>module.c</itemPath>
+      <itemPath>game.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -261,6 +269,8 @@
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/peter/Desktop/KTANE/GitHubReleased/ControlFirmware.X/debug/default/ControlFirmware_ptg"/>
         <property key="programmerToGoImageName" value="ControlFirmware_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

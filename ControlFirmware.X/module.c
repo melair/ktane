@@ -11,9 +11,8 @@
 #include "argb.h"
 #include "lcd.h"
 #include "status.h"
+#include "game.h"
 
-/* Total number of modules that can be part of the network. */
-#define MODULE_COUNT 16
 /* Number of errors in each module to track. */
 #define ERROR_COUNT  8
 
@@ -49,7 +48,8 @@ typedef struct {
     uint16_t        firmware;
     uint32_t        last_seen;
     
-    module_error_t  errors[ERROR_COUNT];    
+    module_error_t  errors[ERROR_COUNT];              
+    module_game_t   game;
 } module_t;
 
 /* Modules in network. */
@@ -78,6 +78,9 @@ void module_initialise(void) {
             modules[i].errors[j].count = 0;
             modules[i].errors[j].active = 0;
         }
+        
+        modules[i].game.enabled = false;
+        modules[i].game.ready = false;
     }
     
     /* Store this module in slot 0. */
@@ -94,6 +97,11 @@ void module_initialise(void) {
     next_lost_check = LOST_CHECK_PERIOD;
 }
 
+/**
+ * Clear all errors off the specified module.
+ * 
+ * @param id CAN id to clear errors of
+ */
 void module_errors_clear(uint8_t id) {
     uint8_t i = module_find(id);
     
@@ -143,6 +151,12 @@ void module_service(void) {
     }
 }
 
+/**
+ * Determine the overall error state of the module. If the module is a controller
+ * this will represent the whole network, if anything else only its own state.
+ * 
+ * @return the error state
+ */
 uint8_t module_determine_error_state(void) {    
     for (uint8_t i = 0; i < ERROR_COUNT; i++) {
         if (modules[0].errors[i].code != MODULE_ERROR_NONE && modules[0].errors[i].active == 1) {
@@ -206,6 +220,7 @@ uint8_t module_find_or_create(uint8_t id) {
         if (!modules[i].flags.INUSE) {
             modules[i].flags.INUSE = 1;
             modules[i].id = id;
+            modules[i].game.id = id;
             return i;
         }      
     }
@@ -234,7 +249,8 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
     modules[idx].mode = mode;
     modules[idx].firmware = firmware;
     modules[idx].last_seen = tick_value;
-    modules[idx].flags.LOST = 0;    
+    modules[idx].flags.LOST = 0;       
+    modules[idx].game.puzzle = (mode >= MODE_PUZZLE_DEBUG);
 }
 
 /**
@@ -287,4 +303,39 @@ void module_error_record(uint8_t id, uint16_t code, bool active) {
     }
     
     modules[idx].errors[ovr].active = true;
+}
+
+/**
+ * Return the game data for a specific module index. Consumers should iterate 
+ * from 0 up to MODULE_COUNT, if a NULL is returned that is the end of the list.
+ * 
+ * @param idx module index in data store to fetch
+ * @return game data for module index, NULL at end of list
+ */
+module_game_t *module_get_game(uint8_t idx) {
+    if (idx >= MODULE_COUNT) {
+        return NULL;
+    }
+    
+    if (!modules[idx].flags.INUSE) {
+        return NULL;
+    }
+    
+    return &modules[idx].game;
+}
+
+/**
+ * Return the game data for a specific module by CAN id.
+ * 
+ * @param id CAN id to get data for
+ * @return game data for module index, NULL if not present
+ */
+module_game_t *module_get_game_by_id(uint8_t id) {
+    uint8_t idx = module_find(id);
+    
+    if (idx == 0xff) {
+        return NULL;       
+    }
+    
+    return &modules[idx].game;
 }

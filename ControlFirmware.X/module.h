@@ -2,6 +2,7 @@
 #define	MODULES_H
 
 #include <stdbool.h>
+#include "game.h"
 
 void module_initialise(void);
 void module_seen(uint8_t id, uint8_t mode, uint16_t firmware);
@@ -9,6 +10,11 @@ void module_error_record(uint8_t id, uint16_t code, bool active);
 void module_error_raise(uint16_t code, bool active);
 void module_service(void);
 void module_errors_clear(uint8_t id);
+module_game_t *module_get_game(uint8_t idx);
+module_game_t *module_get_game_by_id(uint8_t id);
+
+/* Total number of modules that can be part of the network. */
+#define MODULE_COUNT 16
 
 #define MODULE_ERROR_NONE                       0x0000
 #define MODULE_ERROR_CAN_ID_CONFLICT            0x0010

@@ -1,7 +1,7 @@
 # Ignore build files.
-build/
-debug/
-dist/
+/build/
+/debug/
+/dist/
 
 # Include project private settings.
-nbproject/private
+/nbproject/private
