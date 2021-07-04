@@ -40,6 +40,7 @@
       <itemPath>interrupt.h</itemPath>
       <itemPath>module.h</itemPath>
       <itemPath>game.h</itemPath>
+      <itemPath>rng.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -84,6 +85,7 @@
       <itemPath>interrupt.c</itemPath>
       <itemPath>module.c</itemPath>
       <itemPath>game.c</itemPath>
+      <itemPath>rng.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
