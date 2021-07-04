@@ -8,15 +8,8 @@
 #include "buzzer.h"
 #include "tick.h"
 
+/* Tick to turn buzzer off. */
 uint32_t buzzer_off_tick = 0;
-
-#define TOTAL_FREQUENCIES 3
-
-const uint16_t frequencies[TOTAL_FREQUENCIES][2] = {
-    {BUZZER_FREQ_A6_SHARP, 0x010c},
-    {BUZZER_FREQ_C7_SHARP, 0x00e1},
-    {BUZZER_FREQ_B8,       0x003f},
-};
 
 /**
  * Initialise buzzer pin, and PWM to support buzzer.
@@ -49,20 +42,13 @@ void buzzer_initialise(void) {
  */
 void buzzer_on(uint8_t volume, uint16_t frequency) {
     PWM2CONbits.EN = 0;
-    PWM2PR = 0;
-
-    for (uint8_t i = 0; i < TOTAL_FREQUENCIES; i++) {
-        if (frequency <= frequencies[i][0]) {
-            PWM2PR = frequencies[i][1];
-            break;
-        }
-    }
-
+    
+    PWM2PR = (uint16_t) ((uint24_t) 500000 / (uint24_t) frequency);
     if (PWM2PR == 0) {
         return;
     }
 
-    PWM2S1P1 = PWM2PR-1;
+    PWM2S1P1 = PWM2PR >> 1;
 
     PWM2CONbits.EN = 1;
 

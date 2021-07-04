@@ -5,15 +5,23 @@
 #include "mode.h"
 #include "nvm.h"
 #include "tick.h"
+#include "game.h"
 #include "modes/blank/blank.h"
 #include "modes/bootstrap/bootstrap.h"
 #include "modes/controller/controller.h"
+#include "modes/debug/debug.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
+void mode_unconfigured_state(bool first);
 
 /* Modules configured mode*/
 uint8_t configured_mode;
+
+/* Function pointers to each stage. */
+void (*mode_state_function[5])(bool);
+/* Last called stage. */
+uint8_t last_called_state = 0xff;
 
 /**
  * Checks to see if the module is in bootstrap mode, this is done by shorting
@@ -73,6 +81,14 @@ uint8_t mode_get(void) {
 }
 
 /**
+ * Empty function for unused states in mode.
+ * 
+ * @param first true if first time called
+ */
+void mode_unconfigured_state(bool first) {
+}
+
+/**
  * Run any initialisation functions for the specific mode, an unrecognised mode
  * will be treated as a blank module and error and halt.
  */
@@ -81,6 +97,10 @@ void mode_initialise(void) {
 
     if (mode_check_if_bootstrap()) {
         configured_mode = MODE_BOOTSTRAP;
+    }
+    
+    for (uint8_t i = 0; i < 5; i++) {
+        mode_state_function[i] = mode_unconfigured_state;
     }
     
     switch(configured_mode) {
@@ -103,6 +123,10 @@ void mode_initialise(void) {
         /* Module is a controller, but in stand by mode. */
         case MODE_CONTROLLER_STANDBY:
             break;
+        /* Module is a puzzle, debug. */
+        case MODE_PUZZLE_DEBUG:
+            debug_initialise();
+            break;
     }
 }
 
@@ -114,9 +138,20 @@ void mode_service(void) {
         case MODE_CONTROLLER:
             controller_service();
             break;
-        case MODE_CONTROLLER_STANDBY:
-            break;
-        default:
-            break;
     }
+    
+    bool first = last_called_state != game.state;
+    last_called_state = game.state;        
+    mode_state_function[game.state](first);
+}
+
+/**
+ * Register the modes callback against a game state. This prevents duplication
+ * of state switching in modules.
+ * 
+ * @param state to call function for
+ * @param func function to call
+ */
+void mode_register_callback(uint8_t state, void (*func)(bool)) {
+    mode_state_function[state] = func;
 }

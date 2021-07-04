@@ -13,19 +13,20 @@
  */
 #include <xc.h>
 #include <stdbool.h>
-#include "argb.h" 
+#include "argb.h"
 #include "buzzer.h"
-#include "nvm.h"
 #include "can.h"
+#include "firmware.h"
+#include "game.h"
+#include "interrupt.h"
 #include "lcd.h"
-#include "tick.h"
 #include "mode.h"
 #include "module.h"
-#include "firmware.h"
-#include "status.h"
-#include "protocol_module.h"
-#include "interrupt.h"
+#include "nvm.h"
 #include "peripherals/timer/segment.h"
+#include "protocol_module.h"
+#include "status.h"
+#include "tick.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
@@ -90,22 +91,25 @@ void main(void) {
         
     /* Initialise ARGB. */
     argb_initialise();
-
-    /* Initialise the mode. */
-    mode_initialise();
     
     /* Initialise CAN bus. */
     can_initialise();
-        
-    /* Initialise modules. */
-    module_initialise();
-            
+
     /* Initialise Buzzer. */
     buzzer_initialise();
+   
+    /* Initialise modules. */
+    module_initialise();
+       
+    /* Initialise the mode. */
+    mode_initialise();
+    
+    /* Initialise game state. */
+    game_initialise();
     
     /* Lock PPS during main execution. */
     pps_lock();      
-
+  
     /* Set default LCD text. */
     lcd_default();
     
@@ -122,16 +126,19 @@ void main(void) {
         
         /* Service the tick. */
         tick_service();
-        
-        /* Update ARGB string if needed. */
-        argb_service();    
-        
+                
         /* Service CAN buffers. */
         can_service();
         
         /* Service module subsystem. */
         module_service();
+                
+        /* Service the game state. */
+        game_service();
         
+        /* Update ARGB string if needed. */
+        argb_service();    
+
         /* Service LCD driver. */
         lcd_service();
         
