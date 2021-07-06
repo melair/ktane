@@ -17,12 +17,16 @@
         <logicalFolder name="f4" displayName="debug" projectFiles="true">
           <itemPath>modes/debug/debug.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f5" displayName="maze" projectFiles="true">
+          <itemPath>modes/maze/maze.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
         <logicalFolder name="f1" displayName="timer" projectFiles="true">
           <itemPath>peripherals/timer/segment.h</itemPath>
         </logicalFolder>
         <itemPath>peripherals/ports.h</itemPath>
+        <itemPath>peripherals/keymatrix.h</itemPath>
       </logicalFolder>
       <itemPath>nvm.h</itemPath>
       <itemPath>argb.h</itemPath>
@@ -62,11 +66,15 @@
         <logicalFolder name="f4" displayName="debug" projectFiles="true">
           <itemPath>modes/debug/debug.c</itemPath>
         </logicalFolder>
+        <logicalFolder name="f5" displayName="maze" projectFiles="true">
+          <itemPath>modes/maze/maze.c</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
         <logicalFolder name="f1" displayName="timer" projectFiles="true">
           <itemPath>peripherals/timer/segment.c</itemPath>
         </logicalFolder>
+        <itemPath>peripherals/keymatrix.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>nvm.c</itemPath>
@@ -187,7 +195,7 @@
         <property key="calibrate-oscillator-value" value="0x3400"/>
         <property key="clear-bss" value="true"/>
         <property key="code-model-external" value="wordwrite"/>
-        <property key="code-model-rom" value="default,-01f800-01fffe"/>
+        <property key="code-model-rom" value="0-fbff"/>
         <property key="create-html-files" value="false"/>
         <property key="data-model-ram" value=""/>
         <property key="data-model-size-of-double" value="32"/>
@@ -271,8 +279,6 @@
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="C:/Users/peter/Desktop/KTANE/GitHubReleased/ControlFirmware.X/debug/default/ControlFirmware_ptg"/>
         <property key="programmerToGoImageName" value="ControlFirmware_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

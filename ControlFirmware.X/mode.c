@@ -10,10 +10,14 @@
 #include "modes/bootstrap/bootstrap.h"
 #include "modes/controller/controller.h"
 #include "modes/debug/debug.h"
+#include "modes/maze/maze.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
 void mode_unconfigured_state(bool first);
+
+/* Mode data. */
+mode_data_t mode_data;
 
 /* Modules configured mode*/
 uint8_t configured_mode;
@@ -127,6 +131,10 @@ void mode_initialise(void) {
         case MODE_PUZZLE_DEBUG:
             debug_initialise();
             break;
+        /* Module is a puzzle, maze.*/
+        case MODE_PUZZLE_MAZE:
+            maze_initialise();
+            break;
     }
 }
 
@@ -137,6 +145,9 @@ void mode_service(void) {
     switch(configured_mode) {
         case MODE_CONTROLLER:
             controller_service();
+            break;
+        case MODE_PUZZLE_MAZE:
+            maze_service();
             break;
     }
     
