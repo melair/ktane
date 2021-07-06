@@ -27,6 +27,7 @@
 #include "protocol_module.h"
 #include "status.h"
 #include "tick.h"
+#include "rng.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
@@ -85,6 +86,9 @@ void main(void) {
     
     /* Initialise EEPROM, including data migrations. */
     nvm_initialise();    
+    
+    /* Initialise RNG. */
+    rng_initialise();
     
     /* Initialise LCD control. */
     lcd_initialize();
@@ -150,6 +154,9 @@ void main(void) {
         
         /* Service the mode. */
         mode_service();   
+        
+        /* Service RNG. */
+        rng_service();
         
         /* Put MCU into IDLE mode, no CPU instructions but peripherals continue.
          * 

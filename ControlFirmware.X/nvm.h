@@ -15,6 +15,11 @@ void nvm_write(uint16_t addr, uint8_t data);
 #define EEPROM_LOC_MODE_CONFIGURATION               0x010 /* Module configuration mode. */
 #define EEPROM_LOC_CAN_ID                           0x011 /* Configured CAN identifier. */
 
+#define EEPROM_LOC_RNG_A                            0x012 /* RNG Seed, A */
+#define EEPROM_LOC_RNG_B                            0x013 /* RNG Seed, B */
+#define EEPROM_LOC_RNG_C                            0x014 /* RNG Seed, C */
+#define EEPROM_LOC_RNG_D                            0x015 /* RNG Seed, D */
+
 #define EEPROM_LOC_LCD_BRIGHTNESS                   0x020 /* LCD Backlight Brightness. */
 #define EEPROM_LOC_LCD_CONTRAST                     0x021 /* LCD Contrast. */
 
