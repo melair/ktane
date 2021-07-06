@@ -38,6 +38,7 @@ void game_module_update(uint8_t id, bool ready, bool solved);
 
 typedef struct {   
     uint32_t seed;
+    uint32_t module_seed;
     
     uint8_t strikes_current;
     uint8_t strikes_total;

@@ -113,6 +113,7 @@ void game_update(uint8_t state, uint32_t seed, uint8_t strikes, uint8_t minutes,
     
     game.state = state;
     game.seed = seed;
+    game.module_seed = game.seed ^ (uint32_t) can_get_id();
     game.strikes_total = strikes;
     game.time_remaining.minutes = minutes;
     game.time_remaining.seconds = seconds;
