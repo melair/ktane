@@ -1,6 +1,40 @@
 #include <xc.h>
 #include <stdint.h>
 #include "rng.h"
+#include "tick.h"
+#include "nvm.h"
+
+uint32_t base_seed = 0;
+uint32_t saved_seed = 0;
+
+/**
+ * Initialise the RNG base seed from EEPROM.
+ */
+void rng_initialise(void) {    
+    base_seed |= ((uint32_t) nvm_read(EEPROM_LOC_RNG_A) << 24);
+    base_seed |= ((uint32_t) nvm_read(EEPROM_LOC_RNG_B) << 16);
+    base_seed |= ((uint32_t) nvm_read(EEPROM_LOC_RNG_C) << 8);
+    base_seed |= ((uint32_t) nvm_read(EEPROM_LOC_RNG_D));   
+    
+    saved_seed = base_seed;
+}
+
+/**
+ * Periodically check to see if the seed has been updated, save to EEPROM if it
+ * has.
+ */
+void rng_service(void) {
+    if (tick_20hz) {        
+        if (base_seed != saved_seed) {
+            nvm_write(EEPROM_LOC_RNG_A, (base_seed >> 24) & 0xff);
+            nvm_write(EEPROM_LOC_RNG_B, (base_seed >> 16) & 0xff);
+            nvm_write(EEPROM_LOC_RNG_C, (base_seed >> 9) & 0xff);
+            nvm_write(EEPROM_LOC_RNG_D, base_seed & 0xff);
+            
+            saved_seed = base_seed;
+        }
+    }
+}
 
 /**
  * Generate a random number based upon the seed provided.

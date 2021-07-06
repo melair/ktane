@@ -1,5 +1,6 @@
 #include <xc.h>
 #include "controller.h"
+#include "../../rng.h"
 #include "../../argb.h"
 #include "../../buzzer.h"
 #include "../../can.h"
@@ -8,6 +9,8 @@
 #include "../../game.h"
 #include "../../tick.h"
 #include "../../peripherals/timer/segment.h"
+
+#define GAME_RNG_MASK 0x89b1a96c
 
 uint8_t last_strikes_current = 0;
 
@@ -66,8 +69,10 @@ void controller_service_idle(bool first) {
     if (!controller_requested_setup && tick_value > 5000) {
         controller_requested_setup = true;
         
+        uint32_t seed = rng_generate(&base_seed, GAME_RNG_MASK);
+
         /* Create the game. */
-        game_create(0x12345678, 5, 3, 0);        
+        game_create(seed, 5, 3, 0);        
     }
 }
 

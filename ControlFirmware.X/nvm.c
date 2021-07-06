@@ -111,9 +111,6 @@ void nvm_write(uint16_t addr, uint8_t data) {
     NVMCON0 = 0x00;
     NVMCON1 = 0x03;
     
-    /* Disable interrupts. */
-    INTCON0bits.GIE = 0;    
-    
     /* Perform unlock procedure. */
     __asm(" MOVLW   0x55");
     __asm(" MOVWF   NVMLOCK");
@@ -125,9 +122,6 @@ void nvm_write(uint16_t addr, uint8_t data) {
          
     /* Wait until done, this blocks for update period. */
     while(NVMCON0bits.GO == 1);
-    
-    /* Re-enable interrupts. */
-    INTCON0bits.GIE = 1;
 }
 
 
