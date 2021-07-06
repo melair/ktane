@@ -12,6 +12,8 @@
  * long enough not to care. */
 volatile uint32_t tick_value = 0;
 
+/* 20Hz tick flag. */
+volatile bool tick_20hz = false;
 /* 100Hz tick flag. */
 volatile bool tick_100hz = false;
 /* 1kHz tick flag. */
@@ -52,6 +54,7 @@ void tick_initialise(void) {
  * increments internal counter, maintains ticks and main time source.
  */
 void tick_service(void) {
+    tick_20hz = false;
     tick_100hz = false;
     tick_1khz = false;
     tick_2khz = false;
@@ -67,6 +70,10 @@ void tick_service(void) {
         
         if (internal_tick % 20 == 0) {
             tick_100hz = true;
+        }
+        
+        if (internal_tick % 100 == 0) {
+            tick_20hz = true;
             internal_tick = 0;
         }
         
