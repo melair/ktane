@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c modes/debug/debug.c modes/maze/maze.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c peripherals/keymatrix.c
+SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c modes/debug/debug.c modes/maze/maze.c peripherals/timer/segment.c peripherals/keymatrix.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c modes/simon/simon.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/peripherals/keymatrix.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/modes/controller/controller.p1.d ${OBJECTDIR}/modes/debug/debug.p1.d ${OBJECTDIR}/modes/maze/maze.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d ${OBJECTDIR}/interrupt.p1.d ${OBJECTDIR}/module.p1.d ${OBJECTDIR}/game.p1.d ${OBJECTDIR}/rng.p1.d ${OBJECTDIR}/peripherals/keymatrix.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/peripherals/keymatrix.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/modes/simon/simon.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/modes/controller/controller.p1.d ${OBJECTDIR}/modes/debug/debug.p1.d ${OBJECTDIR}/modes/maze/maze.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/peripherals/keymatrix.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d ${OBJECTDIR}/interrupt.p1.d ${OBJECTDIR}/module.p1.d ${OBJECTDIR}/game.p1.d ${OBJECTDIR}/rng.p1.d ${OBJECTDIR}/modes/simon/simon.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/peripherals/keymatrix.p1
+OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/peripherals/keymatrix.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/modes/simon/simon.p1
 
 # Source Files
-SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c modes/debug/debug.c modes/maze/maze.c peripherals/timer/segment.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c peripherals/keymatrix.c
+SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c modes/debug/debug.c modes/maze/maze.c peripherals/timer/segment.c peripherals/keymatrix.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c modes/simon/simon.c
 
 
 
@@ -141,6 +141,14 @@ ${OBJECTDIR}/peripherals/timer/segment.p1: peripherals/timer/segment.c  nbprojec
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/peripherals/timer/segment.p1 peripherals/timer/segment.c 
 	@-${MV} ${OBJECTDIR}/peripherals/timer/segment.d ${OBJECTDIR}/peripherals/timer/segment.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/peripherals/timer/segment.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/peripherals/keymatrix.p1: peripherals/keymatrix.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/peripherals" 
+	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1.d 
+	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/peripherals/keymatrix.p1 peripherals/keymatrix.c 
+	@-${MV} ${OBJECTDIR}/peripherals/keymatrix.d ${OBJECTDIR}/peripherals/keymatrix.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/peripherals/keymatrix.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 ${OBJECTDIR}/main.p1: main.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}" 
@@ -286,13 +294,13 @@ ${OBJECTDIR}/rng.p1: rng.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/rng.d ${OBJECTDIR}/rng.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/rng.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
-${OBJECTDIR}/peripherals/keymatrix.p1: peripherals/keymatrix.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/peripherals" 
-	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1.d 
-	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/peripherals/keymatrix.p1 peripherals/keymatrix.c 
-	@-${MV} ${OBJECTDIR}/peripherals/keymatrix.d ${OBJECTDIR}/peripherals/keymatrix.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/peripherals/keymatrix.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+${OBJECTDIR}/modes/simon/simon.p1: modes/simon/simon.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/simon" 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/simon/simon.p1 modes/simon/simon.c 
+	@-${MV} ${OBJECTDIR}/modes/simon/simon.d ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/simon/simon.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 else
 ${OBJECTDIR}/modes/blank/blank.p1: modes/blank/blank.c  nbproject/Makefile-${CND_CONF}.mk 
@@ -342,6 +350,14 @@ ${OBJECTDIR}/peripherals/timer/segment.p1: peripherals/timer/segment.c  nbprojec
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/peripherals/timer/segment.p1 peripherals/timer/segment.c 
 	@-${MV} ${OBJECTDIR}/peripherals/timer/segment.d ${OBJECTDIR}/peripherals/timer/segment.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/peripherals/timer/segment.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/peripherals/keymatrix.p1: peripherals/keymatrix.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/peripherals" 
+	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1.d 
+	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/peripherals/keymatrix.p1 peripherals/keymatrix.c 
+	@-${MV} ${OBJECTDIR}/peripherals/keymatrix.d ${OBJECTDIR}/peripherals/keymatrix.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/peripherals/keymatrix.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 ${OBJECTDIR}/main.p1: main.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}" 
@@ -487,13 +503,13 @@ ${OBJECTDIR}/rng.p1: rng.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/rng.d ${OBJECTDIR}/rng.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/rng.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
-${OBJECTDIR}/peripherals/keymatrix.p1: peripherals/keymatrix.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/peripherals" 
-	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1.d 
-	@${RM} ${OBJECTDIR}/peripherals/keymatrix.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/peripherals/keymatrix.p1 peripherals/keymatrix.c 
-	@-${MV} ${OBJECTDIR}/peripherals/keymatrix.d ${OBJECTDIR}/peripherals/keymatrix.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/peripherals/keymatrix.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+${OBJECTDIR}/modes/simon/simon.p1: modes/simon/simon.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/simon" 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/simon/simon.p1 modes/simon/simon.c 
+	@-${MV} ${OBJECTDIR}/modes/simon/simon.d ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/simon/simon.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 

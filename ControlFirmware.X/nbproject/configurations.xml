@@ -20,6 +20,9 @@
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f6" displayName="simon" projectFiles="true">
+          <itemPath>modes/simon/simon.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
         <logicalFolder name="f1" displayName="timer" projectFiles="true">
@@ -68,6 +71,9 @@
         </logicalFolder>
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f6" displayName="simon" projectFiles="true">
+          <itemPath>modes/simon/simon.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">

@@ -137,9 +137,6 @@ const uint8_t maze_beacons[MAZE_COUNT][2] = {
     },
 };
 
-/* Local function prototypes. */
-void maze_service_setup(bool first);
-
 /* Define the key matrix. */
 volatile uint8_t *maze_col_ports[] = { &KPORTA,      &KPORTA,        &KPORTA,        &KPORTA,        NULL };
 uint8_t maze_col_mask[]            = { 0b00010000,   0b00100000,     0b01000000,     0b10000000,     0b00000000 };
@@ -150,8 +147,9 @@ uint8_t maze_key_state[4];
 /**
  * Initialise the maze mode.
  */
-void maze_initialise(void) {
+void maze_initialise(void) {    
     /* Register game states. */
+    mode_register_callback(GAME_ALWAYS, maze_service);
     mode_register_callback(GAME_SETUP, maze_service_setup);    
     mode_register_callback(GAME_RUNNING, maze_service_running);
     
@@ -166,7 +164,7 @@ void maze_initialise(void) {
 /**
  * Service required peripherals for maze.
  */
-void maze_service(void) {
+void maze_service(bool first) {
     keymatrix_service();
 }
 

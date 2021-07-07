@@ -10,6 +10,9 @@
 
 #define MODE_PUZZLE_DEBUG        10
 #define MODE_PUZZLE_MAZE         11
+#define MODE_PUZZLE_SIMON        12
+
+#define GAME_ALWAYS              0xff
 
 uint8_t mode_get(void);
 void mode_initialise(void);

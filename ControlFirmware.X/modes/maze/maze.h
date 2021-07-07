@@ -1,10 +1,12 @@
 #ifndef MAZE_H
 #define	MAZE_H
 
-void maze_initialise(void);
-void maze_service(void);
+#include <stdbool.h>
 
-typedef struct {
+void maze_initialise(void);
+void maze_service(bool first);
+
+typedef struct {     
     uint32_t seed;
     
     uint8_t maze;    
