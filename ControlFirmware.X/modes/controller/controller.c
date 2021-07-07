@@ -30,6 +30,7 @@ void controller_initialise(void) {
     segment_initialise();
     
     /* Register state service handlers with mode. */
+    mode_register_callback(GAME_ALWAYS, controller_service);
     mode_register_callback(GAME_IDLE, controller_service_idle);
     mode_register_callback(GAME_SETUP, controller_service_setup);
     mode_register_callback(GAME_START, controller_service_start);
@@ -46,7 +47,7 @@ void controller_initialise(void) {
 /**
  * Service the controllers behaviour.
  */
-void controller_service(void) {
+void controller_service(bool first) {
     /* Service the seven segment display. */
     segment_service();
 }

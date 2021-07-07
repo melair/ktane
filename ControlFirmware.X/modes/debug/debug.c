@@ -31,6 +31,7 @@ void debug_initialise(void) {
     KWPUA |= 0b11100000;
     
     /* Register our callbacks. */
+    mode_register_callback(GAME_ALWAYS, debug_service);
     mode_register_callback(GAME_SETUP, debug_game_setup);
     mode_register_callback(GAME_RUNNING, debug_game_running);
     
@@ -41,7 +42,7 @@ void debug_initialise(void) {
 /**
  * Service required peripherals for debug.
  */
-void debug_service(void) {
+void debug_service(bool first) {
     keymatrix_service();
 }
 

@@ -11,6 +11,7 @@
 #include "modes/controller/controller.h"
 #include "modes/debug/debug.h"
 #include "modes/maze/maze.h"
+#include "modes/simon/simon.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
@@ -23,9 +24,14 @@ mode_data_t mode_data;
 uint8_t configured_mode;
 
 /* Function pointers to each stage. */
-void (*mode_state_function[5])(bool);
+void (*mode_service_state_function[5])(bool);
+/* Function pointer to service every loop. */
+void (*mode_service_always_function)(bool);
+
 /* Last called stage. */
 uint8_t last_called_state = 0xff;
+/* If the service loop is called for the first time. */
+bool service_always_first_call = true;
 
 /**
  * Checks to see if the module is in bootstrap mode, this is done by shorting
@@ -104,8 +110,10 @@ void mode_initialise(void) {
     }
     
     for (uint8_t i = 0; i < 5; i++) {
-        mode_state_function[i] = mode_unconfigured_state;
+        mode_service_state_function[i] = mode_unconfigured_state;
     }
+    
+    mode_service_always_function = mode_unconfigured_state;
     
     switch(configured_mode) {
         /* Module is completely blank, do nothing. */
@@ -135,6 +143,10 @@ void mode_initialise(void) {
         case MODE_PUZZLE_MAZE:
             maze_initialise();
             break;
+        /* Module is a puzzle, simon says. */
+        case MODE_PUZZLE_SIMON:
+            simon_initialise();
+            break;
     }
 }
 
@@ -142,21 +154,14 @@ void mode_initialise(void) {
  * Service the mode.
  */
 void mode_service(void) {
-    switch(configured_mode) {
-        case MODE_CONTROLLER:
-            controller_service();
-            break;
-        case MODE_PUZZLE_DEBUG:
-            debug_service();
-            break;
-        case MODE_PUZZLE_MAZE:
-            maze_service();
-            break;
+    mode_service_always_function(service_always_first_call);
+    if (service_always_first_call) {
+        service_always_first_call = false;
     }
-    
+        
     bool first = last_called_state != game.state;
     last_called_state = game.state;        
-    mode_state_function[game.state](first);
+    mode_service_state_function[game.state](first);
 }
 
 /**
@@ -167,5 +172,9 @@ void mode_service(void) {
  * @param func function to call
  */
 void mode_register_callback(uint8_t state, void (*func)(bool)) {
-    mode_state_function[state] = func;
+    if (state == 0xff) {
+        mode_service_always_function = func;
+    } else {        
+        mode_service_state_function[state] = func;
+    }
 }
