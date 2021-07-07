@@ -141,11 +141,11 @@ const uint8_t maze_beacons[MAZE_COUNT][2] = {
 void maze_service_setup(bool first);
 
 /* Define the key matrix. */
-volatile uint8_t *col_ports[] = { &KPORTA,      &KPORTA,        &KPORTA,        &KPORTA,        NULL };
-uint8_t col_mask[]            = { 0b00010000,   0b00100000,     0b01000000,     0b10000000,     0b00000000 };
-volatile uint8_t *row_ports[] = { NULL, };
-uint8_t row_mask[]            = { 0b00000000, };
-uint8_t key_state[4];
+volatile uint8_t *maze_col_ports[] = { &KPORTA,      &KPORTA,        &KPORTA,        &KPORTA,        NULL };
+uint8_t maze_col_mask[]            = { 0b00010000,   0b00100000,     0b01000000,     0b10000000,     0b00000000 };
+volatile uint8_t *maze_row_ports[] = { NULL, };
+uint8_t maze_row_mask[]            = { 0b00000000, };
+uint8_t maze_key_state[4];
 
 /**
  * Initialise the maze mode.
@@ -155,12 +155,12 @@ void maze_initialise(void) {
     mode_register_callback(GAME_SETUP, maze_service_setup);    
     mode_register_callback(GAME_RUNNING, maze_service_running);
     
-    /* Pull up direction button pins, switch will short to ground. */
+    /* Pull up direction button pins, switch will short to ground. IO module 
+     * has pull ups. */
     KTRISA |= 0b11110000;
-    KWPUA |= 0b11110000;
     
     /* Initialise keymatrix. */
-    keymatrix_initialise(col_ports, col_mask, col_mask, row_ports, row_mask, key_state);
+    keymatrix_initialise(maze_col_ports, maze_col_mask, maze_col_mask, maze_row_ports, maze_row_mask, maze_key_state);
 }
 
 /**

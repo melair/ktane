@@ -5,10 +5,19 @@
 #include "../../game.h"
 #include "../../tick.h"
 #include "../../peripherals/ports.h"
+#include "../../peripherals/keymatrix.h"
 
 /* Local function prototypes. */
 void debug_game_setup(bool first);
 void debug_game_running(bool first);
+
+/* Define the key matrix. */
+volatile uint8_t *debug_col_ports[] = { &KPORTA,        &KPORTA,        &KPORTA,        NULL };
+uint8_t debug_col_mask[]            = { 0b00100000,     0b01000000,     0b10000000,     0b00000000 };
+volatile uint8_t *debug_row_ports[] = { NULL, };
+uint8_t debug_row_mask[]            = { 0b00000000, };
+uint8_t debug_key_state[3];
+
 
 /**
  * Initialise the debug puzzle, a simple puzzle that allows declaration of ready,
@@ -16,31 +25,25 @@ void debug_game_running(bool first);
  */
 void debug_initialise(void) {
     /* Make debug pins input. */
-    KTRISAbits.TRISA5 = 1;
-    KTRISAbits.TRISA6 = 1;
-    KTRISAbits.TRISA7 = 1;
+    KTRISA |= 0b11100000;
     
     /* Enable weak pull up, ground to activate. */
-    KWPUAbits.WPUA5 = 1;
-    KWPUAbits.WPUA6 = 1;
-    KWPUAbits.WPUA7 = 1;
+    KWPUA |= 0b11100000;
     
     /* Register our callbacks. */
     mode_register_callback(GAME_SETUP, debug_game_setup);
     mode_register_callback(GAME_RUNNING, debug_game_running);
+    
+    /* Initialise keymatrix. */
+    keymatrix_initialise(debug_col_ports, debug_col_mask, debug_col_mask, debug_row_ports, debug_row_mask, debug_key_state);
 }
 
-/* Button polling period. */
-#define CHECK_PERIOD 200
-/* Last tick buttons were check during. */
-uint32_t debug_last_tick = 0;
-
-/* Previous state of ready button. */
-bool ready_last;
-/* Previous state of strike button. */
-bool strike_last;
-/* Previous state of solved button. */
-bool solved_last;
+/**
+ * Service required peripherals for debug.
+ */
+void debug_service(void) {
+    keymatrix_service();
+}
 
 /**
  * Handle the debug module during the setup state, just the ready button.
@@ -48,20 +51,21 @@ bool solved_last;
  * @param first true if it is the first time its been called this game
  */
 void debug_game_setup(bool first) {
-    if ((tick_value - debug_last_tick) < CHECK_PERIOD) {
+    if (first) {
+        keymatrix_clear();
+    }
+    
+    if (!tick_20hz) {
         return;
     }
     
-    debug_last_tick = tick_value;
-         
-    /* A5: Game Ready - Only active during GAME_SETUP. */
-    bool ready_current = (!KPORTAbits.RA5);
-
-    if (ready_current != ready_last) {
-        ready_last = ready_current;
-
-        if (ready_current) {
-            game_module_ready(!this_module->ready);
+    for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
+        if (press & KEY_DOWN_BIT) {
+            switch(press & KEY_NUM_BITS) {
+                case 0: // Ready Up
+                    game_module_ready(!this_module->ready);
+                    break;
+            }
         }
     }    
 }
@@ -72,31 +76,24 @@ void debug_game_setup(bool first) {
  * @param first true if it is the first time its been called this game
  */
 void debug_game_running(bool first) {
-    if ((tick_value - debug_last_tick) < CHECK_PERIOD) {
+    if (first) {
+        keymatrix_clear();
+    }
+
+    if (!tick_20hz) {
         return;
     }
     
-    debug_last_tick = tick_value;
-         
-    /* A6: Puzzle Strike - Only active during GAME_RUNNING. */
-    bool strike_current = (!KPORTAbits.RA6);
-
-    if (strike_current != ready_last) {
-        ready_last = strike_current;
-
-        if (strike_current) {
-            game_module_strike(1);
-        }            
-    }  
-
-    /* A7: Puzzle Solved - Only active during GAME_RUNNING. */
-    bool solved_current = (!KPORTAbits.RA7);
-
-    if (solved_current != solved_last) {
-        solved_last = solved_current;
-
-        if (solved_current) {
-            game_module_solved(true);
-        }            
-    }     
+    for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
+        if (press & KEY_DOWN_BIT) {
+            switch(press & KEY_NUM_BITS) {
+                case 1: // Strike
+                    game_module_strike(1);
+                    break;
+                case 2: // Solved
+                    game_module_solved(true);
+                    break;
+            }
+        }
+    }        
 }

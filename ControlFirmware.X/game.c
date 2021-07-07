@@ -217,13 +217,7 @@ void game_module_strike(uint8_t strikes) {
 void game_service_idle(void) {   
     /* Set status led to ready. */
     status_set(STATUS_IDLE);
-}
-
-/**
- * Service a game being setup, on first run clear database to ensure modules
- * are reset to blank.
- */
-void game_service_setup(void) {    
+    
     if (game.state_first) {
         for (uint8_t i = 0; i < MODULE_COUNT; i++) {
             module_game_t *that_module = module_get_game(i);
@@ -237,7 +231,13 @@ void game_service_setup(void) {
             that_module->solved = false;
         }
     }
-    
+}
+
+/**
+ * Service a game being setup, on first run clear database to ensure modules
+ * are reset to blank.
+ */
+void game_service_setup(void) {        
     if (this_module->enabled) {
         if (this_module->ready) {
             status_set(STATUS_READY);
