@@ -146,6 +146,9 @@ void mode_service(void) {
         case MODE_CONTROLLER:
             controller_service();
             break;
+        case MODE_PUZZLE_DEBUG:
+            debug_service();
+            break;
         case MODE_PUZZLE_MAZE:
             maze_service();
             break;
