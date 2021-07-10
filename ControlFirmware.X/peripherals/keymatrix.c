@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include "keymatrix.h"
 #include "../tick.h"
+#include "../peripherals/ports.h"
+
+#define _XTAL_FREQ 64000000
 
 /* How many keys to buffer before user picks it up. */
 #define KEY_HISTORY 8
@@ -16,25 +19,22 @@ uint8_t write = 0;
 /* Number of 100Hz periods required to register a change (debounce time), 50ms. */
 #define REQUIRED_PERIODS_OF_CHANGE 5
 
-/* Pointer to array of pointers to column ports. */
-volatile uint8_t **keymatrix_col_ports;
-/* Array of col bit masks. */
-uint8_t *keymatrix_col_mask;
-/* Array of col invert masks. */
-uint8_t *keymatrix_col_invert;
+#define KEYMATRIX_MAX_COLS 4
+#define KEYMATRIX_MAX_ROWS 4
 
-/* If the key matrix has rows.*/
-bool keymatrix_has_rows;
-/* Pointer to array of pointers to row ports. */
-volatile uint8_t **keymatrix_row_latches;
-/* Array of row bit masks. */
-uint8_t *keymatrix_row_mask;
-/* Pointer to array to store key state in.*/
-uint8_t *keymatrix_state;
+/* Keymatrix configuration and state. */
+pin_t *keymatrix_cols;
+pin_t *keymatrix_rows;
+uint8_t keymatrix_state[KEYMATRIX_MAX_COLS * KEYMATRIX_MAX_ROWS];
+uint8_t keymatrix_mode;
 
 /* Local function prototypes. */
 void keymatrix_update_key(uint8_t key, uint8_t row, uint8_t col, bool this_read);
 void keymatrix_publish_key(uint8_t row, uint8_t col, bool down);
+void keymatrix_service_col_to_row(void);
+void keymatrix_service_col_only(void);
+void keymatrix_init_col_to_row(void);
+void keymatrix_init_col_only(void);
 
 /**
  * Initialise the keymatrix handler.
@@ -44,23 +44,20 @@ void keymatrix_publish_key(uint8_t row, uint8_t col, bool down);
  * there are no row pins, and the pins are pulled high.
  * 
  * Columns are expected to be INPUT, rows are expected to by OUTPUT.
- * 
- * @param col_ports pointers to the port peripheral that has the pin
- * @param col_mask bit mask to select the column
- * @param col_invert bit mask to xor to potentially invert column
- * @param row_latches pointers to the port peripheral that has the pin
- * @param row_mask bit mask to select the row
- * @param key_state pointer to array in memory to track state, must be col x row large
  */
-void keymatrix_initialise(volatile uint8_t **col_ports, uint8_t *col_mask, uint8_t *col_invert, volatile uint8_t **row_latches, uint8_t *row_mask, uint8_t *state) {
-   keymatrix_col_ports = col_ports;
-   keymatrix_col_mask = col_mask;
-   keymatrix_col_invert = col_invert;
-   keymatrix_row_latches = row_latches;
-   keymatrix_row_mask = row_mask;
-   keymatrix_state = state;
-   
-   keymatrix_has_rows = (keymatrix_row_latches[0] != NULL);
+void keymatrix_initialise(pin_t *cols, pin_t *rows, uint8_t mode) {
+    keymatrix_cols = cols;
+    keymatrix_rows = rows;
+    keymatrix_mode = mode;
+    
+    switch(keymatrix_mode) {
+        case KEYMODE_COL_TO_ROW:
+            keymatrix_init_col_to_row();
+            break;
+        case KEYMODE_COL_ONLY:
+            keymatrix_init_col_only();            
+            break;
+    }
 }
 
 /**
@@ -71,30 +68,63 @@ void keymatrix_service(void) {
         return;
     }   
     
+    switch(keymatrix_mode) {
+        case KEYMODE_COL_TO_ROW:
+            keymatrix_service_col_to_row();
+            break;
+        case KEYMODE_COL_ONLY:
+            keymatrix_service_col_only();            
+            break;
+    }   
+}
+
+void keymatrix_init_col_to_row(void) {
+    for (uint8_t r = 0; r < KEYMATRIX_MAX_ROWS && keymatrix_rows[r] != KPIN_NONE; r++) {
+        kpin_write(keymatrix_rows[r], false);
+        kpin_mode(keymatrix_rows[r], PIN_INPUT, true);      
+    }
+    
+    for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
+        kpin_mode(keymatrix_cols[c], PIN_INPUT, true);      
+    }
+}
+
+void keymatrix_service_col_to_row(void) {
+    bool this_read;
     uint8_t key = 0;
     
-    /* Loop through each column. */
-    for (uint8_t c = 0; keymatrix_col_ports[c] != NULL; c++) {       
-        bool this_read;
+    for (uint8_t r = 0; r < KEYMATRIX_MAX_ROWS && keymatrix_rows[r] != KPIN_NONE; r++) {
+        /* Set row to output and low. */
+        kpin_mode(keymatrix_rows[r], PIN_OUTPUT, false);      
         
-        if (keymatrix_has_rows) {
-            for (uint8_t r = 0; keymatrix_row_latches[r] != NULL; r++) {                
-                /* Set row bit. */
-                *keymatrix_row_latches[r] |= keymatrix_row_mask[c];
-
-                this_read = ((*keymatrix_col_ports[c] & keymatrix_col_mask[c]) ^ keymatrix_col_invert[c]) != 0;            
-                keymatrix_update_key(key, r, c, this_read);            
-                key++;                
+        __delay_us(1);
                 
-                /* Clear row bit. */
-                *keymatrix_row_latches[r] &= ~keymatrix_row_mask[c];
-            }            
-        } else {
-            this_read = ((*keymatrix_col_ports[c] & keymatrix_col_mask[c]) ^ keymatrix_col_invert[c]) != 0;            
-            keymatrix_update_key(key, 0, c, this_read);            
-            key++;
+        for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
+            this_read = kpin_read(keymatrix_cols[c]);
+            keymatrix_update_key(key, r, c, !this_read);            
+            key++;         
         }
-    }       
+        
+        /* Set row to input, and pulled high. */
+        kpin_mode(keymatrix_rows[r], PIN_INPUT, true);      
+    }
+}
+
+void keymatrix_init_col_only(void){
+    for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
+        kpin_mode(keymatrix_cols[c], PIN_INPUT, true);      
+    }
+}
+
+void keymatrix_service_col_only(void) {
+    bool this_read;
+    uint8_t key = 0;
+    
+    for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
+        this_read = kpin_read(keymatrix_cols[c]);
+        keymatrix_update_key(key, 0, c, !this_read);            
+        key++;       
+    }    
 }
 
 /**
@@ -113,7 +143,9 @@ void keymatrix_update_key(uint8_t key, uint8_t row, uint8_t col, bool this_read)
     if (last_read != this_read) {
         consecutive_reads = 0;
     } else {
-        consecutive_reads++;
+        if (consecutive_reads < 0b00111111) {
+            consecutive_reads++;
+        }
 
         if (consecutive_reads >= REQUIRED_PERIODS_OF_CHANGE) {
             if (current_state != this_read) {

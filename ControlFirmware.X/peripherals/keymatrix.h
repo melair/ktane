@@ -1,10 +1,15 @@
 #ifndef KEYMATRIX_H
 #define	KEYMATRIX_H
 
-void keymatrix_initialise(volatile uint8_t **col_ports, uint8_t *col_mask, uint8_t *col_invert, volatile uint8_t **row_ports, uint8_t *row_mask, uint8_t *key_state);
+#include "ports.h"
+
+void keymatrix_initialise(pin_t *cols, pin_t *rows, uint8_t mode);
 void keymatrix_service(void);
 uint8_t keymatrix_fetch(void);
 void keymatrix_clear(void);
+
+#define KEYMODE_COL_TO_ROW 0
+#define KEYMODE_COL_ONLY   1
 
 #define KEY_ROW_BITS 0b00000111
 #define KEY_COL_BITS 0b00111000
