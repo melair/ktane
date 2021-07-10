@@ -11,14 +11,6 @@
 void debug_game_setup(bool first);
 void debug_game_running(bool first);
 
-/* Define the key matrix. */
-volatile uint8_t *debug_col_ports[] = { &KPORTA,        &KPORTA,        &KPORTA,        NULL };
-uint8_t debug_col_mask[]            = { 0b00100000,     0b01000000,     0b10000000,     0b00000000 };
-volatile uint8_t *debug_row_ports[] = { NULL, };
-uint8_t debug_row_mask[]            = { 0b00000000, };
-uint8_t debug_key_state[3];
-
-
 /**
  * Initialise the debug puzzle, a simple puzzle that allows declaration of ready,
  * make a strike or mark solved.
@@ -36,7 +28,10 @@ void debug_initialise(void) {
     mode_register_callback(GAME_RUNNING, debug_game_running);
     
     /* Initialise keymatrix. */
-    keymatrix_initialise(debug_col_ports, debug_col_mask, debug_col_mask, debug_row_ports, debug_row_mask, debug_key_state);
+    /* Initialise keymatrix. */
+    pin_t cols[] = {KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
+    pin_t rows[] = {KPIN_NONE};
+    keymatrix_initialise(&cols, &rows, KEYMODE_COL_ONLY);
 }
 
 /**
