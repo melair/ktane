@@ -6,9 +6,7 @@
 void maze_initialise(void);
 void maze_service(bool first);
 
-typedef struct {     
-    uint32_t seed;
-    
+typedef struct {        
     uint8_t maze;    
     
     uint8_t current;

@@ -364,6 +364,17 @@ void lcd_update(uint8_t row, uint8_t col, uint8_t size, uint8_t *data) {
 }
 
 /**
+ * Use 4x4 font to display a character, on a 20x4 screen.
+ * 
+ * @param pos character position
+ * @param ch character to display
+ */
+void lcd_update_big(uint8_t pos, uint8_t ch) {
+    /* Temp */
+    lcd_update(0, 4*pos, 1, &ch);
+}
+
+/**
  * Sync the contests of the user buffer to the desired buffer and mark shadow
  * buffer as dirty.
  */

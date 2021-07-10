@@ -12,6 +12,7 @@
 #include "modes/debug/debug.h"
 #include "modes/maze/maze.h"
 #include "modes/simon/simon.h"
+#include "modes/password/password.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
@@ -146,6 +147,10 @@ void mode_initialise(void) {
         /* Module is a puzzle, simon says. */
         case MODE_PUZZLE_SIMON:
             simon_initialise();
+            break;
+        /* Module is a puzzle, password. */
+        case MODE_PUZZLE_PASSWORD:
+            password_initialise();
             break;
     }
 }

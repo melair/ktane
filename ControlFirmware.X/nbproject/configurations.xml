@@ -20,6 +20,9 @@
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f7" displayName="password" projectFiles="true">
+          <itemPath>modes/password/password.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="f6" displayName="simon" projectFiles="true">
           <itemPath>modes/simon/simon.h</itemPath>
         </logicalFolder>
@@ -72,6 +75,9 @@
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.c</itemPath>
         </logicalFolder>
+        <logicalFolder name="f7" displayName="password" projectFiles="true">
+          <itemPath>modes/password/password.c</itemPath>
+        </logicalFolder>
         <logicalFolder name="f6" displayName="simon" projectFiles="true">
           <itemPath>modes/simon/simon.c</itemPath>
         </logicalFolder>
@@ -81,6 +87,7 @@
           <itemPath>peripherals/timer/segment.c</itemPath>
         </logicalFolder>
         <itemPath>peripherals/keymatrix.c</itemPath>
+        <itemPath>peripherals/ports.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>nvm.c</itemPath>
