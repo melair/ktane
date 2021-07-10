@@ -9,5 +9,6 @@ void lcd_sync(void);
 void lcd_update(uint8_t line, uint8_t col, uint8_t size, uint8_t *data);
 void lcd_clear(void);
 void lcd_default(void);
+void lcd_update_big(uint8_t pos, uint8_t ch);
 
 #endif	/* LCD_H */
