@@ -5,6 +5,8 @@
 #include "can.h"
 #include "mode.h"
 
+/* Big font adapter from: https://github.com/varind/LCDCustomLargeFont */
+
 /* The LCD driver uses the XC8 delay routines, to init and to time E clock
  * pulses, this results in the main loop stopping but vastly simplifies control
  * flow. */
@@ -61,6 +63,241 @@ uint8_t dirty_scan_col = 0;
 uint8_t send_pos = 0x00;
 /* Character being sent to LCD screen. */
 uint8_t send_data = 0x00;
+
+#define BIG_FONT_CHARACTERS 8
+#define BIG_FONT_LINES      8
+
+const uint8_t big_font_characters[BIG_FONT_CHARACTERS][BIG_FONT_LINES] = {
+    { // UB
+        0b11111,
+        0b11111,
+        0b11111,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b00000,
+    },
+    { // RT
+        0b11100,
+        0b11110,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111
+    },
+    { // LL
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b01111,
+        0b00111
+    },
+    { // LB
+        0b00000,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b11111,
+        0b11111,
+        0b11111
+    },
+    { // LR
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11110,
+        0b11100
+    },
+    { // UMB
+        0b11111,
+        0b11111,
+        0b11111,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b11111,
+        0b11111
+    },
+    { // LMB
+        0b11111,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b00000,
+        0b11111,
+        0b11111,
+        0b11111
+    },
+    { // LT
+        0b00111,
+        0b01111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+    },    
+};
+
+#define BIG_FONT_CHARACTER_COUNT    36
+
+const uint8_t big_font[BIG_FONT_CHARACTER_COUNT][4] = {
+    { // 0
+        0x70, 0x1e,
+        0x23, 0x4e,
+    },
+    { // 1 
+        0x01, 0xee,
+        0xef, 0xee,
+    },
+    { // 2
+        0x55, 0x1e,  
+        0x26, 0x6e,
+    },
+    { // 3
+        0x55, 0x1e,  
+        0x66, 0x4e,
+    },
+    { // 4
+        0x23, 0x1e,  
+        0xee, 0xfe,
+    },
+    { // 5 
+        0xf5, 0x5e,  
+        0x66, 0x4e,
+    },    
+    { // 6
+        0x75, 0x5e,  
+        0x26, 0x4e,
+    },
+    { // 7
+        0x00, 0x1e,  
+        0xe7, 0xee,
+    },
+    { // 8
+        0x75, 0x1e,  
+        0x25, 0x4e,
+    },
+    { // 9
+        0x75, 0x1e,  
+        0xee, 0xfe,
+    },  
+    { // A
+        0x75, 0x1e,  
+        0xfe, 0xfe,
+    }, 
+    { // B
+        0xf5, 0x4e,  
+        0xf6, 0x1e,
+    }, 
+    { // C
+        0x70, 0x0e,  
+        0x23, 0x3e,
+    }, 
+    { // D
+        0xf0, 0x1e,  
+        0xf3, 0x4e,
+    }, 
+    { // E
+        0xf5, 0x5e,  
+        0xf6, 0x6e,
+    }, 
+    { // F
+        0xf5, 0x5e,  
+        0xfe, 0xee,
+    }, 
+    { // G
+        0x70, 0x0e,  
+        0x23, 0x1e,
+    }, 
+    { // H
+        0xf3, 0xfe,  
+        0xfe, 0xfe,
+    }, 
+    { // I
+        0x0f, 0x0e,  
+        0x3f, 0x3e,
+    }, 
+    { // J
+        0xee, 0xfe,  
+        0x33, 0x4e,
+    }, 
+    { // K
+        0xf3, 0x4e,  
+        0xfe, 0x1e,
+    }, 
+    { // L
+        0xfe, 0xee,  
+        0xf3, 0x3e,
+    }, 
+    { // M
+        0x72, 0x41,  
+        0xfe, 0xef,
+    }, 
+    { // N
+        0x71, 0xef,  
+        0xfe, 0x24,
+    }, 
+    { // O
+        0x70, 0x1e,
+        0x23, 0x4e,
+    }, 
+    { // P
+        0xf5, 0x1e,  
+        0xfe, 0xee,
+    }, 
+    { // Q
+        0x70, 0x1e,  
+        0x23, 0xf3,
+    }, 
+    { // R
+        0xf5, 0x1e,  
+        0xfe, 0x1e,
+    }, 
+    { // S
+        0x75, 0x5e,  
+        0x66, 0x4e,
+    }, 
+    { // T
+        0x0f, 0x0e,  
+        0xef, 0xee,
+    }, 
+    { // U
+        0xfe, 0xfe,  
+        0x23, 0x4e,
+    }, 
+    { // V
+        0x2e, 0xe4,  
+        0xe1, 0x7e,
+    }, 
+    { // W
+        0xfe, 0xef,  
+        0x27, 0x14,
+    }, 
+    { // X
+        0x23, 0x4e,  
+        0x7e, 0x1e,
+    }, 
+    { // Y
+        0x23, 0x4e,  
+        0xef, 0xee,
+    }, 
+    { // Z
+        0x05, 0x4e,  
+        0x76, 0x3e,
+    }, 
+};
 
 /**
  * Initialise the LCD driver, including PWM3 (P1 and P2) for brightness and
@@ -165,7 +402,38 @@ void lcd_start(void) {
     LCD_DATA = 0b00000110;
     LCD_E = 1;
     __delay_us(1);
-    LCD_E = 0;     
+    LCD_E = 0;    
+}
+
+/**
+ * Load the 2x4 font into the character ram in the LCD display. This will block
+ * execution, it is assumed it will be done during initialisation.
+ */
+void lcd_load_big(void) {
+    LCD_RW = 0;
+
+    for (uint8_t c = 0; c < BIG_FONT_CHARACTERS; c++) {
+        /* Move pointer to Character Generator RAM for character. */
+        LCD_RS = 0;
+        LCD_DATA = 0b01000000 | (c << 3);
+        LCD_E = 1;
+        __delay_us(1);
+        LCD_E = 0;
+        
+        __delay_ms(1);
+        
+        for (uint8_t l = 0; l < BIG_FONT_LINES; l++) {
+            LCD_RS = 1;
+            LCD_DATA = big_font_characters[c][l];
+            LCD_E = 1;
+            __delay_us(1);
+            LCD_E = 0;
+            
+            __delay_ms(1);
+        }
+    }    
+    
+    LCD_RS = 0;
 }
 
 /**
@@ -211,7 +479,8 @@ void lcd_service(void) {
     /* If we're currently not sending something try, find what needs changing. */
     if (send_phase == PHASE_IDLE) {
         uint8_t next_pos = 0x00;
-        uint8_t next_data = 0xff;
+        uint8_t next_data = 0x00;
+        bool found_data = false;        
         
         /* Loop through the desired buffer, checking the shadow to see if it matches.
          * This upon finding something to update, the current row/col are stored in 
@@ -224,6 +493,7 @@ void lcd_service(void) {
                      * to match what we're about to send. */
                     next_data = buffer[LCD_BUFFER_DESIRED][row][col];
                     buffer[LCD_BUFFER_SHADOW][row][col] = next_data;    
+                    found_data = true;
 
                     /* Calculate the position in DGRAM of the HD44780. */
                     next_pos = (0x40 * row) + col;
@@ -242,7 +512,7 @@ void lcd_service(void) {
             }
             
             /* Break the loop if we find anything to change. */
-            if (next_data != 0xff) {
+            if (found_data) {
                  break;
             }
             
@@ -251,7 +521,7 @@ void lcd_service(void) {
         }
         
         /* If we found nothing at all, reset the scan and mark buffer clean. */
-        if (next_data == 0xff) {
+        if (!found_data) {
             dirty_scan_row = 0;
             dirty_scan_col = 0;
             shadow_dirty = false;
@@ -364,14 +634,36 @@ void lcd_update(uint8_t row, uint8_t col, uint8_t size, uint8_t *data) {
 }
 
 /**
- * Use 4x4 font to display a character, on a 20x4 screen.
+ * Use 4x2 font to display a character, on a 20x4 screen.
  * 
  * @param pos character position
  * @param ch character to display
  */
 void lcd_update_big(uint8_t pos, uint8_t ch) {
-    /* Temp */
-    lcd_update(0, 4*pos, 1, &ch);
+    uint8_t t[8];
+    
+    t[0] = (big_font[ch][0] >> 4) & 0x0f;
+    t[1] = big_font[ch][0] & 0x0f;
+    t[2] = (big_font[ch][1] >> 4) & 0x0f;
+    t[3] = big_font[ch][1] & 0x0f;
+    t[4] = (big_font[ch][2] >> 4) & 0x0f;
+    t[5] = big_font[ch][2] & 0x0f;
+    t[6] = (big_font[ch][3] >> 4) & 0x0f;
+    t[7] = big_font[ch][3] & 0x0f;
+    
+    for (uint8_t i = 0; i < 8; i++) {
+        switch(t[i]) {
+            case 0b1110:
+                t[i] = 0xfe;
+                break;
+            case 0b1111:
+                t[i] = 0xff;
+                break;  
+        }
+    }
+    
+    lcd_update(1, 4*pos, 4, &t[0]);
+    lcd_update(2, 4*pos, 4, &t[4]);    
 }
 
 /**

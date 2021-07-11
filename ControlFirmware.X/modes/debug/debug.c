@@ -11,6 +11,10 @@
 void debug_game_setup(bool first);
 void debug_game_running(bool first);
 
+/* Initialise keymatrix. */
+pin_t debug_cols[] = {KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
+pin_t debug_rows[] = {KPIN_NONE};
+
 /**
  * Initialise the debug puzzle, a simple puzzle that allows declaration of ready,
  * make a strike or mark solved.
@@ -28,10 +32,7 @@ void debug_initialise(void) {
     mode_register_callback(GAME_RUNNING, debug_game_running);
     
     /* Initialise keymatrix. */
-    /* Initialise keymatrix. */
-    pin_t cols[] = {KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
-    pin_t rows[] = {KPIN_NONE};
-    keymatrix_initialise(&cols, &rows, KEYMODE_COL_ONLY);
+    keymatrix_initialise(&debug_cols[0], &debug_rows[0], KEYMODE_COL_ONLY);
 }
 
 /**

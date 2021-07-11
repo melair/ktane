@@ -10,5 +10,9 @@ void lcd_update(uint8_t line, uint8_t col, uint8_t size, uint8_t *data);
 void lcd_clear(void);
 void lcd_default(void);
 void lcd_update_big(uint8_t pos, uint8_t ch);
+void lcd_load_big(void);
+
+#define BIG_FONT_NUMBER_BASE        0
+#define BIG_FONT_LETTER_BASE        10
 
 #endif	/* LCD_H */
