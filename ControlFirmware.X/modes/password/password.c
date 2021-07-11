@@ -5,6 +5,7 @@
 #include "../../game.h"
 #include "../../lcd.h"
 #include "../../rng.h"
+#include "../../tick.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../peripherals/ports.h"
 
@@ -36,20 +37,23 @@ void password_copy_and_shuffle(void);
 void password_render_display(void);
 
 /* Keymatrix */
-pin_t cols[] = {KPIN_A4, KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
-pin_t rows[] = {KPIN_A0, KPIN_A1, KPIN_A2, KPIN_NONE};
+pin_t password_cols[] = {KPIN_A4, KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
+pin_t password_rows[] = {KPIN_A0, KPIN_A1, KPIN_A2, KPIN_NONE};
     
 /**
  * Initialise the password puzzle.
  */
 void password_initialise(void) {
+    /* Load the big font into the LCD. */
+    lcd_load_big();
+    
     mode_register_callback(GAME_ALWAYS, password_service);
     mode_register_callback(GAME_IDLE, password_service_idle);
     mode_register_callback(GAME_SETUP, password_service_setup);
     mode_register_callback(GAME_RUNNING, password_service_running);       
             
     /* Initialise keymatrix. */
-    keymatrix_initialise(&cols, &rows, KEYMODE_COL_TO_ROW);
+    keymatrix_initialise(&password_cols[0], &password_rows[0], KEYMODE_COL_TO_ROW);
 }
 
 /**
@@ -151,11 +155,9 @@ void password_render_display(void) {
     lcd_clear();
     
     for (uint8_t i = 0; i < LENGTH; i++) {
-        lcd_update_big(i, mode_data.password.letters[i][mode_data.password.selected[i]]);
+        lcd_update_big(i, (mode_data.password.letters[i][mode_data.password.selected[i]] - 'A' + BIG_FONT_LETTER_BASE));
     }
-    
-    lcd_update(3, 0, 5, &words[mode_data.password.word]);
-    
+        
     lcd_sync();
 }
 

@@ -138,8 +138,8 @@ const uint8_t maze_beacons[MAZE_COUNT][2] = {
 };
 
 /* Keymatrix. */
-pin_t cols[] = {KPIN_A4, KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
-pin_t rows[] = {KPIN_NONE};
+pin_t maze_cols[] = {KPIN_A4, KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
+pin_t maze_rows[] = {KPIN_NONE};
 
 /**
  * Initialise the maze mode.
@@ -151,7 +151,7 @@ void maze_initialise(void) {
     mode_register_callback(GAME_RUNNING, maze_service_running);
 
     /* Initialise keymatrix. */
-    keymatrix_initialise(&cols, &rows, KEYMODE_COL_ONLY);
+    keymatrix_initialise(&maze_cols[0], &maze_rows[0], KEYMODE_COL_ONLY);
 }
 
 /**
