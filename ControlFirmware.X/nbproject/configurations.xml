@@ -33,6 +33,7 @@
         </logicalFolder>
         <itemPath>peripherals/ports.h</itemPath>
         <itemPath>peripherals/keymatrix.h</itemPath>
+        <itemPath>peripherals/pwmled.h</itemPath>
       </logicalFolder>
       <itemPath>nvm.h</itemPath>
       <itemPath>argb.h</itemPath>
@@ -88,6 +89,7 @@
         </logicalFolder>
         <itemPath>peripherals/keymatrix.c</itemPath>
         <itemPath>peripherals/ports.c</itemPath>
+        <itemPath>peripherals/pwmled.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>nvm.c</itemPath>
