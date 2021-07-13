@@ -8,6 +8,7 @@
 #include "../../peripherals/keymatrix.h"
 
 /* Local function prototypes. */
+void debug_service(bool first);
 void debug_game_setup(bool first);
 void debug_game_running(bool first);
 

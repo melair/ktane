@@ -3,6 +3,9 @@
 #include "simon.h"
 #include "../../mode.h"
 
+/* Local function prototypes. */
+void simon_service(bool first);
+
 /**
  * Initialise the simon says puzzle.
  */

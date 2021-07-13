@@ -16,6 +16,7 @@
 
 /* Local function pointers. */
 uint8_t maze_map_array_to_argb(uint8_t array);
+void maze_service(bool first);
 void maze_service_setup(bool first);
 void maze_service_running(bool first);
 void maze_animate_cursor(uint8_t loc, bool beacon);
