@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name Display)(type KiCad)(uri ${KIPRJMOD}/Display.pretty)(options "")(descr "")(disabled))
+  (lib (name Custom)(type KiCad)(uri C:/Users/peter/Desktop/KTANE/ControlBoard/Custom.pretty)(options "")(descr ""))
+)
