@@ -32,7 +32,11 @@ void game_initialise(void) {
 /**
  * Service the game state.
  */
-void game_service(void) {                
+void game_service(void) {   
+    if (!tick_2khz) {
+        return;
+    }
+    
     bool is_first = game.state_first;
 
     switch(game.state) {
@@ -306,31 +310,29 @@ void game_service_running(void) {
         }
     }
     
-    if (tick_2khz) {
-        if (quantum_per_ms_ratio[game.time_ratio] == quantum) {               
-            if (!game.time_remaining.done) {             
-                if (game.time_remaining.centiseconds <= 0) {
-                    game.time_remaining.centiseconds = 99;
+    if (quantum_per_ms_ratio[game.time_ratio] == quantum) {               
+        if (!game.time_remaining.done) {             
+            if (game.time_remaining.centiseconds <= 0) {
+                game.time_remaining.centiseconds = 99;
 
-                    if (game.time_remaining.seconds == 0) {
-                        game.time_remaining.seconds = 59;
+                if (game.time_remaining.seconds == 0) {
+                    game.time_remaining.seconds = 59;
 
-                        if (game.time_remaining.minutes == 0) {
-                            game.time_remaining.done = true;
-                        } else {
-                            game.time_remaining.minutes--;
-                        }
+                    if (game.time_remaining.minutes == 0) {
+                        game.time_remaining.done = true;
                     } else {
-                        game.time_remaining.seconds--;
-                    }                                       
+                        game.time_remaining.minutes--;
+                    }
                 } else {
-                    game.time_remaining.centiseconds--;
-                }              
-            }     
-            quantum = 0;
-        } else {
-            quantum++;
-        }
+                    game.time_remaining.seconds--;
+                }                                       
+            } else {
+                game.time_remaining.centiseconds--;
+            }              
+        }     
+        quantum = 0;
+    } else {
+        quantum++;
     }
 }
 
