@@ -20,7 +20,7 @@
 uint8_t mode_get(void);
 void mode_initialise(void);
 void mode_service(void);
-void mode_register_callback(uint8_t stage, void (*func)(bool));
+void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 
 #include "modes/maze/maze.h"
 #include "modes/password/password.h"

@@ -27,9 +27,9 @@ void debug_initialise(void) {
     KWPUA |= 0b11100000;
     
     /* Register our callbacks. */
-    mode_register_callback(GAME_ALWAYS, debug_service);
-    mode_register_callback(GAME_SETUP, debug_game_setup);
-    mode_register_callback(GAME_RUNNING, debug_game_running);
+    mode_register_callback(GAME_ALWAYS, debug_service, NULL);
+    mode_register_callback(GAME_SETUP, debug_game_setup, &tick_20hz);
+    mode_register_callback(GAME_RUNNING, debug_game_running, &tick_20hz);
     
     /* Initialise keymatrix. */
     keymatrix_initialise(&debug_cols[0], &debug_rows[0], KEYMODE_COL_ONLY);
@@ -51,11 +51,7 @@ void debug_game_setup(bool first) {
     if (first) {
         keymatrix_clear();
     }
-    
-    if (!tick_20hz) {
-        return;
-    }
-    
+
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
             switch(press & KEY_NUM_BITS) {
@@ -77,10 +73,6 @@ void debug_game_running(bool first) {
         keymatrix_clear();
     }
 
-    if (!tick_20hz) {
-        return;
-    }
-    
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
             switch(press & KEY_NUM_BITS) {

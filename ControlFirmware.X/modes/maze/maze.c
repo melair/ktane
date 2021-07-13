@@ -146,9 +146,9 @@ pin_t maze_rows[] = {KPIN_NONE};
  */
 void maze_initialise(void) {    
     /* Register game states. */
-    mode_register_callback(GAME_ALWAYS, maze_service);
-    mode_register_callback(GAME_SETUP, maze_service_setup);    
-    mode_register_callback(GAME_RUNNING, maze_service_running);
+    mode_register_callback(GAME_ALWAYS, maze_service, NULL);
+    mode_register_callback(GAME_SETUP, maze_service_setup, &tick_20hz);    
+    mode_register_callback(GAME_RUNNING, maze_service_running, &tick_20hz);
 
     /* Initialise keymatrix. */
     keymatrix_initialise(&maze_cols[0], &maze_rows[0], KEYMODE_COL_ONLY);
@@ -263,36 +263,29 @@ void maze_service_running(bool first) {
     
     /* Check location, mark as solved if solved. */
     if (mode_data.maze.current == mode_data.maze.destination && !this_module->solved) {
-        game_module_solved(true);
-        
-        for (uint8_t i = 0; i < MAZE_SIZE; i++) {
-            argb_set(1 + i, 31, 0, 0, 0);
-        }
+        game_module_solved(true);       
     }
     
-    /* Animate the maze at 20Hz. */
-    if (tick_20hz) {
-        for (uint8_t i = 0; i < MAZE_SIZE; i++) {
-            argb_set(1 + i, 0, 0, 0, 0);
-        }
-        
-        if (!this_module->solved) {        
-            /* Draw the beacons regardless. */
-            argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][0]), 31, 0, 255, 0);
-            argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][1]), 31, 0, 255, 0);
+    for (uint8_t i = 0; i < MAZE_SIZE; i++) {
+        argb_set(1 + i, 0, 0, 0, 0);
+    }
 
-            /* Draw the cursor. */
-            maze_animate_cursor(mode_data.maze.current, (mode_data.maze.current == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.current == maze_beacons[mode_data.maze.maze][1]));
-            /* Draw the destination. */
-            maze_animate_destination(mode_data.maze.destination, (mode_data.maze.destination == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.destination == maze_beacons[mode_data.maze.maze][1]));                      
-        }
-        
-        mode_data.maze.animation_frame++;
-        
-        if (mode_data.maze.animation_frame == 20) {
-            mode_data.maze.animation_frame = 0;
-        }
-    }    
+    if (!this_module->solved) {        
+        /* Draw the beacons regardless. */
+        argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][0]), 31, 0, 255, 0);
+        argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][1]), 31, 0, 255, 0);
+
+        /* Draw the cursor. */
+        maze_animate_cursor(mode_data.maze.current, (mode_data.maze.current == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.current == maze_beacons[mode_data.maze.maze][1]));
+        /* Draw the destination. */
+        maze_animate_destination(mode_data.maze.destination, (mode_data.maze.destination == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.destination == maze_beacons[mode_data.maze.maze][1]));                      
+    }
+
+    mode_data.maze.animation_frame++;
+
+    if (mode_data.maze.animation_frame == 20) {
+        mode_data.maze.animation_frame = 0;
+    } 
 }
 
 /**

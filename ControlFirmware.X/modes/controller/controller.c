@@ -30,12 +30,12 @@ void controller_initialise(void) {
     segment_initialise();
     
     /* Register state service handlers with mode. */
-    mode_register_callback(GAME_ALWAYS, controller_service);
-    mode_register_callback(GAME_IDLE, controller_service_idle);
-    mode_register_callback(GAME_SETUP, controller_service_setup);
-    mode_register_callback(GAME_START, controller_service_start);
-    mode_register_callback(GAME_RUNNING, controller_service_running);
-    mode_register_callback(GAME_OVER, controller_service_over);
+    mode_register_callback(GAME_ALWAYS, controller_service, NULL);
+    mode_register_callback(GAME_IDLE, controller_service_idle, &tick_20hz);
+    mode_register_callback(GAME_SETUP, controller_service_setup, &tick_20hz);
+    mode_register_callback(GAME_START, controller_service_start, &tick_20hz);
+    mode_register_callback(GAME_RUNNING, controller_service_running, &tick_20hz);
+    mode_register_callback(GAME_OVER, controller_service_over, &tick_20hz);
     
     /* Update the game module state for ourselves to be ready and enabled. */
     this_module->enabled = true;
