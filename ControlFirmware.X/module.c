@@ -144,10 +144,12 @@ void module_service(void) {
         }        
     }
     
-    error_state = module_determine_error_state();
-    if (error_state_prev != error_state) {
-        status_error(error_state);
-        error_state_prev = error_state;
+    if (tick_20hz) {
+        error_state = module_determine_error_state();
+        if (error_state_prev != error_state) {
+            status_error(error_state);
+            error_state_prev = error_state;
+        }
     }
 }
 

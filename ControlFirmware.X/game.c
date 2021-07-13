@@ -189,6 +189,12 @@ void game_module_config(uint8_t id, bool enabled, uint8_t difficulty) {
 void game_module_ready(bool ready) {
     this_module->ready = ready;
     protocol_game_module_state_send(this_module->ready, this_module->solved);
+    
+    if (ready) {
+        status_set(STATUS_READY);
+    } else {
+        status_set(STATUS_SETUP);
+    }
 }
 
 /**
@@ -199,6 +205,12 @@ void game_module_ready(bool ready) {
 void game_module_solved(bool solved) {    
     this_module->solved = solved;
     protocol_game_module_state_send(this_module->ready, this_module->solved);
+    
+    if (solved) {
+        status_set(STATUS_SOLVED);
+    } else {
+        status_set(STATUS_UNSOLVED);
+    }
 }
 
 /**
@@ -214,9 +226,11 @@ void game_module_strike(uint8_t strikes) {
 /**
  * Service a game being idle.
  */
-void game_service_idle(void) {   
-    /* Set status led to ready. */
-    status_set(STATUS_IDLE);
+void game_service_idle(void) { 
+    if (tick_20hz) {
+        /* Set status led to ready. */
+        status_set(STATUS_IDLE);
+    }
     
     if (game.state_first) {
         for (uint8_t i = 0; i < MODULE_COUNT; i++) {
@@ -237,15 +251,17 @@ void game_service_idle(void) {
  * Service a game being setup, on first run clear database to ensure modules
  * are reset to blank.
  */
-void game_service_setup(void) {        
-    if (this_module->enabled) {
-        if (this_module->ready) {
-            status_set(STATUS_READY);
+void game_service_setup(void) {    
+    if (tick_20hz) {    
+        if (this_module->enabled) {
+            if (this_module->ready) {
+                status_set(STATUS_READY);
+            } else {
+                status_set(STATUS_SETUP);
+            }
         } else {
-            status_set(STATUS_SETUP);
+            status_set(STATUS_UNUSED);
         }
-    } else {
-        status_set(STATUS_UNUSED);
     }
 }
 
@@ -253,11 +269,13 @@ void game_service_setup(void) {
  * Service a game being started.
  */
 void game_service_start(void) {  
-    if (this_module->enabled) {
-        status_set(STATUS_UNSOLVED);
-    } else {
-        status_set(STATUS_UNUSED);
-    }   
+    if (tick_20hz) {    
+        if (this_module->enabled) {
+            status_set(STATUS_UNSOLVED);
+        } else {
+            status_set(STATUS_UNUSED);
+        }   
+    }
 }
 
 /* Number of the Hz of the 2kHz ticker to count towards a centisecond on the clock. */
@@ -275,15 +293,17 @@ uint8_t quantum;
 /**
  * Service the game running, primarily used to maintain internal clock.
  */
-void game_service_running(void) {    
-    if (this_module->enabled) {
-        if (this_module->solved) {
-            status_set(STATUS_SOLVED);
+void game_service_running(void) {  
+    if (tick_20hz) {    
+        if (this_module->enabled) {
+            if (this_module->solved) {
+                status_set(STATUS_SOLVED);
+            } else {
+                status_set(STATUS_UNSOLVED);
+            }
         } else {
-            status_set(STATUS_UNSOLVED);
+            status_set(STATUS_UNUSED);
         }
-    } else {
-        status_set(STATUS_UNUSED);
     }
     
     if (tick_2khz) {
@@ -340,12 +360,14 @@ void game_service_over(void) {
         }
     }
     
-    if (game.result == RESULT_SUCCESS) {
-        if (tick_value - note_last_play > NOTE_INTERVAL && success_notes[note] != 0x000) {
-            note_last_play = tick_value;
-            
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, success_notes[note], NOTE_DURATION);
-            note++;
+    if (tick_20hz) {
+        if (game.result == RESULT_SUCCESS) {
+            if (tick_value - note_last_play > NOTE_INTERVAL && success_notes[note] != 0x000) {
+                note_last_play = tick_value;
+
+                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, success_notes[note], NOTE_DURATION);
+                note++;
+            }
         }
     }
 }

@@ -47,10 +47,10 @@ void password_initialise(void) {
     /* Load the big font into the LCD. */
     lcd_load_big();
     
-    mode_register_callback(GAME_ALWAYS, password_service);
-    mode_register_callback(GAME_IDLE, password_service_idle);
-    mode_register_callback(GAME_SETUP, password_service_setup);
-    mode_register_callback(GAME_RUNNING, password_service_running);       
+    mode_register_callback(GAME_ALWAYS, password_service, NULL);
+    mode_register_callback(GAME_IDLE, password_service_idle, &tick_20hz);
+    mode_register_callback(GAME_SETUP, password_service_setup, &tick_20hz);
+    mode_register_callback(GAME_RUNNING, password_service_running, &tick_20hz);       
             
     /* Initialise keymatrix. */
     keymatrix_initialise(&password_cols[0], &password_rows[0], KEYMODE_COL_TO_ROW);

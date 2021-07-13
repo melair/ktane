@@ -8,7 +8,7 @@
  */
 void simon_initialise(void) {
     /* Register our callbacks. */
-    mode_register_callback(GAME_ALWAYS, simon_service);
+    mode_register_callback(GAME_ALWAYS, simon_service, NULL);
 }
 
 /**
