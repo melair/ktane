@@ -15,6 +15,10 @@ $CMP SP720ABTG
 D SP720 Series 3pF 4kV Diode Array 14-Element
 $ENDCMP
 #
+$CMP SR421136N-JN
+D 4 digit 7 segment LED display
+$ENDCMP
+#
 $CMP TPS25962X
 D 2.7-19V, 0.125-2A, 80mOhm eFuse With Current Monitor and Overvoltage Protection
 F https://www.ti.com/lit/ds/symlink/tps2596.pdf
