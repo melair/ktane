@@ -1549,7 +1549,7 @@ F 3 "~" H 7600 3550 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Custom:AudioJack4_SwitchTR1 J1
+L KTANE:AudioJack4_SwitchTR1 J1
 U 1 1 608688C5
 P 10600 1150
 F 0 "J1" H 10650 1600 50  0000 R CNN
