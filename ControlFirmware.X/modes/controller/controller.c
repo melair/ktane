@@ -15,6 +15,7 @@
 uint8_t last_strikes_current = 0;
 
 /* Local function prototypes. */
+void controller_service(bool first);
 void controller_service_idle(bool first);
 void controller_service_setup(bool first);
 void controller_service_start(bool first);

@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 void maze_initialise(void);
-void maze_service(bool first);
 
 typedef struct {        
     uint8_t maze;    
