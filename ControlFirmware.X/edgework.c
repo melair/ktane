@@ -46,6 +46,12 @@ const uint8_t port_name[PORT_MAX + 1][4] = {
   "RCA",
 };
 
+/**
+ * Generate new edgework for the game.
+ * 
+ * @param seed seed to generate edgework for
+ * @param difficulty level to set edgework for
+ */
 void edgework_generate(uint32_t seed, uint8_t difficulty) {       
     for (uint8_t i = 0; i < MAX_EDGEWORK; i++) {
         edgework_slots[i] = 0;
@@ -121,6 +127,9 @@ void edgework_generate(uint32_t seed, uint8_t difficulty) {
     }
 }
 
+/**
+ * Update devices to display game edge work.
+ */
 void edgework_display(void) {
     lcd_clear();
     
@@ -166,6 +175,13 @@ void edgework_display(void) {
     lcd_sync();
 }
 
+/**
+ * Check to see if the indicator specified has the lit state queried.
+ * 
+ * @param ind indicator to check for
+ * @param lit true if indicator must be lit
+ * @return true if the indicator is present and has the state required
+ */
 bool edgework_indicator_present(indicator_t ind, bool lit) {
     for (uint8_t i = 0; i < MAX_EDGEWORK; i++) {
         if ((edgework_slots[i] & SLOT_PREFIX_INDICATOR) != SLOT_PREFIX_INDICATOR) {
@@ -183,18 +199,39 @@ bool edgework_indicator_present(indicator_t ind, bool lit) {
     return false;
 }
 
+/**
+ * Get the battery count.
+ * 
+ * @return total battery count
+ */
 uint8_t edgework_battery_count(void) {
     return edgework_battery;
 }
 
+/**
+ * Check if serial has a vowel.
+ * 
+ * @return  true if serial has a vowel
+ */
 bool edgework_serial_vowel(void) {
     return edgework_serial_has_vowel;
 }
 
+/**
+ * Get the last digit from serial number.
+ * 
+ * @return last digit of serial number, as number not ASCII
+ */
 uint8_t edgework_serial_last_digit(void) {
     return edgework_serial[SERIAL_LENGTH - 1] - '0';
 }
 
+/**
+ * Check to see if the port specified is present.
+ * 
+ * @param port port to look for
+ * @return true if port is present
+ */
 bool edgework_port_present(port_t port) {
     for (uint8_t i = 0; i < MAX_EDGEWORK; i++) {
         if ((edgework_slots[i] & SLOT_PREFIX_PORT) != SLOT_PREFIX_PORT) {
