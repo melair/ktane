@@ -4,6 +4,7 @@
 #include "../../argb.h"
 #include "../../buzzer.h"
 #include "../../can.h"
+#include "../../edgework.h"
 #include "../../module.h"
 #include "../../mode.h"
 #include "../../game.h"
@@ -35,7 +36,7 @@ void controller_initialise(void) {
     mode_register_callback(GAME_IDLE, controller_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, controller_service_setup, &tick_20hz);
     mode_register_callback(GAME_START, controller_service_start, &tick_20hz);
-    mode_register_callback(GAME_RUNNING, controller_service_running, &tick_20hz);
+    mode_register_callback(GAME_RUNNING, controller_service_running, &tick_2khz);
     mode_register_callback(GAME_OVER, controller_service_over, &tick_20hz);
     
     /* Update the game module state for ourselves to be ready and enabled. */
@@ -159,9 +160,10 @@ void controller_service_start(bool first) {
         
         if (start_countdown == 0) {
             game_set_state(GAME_RUNNING, RESULT_NONE);
+            edgework_display();
         }
         
-        start_countdown--;
+        start_countdown--;       
     }
 }
 

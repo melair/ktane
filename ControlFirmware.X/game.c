@@ -7,6 +7,7 @@
 #include "mode.h"
 #include "status.h"
 #include "can.h"
+#include "edgework.h"
 #include "protocol_game.h"
 
 /* Game state. */
@@ -115,6 +116,10 @@ void game_update(uint8_t state, uint32_t seed, uint8_t strikes, uint8_t minutes,
         game.state_first = true;
     }
     
+    if (game.seed != seed) {
+        edgework_generate(seed, 255);
+    }
+    
     game.state = state;
     game.seed = seed;
     game.module_seed = game.seed ^ (uint32_t) can_get_id();
@@ -124,6 +129,7 @@ void game_update(uint8_t state, uint32_t seed, uint8_t strikes, uint8_t minutes,
     game.time_remaining.centiseconds = centiseconds;    
     game.time_remaining.done = (minutes == 0 && seconds == 0 && centiseconds == 0);
     game.time_ratio = time_ratio;
+        
 }
 
 /**
