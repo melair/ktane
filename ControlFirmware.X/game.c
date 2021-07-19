@@ -72,8 +72,8 @@ void game_service(void) {
  * @param minutes number of minutes player has to solve game
  * @param seconds number of seconds on top of minutes player has to solve game
  */
-void game_create(uint32_t seed, uint8_t strikes, uint8_t minutes, uint8_t seconds) {
-    game_update(GAME_SETUP, seed, strikes, minutes, seconds, 0, TIME_RATIO_1);
+void game_create(uint32_t seed, uint8_t strikes_total, uint8_t minutes, uint8_t seconds) {
+    game_update(GAME_SETUP, seed, 0, strikes_total, minutes, seconds, 0, TIME_RATIO_1);
     game_update_send();
 }
 
@@ -95,7 +95,7 @@ void game_set_state(uint8_t state, uint8_t result) {
  * For use by the controller, publish the games current state to the network.
  */
 void game_update_send(void) {
-    protocol_game_state_send(game.state, game.seed, game.strikes_total, game.time_remaining.minutes, game.time_remaining.seconds, game.time_remaining.centiseconds, game.time_ratio);
+    protocol_game_state_send(game.state, game.seed, game.strikes_current, game.strikes_total, game.time_remaining.minutes, game.time_remaining.seconds, game.time_remaining.centiseconds, game.time_ratio);
 }
 
 /**
@@ -111,7 +111,7 @@ void game_update_send(void) {
  * @param centiseconds number of centiseconds remaining
  * @param time_ratio current time ratio
  */
-void game_update(uint8_t state, uint32_t seed, uint8_t strikes, uint8_t minutes, uint8_t seconds, uint8_t centiseconds, uint8_t time_ratio) {   
+void game_update(uint8_t state, uint32_t seed, uint8_t strikes_current, uint8_t strikes_total, uint8_t minutes, uint8_t seconds, uint8_t centiseconds, uint8_t time_ratio) {   
     if (game.state != state) {
         game.state_first = true;
     }
@@ -123,7 +123,8 @@ void game_update(uint8_t state, uint32_t seed, uint8_t strikes, uint8_t minutes,
     game.state = state;
     game.seed = seed;
     game.module_seed = game.seed ^ (uint32_t) can_get_id();
-    game.strikes_total = strikes;
+    game.strikes_current = strikes_current;
+    game.strikes_total = strikes_total;
     game.time_remaining.minutes = minutes;
     game.time_remaining.seconds = seconds;
     game.time_remaining.centiseconds = centiseconds;    

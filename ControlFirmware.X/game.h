@@ -7,7 +7,7 @@ void game_initialise(void);
 void game_service(void);
 
 void game_create(uint32_t seed, uint8_t strikes, uint8_t minutes, uint8_t seconds);
-void game_update(uint8_t state, uint32_t seed, uint8_t strikes, uint8_t minutes, uint8_t seconds, uint8_t centiseconds, uint8_t time_ratio);
+void game_update(uint8_t state, uint32_t seed, uint8_t strikes_current, uint8_t strikes_total, uint8_t minutes, uint8_t seconds, uint8_t centiseconds, uint8_t time_ratio);
 void game_update_send(void);
 void game_set_state(uint8_t state, uint8_t result);
 
