@@ -24,10 +24,12 @@ void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 
 #include "modes/maze/maze.h"
 #include "modes/password/password.h"
+#include "modes/simon/simon.h"
 
 typedef union {
     mode_maze_t     maze;
     mode_password_t password;
+    mode_simon_t    simon;
 } mode_data_t;
 
 extern mode_data_t mode_data;

@@ -72,8 +72,8 @@ void protocol_game_receive(uint8_t id, uint8_t size, uint8_t *payload) {
 /**
  * Send a game state packet.
  */
-void protocol_game_state_send(uint8_t state, uint32_t seed, uint8_t strikes, uint8_t minutes, uint8_t seconds, uint8_t centiseconds, uint8_t time_ratio) {
-    uint8_t payload[11];
+void protocol_game_state_send(uint8_t state, uint32_t seed, uint8_t strikes_current, uint8_t strikes_total, uint8_t minutes, uint8_t seconds, uint8_t centiseconds, uint8_t time_ratio) {
+    uint8_t payload[12];
     
     payload[0] = OPCODE_GAME_STATE;
     payload[1] = state;
@@ -81,11 +81,12 @@ void protocol_game_state_send(uint8_t state, uint32_t seed, uint8_t strikes, uin
     payload[3] = (seed >> 16) & 0xff;
     payload[4] = (seed >> 8) & 0xff;
     payload[5] = seed & 0xff;
-    payload[6] = strikes;
-    payload[7] = minutes;
-    payload[8] = seconds;
-    payload[9] = centiseconds;
-    payload[10] = time_ratio;
+    payload[6] = strikes_current;
+    payload[7] = strikes_total;
+    payload[8] = minutes;
+    payload[9] = seconds;
+    payload[10] = centiseconds;
+    payload[11] = time_ratio;
 
     can_send(PREFIX_GAME, sizeof(payload), &payload[0]);
 }
@@ -99,16 +100,17 @@ void protocol_game_state_send(uint8_t state, uint32_t seed, uint8_t strikes, uin
  */
 void protocol_game_state_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
     /* Safety check. */
-    if (size < 11) {
+    if (size < 12) {
         return;
     }   
     
     uint8_t state = payload[1];
-    uint8_t strikes = payload[6];
-    uint8_t minutes = payload[7];
-    uint8_t seconds = payload[8];
-    uint8_t centiseconds = payload[9];
-    uint8_t time_ratio = payload[10];
+    uint8_t strikes_current = payload[6];
+    uint8_t strikes_total = payload[7];
+    uint8_t minutes = payload[8];
+    uint8_t seconds = payload[9];
+    uint8_t centiseconds = payload[10];
+    uint8_t time_ratio = payload[11];
     
     uint8_t a = payload[2];
     uint8_t b = payload[3];
@@ -117,7 +119,7 @@ void protocol_game_state_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     
     uint32_t seed = ((uint32_t) a << 24) | ((uint32_t)b << 16) | ((uint32_t) c << 8) | ((uint32_t) d);
     
-    game_update(state, seed, strikes, minutes, seconds, centiseconds, time_ratio);
+    game_update(state, seed, strikes_current, strikes_total, minutes, seconds, centiseconds, time_ratio);
 }
 
 /*
