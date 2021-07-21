@@ -13,6 +13,7 @@
 #include "modes/maze/maze.h"
 #include "modes/simon/simon.h"
 #include "modes/password/password.h"
+#include "modes/whosonfirst/whosonfirst.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
@@ -153,6 +154,10 @@ void mode_initialise(void) {
         /* Module is a puzzle, password. */
         case MODE_PUZZLE_PASSWORD:
             password_initialise();
+            break;
+        /* Module is a puzzle, who's on first.*/
+        case MODE_PUZZLE_WHOSONFIRST:
+            whosonfirst_initialise();
             break;
     }
 }

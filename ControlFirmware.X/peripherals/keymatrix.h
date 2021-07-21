@@ -11,8 +11,8 @@ void keymatrix_clear(void);
 #define KEYMODE_COL_TO_ROW 0
 #define KEYMODE_COL_ONLY   1
 
-#define KEY_ROW_BITS 0b00000111
-#define KEY_COL_BITS 0b00111000
+#define KEY_ROW_BITS 0b00111000
+#define KEY_COL_BITS 0b00000111
 #define KEY_NUM_BITS (KEY_ROW_BITS | KEY_COL_BITS)
 #define KEY_DOWN_BIT 0b10000000
 
