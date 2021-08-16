@@ -1,4 +1,4 @@
-19084167959893932
+19087433125647310
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -48768,20 +48768,6 @@ THT ceramic resonator filter DSS6
 0
 3
 3
-Custom
-Buzzer_9x5.5R
-
-
-0
-2
-2
-Custom
-PinHeader_2x08_P2.54mm_Vertical-Centered
-Through hole straight pin header, 2x08, 2.54mm pitch, double rows
-Through hole pin header THT 2x08 2.54mm double row
-0
-16
-16
 Diode_SMD
 D_0201_0603Metric
 Diode SMD 0201 (0603 Metric), square (rectangular) end terminal, IPC_7351 nominal, (Body size source: https://www.vishay.com/docs/20052/crcw0201e3.pdf), generated with kicad-footprint-generator
@@ -55103,6 +55089,34 @@ solder jumper open
 0
 5
 3
+KTANE
+ARK1136
+7-Segment x 4 with Colon and Periods
+
+0
+14
+14
+KTANE
+Buzzer_9x5.5R
+
+
+0
+2
+2
+KTANE
+MultisizeBuzzer
+
+
+0
+5
+2
+KTANE
+PinHeader_2x08_P2.54mm_Vertical-Centered
+Through hole straight pin header, 2x08, 2.54mm pitch, double rows
+Through hole pin header THT 2x08 2.54mm double row
+0
+16
+16
 LED_SMD
 LED-APA102-2020
 http://www.led-color.com/upload/201604/APA102-2020%20SMD%20LED.pdf

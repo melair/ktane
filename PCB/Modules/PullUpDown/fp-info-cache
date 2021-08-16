@@ -1,4 +1,4 @@
-19084180801466868
+19087433125647310
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -55090,11 +55090,25 @@ solder jumper open
 5
 3
 KTANE
+ARK1136
+7-Segment x 4 with Colon and Periods
+
+0
+14
+14
+KTANE
 Buzzer_9x5.5R
 
 
 0
 2
+2
+KTANE
+MultisizeBuzzer
+
+
+0
+5
 2
 KTANE
 PinHeader_2x08_P2.54mm_Vertical-Centered
