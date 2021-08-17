@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "whosonfirst.h"
 #include "../../buzzer.h"
+#include "../../argb.h"
 #include "../../mode.h"
 #include "../../game.h"
 #include "../../lcd.h"
@@ -51,6 +52,7 @@ const uint8_t topword_key[] = {
 
 #define LOWERWORDS_COUNT 28
 #define LOWERWORDS_GROUP_COUNT 14
+#define STAGE_COUNT 3
 
 /* Dictionary for button words, aggregated string. Actually operates as two
  * groups of words, split in the middle. Thanks TheDarkSid3r. */
@@ -130,6 +132,7 @@ void whosonfirst_service_setup(bool first);
 void whosonfirst_service_running(bool first);
 void whosonfirst_stage_generate_and_display(void);
 uint8_t whosonfirst_word_len(uint8_t *s);
+void whosonfirst_update_stage_leds(void);
 
 /**
  * Initialise Who's On First.
@@ -213,7 +216,8 @@ void whosonfirst_service_running(bool first) {
                 if (choice[choicelookup][i] == mapped) {                    
                     mode_data.whosonfirst.stage++;
                     
-                    if (mode_data.whosonfirst.stage >= 3) {
+                    if (mode_data.whosonfirst.stage >= STAGE_COUNT) {
+                        whosonfirst_update_stage_leds();
                         game_module_solved(true);
                     } else {
                         whosonfirst_stage_generate_and_display();   
@@ -291,6 +295,20 @@ void whosonfirst_stage_generate_and_display(void) {
     }    
     
     lcd_sync();
+    whosonfirst_update_stage_leds();
+}
+
+/**
+ * Update ARGB strip to show which Who's On First stage is being worked on.
+ */
+void whosonfirst_update_stage_leds(void) {
+    for (uint8_t i = 0; i < STAGE_COUNT; i++) {
+        if (i <= mode_data.whosonfirst.stage) {
+            argb_set(1+i, 31, 255, 0, 0, 0);
+        } else {
+            argb_set(1+i, 31, 0, 255, 0, 0);
+        }
+    }
 }
 
 /**
