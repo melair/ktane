@@ -15,6 +15,7 @@
 #define MODE_PUZZLE_SIMON        12
 #define MODE_PUZZLE_PASSWORD     13
 #define MODE_PUZZLE_WHOSONFIRST  14
+#define MODE_PUZZLE_WIRES        15
 
 #define GAME_ALWAYS              0xff
 
@@ -27,12 +28,14 @@ void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 #include "modes/password/password.h"
 #include "modes/simon/simon.h"
 #include "modes/whosonfirst/whosonfirst.h"
+#include "modes/wires/wires.h"
 
 typedef union {
     mode_maze_t         maze;
     mode_password_t     password;
     mode_simon_t        simon;
     mode_whosonfirst_t  whosonfirst;
+    mode_wires_t        wires;
 } mode_data_t;
 
 extern mode_data_t mode_data;
