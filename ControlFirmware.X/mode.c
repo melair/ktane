@@ -14,6 +14,7 @@
 #include "modes/simon/simon.h"
 #include "modes/password/password.h"
 #include "modes/whosonfirst/whosonfirst.h"
+#include "modes/wires/wires.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
@@ -158,6 +159,10 @@ void mode_initialise(void) {
         /* Module is a puzzle, who's on first.*/
         case MODE_PUZZLE_WHOSONFIRST:
             whosonfirst_initialise();
+            break;
+        /* Module is a puzzle, wires. */
+        case MODE_PUZZLE_WIRES:
+            wires_initialise();
             break;
     }
 }

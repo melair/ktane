@@ -41,6 +41,14 @@
 #define KWPUBbits WPUFbits
 #define KWPUCbits WPUDbits
 
+#define KANSELA ANSELA
+#define KANSELB ANSELF
+#define KANSELC ANSELD
+
+#define KANSELAbits ANSELAbits
+#define KANSELBbits ANSELFbits
+#define KANSELCbits ANSELDbits
+
 typedef uint8_t pin_t;
 
 #define KPIN_A0 ((pin_t) 0b00000000)

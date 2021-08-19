@@ -29,6 +29,9 @@
         <logicalFolder name="f8" displayName="whosonfirst" projectFiles="true">
           <itemPath>modes/whosonfirst/whosonfirst.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f9" displayName="wires" projectFiles="true">
+          <itemPath>modes/wires/wires.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
         <logicalFolder name="f1" displayName="timer" projectFiles="true">
@@ -88,6 +91,9 @@
         </logicalFolder>
         <logicalFolder name="f8" displayName="whosonfirst" projectFiles="true">
           <itemPath>modes/whosonfirst/whosonfirst.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f9" displayName="wires" projectFiles="true">
+          <itemPath>modes/wires/wires.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">

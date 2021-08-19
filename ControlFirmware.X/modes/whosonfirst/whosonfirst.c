@@ -304,9 +304,9 @@ void whosonfirst_stage_generate_and_display(void) {
 void whosonfirst_update_stage_leds(void) {
     for (uint8_t i = 0; i < STAGE_COUNT; i++) {
         if (i <= mode_data.whosonfirst.stage) {
-            argb_set(1+i, 31, 255, 0, 0, 0);
+            argb_set(1+i, 31, 255, 0, 0);
         } else {
-            argb_set(1+i, 31, 0, 255, 0, 0);
+            argb_set(1+i, 31, 0, 255, 0);
         }
     }
 }
