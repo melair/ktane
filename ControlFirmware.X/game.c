@@ -118,11 +118,11 @@ void game_update(uint8_t state, uint32_t seed, uint8_t strikes_current, uint8_t 
     
     if (game.seed != seed) {
         edgework_generate(seed, 255);
+        game.seed = seed;
+        game.module_seed = game.seed ^ (uint32_t) can_get_id();        
     }
     
     game.state = state;
-    game.seed = seed;
-    game.module_seed = game.seed ^ (uint32_t) can_get_id();
     game.strikes_current = strikes_current;
     game.strikes_total = strikes_total;
     game.time_remaining.minutes = minutes;
