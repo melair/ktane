@@ -120,7 +120,7 @@ void wires_service_setup(bool first) {
     if (mode_data.wires.process.init_stage == 1) {
         uint32_t seed = game.module_seed;
 
-        mode_data.wires.complex = false;  // (rng_generate8(&seed, WIRES_RNG_MASK % 2) == 0);
+        mode_data.wires.complex = false; //(rng_generate8(&seed, WIRES_RNG_MASK % 2) == 0);
 
         /* Generate the required number of wires for a game, 3-6 wires. */
         uint8_t required_wires = 3 + (rng_generate8(&seed, WIRES_RNG_MASK) % 4);
