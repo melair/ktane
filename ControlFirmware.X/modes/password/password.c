@@ -37,8 +37,8 @@ void password_copy_and_shuffle(void);
 void password_render_display(void);
 
 /* Keymatrix */
-pin_t password_cols[] = {KPIN_A4, KPIN_A5, KPIN_A6, KPIN_A7, KPIN_NONE};
-pin_t password_rows[] = {KPIN_A0, KPIN_A1, KPIN_A2, KPIN_NONE};
+pin_t password_cols[] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3, KPIN_NONE};
+pin_t password_rows[] = {KPIN_B4, KPIN_B5, KPIN_B6, KPIN_B7, KPIN_NONE};
     
 /**
  * Initialise the password puzzle.
@@ -108,10 +108,9 @@ void password_service_running(bool first) {
         if (press & KEY_DOWN_BIT) {
             /* Feedback to user button was accepted. */
             buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);           
-            uint8_t button = press & KEY_NUM_BITS;
             
             /* Map bits from keymatrix into a number. */
-            button = ((button & 0b00011000) >> 1) | (button & 0b00000011);
+            uint8_t button = ((press & KEY_ROW_BITS) >> 3) + ((press & KEY_COL_BITS) * 4);            
             
             if (button < 5) {
                 /* Down button pressed.*/
