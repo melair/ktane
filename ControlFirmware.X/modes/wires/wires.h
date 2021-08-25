@@ -6,6 +6,8 @@ void wires_initialise(void);
 #define WIRES_COUNT 6
 
 typedef struct {        
+    bool complex;
+    
     struct {
         unsigned adc_check  :3;
         unsigned init_stage :3;
