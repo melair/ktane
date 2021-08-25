@@ -122,8 +122,8 @@ const uint8_t choice[LOWERWORDS_COUNT][CHOICE_COUNT] = {
     {17, 24, 19, 18, 25, 23, 21, 22, 20, 14, 27, 26, 15, 16},
 };
 
-pin_t whosonfirst_cols[] = {KPIN_A4, KPIN_A5, KPIN_NONE};
-pin_t whosonfirst_rows[] = {KPIN_A0, KPIN_A1, KPIN_A2, KPIN_NONE};
+pin_t whosonfirst_cols[] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3, KPIN_NONE};
+pin_t whosonfirst_rows[] = {KPIN_B4, KPIN_B5, KPIN_B6, KPIN_B7, KPIN_NONE};
 
 /* Local function prototypes. */
 void whosonfirst_service(bool first);
@@ -203,17 +203,44 @@ void whosonfirst_service_running(bool first) {
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {                  
             /* Map the rows/cols to be 0-5. */
-            uint8_t mapped = (((press & KEY_ROW_BITS) >> 3) * 2) + (press & KEY_COL_BITS);            
+            uint8_t button = ((press & KEY_ROW_BITS) >> 3) + ((press & KEY_COL_BITS) * 4);   
+            uint8_t mapped = 0;
+            
+            /* Change mapping to be internal, rather than keycode or what's written on
+             * the module. */
+            switch(button) {
+                case 0:
+                    mapped = 0;
+                    break;
+                case 1:
+                    mapped = 2;
+                    break;                    
+                case 2:
+                    mapped = 4;
+                    break;                    
+                case 3:
+                    mapped = 1;
+                    break;
+                case 4:
+                    mapped = 3;
+                    break;
+                case 5:
+                    mapped = 5;
+                    break;                    
+            }
             
             /* Using the top word, identify which button to use for the correct
              * order. */
             uint8_t choicelookup = mode_data.whosonfirst.words[topword_key[mode_data.whosonfirst.topword]];
             
+            bool abort_check = false;
+            
             /* Loop through choices. */
             for (uint8_t i = 0; i < CHOICE_COUNT; i++) {
                 /* Check to see if the button pressed is this choice, if so
                  * handle success correctly. */
-                if (choice[choicelookup][i] == mapped) {                    
+                if (choice[choicelookup][i] == mode_data.whosonfirst.words[mapped]) {       
+                    buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);
                     mode_data.whosonfirst.stage++;
                     
                     if (mode_data.whosonfirst.stage >= STAGE_COUNT) {
@@ -222,6 +249,8 @@ void whosonfirst_service_running(bool first) {
                     } else {
                         whosonfirst_stage_generate_and_display();   
                     }
+                    
+                    abort_check = true;
                 } else {                 
                     /* However if it's not, then loop through the button words,
                      * if we match then the player should have pressed that. So
@@ -235,9 +264,15 @@ void whosonfirst_service_running(bool first) {
                         if (mode_data.whosonfirst.words[j] == choice[choicelookup][i]) {
                             game_module_strike(1);
                             whosonfirst_stage_generate_and_display();
+                            abort_check = true;                            
+                            break;
                         }
                     }
                 }
+                
+                if (abort_check) {
+                    break;
+                }                
             }            
         }
     }
@@ -252,6 +287,11 @@ void whosonfirst_stage_generate_and_display(void) {
     
     /* Select if we're using word group 0 or 1. */
     bool group_zero = (rng_generate8(&game.module_seed, WHOSONFIRST_RNG_MASK) % 2) == 0;
+    
+    /* Wipe out existing words, this prevents words being excluded. */
+    for (uint8_t i = 0; i < WHOSONFIRST_WORD_COUNT; i++) {
+        mode_data.whosonfirst.words[i] = 0xff;
+    }
     
     /* Select words for buttons.*/
     for (uint8_t i = 0; i < WHOSONFIRST_WORD_COUNT; i++) {
@@ -276,6 +316,8 @@ void whosonfirst_stage_generate_and_display(void) {
     }
 
     /* Display the words on the LCD screen. */
+    lcd_clear();
+    
     uint8_t topwidth = whosonfirst_word_len(&topwords[mode_data.whosonfirst.topword * 8]);
     uint8_t topcenter = (20-topwidth) / 2;
     
@@ -303,10 +345,10 @@ void whosonfirst_stage_generate_and_display(void) {
  */
 void whosonfirst_update_stage_leds(void) {
     for (uint8_t i = 0; i < STAGE_COUNT; i++) {
-        if (i <= mode_data.whosonfirst.stage) {
-            argb_set(1+i, 31, 255, 0, 0);
-        } else {
+        if (i < mode_data.whosonfirst.stage) {
             argb_set(1+i, 31, 0, 255, 0);
+        } else {
+            argb_set(1+i, 31, 255, 0, 0);        
         }
     }
 }
