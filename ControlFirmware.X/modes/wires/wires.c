@@ -8,6 +8,7 @@
 #include "../../game.h"
 #include "../../mode.h"
 #include "../../peripherals/ports.h"
+#include "../../edgework.h"
 
 #define WIRES_RNG_MASK 0xbde83a1f
 
@@ -64,6 +65,11 @@ void wires_service_running(bool first);
 void wires_service_adc(void);
 void wires_calculate_solution_simple(void);
 void wires_calculate_solution_complex(void);
+void wires_set_cut(int8_t wire);
+void wires_set_cut_color(uint8_t color, int8_t wire);
+uint8_t wires_get_wire_count(void);
+uint8_t wires_get_color_count(uint8_t color);
+uint8_t wires_get_last_wire_color(void);
 
 /**
  * Initialise Wires.
@@ -114,7 +120,7 @@ void wires_service_setup(bool first) {
     if (mode_data.wires.process.init_stage == 1) {
         uint32_t seed = game.module_seed;
 
-        mode_data.wires.complex = (rng_generate8(&seed, WIRES_RNG_MASK % 2) == 0);
+        mode_data.wires.complex = false;  // (rng_generate8(&seed, WIRES_RNG_MASK % 2) == 0);
 
         /* Generate the required number of wires for a game, 3-6 wires. */
         uint8_t required_wires = 3 + (rng_generate8(&seed, WIRES_RNG_MASK) % 4);
@@ -234,7 +240,164 @@ void wires_service_setup(bool first) {
 }
 
 void wires_calculate_solution_simple(void) {
+    uint8_t wire_count = wires_get_wire_count();
+    bool lastSerialDigitIsOdd = (edgework_serial_last_digit() % 2 == 1);
     
+    switch(wire_count) {
+        case 3:
+            /*
+             If there are no red wires, cut the second wire.
+             Otherwise, if the last wire is white, cut the last wire.
+             Otherwise, if there is more than one blue wire, cut the last blue wire.
+             Otherwise, cut the last wire. 
+             */
+            if (wires_get_color_count(WIRE_COLOUR_RED) == 0) {
+                wires_set_cut(2);
+            } else if (wires_get_last_wire_color() == WIRE_COLOUR_WHITE) {
+                wires_set_cut(-1);
+            } else if (wires_get_color_count(WIRE_COLOUR_BLUE) > 1) {
+                wires_set_cut_color(WIRE_COLOUR_BLUE, -1);
+            } else {
+                wires_set_cut(-1);
+            }
+            break;
+        case 4:                        
+            /*
+             If there is more than one red wire and the last digit of the serial number is odd, cut the last red wire.
+             Otherwise, if the last wire is yellow and there are no red wires, cut the first wire.
+             Otherwise, if there is exactly one blue wire, cut the first wire.
+             Otherwise, if there is more than one yellow wire, cut the last wire.
+             Otherwise, cut the second wire. 
+             */
+            if (wires_get_color_count(WIRE_COLOUR_RED) > 1 && lastSerialDigitIsOdd) {
+                wires_set_cut_color(WIRE_COLOUR_RED, -1);
+            } else if (wires_get_last_wire_color() == WIRE_COLOUR_YELLOW && wires_get_color_count(WIRE_COLOUR_RED) == 0) {
+                wires_set_cut(1);
+            } else if (wires_get_color_count(WIRE_COLOUR_BLUE) == 1) {
+                wires_set_cut(1);
+            } else if(wires_get_color_count(WIRE_COLOUR_YELLOW) > 1) {
+                wires_set_cut(-1);                
+            } else {
+                wires_set_cut(2);                
+            }            
+            break;
+        case 5:
+            /*
+             If the last wire is black and the last digit of the serial number is odd, cut the fourth wire.
+             Otherwise, if there is exactly one red wire and there is more than one yellow wire, cut the first wire.
+             Otherwise, if there are no black wires, cut the second wire.
+             Otherwise, cut the first wire. 
+             */
+            if (wires_get_last_wire_color() == WIRE_COLOUR_BLACK && lastSerialDigitIsOdd) {
+                wires_set_cut(4);
+            } else if (wires_get_color_count(WIRE_COLOUR_RED) == 1 && wires_get_color_count(WIRE_COLOUR_YELLOW) > 1) {
+                wires_set_cut(1);               
+            } else if (wires_get_color_count(WIRE_COLOUR_BLACK) == 0) {
+                wires_set_cut(2);               
+            } else {
+                wires_set_cut(1);                               
+            }
+            break;
+        case 6:
+            /*
+             If there are no yellow wires and the last digit of the serial number is odd, cut the third wire.
+             Otherwise, if there is exactly one yellow wire and there is more than one white wire, cut the fourth wire.
+             Otherwise, if there are no red wires, cut the last wire.
+             Otherwise, cut the fourth wire. 
+             */
+            if (wires_get_color_count(WIRE_COLOUR_YELLOW) == 0 && lastSerialDigitIsOdd) {
+                wires_set_cut(3);           
+            } else if (wires_get_color_count(WIRE_COLOUR_YELLOW) == 1 && wires_get_color_count(WIRE_COLOUR_WHITE) > 1) {
+                wires_set_cut(4);
+            } else if (wires_get_color_count(WIRE_COLOUR_RED) == 0) {
+                wires_set_cut(-1);
+            } else {
+                wires_set_cut(4);                
+            }
+            break;            
+    }
+}
+
+void wires_set_cut(int8_t wire) {
+    uint8_t last = 0;
+    uint8_t c = 0;
+    
+    for (uint8_t i = 0; i < WIRES_COUNT; i++) {
+        if (mode_data.wires.wires[i].wiretype != NO_WIRE) {
+            c++;
+            last = i;
+            if (wire == c) {
+                mode_data.wires.wires[i].cutneeded = 1;
+                return;
+            }
+        }
+    }
+    
+    if (wire == -1) {
+        mode_data.wires.wires[last].cutneeded = 1;
+    }
+}
+
+void wires_set_cut_color(uint8_t color, int8_t wire) {
+    uint8_t last = 0;
+    uint8_t c = 0;
+    
+    for (uint8_t i = 0; i < WIRES_COUNT; i++) {
+        if (mode_data.wires.wires[i].wiretype != NO_WIRE) {
+            if (wirelookup[mode_data.wires.wires[i].wiretype].colours.wire == color) {                       
+                c++;
+                last = i;
+                if (wire == c) {
+                    mode_data.wires.wires[i].cutneeded = 1;
+                    return;
+                }
+            }
+        }
+    }
+    
+    if (wire == -1) {
+        mode_data.wires.wires[last].cutneeded = 1;
+    } 
+}
+
+uint8_t wires_get_wire_count(void) {
+    uint8_t c = 0;
+    
+    for (uint8_t i = 0; i < WIRES_COUNT; i++) {
+        if (mode_data.wires.wires[i].wiretype != NO_WIRE) {
+            c++;
+        }
+    }
+    
+    return c;
+}
+
+uint8_t wires_get_color_count(uint8_t color) {
+    uint8_t c = 0;
+    
+    for (uint8_t i = 0; i < WIRES_COUNT; i++) {
+        uint8_t wt = mode_data.wires.wires[i].wiretype;
+        
+        if (wirelookup[wt].colours.plug == color || wirelookup[wt].colours.wire == color) {
+            c++;            
+        }
+    }
+    
+    return c;
+}
+
+uint8_t wires_get_last_wire_color(void) {
+    uint8_t last = 0;
+    
+    for (uint8_t i = 0; i < WIRES_COUNT; i++) {
+        uint8_t wt = mode_data.wires.wires[i].wiretype;
+        
+        if (wt != NO_WIRE) {
+            last = wirelookup[wt].colours.wire;
+        }
+    }
+    
+    return last;
 }
 
 void wires_calculate_solution_complex(void) {
