@@ -19,6 +19,7 @@
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
 void mode_unconfigured_state(bool first);
+uint8_t mode_find_name_index(uint8_t mode);
 
 /* Mode data. */
 mode_data_t mode_data;
@@ -37,6 +38,38 @@ void (*mode_service_always_function)(bool);
 uint8_t last_called_state = 0xff;
 /* If the service loop is called for the first time. */
 bool service_always_first_call = true;
+
+/* List of node names. */
+mode_names_t mode_names[MODE_COUNT+1] = {
+    { 0xff, "Unknown" },
+    { MODE_BLANK, "Blank" },
+    { MODE_BOOTSTRAP, "Bootstrap" },
+    { MODE_UNCONFIGURED, "Unconfigured" },
+    { MODE_CONTROLLER, "Controller" },
+    { MODE_CONTROLLER_STANDBY, "Standby Controller" },
+    { MODE_PUZZLE_DEBUG, "Debug" },
+    { MODE_PUZZLE_MAZE, "Maze" },
+    { MODE_PUZZLE_SIMON, "Simon Says" },
+    { MODE_PUZZLE_PASSWORD, "Password" },
+    { MODE_PUZZLE_WHOSONFIRST, "Who's On First" },
+    { MODE_PUZZLE_WIRES, "Wires" },
+};
+
+/**
+ * Find a modes name in the mode_name index. 
+ * 
+ * @param mode mode to find
+ * @return name index in name array
+ */
+uint8_t mode_find_name_index(uint8_t mode) {
+    for (uint8_t i = 0; i < MODE_COUNT; i++) {
+        if (mode_names[i].id == mode) {
+            return i;
+        }
+    }
+    
+    return 0;
+}
 
 /**
  * Checks to see if the module is in bootstrap mode, this is done by shorting

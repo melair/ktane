@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#define MODE_COUNT 11
+
 #define MODE_BLANK               0
 #define MODE_BOOTSTRAP           1
 #define MODE_UNCONFIGURED        2
@@ -39,6 +41,15 @@ typedef union {
 } mode_data_t;
 
 extern mode_data_t mode_data;
+
+#define MAX_NAME 20
+
+typedef struct {
+    uint8_t id;
+    uint8_t name[MAX_NAME];
+} mode_names_t;
+
+extern mode_names_t mode_names[];
 
 #endif	/* MODE_H */
 
