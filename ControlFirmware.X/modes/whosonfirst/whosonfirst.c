@@ -146,6 +146,8 @@ void whosonfirst_initialise(void) {
 
     /* Initialise keymatrix. */
     keymatrix_initialise(&whosonfirst_cols[0], &whosonfirst_rows[0], KEYMODE_COL_TO_ROW);
+    
+    lcd_set_contrast(0x8a); 
 }
 
 /**
@@ -246,6 +248,8 @@ void whosonfirst_service_running(bool first) {
                     if (mode_data.whosonfirst.stage >= STAGE_COUNT) {
                         whosonfirst_update_stage_leds();
                         game_module_solved(true);
+                        lcd_clear();
+                        lcd_sync();
                     } else {
                         whosonfirst_stage_generate_and_display();   
                     }
