@@ -54,6 +54,8 @@ void password_initialise(void) {
             
     /* Initialise keymatrix. */
     keymatrix_initialise(&password_cols[0], &password_rows[0], KEYMODE_COL_TO_ROW);
+    
+    lcd_set_contrast(0x8a); 
 }
 
 /**
@@ -139,6 +141,8 @@ void password_service_running(bool first) {
                 
                 if (match) {
                     game_module_solved(true); 
+                    lcd_clear();
+                    lcd_sync();                    
                 } else {
                     game_module_strike(1);
                 }
