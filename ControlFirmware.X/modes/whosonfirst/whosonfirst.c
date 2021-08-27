@@ -366,9 +366,9 @@ void whosonfirst_update_stage_leds(void) {
  * @return length of string
  */
 uint8_t whosonfirst_word_len(uint8_t *s) {
-    for (uint8_t i = 0; i < WORD_WIDTH; i++) {
-        if (s[i] == ' ') {
-            return i;
+    for (int8_t i = (WORD_WIDTH - 1); i >= 0; i--) {
+        if (s[i] != ' ') {
+            return i+1;
         }
     }
     
