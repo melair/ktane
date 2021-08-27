@@ -18,6 +18,7 @@
 #define SIMON_GREEN  2
 #define SIMON_YELLOW 3
 
+#define SIMON_OFF    0
 #define SIMON_DIM    15
 #define SIMON_BRIGHT 31
 
@@ -171,7 +172,7 @@ void simon_service_running(bool first) {
         if (mode_data.simon.next_display_stage == 0) {
             uint8_t next = (mode_data.simon.order >> (2*mode_data.simon.next_display)) & 0b11;
             
-            pwmled_set(next, SIMON_BRIGHT, simon_colours[next][0], simon_colours[next][1], simon_colours[next][2]);
+            pwmled_set(next, SIMON_OFF, simon_colours[next][0], simon_colours[next][1], simon_colours[next][2]);
             buzzer_on_timed(BUZZER_DEFAULT_VOLUME, simon_freqs[next], 300);
             
             mode_data.simon.next_display++;            
@@ -202,10 +203,10 @@ void simon_service_running(bool first) {
  * Clear RGB leds colours back to dim.
  */
 void simon_display_clear(void) {
-    pwmled_set(0, SIMON_DIM, simon_colours[SIMON_RED][0], simon_colours[SIMON_RED][1], simon_colours[SIMON_RED][2]);
-    pwmled_set(1, SIMON_DIM, simon_colours[SIMON_BLUE][0], simon_colours[SIMON_BLUE][1], simon_colours[SIMON_BLUE][2]);
-    pwmled_set(2, SIMON_DIM, simon_colours[SIMON_GREEN][0], simon_colours[SIMON_GREEN][1], simon_colours[SIMON_GREEN][2]);
-    pwmled_set(3, SIMON_DIM, simon_colours[SIMON_YELLOW][0], simon_colours[SIMON_YELLOW][1], simon_colours[SIMON_YELLOW][2]); 
+    pwmled_set(0, SIMON_BRIGHT, simon_colours[SIMON_RED][0], simon_colours[SIMON_RED][1], simon_colours[SIMON_RED][2]);
+    pwmled_set(1, SIMON_BRIGHT, simon_colours[SIMON_BLUE][0], simon_colours[SIMON_BLUE][1], simon_colours[SIMON_BLUE][2]);
+    pwmled_set(2, SIMON_BRIGHT, simon_colours[SIMON_GREEN][0], simon_colours[SIMON_GREEN][1], simon_colours[SIMON_GREEN][2]);
+    pwmled_set(3, SIMON_BRIGHT, simon_colours[SIMON_YELLOW][0], simon_colours[SIMON_YELLOW][1], simon_colours[SIMON_YELLOW][2]); 
 }
 
 /**
