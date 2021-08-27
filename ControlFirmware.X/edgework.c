@@ -133,45 +133,47 @@ void edgework_generate(uint32_t seed, uint8_t difficulty) {
 void edgework_display(void) {
     lcd_clear();
     
-    uint8_t t[10] = "          ";                          
+    const uint8_t *serial = "Serial Number:";    
+    lcd_update(0, 0, 14, serial);
+    lcd_update(1, 0, SERIAL_LENGTH, &edgework_serial);
                     
-    for (uint8_t i = 0; i < MAX_EDGEWORK; i++) {
-        uint8_t r = i / 2;
-        uint8_t c = (i % 2) * 10;
-        
-        switch(edgework_slots[i] & SLOT_PREFIX_MASK) {
-            case SLOT_PREFIX_PORT:
-                t[0] = 'P';
-                lcd_update(r, c, 1, &t);                
-                
-                uint8_t port = edgework_slots[i] & 0b00001111;
-                lcd_update(r, c+2, 4, &port_name[port]); 
-                break;
-            case SLOT_PREFIX_INDICATOR:
-                t[0] = 'I';
-                
-                if ((edgework_slots[i] & 0b00010000) == 0b00010000) {
-                    t[5] = '+';
-                }
-                
-                lcd_update(r, c, 6, &t);
-                
-                uint8_t ind = edgework_slots[i] & 0b00001111;
-                lcd_update(r, c+2, 3, &indicator_name[ind]);               
-                
-                break;
-            case SLOT_PREFIX_BATTERY:
-                t[0] = 'B';
-                t[1] = ' ';
-                t[2] = (edgework_slots[i] & ~(SLOT_PREFIX_MASK)) + 1 + '0';
-                lcd_update(r, c, 3, &t);
-                break;
-            case SLOT_PREFIX_SERIAL:
-                lcd_update(r, c, SERIAL_LENGTH, &edgework_serial);
-                break;                        
-        }
-    }
-    
+//    for (uint8_t i = 0; i < MAX_EDGEWORK; i++) {
+//        uint8_t r = i / 2;
+//        uint8_t c = (i % 2) * 10;
+//        
+//        switch(edgework_slots[i] & SLOT_PREFIX_MASK) {
+//            case SLOT_PREFIX_PORT:
+//                t[0] = 'P';
+//                lcd_update(r, c, 1, &t);                
+//                
+//                uint8_t port = edgework_slots[i] & 0b00001111;
+//                lcd_update(r, c+2, 4, &port_name[port]); 
+//                break;
+//            case SLOT_PREFIX_INDICATOR:
+//                t[0] = 'I';
+//                
+//                if ((edgework_slots[i] & 0b00010000) == 0b00010000) {
+//                    t[5] = '+';
+//                }
+//                
+//                lcd_update(r, c, 6, &t);
+//                
+//                uint8_t ind = edgework_slots[i] & 0b00001111;
+//                lcd_update(r, c+2, 3, &indicator_name[ind]);               
+//                
+//                break;
+//            case SLOT_PREFIX_BATTERY:
+//                t[0] = 'B';
+//                t[1] = ' ';
+//                t[2] = (edgework_slots[i] & ~(SLOT_PREFIX_MASK)) + 1 + '0';
+//                lcd_update(r, c, 3, &t);
+//                break;
+//            case SLOT_PREFIX_SERIAL:
+//                lcd_update(r, c, SERIAL_LENGTH, &edgework_serial);
+//                break;                        
+//        }
+//    }
+//    
     lcd_sync();
 }
 
