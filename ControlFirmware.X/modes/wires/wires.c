@@ -30,22 +30,22 @@ typedef struct {
 
 #define WIRE_POSSIBLE_COUNT 12
 
-#define NO_WIRE 255
+#define NO_WIRE 11
 
 /* Lookup table, ADC value to plug and wire colour. */
 wirelookup_t wirelookup[WIRE_POSSIBLE_COUNT] = {
-    { 0, WIRE_COLOUR_BLUE, WIRE_COLOUR_BLUE,},
-    { 468, WIRE_COLOUR_BLUE, WIRE_COLOUR_RED,},
-    { 821, WIRE_COLOUR_BLUE, WIRE_COLOUR_WHITE,},
-    { 1163, WIRE_COLOUR_RED, WIRE_COLOUR_BLUE,},
-    { 1484, WIRE_COLOUR_RED, WIRE_COLOUR_WHITE,},
-    { 1853, WIRE_COLOUR_RED, WIRE_COLOUR_RED,},
-    { 2141, WIRE_COLOUR_WHITE, WIRE_COLOUR_BLUE,},
-    { 2434, WIRE_COLOUR_WHITE, WIRE_COLOUR_RED,},
-    { 2811, WIRE_COLOUR_WHITE, WIRE_COLOUR_WHITE,},
-    { 3125, WIRE_COLOUR_YELLOW, WIRE_COLOUR_YELLOW,},
-    { 3416, WIRE_COLOUR_BLACK, WIRE_COLOUR_BLACK,},
-    { 3752, WIRE_COLOUR_NONE, WIRE_COLOUR_NONE,},
+    { 468, WIRE_COLOUR_BLUE, WIRE_COLOUR_BLUE,},
+    { 821, WIRE_COLOUR_BLUE, WIRE_COLOUR_RED,},
+    { 1163, WIRE_COLOUR_BLUE, WIRE_COLOUR_WHITE,},
+    { 1484, WIRE_COLOUR_RED, WIRE_COLOUR_BLUE,},
+    { 1853, WIRE_COLOUR_RED, WIRE_COLOUR_WHITE,},
+    { 2141, WIRE_COLOUR_RED, WIRE_COLOUR_RED,},
+    { 2434, WIRE_COLOUR_WHITE, WIRE_COLOUR_BLUE,},
+    { 2811, WIRE_COLOUR_WHITE, WIRE_COLOUR_RED,},
+    { 3125, WIRE_COLOUR_WHITE, WIRE_COLOUR_WHITE,},
+    { 3416, WIRE_COLOUR_YELLOW, WIRE_COLOUR_YELLOW,},
+    { 3752, WIRE_COLOUR_BLACK, WIRE_COLOUR_BLACK,},
+    { 4096, WIRE_COLOUR_NONE, WIRE_COLOUR_NONE,},
 };
 
 const uint8_t wire_colors[6][3] = {
@@ -214,7 +214,7 @@ void wires_service_setup(bool first) {
                 argb_set(1 + i, 31, 0x00, 0x00, 0x00);
                 argb_set(7 + i, 31, 0x00, 0x00, 0x00);
             }
-        } else if (mode_data.wires.wires[i].wiretype != NO_WIRE && !mode_data.wires.wires[i].required) {
+        } else if (!mode_data.wires.wires[i].required) {
             if (mode_data.wires.process.animation_tick == 0) {
                 argb_set(1 + i, 31, 0xff, 0x00, 0x00);
                 argb_set(7 + i, 31, 0xff, 0x00, 0x00);
