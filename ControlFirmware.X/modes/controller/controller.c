@@ -14,6 +14,7 @@
 #define GAME_RNG_MASK 0x89b1a96c
 
 uint8_t last_strikes_current = 0;
+uint32_t ready_at = 0;
 
 /* Local function prototypes. */
 void controller_service(bool first);
@@ -75,7 +76,7 @@ void controller_service_idle(bool first) {
         uint32_t seed = rng_generate(&base_seed, GAME_RNG_MASK);
 
         /* Create the game. */
-        game_create(seed, 5, 3, 0);        
+        game_create(seed, 3, 5, 0);        
     }
 }
 
@@ -99,6 +100,8 @@ void controller_service_setup(bool first) {
         this_module->enabled = true;
         this_module->ready = true;
         this_module->solved = true;
+        
+        ready_at = 0;
     }
     
     bool all_ready = true;
@@ -124,8 +127,14 @@ void controller_service_setup(bool first) {
     }
     
     if (all_ready && at_least_one_puzzle) {
-        game_set_state(GAME_START, RESULT_NONE);
-    }   
+        if (ready_at == 0) {
+            ready_at = tick_value + 3000;
+        } else if (ready_at <= tick_value) {
+            game_set_state(GAME_START, RESULT_NONE);
+        }
+    } else {
+        ready_at = 0;
+    }
 }
 
 /* Time start phase started.*/
