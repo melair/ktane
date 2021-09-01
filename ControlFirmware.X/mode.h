@@ -18,6 +18,9 @@
 #define MODE_PUZZLE_PASSWORD     13
 #define MODE_PUZZLE_WHOSONFIRST  14
 #define MODE_PUZZLE_WIRES        15
+#define MODE_PUZZLE_COMBINATION  16
+
+#define MODE_NEEDY_KEYS          224
 
 #define GAME_ALWAYS              0xff
 

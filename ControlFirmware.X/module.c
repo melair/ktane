@@ -253,6 +253,7 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
     modules[idx].last_seen = tick_value;
     modules[idx].flags.LOST = 0;       
     modules[idx].game.puzzle = (mode >= MODE_PUZZLE_DEBUG);
+    modules[idx].game.needy = (mode >= MODE_NEEDY_KEYS);
 }
 
 /**
