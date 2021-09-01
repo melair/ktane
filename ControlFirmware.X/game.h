@@ -65,6 +65,7 @@ typedef struct {
     uint8_t difficulty;
     struct {
         unsigned puzzle      :1;
+        unsigned needy       :1;        
         unsigned enabled     :1;
         unsigned ready       :1;
         unsigned solved      :1;
