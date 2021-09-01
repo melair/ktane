@@ -99,7 +99,6 @@ void controller_service_setup(bool first) {
         
         this_module->enabled = true;
         this_module->ready = true;
-        this_module->solved = true;
         
         ready_at = 0;
     }
@@ -197,6 +196,10 @@ void controller_update_strikes(void) {
  * @param first true if first call of the state
  */
 void controller_service_running(bool first) {
+    if (first) {
+        game_module_solved(true);
+    }
+    
     if (!game.time_remaining.done) {
         uint8_t seconds = game.time_remaining.seconds % 10;
         uint8_t tenseconds = game.time_remaining.seconds / 10;
@@ -308,6 +311,22 @@ void controller_service_over(bool first){
                 segment_set_digit(3, characters[DIGIT_DASH]);
                 break;
         }
+        
+        lcd_clear();
+        
+        uint8_t *text_strikes = "Strikes: X of X";
+        uint8_t *text_remaining = "Time: X:XX.XX";        
+        
+        lcd_update(0, 0, 15, text_strikes);
+        lcd_number(0, 9, 1, game.strikes_current);
+        lcd_number(0, 14, 1, game.strikes_total);
+        
+        lcd_update(1, 0, 13, text_remaining);        
+        lcd_number(1, 6, 1, game.time_remaining.minutes);        
+        lcd_number(1, 8, 2, game.time_remaining.seconds);        
+        lcd_number(1, 11, 2, game.time_remaining.centiseconds);
+        
+        lcd_sync();
     }
 }
 

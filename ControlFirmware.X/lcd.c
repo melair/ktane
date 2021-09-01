@@ -633,6 +633,25 @@ void lcd_update(uint8_t row, uint8_t col, uint8_t size, uint8_t *data) {
     }
 }
 
+const uint8_t *hex_map = "0123456789ABCDEF";
+
+/**
+ * Print a number to the LCD screen.
+ * 
+ * @param row row of the LCD panel
+ * @param col column in row to start number
+ * @param digits number of digits
+ * @param number number to display
+ */
+void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint8_t number) {    
+    for (uint8_t i = 0; i < digits; i++) {
+        uint8_t remain = number % 10;
+        number = (number - remain) / 10;
+        
+        lcd_update(row, (col+digits)-(i+1), 1, &hex_map[number]); 
+    }
+}
+
 /**
  * Use 4x2 font to display a character, on a 20x4 screen.
  * 
@@ -688,8 +707,6 @@ void lcd_default(void) {
     const uint8_t *welcome_first = "KTANE by Melair";
     const uint8_t *welcome_second_mode = "Mode:";
     const uint8_t *welcome_second_can = "CAN:";
-
-    const uint8_t *hex_map = "0123456789ABCDEF";
 
     uint8_t can_id = can_get_id();
     uint8_t mode = mode_get();
