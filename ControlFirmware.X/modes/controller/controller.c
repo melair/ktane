@@ -9,6 +9,7 @@
 #include "../../mode.h"
 #include "../../game.h"
 #include "../../tick.h"
+#include "../../lcd.h"
 #include "../../peripherals/timer/segment.h"
 
 #define GAME_RNG_MASK 0x89b1a96c
