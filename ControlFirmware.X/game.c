@@ -308,7 +308,19 @@ void game_service_running(void) {
     if (tick_20hz) {    
         if (this_module->enabled) {
             if (this_module->solved) {
-                status_set(STATUS_SOLVED);
+                status_set(STATUS_SOLVED);                
+                
+                if (this_module->solved_tick < 15) {
+                    switch(this_module->solved_tick) {
+                        case 0:
+                            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_D5_SHARP, 700);
+                            break;
+                        case 14:
+                            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_F5_SHARP, 700);
+                            break;
+                    }
+                    this_module->solved_tick++;
+                }
             } else {
                 status_set(STATUS_UNSOLVED);
             }

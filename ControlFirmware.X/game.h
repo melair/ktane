@@ -64,10 +64,11 @@ typedef struct {
     uint8_t id;
     uint8_t difficulty;
     struct {
-        unsigned puzzle     :1;
-        unsigned enabled    :1;
-        unsigned ready      :1;
-        unsigned solved     :1;
+        unsigned puzzle      :1;
+        unsigned enabled     :1;
+        unsigned ready       :1;
+        unsigned solved      :1;
+        unsigned solved_tick :4;
     };
 } module_game_t;
 

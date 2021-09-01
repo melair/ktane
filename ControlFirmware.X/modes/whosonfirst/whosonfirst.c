@@ -246,8 +246,8 @@ void whosonfirst_service_running(bool first) {
                     mode_data.whosonfirst.stage++;
                     
                     if (mode_data.whosonfirst.stage >= STAGE_COUNT) {
-                        whosonfirst_update_stage_leds();
                         game_module_solved(true);
+                        whosonfirst_update_stage_leds();
                         lcd_clear();
                         lcd_sync();
                     } else {
