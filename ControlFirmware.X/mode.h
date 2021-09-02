@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define MODE_COUNT 11
+#define MODE_COUNT 12
 
 #define MODE_BLANK               0
 #define MODE_BOOTSTRAP           1
@@ -34,6 +34,7 @@ void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 #include "modes/simon/simon.h"
 #include "modes/whosonfirst/whosonfirst.h"
 #include "modes/wires/wires.h"
+#include "modes/keys/keys.h"
 
 typedef union {
     mode_maze_t         maze;
@@ -41,6 +42,7 @@ typedef union {
     mode_simon_t        simon;
     mode_whosonfirst_t  whosonfirst;
     mode_wires_t        wires;
+    mode_keys_t         keys;
 } mode_data_t;
 
 extern mode_data_t mode_data;

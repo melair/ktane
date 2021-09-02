@@ -15,6 +15,7 @@
 #include "modes/password/password.h"
 #include "modes/whosonfirst/whosonfirst.h"
 #include "modes/wires/wires.h"
+#include "modes/keys/keys.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
@@ -53,6 +54,7 @@ mode_names_t mode_names[MODE_COUNT+1] = {
     { MODE_PUZZLE_PASSWORD, "Password" },
     { MODE_PUZZLE_WHOSONFIRST, "Who's On First" },
     { MODE_PUZZLE_WIRES, "Wires" },
+    { MODE_NEEDY_KEYS, "Keys" },
 };
 
 /**
@@ -196,6 +198,10 @@ void mode_initialise(void) {
         /* Module is a puzzle, wires. */
         case MODE_PUZZLE_WIRES:
             wires_initialise();
+            break;
+        /* Module is needy, keys. */  
+        case MODE_NEEDY_KEYS:
+            keys_initialise();
             break;
     }
 }
