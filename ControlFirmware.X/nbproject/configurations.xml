@@ -17,6 +17,9 @@
         <logicalFolder name="f4" displayName="debug" projectFiles="true">
           <itemPath>modes/debug/debug.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f10" displayName="keys" projectFiles="true">
+          <itemPath>modes/keys/keys.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.h</itemPath>
         </logicalFolder>
@@ -80,6 +83,9 @@
         </logicalFolder>
         <logicalFolder name="f4" displayName="debug" projectFiles="true">
           <itemPath>modes/debug/debug.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f10" displayName="keys" projectFiles="true">
+          <itemPath>modes/keys/keys.c</itemPath>
         </logicalFolder>
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.c</itemPath>

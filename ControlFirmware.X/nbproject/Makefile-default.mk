@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c modes/debug/debug.c modes/maze/maze.c modes/password/password.c modes/simon/simon.c modes/whosonfirst/whosonfirst.c modes/wires/wires.c peripherals/timer/segment.c peripherals/keymatrix.c peripherals/ports.c peripherals/pwmled.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c edgework.c modes/needy.c
+SOURCEFILES_QUOTED_IF_SPACED=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c peripherals/timer/segment.c peripherals/keymatrix.c peripherals/ports.c peripherals/pwmled.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c edgework.c modes/needy.c modes/debug/debug.c modes/maze/maze.c modes/password/password.c modes/whosonfirst/whosonfirst.c modes/wires/wires.c modes/keys/keys.c modes/simon/simon.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/modes/password/password.p1 ${OBJECTDIR}/modes/simon/simon.p1 ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 ${OBJECTDIR}/modes/wires/wires.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/peripherals/keymatrix.p1 ${OBJECTDIR}/peripherals/ports.p1 ${OBJECTDIR}/peripherals/pwmled.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/edgework.p1 ${OBJECTDIR}/modes/needy.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/modes/controller/controller.p1.d ${OBJECTDIR}/modes/debug/debug.p1.d ${OBJECTDIR}/modes/maze/maze.p1.d ${OBJECTDIR}/modes/password/password.p1.d ${OBJECTDIR}/modes/simon/simon.p1.d ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d ${OBJECTDIR}/modes/wires/wires.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/peripherals/keymatrix.p1.d ${OBJECTDIR}/peripherals/ports.p1.d ${OBJECTDIR}/peripherals/pwmled.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d ${OBJECTDIR}/interrupt.p1.d ${OBJECTDIR}/module.p1.d ${OBJECTDIR}/game.p1.d ${OBJECTDIR}/rng.p1.d ${OBJECTDIR}/edgework.p1.d ${OBJECTDIR}/modes/needy.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/peripherals/keymatrix.p1 ${OBJECTDIR}/peripherals/ports.p1 ${OBJECTDIR}/peripherals/pwmled.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/edgework.p1 ${OBJECTDIR}/modes/needy.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/modes/password/password.p1 ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 ${OBJECTDIR}/modes/wires/wires.p1 ${OBJECTDIR}/modes/keys/keys.p1 ${OBJECTDIR}/modes/simon/simon.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/modes/blank/blank.p1.d ${OBJECTDIR}/modes/bootstrap/bootstrap.p1.d ${OBJECTDIR}/modes/controller/controller.p1.d ${OBJECTDIR}/peripherals/timer/segment.p1.d ${OBJECTDIR}/peripherals/keymatrix.p1.d ${OBJECTDIR}/peripherals/ports.p1.d ${OBJECTDIR}/peripherals/pwmled.p1.d ${OBJECTDIR}/main.p1.d ${OBJECTDIR}/nvm.p1.d ${OBJECTDIR}/argb.p1.d ${OBJECTDIR}/buzzer.p1.d ${OBJECTDIR}/can.p1.d ${OBJECTDIR}/tick.p1.d ${OBJECTDIR}/mode.p1.d ${OBJECTDIR}/lcd.p1.d ${OBJECTDIR}/protocol.p1.d ${OBJECTDIR}/firmware.p1.d ${OBJECTDIR}/protocol_module.p1.d ${OBJECTDIR}/protocol_firmware.p1.d ${OBJECTDIR}/status.p1.d ${OBJECTDIR}/protocol_game.p1.d ${OBJECTDIR}/interrupt.p1.d ${OBJECTDIR}/module.p1.d ${OBJECTDIR}/game.p1.d ${OBJECTDIR}/rng.p1.d ${OBJECTDIR}/edgework.p1.d ${OBJECTDIR}/modes/needy.p1.d ${OBJECTDIR}/modes/debug/debug.p1.d ${OBJECTDIR}/modes/maze/maze.p1.d ${OBJECTDIR}/modes/password/password.p1.d ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d ${OBJECTDIR}/modes/wires/wires.p1.d ${OBJECTDIR}/modes/keys/keys.p1.d ${OBJECTDIR}/modes/simon/simon.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/modes/password/password.p1 ${OBJECTDIR}/modes/simon/simon.p1 ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 ${OBJECTDIR}/modes/wires/wires.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/peripherals/keymatrix.p1 ${OBJECTDIR}/peripherals/ports.p1 ${OBJECTDIR}/peripherals/pwmled.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/edgework.p1 ${OBJECTDIR}/modes/needy.p1
+OBJECTFILES=${OBJECTDIR}/modes/blank/blank.p1 ${OBJECTDIR}/modes/bootstrap/bootstrap.p1 ${OBJECTDIR}/modes/controller/controller.p1 ${OBJECTDIR}/peripherals/timer/segment.p1 ${OBJECTDIR}/peripherals/keymatrix.p1 ${OBJECTDIR}/peripherals/ports.p1 ${OBJECTDIR}/peripherals/pwmled.p1 ${OBJECTDIR}/main.p1 ${OBJECTDIR}/nvm.p1 ${OBJECTDIR}/argb.p1 ${OBJECTDIR}/buzzer.p1 ${OBJECTDIR}/can.p1 ${OBJECTDIR}/tick.p1 ${OBJECTDIR}/mode.p1 ${OBJECTDIR}/lcd.p1 ${OBJECTDIR}/protocol.p1 ${OBJECTDIR}/firmware.p1 ${OBJECTDIR}/protocol_module.p1 ${OBJECTDIR}/protocol_firmware.p1 ${OBJECTDIR}/status.p1 ${OBJECTDIR}/protocol_game.p1 ${OBJECTDIR}/interrupt.p1 ${OBJECTDIR}/module.p1 ${OBJECTDIR}/game.p1 ${OBJECTDIR}/rng.p1 ${OBJECTDIR}/edgework.p1 ${OBJECTDIR}/modes/needy.p1 ${OBJECTDIR}/modes/debug/debug.p1 ${OBJECTDIR}/modes/maze/maze.p1 ${OBJECTDIR}/modes/password/password.p1 ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 ${OBJECTDIR}/modes/wires/wires.p1 ${OBJECTDIR}/modes/keys/keys.p1 ${OBJECTDIR}/modes/simon/simon.p1
 
 # Source Files
-SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c modes/debug/debug.c modes/maze/maze.c modes/password/password.c modes/simon/simon.c modes/whosonfirst/whosonfirst.c modes/wires/wires.c peripherals/timer/segment.c peripherals/keymatrix.c peripherals/ports.c peripherals/pwmled.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c edgework.c modes/needy.c
+SOURCEFILES=modes/blank/blank.c modes/bootstrap/bootstrap.c modes/controller/controller.c peripherals/timer/segment.c peripherals/keymatrix.c peripherals/ports.c peripherals/pwmled.c main.c nvm.c argb.c buzzer.c can.c tick.c mode.c lcd.c protocol.c firmware.c protocol_module.c protocol_firmware.c status.c protocol_game.c interrupt.c module.c game.c rng.c edgework.c modes/needy.c modes/debug/debug.c modes/maze/maze.c modes/password/password.c modes/whosonfirst/whosonfirst.c modes/wires/wires.c modes/keys/keys.c modes/simon/simon.c
 
 
 
@@ -117,54 +117,6 @@ ${OBJECTDIR}/modes/controller/controller.p1: modes/controller/controller.c  nbpr
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/controller/controller.p1 modes/controller/controller.c 
 	@-${MV} ${OBJECTDIR}/modes/controller/controller.d ${OBJECTDIR}/modes/controller/controller.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/modes/controller/controller.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/debug/debug.p1: modes/debug/debug.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/debug" 
-	@${RM} ${OBJECTDIR}/modes/debug/debug.p1.d 
-	@${RM} ${OBJECTDIR}/modes/debug/debug.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/debug/debug.p1 modes/debug/debug.c 
-	@-${MV} ${OBJECTDIR}/modes/debug/debug.d ${OBJECTDIR}/modes/debug/debug.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/debug/debug.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/maze/maze.p1: modes/maze/maze.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/maze" 
-	@${RM} ${OBJECTDIR}/modes/maze/maze.p1.d 
-	@${RM} ${OBJECTDIR}/modes/maze/maze.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/maze/maze.p1 modes/maze/maze.c 
-	@-${MV} ${OBJECTDIR}/modes/maze/maze.d ${OBJECTDIR}/modes/maze/maze.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/maze/maze.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/password/password.p1: modes/password/password.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/password" 
-	@${RM} ${OBJECTDIR}/modes/password/password.p1.d 
-	@${RM} ${OBJECTDIR}/modes/password/password.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/password/password.p1 modes/password/password.c 
-	@-${MV} ${OBJECTDIR}/modes/password/password.d ${OBJECTDIR}/modes/password/password.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/password/password.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/simon/simon.p1: modes/simon/simon.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/simon" 
-	@${RM} ${OBJECTDIR}/modes/simon/simon.p1.d 
-	@${RM} ${OBJECTDIR}/modes/simon/simon.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/simon/simon.p1 modes/simon/simon.c 
-	@-${MV} ${OBJECTDIR}/modes/simon/simon.d ${OBJECTDIR}/modes/simon/simon.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/simon/simon.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1: modes/whosonfirst/whosonfirst.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/whosonfirst" 
-	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
-	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 modes/whosonfirst/whosonfirst.c 
-	@-${MV} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.d ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/wires/wires.p1: modes/wires/wires.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/wires" 
-	@${RM} ${OBJECTDIR}/modes/wires/wires.p1.d 
-	@${RM} ${OBJECTDIR}/modes/wires/wires.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/wires/wires.p1 modes/wires/wires.c 
-	@-${MV} ${OBJECTDIR}/modes/wires/wires.d ${OBJECTDIR}/modes/wires/wires.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/wires/wires.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 ${OBJECTDIR}/peripherals/timer/segment.p1: peripherals/timer/segment.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/peripherals/timer" 
@@ -358,6 +310,62 @@ ${OBJECTDIR}/modes/needy.p1: modes/needy.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/modes/needy.d ${OBJECTDIR}/modes/needy.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/modes/needy.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
+${OBJECTDIR}/modes/debug/debug.p1: modes/debug/debug.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/debug" 
+	@${RM} ${OBJECTDIR}/modes/debug/debug.p1.d 
+	@${RM} ${OBJECTDIR}/modes/debug/debug.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/debug/debug.p1 modes/debug/debug.c 
+	@-${MV} ${OBJECTDIR}/modes/debug/debug.d ${OBJECTDIR}/modes/debug/debug.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/debug/debug.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/maze/maze.p1: modes/maze/maze.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/maze" 
+	@${RM} ${OBJECTDIR}/modes/maze/maze.p1.d 
+	@${RM} ${OBJECTDIR}/modes/maze/maze.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/maze/maze.p1 modes/maze/maze.c 
+	@-${MV} ${OBJECTDIR}/modes/maze/maze.d ${OBJECTDIR}/modes/maze/maze.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/maze/maze.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/password/password.p1: modes/password/password.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/password" 
+	@${RM} ${OBJECTDIR}/modes/password/password.p1.d 
+	@${RM} ${OBJECTDIR}/modes/password/password.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/password/password.p1 modes/password/password.c 
+	@-${MV} ${OBJECTDIR}/modes/password/password.d ${OBJECTDIR}/modes/password/password.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/password/password.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1: modes/whosonfirst/whosonfirst.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/whosonfirst" 
+	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
+	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 modes/whosonfirst/whosonfirst.c 
+	@-${MV} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.d ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/wires/wires.p1: modes/wires/wires.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/wires" 
+	@${RM} ${OBJECTDIR}/modes/wires/wires.p1.d 
+	@${RM} ${OBJECTDIR}/modes/wires/wires.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/wires/wires.p1 modes/wires/wires.c 
+	@-${MV} ${OBJECTDIR}/modes/wires/wires.d ${OBJECTDIR}/modes/wires/wires.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/wires/wires.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/keys/keys.p1: modes/keys/keys.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/keys" 
+	@${RM} ${OBJECTDIR}/modes/keys/keys.p1.d 
+	@${RM} ${OBJECTDIR}/modes/keys/keys.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/keys/keys.p1 modes/keys/keys.c 
+	@-${MV} ${OBJECTDIR}/modes/keys/keys.d ${OBJECTDIR}/modes/keys/keys.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/keys/keys.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/simon/simon.p1: modes/simon/simon.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/simon" 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c  -D__DEBUG=1   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/simon/simon.p1 modes/simon/simon.c 
+	@-${MV} ${OBJECTDIR}/modes/simon/simon.d ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/simon/simon.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
 else
 ${OBJECTDIR}/modes/blank/blank.p1: modes/blank/blank.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/modes/blank" 
@@ -382,54 +390,6 @@ ${OBJECTDIR}/modes/controller/controller.p1: modes/controller/controller.c  nbpr
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/controller/controller.p1 modes/controller/controller.c 
 	@-${MV} ${OBJECTDIR}/modes/controller/controller.d ${OBJECTDIR}/modes/controller/controller.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/modes/controller/controller.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/debug/debug.p1: modes/debug/debug.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/debug" 
-	@${RM} ${OBJECTDIR}/modes/debug/debug.p1.d 
-	@${RM} ${OBJECTDIR}/modes/debug/debug.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/debug/debug.p1 modes/debug/debug.c 
-	@-${MV} ${OBJECTDIR}/modes/debug/debug.d ${OBJECTDIR}/modes/debug/debug.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/debug/debug.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/maze/maze.p1: modes/maze/maze.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/maze" 
-	@${RM} ${OBJECTDIR}/modes/maze/maze.p1.d 
-	@${RM} ${OBJECTDIR}/modes/maze/maze.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/maze/maze.p1 modes/maze/maze.c 
-	@-${MV} ${OBJECTDIR}/modes/maze/maze.d ${OBJECTDIR}/modes/maze/maze.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/maze/maze.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/password/password.p1: modes/password/password.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/password" 
-	@${RM} ${OBJECTDIR}/modes/password/password.p1.d 
-	@${RM} ${OBJECTDIR}/modes/password/password.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/password/password.p1 modes/password/password.c 
-	@-${MV} ${OBJECTDIR}/modes/password/password.d ${OBJECTDIR}/modes/password/password.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/password/password.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/simon/simon.p1: modes/simon/simon.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/simon" 
-	@${RM} ${OBJECTDIR}/modes/simon/simon.p1.d 
-	@${RM} ${OBJECTDIR}/modes/simon/simon.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/simon/simon.p1 modes/simon/simon.c 
-	@-${MV} ${OBJECTDIR}/modes/simon/simon.d ${OBJECTDIR}/modes/simon/simon.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/simon/simon.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1: modes/whosonfirst/whosonfirst.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/whosonfirst" 
-	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
-	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 modes/whosonfirst/whosonfirst.c 
-	@-${MV} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.d ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
-	
-${OBJECTDIR}/modes/wires/wires.p1: modes/wires/wires.c  nbproject/Makefile-${CND_CONF}.mk 
-	@${MKDIR} "${OBJECTDIR}/modes/wires" 
-	@${RM} ${OBJECTDIR}/modes/wires/wires.p1.d 
-	@${RM} ${OBJECTDIR}/modes/wires/wires.p1 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/wires/wires.p1 modes/wires/wires.c 
-	@-${MV} ${OBJECTDIR}/modes/wires/wires.d ${OBJECTDIR}/modes/wires/wires.p1.d 
-	@${FIXDEPS} ${OBJECTDIR}/modes/wires/wires.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 ${OBJECTDIR}/peripherals/timer/segment.p1: peripherals/timer/segment.c  nbproject/Makefile-${CND_CONF}.mk 
 	@${MKDIR} "${OBJECTDIR}/peripherals/timer" 
@@ -622,6 +582,62 @@ ${OBJECTDIR}/modes/needy.p1: modes/needy.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/needy.p1 modes/needy.c 
 	@-${MV} ${OBJECTDIR}/modes/needy.d ${OBJECTDIR}/modes/needy.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/modes/needy.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/debug/debug.p1: modes/debug/debug.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/debug" 
+	@${RM} ${OBJECTDIR}/modes/debug/debug.p1.d 
+	@${RM} ${OBJECTDIR}/modes/debug/debug.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/debug/debug.p1 modes/debug/debug.c 
+	@-${MV} ${OBJECTDIR}/modes/debug/debug.d ${OBJECTDIR}/modes/debug/debug.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/debug/debug.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/maze/maze.p1: modes/maze/maze.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/maze" 
+	@${RM} ${OBJECTDIR}/modes/maze/maze.p1.d 
+	@${RM} ${OBJECTDIR}/modes/maze/maze.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/maze/maze.p1 modes/maze/maze.c 
+	@-${MV} ${OBJECTDIR}/modes/maze/maze.d ${OBJECTDIR}/modes/maze/maze.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/maze/maze.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/password/password.p1: modes/password/password.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/password" 
+	@${RM} ${OBJECTDIR}/modes/password/password.p1.d 
+	@${RM} ${OBJECTDIR}/modes/password/password.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/password/password.p1 modes/password/password.c 
+	@-${MV} ${OBJECTDIR}/modes/password/password.d ${OBJECTDIR}/modes/password/password.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/password/password.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1: modes/whosonfirst/whosonfirst.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/whosonfirst" 
+	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
+	@${RM} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1 modes/whosonfirst/whosonfirst.c 
+	@-${MV} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.d ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/whosonfirst/whosonfirst.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/wires/wires.p1: modes/wires/wires.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/wires" 
+	@${RM} ${OBJECTDIR}/modes/wires/wires.p1.d 
+	@${RM} ${OBJECTDIR}/modes/wires/wires.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/wires/wires.p1 modes/wires/wires.c 
+	@-${MV} ${OBJECTDIR}/modes/wires/wires.d ${OBJECTDIR}/modes/wires/wires.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/wires/wires.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/keys/keys.p1: modes/keys/keys.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/keys" 
+	@${RM} ${OBJECTDIR}/modes/keys/keys.p1.d 
+	@${RM} ${OBJECTDIR}/modes/keys/keys.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/keys/keys.p1 modes/keys/keys.c 
+	@-${MV} ${OBJECTDIR}/modes/keys/keys.d ${OBJECTDIR}/modes/keys/keys.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/keys/keys.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/modes/simon/simon.p1: modes/simon/simon.c  nbproject/Makefile-${CND_CONF}.mk 
+	@${MKDIR} "${OBJECTDIR}/modes/simon" 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${RM} ${OBJECTDIR}/modes/simon/simon.p1 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -mcpu=$(MP_PROCESSOR_OPTION) -c   -mdfp="${DFP_DIR}/xc8"  -fno-short-double -fno-short-float -memi=wordwrite -mrom=0-fbff -O2 -fasmfile -maddrqual=ignore -xassembler-with-cpp -mwarn=-3 -Wa,-a -DXPRJ_default=$(CND_CONF)  -msummary=-psect,-class,+mem,-hex,-file  -ginhx032 -Wl,--data-init -mno-keep-startup -mno-download -mdefault-config-bits $(COMPARISON_BUILD)  -std=c99 -gdwarf-3 -mstack=compiled:auto:auto:auto     -o ${OBJECTDIR}/modes/simon/simon.p1 modes/simon/simon.c 
+	@-${MV} ${OBJECTDIR}/modes/simon/simon.d ${OBJECTDIR}/modes/simon/simon.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/modes/simon/simon.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 
