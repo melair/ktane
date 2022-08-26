@@ -131,10 +131,11 @@ void wires_service_setup(bool first) {
         /* Mark all wires required initially. */
         for (uint8_t i = 0; i < WIRES_COUNT; i++) {
             if (mode_data.wires.wires[i].wiretype != NO_WIRE) { 
-               current_wires++;
+                current_wires++;
                 mode_data.wires.wires[i].required = true;
                 mode_data.wires.wires[i].updated = 1;
                 mode_data.wires.wires[i].cutneeded = 0;
+                mode_data.wires.wires[i].cut = 0;
             }            
         }
 
@@ -447,9 +448,14 @@ void wires_service_running(bool first) {
         if (mode_data.wires.wires[i].updated == 1) {
             mode_data.wires.wires[i].updated = 0;
 
-            /* If a new wire was added illegally, or it was CUT incorrectly. */
-            if (mode_data.wires.wires[i].wiretype != NO_WIRE || !mode_data.wires.wires[i].cutneeded) {
-                game_module_strike(1);
+            /* Was a new wire just cut? */
+            if (mode_data.wires.wires[1].required && mode_data.wires.wires[i].wiretype == NO_WIRE && !mode_data.wires.wires[i].cut) {
+                mode_data.wires.wires[i].cut = 1;
+                
+                /* If it should not have been cut, then strike. */
+                if (!mode_data.wires.wires[i].cutneeded) {
+                    game_module_strike(1);
+                }
             }
         }
 

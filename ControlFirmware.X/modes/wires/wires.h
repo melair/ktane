@@ -17,8 +17,10 @@ typedef struct {
     struct {
         unsigned required       :1;
         unsigned updated        :1;
+        
         unsigned cutneeded      :1;
-                
+        unsigned cut            :1;
+        
         unsigned light_left     :1;
         unsigned light_right    :1;
                 
