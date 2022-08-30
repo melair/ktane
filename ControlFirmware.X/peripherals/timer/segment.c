@@ -25,7 +25,7 @@
  * G  = 0b01000000
  * DP = 0b00010000
  */
-const uint8_t characters[28] = { 
+const uint8_t characters[29] = { 
     0b00000000, // SPACE
     0b10101111, // 0
     0b10100000, // 1
@@ -54,6 +54,7 @@ const uint8_t characters[28] = {
     0b10101001, // ||
     0b00001001, // |
     0b00010000, // .
+    0b01000100, // = (Lower Two Horizontal)
 };
 
 #define DIGIT0  0b00010000

@@ -16,6 +16,7 @@
 #include "argb.h"
 #include "buzzer.h"
 #include "can.h"
+#include "edgework.h"
 #include "firmware.h"
 #include "game.h"
 #include "interrupt.h"
@@ -151,6 +152,9 @@ void main(void) {
         
         /* Service status LED. */
         status_service();
+        
+        /* Service edgework. */
+        edgework_service();
         
         /* Service the mode. */
         mode_service();   

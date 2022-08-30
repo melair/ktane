@@ -4,7 +4,7 @@
 #include "../module.h"
 
 bool needy_all_other_modules_complete(void) {
-        for (uint8_t i = 0; i < MODULE_COUNT; i++) {
+    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
         module_game_t *that_module = module_get_game(i);
         
         if (that_module == NULL) {

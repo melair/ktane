@@ -21,7 +21,7 @@ asm("GLOBAL _firmware_flash");
 #ifdef __DEBUG
 const uint16_t firmware_version = INVALID_FIRMWARE_VERSION;
 #else
-const uint16_t firmware_version = 0x0037;
+const uint16_t firmware_version = 0x0044;
 #endif
 
 /* CRC32 checksum of firmware, first 63kb of program memory. */

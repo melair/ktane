@@ -8,7 +8,7 @@ void segment_service(void);
 void segment_set_digit(uint8_t digit, uint8_t value);
 void segment_set_colon(bool on);
 
-extern const uint8_t characters[28];
+extern const uint8_t characters[29];
 
 #define DIGIT_SPACE         0
 #define DIGIT_0             1
@@ -39,6 +39,7 @@ extern const uint8_t characters[28];
 #define DIGIT_DOUBLE_PIPE   25
 #define DIGIT_LEFT_PIPE     26
 #define DIGIT_PERIOD        27
+#define DIGIT_EQUALS        28
 
 #define SEGMENT_A  0b00000010
 #define SEGMENT_B  0b10000000

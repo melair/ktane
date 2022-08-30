@@ -645,10 +645,16 @@ const uint8_t *hex_map = "0123456789ABCDEF";
  */
 void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint8_t number) {    
     for (uint8_t i = 0; i < digits; i++) {
-        uint8_t remain = number % 10;
-        number = (number - remain) / 10;
+        uint8_t displayNumber = 0;
+        uint8_t remaining = digits - (i+1);
         
-        lcd_update(row, (col+digits)-(i+1), 1, &hex_map[number]); 
+        if (remaining == 0) {
+            displayNumber = number % 10;
+        } else {
+            displayNumber = number / 10;            
+        }
+        
+        lcd_update(row, col+i, 1, &hex_map[displayNumber]); 
     }
 }
 

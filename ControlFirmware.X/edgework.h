@@ -3,6 +3,8 @@
 
 typedef uint8_t indicator_t;
 
+#define MAX_EDGEWORK        7
+
 #define INDICATOR_SND ((indicator_t) 0)
 #define INDICATOR_CLR ((indicator_t) 1)
 #define INDICATOR_CAR ((indicator_t) 2)
@@ -29,11 +31,14 @@ typedef uint8_t port_t;
 #define PORT_MAX        PORT_RCA
 
 void edgework_generate(uint32_t seed, uint8_t difficulty);
-void edgework_display(void);
 bool edgework_indicator_present(indicator_t ind, bool lit);
 uint8_t edgework_battery_count(void);
 bool edgework_serial_vowel(void);
 uint8_t edgework_serial_last_digit(void);
 bool edgework_port_present(port_t port);
+uint8_t edgework_twofa_digit(uint8_t digit);
+bool edgework_twofa_present(void);
+void edgework_service(void);
+void edgework_display(uint8_t i);
 
 #endif	/* EDGEWORK_H */
