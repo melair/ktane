@@ -14,7 +14,7 @@ module_game_t *module_get_game(uint8_t idx);
 module_game_t *module_get_game_by_id(uint8_t id);
 
 /* Total number of modules that can be part of the network. */
-#define MODULE_COUNT 16
+#define MODULE_COUNT 24
 
 #define MODULE_ERROR_NONE                       0x0000
 #define MODULE_ERROR_CAN_ID_CONFLICT            0x0010

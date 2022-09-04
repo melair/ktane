@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define MODE_COUNT 12
+#define MODE_COUNT 13
 
 #define MODE_BLANK               0
 #define MODE_BOOTSTRAP           1
