@@ -5,7 +5,7 @@
 #include "protocol_game.h"
 #include "protocol_module.h"
 #include "protocol_firmware.h"
-#include "protocol_can_address.h"
+#include "protocol_network.h"
 #include "can.h"
 #include "mode.h"
 #include "tick.h"
@@ -23,8 +23,8 @@
  */
 void protocol_receive(uint8_t prefix, uint8_t id, uint8_t size, uint8_t *payload) {
     /* CAN addressing messages must always be handled, especially if it conflicts. */
-    if (prefix == PREFIX_CAN_ADDRESS) {
-        protocol_can_address_receive(id, size, payload);
+    if (prefix == PREFIX_NETWORK) {
+        protocol_network_receive(id, size, payload);
         return;
     }
     

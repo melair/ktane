@@ -8,7 +8,7 @@
 #include "nvm.h"
 #include "argb.h"
 #include "protocol.h"
-#include "protocol_can_address.h"
+#include "protocol_network.h"
 #include "serial.h"
 #include "rng.h"
 #include "tick.h"
@@ -260,7 +260,7 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
         return;
     }
     
-    if (!can_ready() && prefix != PREFIX_CAN_ADDRESS) {
+    if (!can_ready() && prefix != PREFIX_NETWORK) {
         stats.tx_not_ready++;
         return;
     }
@@ -368,7 +368,7 @@ void can_address_service(void) {
             can_address_phase++;
             
             can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);   
-            protocol_can_address_announcement_send();
+            protocol_network_announcement_send();
         }
     } else {
         if (can_address_clear_tick <= tick_value) {
@@ -376,7 +376,7 @@ void can_address_service(void) {
             
             if (can_address_phase <= CAN_ADDRESS_CHECKS) {
                 can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);        
-                protocol_can_address_announcement_send();
+                protocol_network_announcement_send();
             }
         }
     }
@@ -399,7 +399,7 @@ void can_address_conflict(uint8_t id) {
  */
 void can_address_check(uint8_t id) {
     if (id == can_identifier) {
-        protocol_can_address_nak_send();
+        protocol_network_nak_send();
         
         can_address_conflict(id);     
     }

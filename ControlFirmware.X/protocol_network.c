@@ -2,13 +2,13 @@
 #include <stdint.h>
 #include "module.h"
 #include "protocol.h"
-#include "protocol_can_address.h"
+#include "protocol_network.h"
 #include "serial.h"
 #include "can.h"
 
 /* Local function prototypes. */
-void protocol_can_address_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
-void protocol_can_address_nak_receive(uint8_t id, uint8_t size, uint8_t *payload);
+void protocol_network_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
+void protocol_network_nak_receive(uint8_t id, uint8_t size, uint8_t *payload);
 
 #define OPCODE_CAN_ADDRESS_ANNOUNCEMENT 0x00
 #define OPCODE_CAN_ADDRESS_NAK          0x01
@@ -20,7 +20,7 @@ void protocol_can_address_nak_receive(uint8_t id, uint8_t size, uint8_t *payload
  * @param size size of CAN payload received
  * @param payload pointer to payload
  */
-void protocol_can_address_receive(uint8_t id, uint8_t size, uint8_t *payload) {
+void protocol_network_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check, if size is 0 we can not check the opcode. */
     if (size == 0) {
         return;
@@ -29,10 +29,10 @@ void protocol_can_address_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Switch to the correct packet based on opcode in packet. */
     switch (payload[0]) {
         case OPCODE_CAN_ADDRESS_ANNOUNCEMENT:
-            protocol_can_address_announcement_receive(id, size, payload);
+            protocol_network_announcement_receive(id, size, payload);
             break;
         case OPCODE_CAN_ADDRESS_NAK:
-            protocol_can_address_nak_receive(id, size, payload);
+            protocol_network_nak_receive(id, size, payload);
             break;
         default:
             /* Alert an unknown opcode has been received. */
@@ -58,7 +58,7 @@ void protocol_can_address_receive(uint8_t id, uint8_t size, uint8_t *payload) {
 /**
  * Send a CAN address announcement packet.
  */
-void protocol_can_address_announcement_send(void) {
+void protocol_network_announcement_send(void) {
     uint8_t payload[5];
     
     uint32_t serial = serial_get();
@@ -69,7 +69,7 @@ void protocol_can_address_announcement_send(void) {
     payload[3] = (serial >> 8) & 0xff;
     payload[4] = serial & 0xff;
 
-    can_send(PREFIX_CAN_ADDRESS, sizeof(payload), &payload[0]);
+    can_send(PREFIX_NETWORK, sizeof(payload), &payload[0]);
 }
 
 /**
@@ -79,7 +79,7 @@ void protocol_can_address_announcement_send(void) {
  * @param size size of CAN payload received
  * @param payload pointer to payload
  */
-void protocol_can_address_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
+void protocol_network_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
     /* Safety check, if size is < 4 there is no mode. */
     if (size < 5) {
         return;
@@ -107,7 +107,7 @@ void protocol_can_address_announcement_receive(uint8_t id, uint8_t size, uint8_t
 /**
  * Send a CAN address nak packet.
  */
-void protocol_can_address_nak_send(void) {
+void protocol_network_nak_send(void) {
     uint8_t payload[5];
     
     uint32_t serial = serial_get();
@@ -118,7 +118,7 @@ void protocol_can_address_nak_send(void) {
     payload[3] = (serial >> 8) & 0xff;
     payload[4] = serial & 0xff;
 
-    can_send(PREFIX_CAN_ADDRESS, sizeof(payload), &payload[0]);
+    can_send(PREFIX_NETWORK, sizeof(payload), &payload[0]);
 }
 
 /**
@@ -128,7 +128,7 @@ void protocol_can_address_nak_send(void) {
  * @param size size of CAN payload received
  * @param payload pointer to payload
  */
-void protocol_can_address_nak_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
+void protocol_network_nak_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
     /* Safety check, if size is < 4 there is no mode. */
     if (size < 5) {
         return;
