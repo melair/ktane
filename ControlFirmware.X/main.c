@@ -26,6 +26,7 @@
 #include "nvm.h"
 #include "peripherals/timer/segment.h"
 #include "protocol_module.h"
+#include "serial.h"
 #include "status.h"
 #include "tick.h"
 #include "rng.h"
@@ -97,6 +98,9 @@ void main(void) {
     /* Initialise ARGB. */
     argb_initialise();
     
+    /* Initialise serial number. */
+    serial_initialise();
+    
     /* Initialise CAN bus. */
     can_initialise();
 
@@ -114,10 +118,7 @@ void main(void) {
     
     /* Lock PPS during main execution. */
     pps_lock();      
-  
-    /* Set default LCD text. */
-    lcd_default();
-    
+      
     /* Beep on start. */
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);
     

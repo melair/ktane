@@ -12,6 +12,7 @@
 #include "lcd.h"
 #include "status.h"
 #include "game.h"
+#include "serial.h"
 
 /* Number of errors in each module to track. */
 #define ERROR_COUNT  8
@@ -47,6 +48,7 @@ typedef struct {
     uint8_t         mode;
     uint16_t        firmware;
     uint32_t        last_seen;
+    uint32_t        serial;
     
     module_error_t  errors[ERROR_COUNT];              
     module_game_t   game;
@@ -68,7 +70,7 @@ uint8_t module_determine_error_state(void);
 /**
  * Initialise the module database, store self and set up next announcement time.
  */
-void module_initialise(void) {        
+void module_initialise(void) {    
     /* Init module structure. */
     for (uint8_t i = 0; i < MODULE_COUNT; i++) {
         modules[i].flags.INUSE = 0;
@@ -88,13 +90,24 @@ void module_initialise(void) {
     modules[0].flags.LOST = 0;
     modules[0].id = can_get_id();
     modules[0].mode = mode_get();
-    
+    modules[0].serial = serial_get();
+   
     /* Set next module announce time, offsetting with modulus of CAN ID to 
      * attempt to avoid collisions. */
     next_announce = tick_value + ANNOUNCE_PERIOD + (can_get_id() & 0x0f);
     
     /* Set next lost check. */
     next_lost_check = LOST_CHECK_PERIOD;
+}
+
+/**
+ * Set this modules CAN id in the module record.
+ * 
+ * @param id new can ID
+ */
+void module_set_self_can_id(uint8_t id) {
+    modules[0].id = id;
+    modules[0].game.id = id;
 }
 
 /**
@@ -121,6 +134,11 @@ void module_errors_clear(uint8_t id) {
  * lost modules.
  */
 void module_service(void) {   
+    /* If module is still initing, then don't do anything. */
+    if (game.state == GAME_INIT) {
+        return;
+    }
+    
     /* Announce self. */
     if (tick_value >= next_announce) {
         /* Set next announce time. */
@@ -236,8 +254,10 @@ uint8_t module_find_or_create(uint8_t id) {
  * 
  * @param id CAN id
  * @param mode modules mode
+ * @param firmware firmware version
+ * @param serial serial number of the module
  */
-void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
+void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial) {
     uint8_t idx = module_find_or_create(id);
     
     if (idx == 0xff) {
@@ -250,6 +270,7 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware) {
     
     modules[idx].mode = mode;
     modules[idx].firmware = firmware;
+    modules[idx].serial = serial;
     modules[idx].last_seen = tick_value;
     modules[idx].flags.LOST = 0;       
     modules[idx].game.puzzle = (mode >= MODE_PUZZLE_DEBUG);

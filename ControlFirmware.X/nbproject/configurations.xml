@@ -67,6 +67,8 @@
       <itemPath>game.h</itemPath>
       <itemPath>rng.h</itemPath>
       <itemPath>edgework.h</itemPath>
+      <itemPath>serial.h</itemPath>
+      <itemPath>protocol_can_address.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -139,6 +141,8 @@
       <itemPath>game.c</itemPath>
       <itemPath>rng.c</itemPath>
       <itemPath>edgework.c</itemPath>
+      <itemPath>serial.c</itemPath>
+      <itemPath>protocol_can_address.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

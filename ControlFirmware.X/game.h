@@ -20,11 +20,14 @@ void game_module_solved(bool solved);
 void game_module_strike(uint8_t strikes);
 void game_module_update(uint8_t id, bool ready, bool solved);
 
-#define GAME_IDLE       0
-#define GAME_SETUP      1
-#define GAME_START      2
-#define GAME_RUNNING    3
-#define GAME_OVER       4
+#define GAME_STATE_COUNT 6
+
+#define GAME_INIT       0
+#define GAME_IDLE       1
+#define GAME_SETUP      2
+#define GAME_START      3
+#define GAME_RUNNING    4
+#define GAME_OVER       5
 
 #define TIME_RATIO_1        0
 #define TIME_RATIO_1_25     1

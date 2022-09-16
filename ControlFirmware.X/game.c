@@ -7,6 +7,7 @@
 #include "mode.h"
 #include "status.h"
 #include "can.h"
+#include "lcd.h"
 #include "edgework.h"
 #include "protocol_game.h"
 
@@ -15,6 +16,7 @@ game_t game;
 module_game_t *this_module;
 
 /* Local function prototypes. */
+void game_service_init(void);
 void game_service_idle(void);
 void game_service_start(void);
 void game_service_setup(void);
@@ -26,7 +28,7 @@ uint8_t game_find_or_create_module(uint8_t id);
  * Initialise the game state.
  */
 void game_initialise(void) {
-    game.state = GAME_IDLE;
+    game.state = GAME_INIT;
     this_module = module_get_game(0);
 }
 
@@ -41,6 +43,8 @@ void game_service(void) {
     bool is_first = game.state_first;
 
     switch(game.state) {
+        case GAME_INIT:
+            game_service_init();
         case GAME_IDLE:
             game_service_idle();
             break;
@@ -232,6 +236,17 @@ void game_module_solved(bool solved) {
 void game_module_strike(uint8_t strikes) {
     protocol_game_module_strike_send(strikes);
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 750);
+}
+
+/**
+ * Service a game that is initing.
+ */
+void game_service_init(void) {
+    if (can_ready()) {
+        module_set_self_can_id(can_get_id());
+        game_set_state(GAME_IDLE, RESULT_NONE);    
+        lcd_default();
+    }
 }
 
 /**

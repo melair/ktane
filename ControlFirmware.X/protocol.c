@@ -5,6 +5,7 @@
 #include "protocol_game.h"
 #include "protocol_module.h"
 #include "protocol_firmware.h"
+#include "protocol_can_address.h"
 #include "can.h"
 #include "mode.h"
 #include "tick.h"
@@ -21,6 +22,12 @@
  * @param payload pointer to payload
  */
 void protocol_receive(uint8_t prefix, uint8_t id, uint8_t size, uint8_t *payload) {
+    /* CAN addressing messages must always be handled, especially if it conflicts. */
+    if (prefix == PREFIX_CAN_ADDRESS) {
+        protocol_can_address_receive(id, size, payload);
+        return;
+    }
+    
     /* Detect a CAN ID conflict, report as an error. This ignores the packet, 
      * this might result in a desync of the game - but it's a critical error
      * and we can not continue.*/
@@ -28,7 +35,7 @@ void protocol_receive(uint8_t prefix, uint8_t id, uint8_t size, uint8_t *payload
         module_error_raise(MODULE_ERROR_CAN_ID_CONFLICT, true);
         return;
     }   
-    
+         
     /* Switch to correct set of op codes based on protocol prefix. */
     switch (prefix) {
         case PREFIX_MODULE:

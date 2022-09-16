@@ -6,6 +6,7 @@
 #include "firmware.h"
 #include "mode.h"
 #include "can.h"
+#include "serial.h"
 #include "status.h"
 
 /* Local function prototypes. */
@@ -77,15 +78,20 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
  * Send a module announcement packet.
  */
 void protocol_module_announcement_send(void) {
-    uint8_t payload[5];
+    uint8_t payload[9];
     
     uint16_t fw = firmware_get_version();
+    uint32_t serial = serial_get();
     
     payload[0] = OPCODE_MODULE_ANNOUNCEMENT;
     payload[1] = mode_get();
     payload[2] = (fw >> 8) & 0xff;
     payload[3] = fw & 0xff;
     payload[4] = 0x00;
+    payload[5] = (serial >> 24) & 0xff;
+    payload[6] = (serial >> 16) & 0xff;
+    payload[7] = (serial >> 8) & 0xff;
+    payload[8] = serial & 0xff;
     
     if (announce_reset) {
         announce_reset = false;
@@ -104,19 +110,20 @@ void protocol_module_announcement_send(void) {
  */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
     /* Safety check, if size is < 4 there is no mode. */
-    if (size < 5) {
+    if (size < 9) {
         return;
     }              
 
     uint8_t mode = payload[1];    
     uint16_t fw = (uint16_t) ((payload[2] << 8) | payload[3]);
     bool reset = (payload[4] & 0b10000000);
+    uint32_t serial = (uint32_t) (((uint32_t) payload[5] << 24) | ((uint32_t) payload[6] << 16) | ((uint32_t) payload[7] << 8) | (uint32_t) payload[8]);
     
     if (reset) {
         module_errors_clear(id);
     }
     
-    module_seen(id, mode, fw);  
+    module_seen(id, mode, fw, serial);  
     
     if (mode == MODE_CONTROLLER) {
         firmware_check(fw);

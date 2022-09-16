@@ -8,6 +8,13 @@
 #include "nvm.h"
 #include "argb.h"
 #include "protocol.h"
+#include "protocol_can_address.h"
+#include "serial.h"
+#include "rng.h"
+#include "tick.h"
+
+#define CAN_ADDRESS_RNG_MASK 0x74926411
+#define CAN_ADDRESS_CHECKS 4
 
 /* Statistics structure for CAN bus. */
 typedef struct {
@@ -20,7 +27,10 @@ typedef struct {
     uint16_t tx_overflow;
     uint16_t rx_overflow;
     
+    uint16_t tx_not_ready;
+    
     uint16_t can_error;
+    uint16_t id_cycles;
 } can_statistics_t;
 
 /* CAN bus statistics. */
@@ -28,8 +38,15 @@ can_statistics_t stats;
 /* Devices CAN ID. */
 uint8_t can_identifier;
 
+/* CAN address seed. */
+uint32_t can_address_seed;
+uint8_t can_address_phase;
+uint32_t can_address_clear_tick;
+uint8_t can_address_eeprom;
+
 /* Local function prototypes. */
 bool can_change_mode(uint8_t mode);
+void can_address_service(void);
 
 /**
  * Initialise the CAN interface, used to communicate and coordinate modules.
@@ -37,8 +54,19 @@ bool can_change_mode(uint8_t mode);
  * 500Kbs baud, 20 byte payload.
  */
 void can_initialise(void) {
-    /* Load this modules CAN ID from NVM. */
-    can_identifier = nvm_read(EEPROM_LOC_CAN_ID);
+    /* Set our address to no address. */
+    can_identifier = CAN_NO_ADDRESS;
+    
+    /* Retrieve the CAN EEPROM address. */
+    can_address_eeprom = nvm_read(EEPROM_LOC_CAN_ID);
+    if (can_address_eeprom == 0x00) {
+        can_address_eeprom = CAN_NO_ADDRESS;
+    }
+    
+    /* Set our address seed, our serial number. This should reduce/eliminate
+     * conflicts. */
+    can_address_seed = serial_get();
+    can_address_phase = 0;
     
     /* Configure CANTX/CANRX pins, RB0: RX, RB1: TX. */
     TRISBbits.TRISB0 = 1;
@@ -232,6 +260,11 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
         return;
     }
     
+    if (!can_ready() && prefix != PREFIX_CAN_ADDRESS) {
+        stats.tx_not_ready++;
+        return;
+    }
+    
     /* Check to see if TX FIFO is full. */
     if (C1TXQSTALbits.TXQNIF == 0) {
         stats.tx_overflow++;
@@ -300,6 +333,76 @@ void can_service(void) {
         /* Increment the buffer. */
         C1FIFOCON1Hbits.UINC = 1;
     }   
+    
+    if (can_address_phase <= CAN_ADDRESS_CHECKS) {
+        can_address_service();
+        
+        if (can_ready()) {
+            if (can_identifier != can_address_eeprom) {
+                nvm_write(EEPROM_LOC_CAN_ID, can_identifier);
+            }
+        }
+    }
+}
+
+/**
+ * Service CAN address selection process.
+ */
+void can_address_service(void) {
+    if (can_address_phase == 0) {
+        if (can_address_eeprom != CAN_NO_ADDRESS && can_identifier == CAN_NO_ADDRESS) {
+            can_identifier = can_address_eeprom;
+        } else {
+            can_identifier = CAN_NO_ADDRESS;
+
+            while(can_identifier == CAN_NO_ADDRESS) {
+                can_identifier = rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK);            
+            }
+        }
+              
+        can_address_clear_tick = tick_value + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);        
+        can_address_phase++;
+        stats.id_cycles++;       
+    } if (can_address_phase == 1) {
+        if (can_address_clear_tick <= tick_value) {
+            can_address_phase++;
+            
+            can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);   
+            protocol_can_address_announcement_send();
+        }
+    } else {
+        if (can_address_clear_tick <= tick_value) {
+            can_address_phase++;
+            
+            if (can_address_phase <= CAN_ADDRESS_CHECKS) {
+                can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);        
+                protocol_can_address_announcement_send();
+            }
+        }
+    }
+}
+
+/**
+ * Handle receiving notification that our candidate is in use.
+ */
+void can_address_conflict(uint8_t id) {
+    if (id == can_identifier) {
+        /* Just reset our progress to selection if we're not decided. */
+        if (can_address_phase <= CAN_ADDRESS_CHECKS) {
+            can_address_phase = 0;
+        }
+    }
+}
+
+/**
+ * Handle an announcement and see if it's in conflict.
+ */
+void can_address_check(uint8_t id) {
+    if (id == can_identifier) {
+        protocol_can_address_nak_send();
+        
+        can_address_conflict(id);     
+    }
 }
 
 /**
@@ -309,4 +412,13 @@ void can_service(void) {
  */
 uint8_t can_get_id(void) {
     return can_identifier; 
+}
+
+/**
+ * Return true if the CAN bus is not ready, i.e. has no address id yet.
+ * 
+ * @return true if read.
+ */
+bool can_ready(void) {
+    return can_address_phase > CAN_ADDRESS_CHECKS;
 }

@@ -6,7 +6,6 @@
 #include "nvm.h"
 #include "tick.h"
 #include "game.h"
-#include "modes/blank/blank.h"
 #include "modes/bootstrap/bootstrap.h"
 #include "modes/controller/controller.h"
 #include "modes/debug/debug.h"
@@ -30,9 +29,9 @@ mode_data_t mode_data;
 uint8_t configured_mode;
 
 /* Function pointers to each stage. */
-void (*mode_service_state_function[5])(bool);
+void (*mode_service_state_function[GAME_STATE_COUNT])(bool);
 /* Pointers to tick variable to use to rate limit call. */
-bool *mode_service_tick[5];
+bool *mode_service_tick[GAME_STATE_COUNT];
 /* Function pointer to service every loop. */
 void (*mode_service_always_function)(bool);
 
@@ -46,7 +45,6 @@ mode_names_t mode_names[MODE_COUNT+1] = {
     { 0xff, "Unknown" },
     { MODE_BLANK, "Blank" },
     { MODE_BOOTSTRAP, "Bootstrap" },
-    { MODE_UNCONFIGURED, "Unconfigured" },
     { MODE_CONTROLLER, "Controller" },
     { MODE_CONTROLLER_STANDBY, "Standby Controller" },
     { MODE_PUZZLE_DEBUG, "Debug" },
@@ -151,7 +149,7 @@ void mode_initialise(void) {
         configured_mode = MODE_BOOTSTRAP;
     }
     
-    for (uint8_t i = 0; i < 5; i++) {
+    for (uint8_t i = 0; i < GAME_STATE_COUNT; i++) {
         mode_service_state_function[i] = mode_unconfigured_state;
     }
     
@@ -161,14 +159,10 @@ void mode_initialise(void) {
         /* Module is completely blank, do nothing. */
         default:
         case MODE_BLANK:
-            blank_initialise();
             break;
         /* Module is in bootstrap, A0/A1 shorted. */
         case MODE_BOOTSTRAP:
             bootstrap_initialise();
-            break;
-        /* Module has no mode, but has been bootstrapped. */
-        case MODE_UNCONFIGURED:
             break;
         /* Module is a controller. */
         case MODE_CONTROLLER:
