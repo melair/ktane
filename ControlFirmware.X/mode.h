@@ -7,7 +7,6 @@
 
 #define MODE_BLANK               0
 #define MODE_BOOTSTRAP           1
-#define MODE_UNCONFIGURED        2
 
 #define MODE_CONTROLLER          3
 #define MODE_CONTROLLER_STANDBY  4
@@ -35,6 +34,7 @@ void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 #include "modes/whosonfirst/whosonfirst.h"
 #include "modes/wires/wires.h"
 #include "modes/keys/keys.h"
+#include "modes/combination/combination.h"
 
 typedef union {
     mode_maze_t         maze;
@@ -43,6 +43,7 @@ typedef union {
     mode_whosonfirst_t  whosonfirst;
     mode_wires_t        wires;
     mode_keys_t         keys;
+    mode_combination_t  combination;
 } mode_data_t;
 
 extern mode_data_t mode_data;

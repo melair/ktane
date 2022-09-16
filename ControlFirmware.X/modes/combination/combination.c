@@ -26,21 +26,6 @@ void combination_setup(void);
 
 #define COMBINATION_MAX_VALUE 20
 
-/* Current display value. */
-int8_t combination_value = 0;
-/* Clockwise */
-bool combination_clockwise_traveled = false;
-/* Anticlockwise */
-bool combination_anticlockwise_traveled = false;
-/* Current stage. */
-uint8_t combination_stage = 0;
-/* Expected values */
-uint8_t combination_expected[3] = { 0, 0, 0 };
-/* Entered values, incase 2fa changes. */
-uint8_t combination_entered[2] = { 0, 0 };
-/* First direction should be clockwise. */
-bool combination_even_clockwise = false;
-
 void combination_initialise(void) {
     /* Initialise the seven segment display and encoder. */
     segment_initialise();
@@ -70,11 +55,11 @@ void combination_service_setup(bool first) {
 }
 
 void combination_setup(void){
-    combination_stage = 0;
-    combination_value = ((uint8_t) (game.module_seed & 0xff)) % COMBINATION_MAX_VALUE;
-    combination_even_clockwise = ((combination_value / 10) + (combination_value % 10)) % 3 == 0;
-    combination_clockwise_traveled = false;
-    combination_anticlockwise_traveled = false;
+    mode_data.combination.stage = 0;
+    mode_data.combination.value = ((uint8_t) (game.module_seed & 0xff)) % COMBINATION_MAX_VALUE;
+    mode_data.combination.even_clockwise = ((mode_data.combination.value / 10) + (mode_data.combination.value % 10)) % 3 == 0;
+    mode_data.combination.clockwise_traveled = false;
+    mode_data.combination.anticlockwise_traveled = false;
     
     uint8_t module_count = 0;
     uint8_t solved_count = 0;
@@ -94,8 +79,8 @@ void combination_setup(void){
     }
     
     if (!edgework_twofa_present()) {
-        combination_expected[0] = edgework_serial_last_digit() + solved_count;
-        combination_expected[1] = module_count;
+        mode_data.combination.expected[0] = edgework_serial_last_digit() + solved_count;
+        mode_data.combination.expected[1] = module_count;
     }        
 }
 
@@ -108,18 +93,18 @@ void combination_service_running(bool first) {
     
     if (delta != 0) {
         if (delta > 0) {
-            combination_clockwise_traveled = true;
+            mode_data.combination.clockwise_traveled = true;
         } else {
-            combination_anticlockwise_traveled = true;
+            mode_data.combination.anticlockwise_traveled = true;
         }
     }
     
-    combination_value += delta;
+    mode_data.combination.value += delta;
     
-    if (combination_value < 0) {
-        combination_value = COMBINATION_MAX_VALUE - 1;
-    } else if (combination_value >= COMBINATION_MAX_VALUE) {
-        combination_value = 0;
+    if (mode_data.combination.value < 0) {
+        mode_data.combination.value = COMBINATION_MAX_VALUE - 1;
+    } else if (mode_data.combination.value >= COMBINATION_MAX_VALUE) {
+        mode_data.combination.value = 0;
     }
     
     rotary_clear();
@@ -134,7 +119,7 @@ void combination_service_running(bool first) {
     /* Update segment display. */
     uint8_t edge_character = 0;
     
-    switch(combination_stage) {
+    switch(mode_data.combination.stage) {
         case 0:
             edge_character = DIGIT_THREESCORE;
             break;
@@ -146,13 +131,13 @@ void combination_service_running(bool first) {
             break;
     }
    
-    if (combination_stage == 3) {
+    if (mode_data.combination.stage == 3) {
         segment_set_digit(1, characters[0]);
         segment_set_digit(2, characters[0]);
     } else {
-        uint8_t digit = combination_value / 10;
+        uint8_t digit = mode_data.combination.value / 10;
         segment_set_digit(1, characters[1 + digit]);
-        digit = combination_value % 10;
+        digit = mode_data.combination.value % 10;
         segment_set_digit(2, characters[1 + digit]);
     }
    
@@ -162,41 +147,41 @@ void combination_service_running(bool first) {
 
 void combination_check(void) {
     if (edgework_twofa_present()) {
-        combination_expected[0] = edgework_twofa_digit(0) + edgework_twofa_digit(1);
-        combination_expected[1] = edgework_twofa_digit(4) + edgework_twofa_digit(5);
+        mode_data.combination.expected[0] = edgework_twofa_digit(0) + edgework_twofa_digit(1);
+        mode_data.combination.expected[1] = edgework_twofa_digit(4) + edgework_twofa_digit(5);
     }
          
-    combination_expected[2] = (combination_entered[0] + combination_entered[1]) % COMBINATION_MAX_VALUE;
+    mode_data.combination.expected[2] = (mode_data.combination.entered[0] + mode_data.combination.entered[1]) % COMBINATION_MAX_VALUE;
     
     bool correct = false;
     
     /* Skip and strike if both directions, or if neither. */
-    if (combination_clockwise_traveled || combination_anticlockwise_traveled) {
-        bool shouldBeClockwise = (combination_stage % 2) == (combination_even_clockwise ? 0 : 1);
+    if (mode_data.combination.clockwise_traveled || mode_data.combination.anticlockwise_traveled) {
+        bool shouldBeClockwise = (mode_data.combination.stage % 2) == (mode_data.combination.even_clockwise ? 0 : 1);
                        
         /* Skip if wrong direction, stage is 0 indexed. */
-        if ((shouldBeClockwise && combination_clockwise_traveled) || (!shouldBeClockwise && combination_anticlockwise_traveled)) {
+        if ((shouldBeClockwise && mode_data.combination.clockwise_traveled) || (!shouldBeClockwise && mode_data.combination.anticlockwise_traveled)) {
             /* If we have the correct value, great. */
-            if (combination_expected[combination_stage] == combination_value) {
-                combination_entered[combination_stage] = combination_value;
+            if (mode_data.combination.expected[mode_data.combination.stage] == mode_data.combination.value) {
+                mode_data.combination.entered[mode_data.combination.stage] = mode_data.combination.value;
                 correct = true;
             }
         }
     }
     
     if (correct) {
-        combination_stage++;
+        mode_data.combination.stage++;
     } else {
         game_module_strike(1);
-        combination_stage = 0;
-        combination_value = ((uint8_t) (game.module_seed & 0xff)) % COMBINATION_MAX_VALUE;
-        combination_even_clockwise = ((combination_value / 10) + (combination_value % 10)) % 3 == 0;        
+        mode_data.combination.stage = 0;
+        mode_data.combination.value = ((uint8_t) (game.module_seed & 0xff)) % COMBINATION_MAX_VALUE;
+        mode_data.combination.even_clockwise = ((mode_data.combination.value / 10) + (mode_data.combination.value % 10)) % 3 == 0;        
     }
     
-    combination_clockwise_traveled = false;
-    combination_anticlockwise_traveled = false;
+    mode_data.combination.clockwise_traveled = false;
+    mode_data.combination.anticlockwise_traveled = false;
     
-    if (combination_stage == 3) {
+    if (mode_data.combination.stage == 3) {
         game_module_solved(true);       
     }
 }
