@@ -90,13 +90,6 @@ uint8_t nvm_read(uint16_t addr) {
  * EEPROM will block for a period of time. This could be rewritten to use
  * the interrupt flag NVMIF.
  * 
- * Writes are likely infrequent however:
- *  - Completion of slider calibration.
- *  - New controller bus direction (usually only on start up).
- * 
- * While the EEPROM is unlocked, global interrupts are disabled for two 
- * instructions, though this is unlikely to cause any issue.
- * 
  * @param addr EEPROM relative address 0x000-0x3ff
  * @param data byte to write to EEPROM
  */
@@ -124,4 +117,61 @@ void nvm_write(uint16_t addr, uint8_t data) {
     while(NVMCON0bits.GO == 1);
 }
 
+/**
+ * Read word (16bits) from PFM.
+ * 
+ * WARNING: Function contains a loop dependent on SFR bit, though reading
+ * from EEPROM should not spin.
+ * 
+ * @param addr PFM address
+ * @return word read from program memory
+ */
+uint16_t nvm_read_pfm(uint24_t addr) {
+    /* Clear NVCON1, and set command to READ byte. */
+    NVMCON1 = 0;
+    NVMCON1bits.CMD = 0;
+    
+    /* Load address, EEPROM base is 0x380000. */
+    NVMADR = addr;
+  
+    /* Execute command, and wait until done. */
+    NVMCON0bits.GO = 1;
+    while(NVMCON0bits.GO == 1);
+    
+    /* Return read byte. */
+    return NVMDAT;
+}
 
+/**
+ * Write word (16bits) to PFM.
+ * 
+ * WARNING: Function contains a loop dependent on SFR bit, writing to the
+ * EEPROM will block for a period of time. This could be rewritten to use
+ * the interrupt flag NVMIF.
+ * 
+ * @param addr PFM address
+ * @param data word to write to program memory
+ */
+void nvm_write_pfm(uint24_t addr, uint16_t data) {
+    /* Load address. */
+    NVMADR = addr;
+           
+    /* Load byte to be written. */
+    NVMDAT = data;
+    
+    /* Clear NVCON0, NVCON1, and set command to WRITE byte. */
+    NVMCON0 = 0x00;
+    NVMCON1 = 0x03;
+    
+    /* Perform unlock procedure. */
+    __asm(" MOVLW   0x55");
+    __asm(" MOVWF   NVMLOCK");
+    __asm(" MOVLW   0xAA");
+    __asm(" MOVWF   NVMLOCK");
+    
+    /* Start operation. */
+    __asm(" BSF     NVMCON0, 0");
+         
+    /* Wait until done, this blocks for update period. */
+    while(NVMCON0bits.GO == 1);
+}

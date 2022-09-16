@@ -7,6 +7,9 @@ void nvm_initialise(void);
 uint8_t nvm_read(uint16_t addr);
 void nvm_write(uint16_t addr, uint8_t data);
 
+uint16_t nvm_read_pfm(uint24_t addr);
+void nvm_write_pfm(uint24_t addr, uint16_t data);
+
 /* PIC18F57Q84 EEPROM, 0x000-0x3ff. */
 
 #define EEPROM_LOC_VERSION_HIGH                     0x000 /* Version of EEPROM data, allowing setting of defaults. */
