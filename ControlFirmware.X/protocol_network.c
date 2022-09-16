@@ -10,8 +10,8 @@
 void protocol_network_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_network_nak_receive(uint8_t id, uint8_t size, uint8_t *payload);
 
-#define OPCODE_CAN_ADDRESS_ANNOUNCEMENT 0x00
-#define OPCODE_CAN_ADDRESS_NAK          0x01
+#define OPCODE_NETWORK_ANNOUNCEMENT 0x00
+#define OPCODE_NETWORK_NAK          0x01
 
 /**
  * Handle reception of a new packet from CAN that is for the CAN address prefix.
@@ -28,10 +28,10 @@ void protocol_network_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     
     /* Switch to the correct packet based on opcode in packet. */
     switch (payload[0]) {
-        case OPCODE_CAN_ADDRESS_ANNOUNCEMENT:
+        case OPCODE_NETWORK_ANNOUNCEMENT:
             protocol_network_announcement_receive(id, size, payload);
             break;
-        case OPCODE_CAN_ADDRESS_NAK:
+        case OPCODE_NETWORK_NAK:
             protocol_network_nak_receive(id, size, payload);
             break;
         default:
@@ -63,7 +63,7 @@ void protocol_network_announcement_send(void) {
     
     uint32_t serial = serial_get();
     
-    payload[0] = OPCODE_CAN_ADDRESS_ANNOUNCEMENT;
+    payload[0] = OPCODE_NETWORK_ANNOUNCEMENT;
     payload[1] = (serial >> 24) & 0xff;
     payload[2] = (serial >> 16) & 0xff;
     payload[3] = (serial >> 8) & 0xff;
@@ -112,7 +112,7 @@ void protocol_network_nak_send(void) {
     
     uint32_t serial = serial_get();
     
-    payload[0] = OPCODE_CAN_ADDRESS_NAK;
+    payload[0] = OPCODE_NETWORK_NAK;
     payload[1] = (serial >> 24) & 0xff;
     payload[2] = (serial >> 16) & 0xff;
     payload[3] = (serial >> 8) & 0xff;
