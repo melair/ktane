@@ -1,0 +1,23 @@
+%TF.GenerationSoftware,KiCad,Pcbnew,(6.0.9)*%
+%TF.CreationDate,2022-12-02T21:30:47+00:00*%
+%TF.ProjectId,SPIRadioCFRTC,53504952-6164-4696-9f43-465254432e6b,rev?*%
+%TF.SameCoordinates,Original*%
+%TF.FileFunction,Paste,Bot*%
+%TF.FilePolarity,Positive*%
+%FSLAX46Y46*%
+G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
+G04 Created by KiCad (PCBNEW (6.0.9)) date 2022-12-02 21:30:47*
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+%ADD10R,3.050000X3.400000*%
+%ADD11R,4.500000X2.400000*%
+G04 APERTURE END LIST*
+D10*
+%TO.C,BT1*%
+X23868350Y-55000000D03*
+D11*
+X44968350Y-55000000D03*
+%TD*%
+M02*

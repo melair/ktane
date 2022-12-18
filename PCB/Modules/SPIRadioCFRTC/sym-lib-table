@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name "Custom")(type "Legacy")(uri "${KIPRJMOD}/Custom.lib")(options "")(descr "")(disabled))
+  (lib (name "SPIRadioCFRTC")(type "KiCad")(uri "${KIPRJMOD}/SPIRadioCFRTC.kicad_sym")(options "")(descr ""))
+)
