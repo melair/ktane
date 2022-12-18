@@ -68,9 +68,11 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Op Code      |  Module Mode  |  Firmware Version             |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |R| | | | | | | |                                               |
+   |R| | | | | | | |  Serial                                       |
    |S| | | | | | | |                                               |
    |T| | | | | | | |                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Serial       |                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 
@@ -78,10 +80,11 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
  * Send a module announcement packet.
  */
 void protocol_module_announcement_send(void) {
-    uint8_t payload[9];
+    uint8_t payload[10];
     
     uint16_t fw = firmware_get_version();
     uint32_t serial = serial_get();
+    uint8_t domain = can_get_domain();
     
     payload[0] = OPCODE_MODULE_ANNOUNCEMENT;
     payload[1] = mode_get();
@@ -92,6 +95,7 @@ void protocol_module_announcement_send(void) {
     payload[6] = (serial >> 16) & 0xff;
     payload[7] = (serial >> 8) & 0xff;
     payload[8] = serial & 0xff;
+    payload[9] = domain;
     
     if (announce_reset) {
         announce_reset = false;
@@ -109,8 +113,8 @@ void protocol_module_announcement_send(void) {
  * @param payload pointer to payload
  */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
-    /* Safety check, if size is < 4 there is no mode. */
-    if (size < 9) {
+    /* Safety check, if size is < 10 there is no mode. */
+    if (size < 10) {
         return;
     }              
 
@@ -118,12 +122,13 @@ void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *pay
     uint16_t fw = (uint16_t) ((payload[2] << 8) | payload[3]);
     bool reset = (payload[4] & 0b10000000);
     uint32_t serial = (uint32_t) (((uint32_t) payload[5] << 24) | ((uint32_t) payload[6] << 16) | ((uint32_t) payload[7] << 8) | (uint32_t) payload[8]);
+    uint8_t domain = payload[9];
     
     if (reset) {
         module_errors_clear(id);
     }
     
-    module_seen(id, mode, fw, serial);  
+    module_seen(id, mode, fw, serial, domain);  
     
     if (mode == MODE_CONTROLLER) {
         firmware_check(fw);

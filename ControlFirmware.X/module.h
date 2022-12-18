@@ -5,12 +5,13 @@
 #include "game.h"
 
 void module_initialise(void);
-void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial);
+void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain);
 void module_error_record(uint8_t id, uint16_t code, bool active);
 void module_error_raise(uint16_t code, bool active);
 void module_service(void);
 void module_errors_clear(uint8_t id);
 void module_set_self_can_id(uint8_t id);
+void module_set_self_domain(uint8_t domain);
 module_game_t *module_get_game(uint8_t idx);
 module_game_t *module_get_game_by_id(uint8_t id);
 

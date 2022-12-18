@@ -12,6 +12,7 @@
 #include "serial.h"
 #include "rng.h"
 #include "tick.h"
+#include "module.h"
 
 #define CAN_ADDRESS_RNG_MASK 0x74926411
 #define CAN_ADDRESS_CHECKS 4
@@ -37,6 +38,8 @@ typedef struct {
 can_statistics_t stats;
 /* Devices CAN ID. */
 uint8_t can_identifier;
+/* Devices CAN domain. */
+uint8_t can_domain;
 
 /* CAN address seed. */
 uint32_t can_address_seed;
@@ -62,6 +65,9 @@ void can_initialise(void) {
     if (can_address_eeprom == 0x00) {
         can_address_eeprom = CAN_NO_ADDRESS;
     }
+    
+    /* Load last CAN domain. */
+    can_domain = nvm_read(EEPROM_LOC_CAN_DOMAIN);
     
     /* Set our address seed, our serial number. This should reduce/eliminate
      * conflicts. */
@@ -368,7 +374,7 @@ void can_address_service(void) {
             can_address_phase++;
             
             can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);   
-            protocol_network_announcement_send();
+            protocol_network_address_announce_send();
         }
     } else {
         if (can_address_clear_tick <= tick_value) {
@@ -376,7 +382,7 @@ void can_address_service(void) {
             
             if (can_address_phase <= CAN_ADDRESS_CHECKS) {
                 can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);        
-                protocol_network_announcement_send();
+                protocol_network_address_announce_send();
             }
         }
     }
@@ -399,10 +405,23 @@ void can_address_conflict(uint8_t id) {
  */
 void can_address_check(uint8_t id) {
     if (id == can_identifier) {
-        protocol_network_nak_send();
+        protocol_network_address_nak_send();
         
         can_address_conflict(id);     
     }
+}
+
+/**
+ * Handle updates to the modules domain.
+ * 
+ * @param domain can domain
+ */
+void can_domain_update(uint8_t domain) {
+    if (domain != can_domain) {
+        module_set_self_domain(domain);
+        can_domain = domain;
+        nvm_write(EEPROM_LOC_CAN_DOMAIN, can_domain);
+    }    
 }
 
 /**
@@ -412,6 +431,15 @@ void can_address_check(uint8_t id) {
  */
 uint8_t can_get_id(void) {
     return can_identifier; 
+}
+
+/**
+ * Get the CAN domain of module.
+ * 
+ * @return the CAN domain
+ */
+uint8_t can_get_domain(void) {
+    return can_domain; 
 }
 
 /**

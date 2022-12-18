@@ -23,6 +23,8 @@ void nvm_write_pfm(uint24_t addr, uint16_t data);
 #define EEPROM_LOC_RNG_C                            0x014 /* RNG Seed, C */
 #define EEPROM_LOC_RNG_D                            0x015 /* RNG Seed, D */
 
+#define EEPROM_LOC_CAN_DOMAIN                       0x016 /* Configured CAN domain. */
+
 #define EEPROM_LOC_LCD_BRIGHTNESS                   0x020 /* LCD Backlight Brightness. */
 #define EEPROM_LOC_LCD_CONTRAST                     0x021 /* LCD Contrast. */
 

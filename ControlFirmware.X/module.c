@@ -49,6 +49,7 @@ typedef struct {
     uint16_t        firmware;
     uint32_t        last_seen;
     uint32_t        serial;
+    uint8_t         domain;
     
     module_error_t  errors[ERROR_COUNT];              
     module_game_t   game;
@@ -91,6 +92,7 @@ void module_initialise(void) {
     modules[0].id = can_get_id();
     modules[0].mode = mode_get();
     modules[0].serial = serial_get();
+    modules[0].domain = can_get_domain();
    
     /* Set next module announce time, offsetting with modulus of CAN ID to 
      * attempt to avoid collisions. */
@@ -108,6 +110,15 @@ void module_initialise(void) {
 void module_set_self_can_id(uint8_t id) {
     modules[0].id = id;
     modules[0].game.id = id;
+}
+
+/**
+ * Set this modules CAN domain in the module record.
+ * 
+ * @param id new domain
+ */
+void module_set_self_domain(uint8_t domain) {
+    modules[0].domain = domain;
 }
 
 /**
@@ -257,7 +268,7 @@ uint8_t module_find_or_create(uint8_t id) {
  * @param firmware firmware version
  * @param serial serial number of the module
  */
-void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial) {
+void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain) {
     uint8_t idx = module_find_or_create(id);
     
     if (idx == 0xff) {
@@ -275,6 +286,7 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial) {
     modules[idx].flags.LOST = 0;       
     modules[idx].game.puzzle = (mode >= MODE_PUZZLE_DEBUG);
     modules[idx].game.needy = (mode >= MODE_NEEDY_KEYS);
+    modules[idx].domain = domain;
 }
 
 /**

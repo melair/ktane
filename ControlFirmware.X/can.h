@@ -12,6 +12,8 @@ uint8_t can_get_id(void);
 bool can_ready(void);
 void can_address_conflict(uint8_t id);
 void can_address_check(uint8_t id);
+uint8_t can_get_domain(void);
+void can_domain_update(uint8_t domain);
 
 #endif	/* CAN_H */
 
