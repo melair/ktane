@@ -146,9 +146,7 @@ void mode_unconfigured_state(bool first) {
  */
 void mode_initialise(void) {       
     configured_mode = nvm_read(EEPROM_LOC_MODE_CONFIGURATION);
-
-    configured_mode = MODE_PUZZLE_OPERATOR;
-    
+   
     if (mode_check_if_bootstrap()) {
         configured_mode = MODE_BOOTSTRAP;
     }
