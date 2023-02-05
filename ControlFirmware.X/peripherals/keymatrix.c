@@ -15,9 +15,8 @@ uint8_t key_buffer[KEY_HISTORY];
 uint8_t read = 0;
 /* Pointer where to write to the buffer next. */
 uint8_t write = 0;
-
-/* Number of 100Hz periods required to register a change (debounce time), 50ms. */
-#define REQUIRED_PERIODS_OF_CHANGE 5
+/* Number of consequitive periods of change that must match for state change, default 5 as 50ms. */
+uint8_t required_periods_of_change = 5;
 
 #define KEYMATRIX_MAX_COLS 4
 #define KEYMATRIX_MAX_ROWS 4
@@ -128,6 +127,16 @@ void keymatrix_service_col_only(void) {
 }
 
 /**
+ * Allow the application to set the number of measured periods that must match
+ * for a change to be accepted.
+ * 
+ * @param periods number of periods
+ */
+void keymatrix_required_periods(uint8_t periods) {
+    required_periods_of_change = periods;
+}
+
+/**
  * Update key state with results from port read.
  * 
  * @param key key number
@@ -147,7 +156,7 @@ void keymatrix_update_key(uint8_t key, uint8_t row, uint8_t col, bool this_read)
             consecutive_reads++;
         }
 
-        if (consecutive_reads >= REQUIRED_PERIODS_OF_CHANGE) {
+        if (consecutive_reads >= required_periods_of_change) {
             if (current_state != this_read) {
                 current_state = this_read;
                 consecutive_reads = 0;

@@ -7,6 +7,7 @@ void keymatrix_initialise(pin_t *cols, pin_t *rows, uint8_t mode);
 void keymatrix_service(void);
 uint8_t keymatrix_fetch(void);
 void keymatrix_clear(void);
+void keymatrix_required_periods(uint8_t periods);
 
 #define KEYMODE_COL_TO_ROW 0
 #define KEYMODE_COL_ONLY   1
