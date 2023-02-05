@@ -1,6 +1,8 @@
 #ifndef PORTS_H
 #define	PORTS_H
 
+#include <stdbool.h>
+
 #define KPORTA PORTA
 #define KPORTB PORTF
 #define KPORTC PORTD
