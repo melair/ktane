@@ -29,6 +29,8 @@ void mode_initialise(void);
 void mode_service(void);
 void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 
+#include "modes/controller/controller.h"
+#include "modes/controller/ui.h"
 #include "modes/maze/maze.h"
 #include "modes/password/password.h"
 #include "modes/simon/simon.h"
@@ -39,6 +41,10 @@ void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 #include "modes/operator/operator.h"
 
 typedef union {
+    struct {
+        mode_controller_control_t   ctrl;
+        mode_controller_ui_t        ui;
+    } controller;
     mode_maze_t         maze;
     mode_password_t     password;
     mode_simon_t        simon;

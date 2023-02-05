@@ -1,29 +1,22 @@
 #include <xc.h>
 #include "controller.h"
+#include "ui.h"
 #include "../../rng.h"
 #include "../../argb.h"
 #include "../../buzzer.h"
 #include "../../can.h"
-#include "../../edgework.h"
 #include "../../module.h"
 #include "../../mode.h"
 #include "../../game.h"
 #include "../../tick.h"
-#include "../../lcd.h"
 #include "../../protocol_module.h"
 #include "../../peripherals/timer/segment.h"
-#include "../../peripherals/rotary.h"
-#include "../../peripherals/keymatrix.h"
 
-/* Keymatrix. */
-pin_t controller_cols[] = {KPIN_B2, KPIN_NONE};
-pin_t controller_rows[] = {KPIN_NONE};
 
 #define GAME_RNG_MASK 0x89b1a96c
 
 uint8_t last_strikes_current = 0;
 uint32_t ready_at = 0;
-int8_t edgework_displayed = 0;
 
 /* Local function prototypes. */
 void controller_service(bool first);
@@ -33,18 +26,16 @@ void controller_service_start(bool first);
 void controller_service_running(bool first);
 void controller_service_over(bool first);
 void controller_update_strikes(void);
-void controller_display_edgework(void);
 
 /**
  * Initialise any components or state that the controller will require.
  */
 void controller_initialise(void) {
+    /* Initialise the UI. */
+    ui_initialise();
+    
     /* Initialise the seven segment display. */
-    segment_initialise();
-    /* Initialise the rotary encoder. */
-    rotary_initialise(KPIN_B0, KPIN_B1);
-    /* Initialise keymatrix. */
-    keymatrix_initialise(&controller_cols[0], &controller_rows[0], KEYMODE_COL_ONLY);
+    segment_initialise();           
     
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, controller_service, NULL);
@@ -67,10 +58,9 @@ void controller_initialise(void) {
 void controller_service(bool first) {
     /* Service the seven segment display. */
     segment_service();
-    /* Service rotary encoder. */
-    rotary_service();    
-    /* Service keymatrix. */
-    keymatrix_service();
+
+    /* Service the UI peripherals. */
+    ui_service();
 }
 
 /* Maintain if a game request has already been sent. */
@@ -262,10 +252,6 @@ void controller_service_running(bool first) {
             segment_set_digit(2, characters[DIGIT_0 + tencentiseconds]);
             segment_set_digit(3, characters[DIGIT_0 + centiseconds]);
         }
-        
-        if (tick_20hz) {
-            controller_display_edgework();
-        }
     } else {
         game_set_state(GAME_OVER, RESULT_FAILURE);
     }
@@ -309,8 +295,6 @@ void controller_service_running(bool first) {
  */
 void controller_service_over(bool first){
     if(first) {
-        keymatrix_clear();
-
         segment_set_colon(false);
 
         switch(game.result) {
@@ -333,41 +317,5 @@ void controller_service_over(bool first){
                 segment_set_digit(3, characters[DIGIT_DASH]);
                 break;
         }
-        
-        lcd_clear();
-        
-        uint8_t *text_strikes = "Strikes: X of X";
-        uint8_t *text_remaining = "Time: X:XX.XX";        
-        
-        lcd_update(0, 0, 15, text_strikes);
-        lcd_number(0, 9, 1, game.strikes_current);
-        lcd_number(0, 14, 1, game.strikes_total);
-        
-        lcd_update(1, 0, 13, text_remaining);        
-        lcd_number(1, 6, 1, game.time_remaining.minutes);        
-        lcd_number(1, 8, 2, game.time_remaining.seconds);        
-        lcd_number(1, 11, 2, game.time_remaining.centiseconds);
-        
-        lcd_sync();
-    }
-    
-        
-    for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
-        if (press & KEY_DOWN_BIT) {
-            protocol_module_reset_send();
-        }
-    }          
-}
-
-void controller_display_edgework(void) {
-    edgework_displayed += rotary_fetch_delta();
-    rotary_clear();
-    
-    if (edgework_displayed < 0) {
-        edgework_displayed = MAX_EDGEWORK - 1;
-    } else if (edgework_displayed > (MAX_EDGEWORK - 1)) {
-        edgework_displayed = 0;
-    }
-    
-    edgework_display(edgework_displayed);
+    } 
 }
