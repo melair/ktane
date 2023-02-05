@@ -1,7 +1,30 @@
-# Ignore build files.
-/build/
-/debug/
-/dist/
+# .gitignore file
 
-# Include project private settings.
-/nbproject/private
+# MPLAB X IDE (Netbeans) specific
+~*.*
+build/
+debug/
+dist/
+disassembly/
+.generated_files/
+nbproject/private/
+nbproject/*.mk
+nbproject/*.bash
+nbproject/Makefile-genesis.properties
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Executables
+*.exe
+
+
+# KDE specific
+.directory
+
+# Misc
+.svn
+*.bak
