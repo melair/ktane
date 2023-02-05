@@ -249,7 +249,7 @@ void arbiter_initialise(void) {
  * Disable peripherals not used, this saves some power. 
  */
 void pmd_initialise(void) {
-    PMD0 = 0b01101110; // Keep FOSC, CRC and IOC
+    PMD0 = 0b01101111; // Keep FOSC and CRC
     PMD1 = 0b10000000; // Keep Timers
     PMD2 = 0b01111111; // Keep CAN
     PMD3 = 0b11011111; // Keep ADC
