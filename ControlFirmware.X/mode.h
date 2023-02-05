@@ -18,6 +18,7 @@
 #define MODE_PUZZLE_WHOSONFIRST  14
 #define MODE_PUZZLE_WIRES        15
 #define MODE_PUZZLE_COMBINATION  16
+#define MODE_PUZZLE_OPERATOR     17
 
 #define MODE_NEEDY_KEYS          224
 
@@ -35,6 +36,7 @@ void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 #include "modes/wires/wires.h"
 #include "modes/keys/keys.h"
 #include "modes/combination/combination.h"
+#include "modes/operator/operator.h"
 
 typedef union {
     mode_maze_t         maze;
@@ -44,6 +46,7 @@ typedef union {
     mode_wires_t        wires;
     mode_keys_t         keys;
     mode_combination_t  combination;
+    mode_operator_t     operator;
 } mode_data_t;
 
 extern mode_data_t mode_data;

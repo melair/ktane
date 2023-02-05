@@ -354,6 +354,8 @@ void game_service_running(void) {
 
                     if (game.time_remaining.minutes == 0) {
                         game.time_remaining.done = true;
+                        game.time_remaining.centiseconds = 0;
+                        game.time_remaining.seconds = 0;
                     } else {
                         game.time_remaining.minutes--;
                     }

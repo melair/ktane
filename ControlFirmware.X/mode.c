@@ -15,6 +15,7 @@
 #include "modes/whosonfirst/whosonfirst.h"
 #include "modes/wires/wires.h"
 #include "modes/combination/combination.h"
+#include "modes/operator/operator.h"
 #include "modes/keys/keys.h"
 
 /* Local function prototypes. */
@@ -54,6 +55,7 @@ mode_names_t mode_names[MODE_COUNT+1] = {
     { MODE_PUZZLE_WHOSONFIRST, "Who's On First" },
     { MODE_PUZZLE_WIRES, "Wires" },
     { MODE_PUZZLE_COMBINATION, "Combination" },
+    { MODE_PUZZLE_OPERATOR, "Operator" },
     { MODE_NEEDY_KEYS, "Keys" },
 };
 
@@ -145,6 +147,8 @@ void mode_unconfigured_state(bool first) {
 void mode_initialise(void) {       
     configured_mode = nvm_read(EEPROM_LOC_MODE_CONFIGURATION);
 
+    configured_mode = MODE_PUZZLE_OPERATOR;
+    
     if (mode_check_if_bootstrap()) {
         configured_mode = MODE_BOOTSTRAP;
     }
@@ -198,6 +202,10 @@ void mode_initialise(void) {
         /* Module is a puzzle, combination locks. */
         case MODE_PUZZLE_COMBINATION:
             combination_initialise();
+            break;
+        /* Module is a puzzle, operator.*/
+        case MODE_PUZZLE_OPERATOR:
+            operator_initialise();
             break;
         /* Module is needy, keys. */  
         case MODE_NEEDY_KEYS:

@@ -104,7 +104,7 @@ void key_service_running(bool first) {
         argb_set(led_index[mode_data.keys.key], 31, 0, 255, 0);
     }
     
-     /* Handle moves. */
+    /* Handle moves. */
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         /* Feedback to user button was accepted. */
         buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);           

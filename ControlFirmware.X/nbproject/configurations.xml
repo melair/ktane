@@ -23,6 +23,9 @@
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f2" displayName="operator" projectFiles="true">
+          <itemPath>modes/operator/operator.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="f7" displayName="password" projectFiles="true">
           <itemPath>modes/password/password.h</itemPath>
         </logicalFolder>
@@ -92,6 +95,9 @@
         </logicalFolder>
         <logicalFolder name="f5" displayName="maze" projectFiles="true">
           <itemPath>modes/maze/maze.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f2" displayName="operator" projectFiles="true">
+          <itemPath>modes/operator/operator.c</itemPath>
         </logicalFolder>
         <logicalFolder name="f7" displayName="password" projectFiles="true">
           <itemPath>modes/password/password.c</itemPath>

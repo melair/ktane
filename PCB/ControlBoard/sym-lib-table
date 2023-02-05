@@ -1,4 +1,5 @@
 (sym_lib_table
-  (lib (name Custom)(type Legacy)(uri ${KIPRJMOD}/Custom.lib)(options "")(descr "")(disabled))
-  (lib (name ControlBoard-rescue)(type Legacy)(uri ${KIPRJMOD}/ControlBoard-rescue.lib)(options "")(descr "")(disabled))
+  (lib (name "Custom")(type "Legacy")(uri "${KIPRJMOD}/Custom.lib")(options "")(descr "")(disabled))
+  (lib (name "ControlBoard-rescue")(type "Legacy")(uri "${KIPRJMOD}/ControlBoard-rescue.lib")(options "")(descr "")(disabled))
+  (lib (name "ControlBoard-cache")(type "Legacy")(uri "${KIPRJMOD}/ControlBoard-cache.lib")(options "")(descr "")(disabled))
 )
