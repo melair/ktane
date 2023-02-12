@@ -7,9 +7,9 @@
 
 /*
  * Character Bank
- * 
+ *
  * Bits are not in any sane order, this is due to ease of electrical wiring.
- * 
+ *
  *      A
  *    F   B
  *      G
@@ -25,15 +25,15 @@
  * G  = 0b01000000
  * DP = 0b00010000
  */
-const uint8_t characters[29] = { 
+const uint8_t characters[29] = {
     0b00000000, // SPACE
     0b10101111, // 0
     0b10100000, // 1
     0b11000111, // 2
-    0b11100110, // 3    
+    0b11100110, // 3
     0b11101000, // 4
-    0b01101110, // 5   
-    0b01101111, // 6 
+    0b01101110, // 5
+    0b01101111, // 6
     0b10100010, // 7
     0b11101111, // 8
     0b11101110, // 9
@@ -85,24 +85,24 @@ void segment_service(void) {
     if (tick_2khz) {
         /* Inverse the digit bits, as a high switches off the low side switch. */
         KLATA = ~digits[digit];
-        
+
         /* Handle colon. */
         if (digit == 4 && !colon) {
             KLATB = (KLATB & 0b00000111);
         } else {
-            KLATB = (KLATB & 0b00000111) | select[digit];            
+            KLATB = (KLATB & 0b00000111) | select[digit];
         }
 
         digit++;
         if (digit >= DIGIT_COUNT) {
             digit = 0;
-        } 
+        }
     }
 }
 
 /**
  * Set a segment digit.
- * 
+ *
  * @param digit digit number to set
  * @param value value to display
  */
@@ -110,13 +110,13 @@ void segment_set_digit(uint8_t digit, uint8_t value) {
     if (digit >= DIGIT_COUNT) {
         return;
     }
-    
+
     digits[digit] = value;
 }
 
 /**
  * Set colon to be on or off.
- * 
+ *
  * @param on true if colon is to be on
  */
 void segment_set_colon(bool on) {

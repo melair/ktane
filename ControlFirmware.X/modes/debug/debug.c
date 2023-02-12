@@ -23,15 +23,15 @@ pin_t debug_rows[] = {KPIN_NONE};
 void debug_initialise(void) {
     /* Make debug pins input. */
     KTRISA |= 0b11100000;
-    
+
     /* Enable weak pull up, ground to activate. */
     KWPUA |= 0b11100000;
-    
+
     /* Register our callbacks. */
     mode_register_callback(GAME_ALWAYS, debug_service, NULL);
     mode_register_callback(GAME_SETUP, debug_game_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, debug_game_running, &tick_20hz);
-    
+
     /* Initialise keymatrix. */
     keymatrix_initialise(&debug_cols[0], &debug_rows[0], KEYMODE_COL_ONLY);
 }
@@ -45,7 +45,7 @@ void debug_service(bool first) {
 
 /**
  * Handle the debug module during the setup state, just the ready button.
- * 
+ *
  * @param first true if it is the first time its been called this game
  */
 void debug_game_setup(bool first) {
@@ -61,12 +61,12 @@ void debug_game_setup(bool first) {
                     break;
             }
         }
-    }    
+    }
 }
 
 /**
  * Handle the debug module during the running state, strike and solved button.
- * 
+ *
  * @param first true if it is the first time its been called this game
  */
 void debug_game_running(bool first) {
@@ -85,5 +85,5 @@ void debug_game_running(bool first) {
                     break;
             }
         }
-    }        
+    }
 }

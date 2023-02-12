@@ -37,24 +37,24 @@ void keymatrix_init_col_only(void);
 
 /**
  * Initialise the keymatrix handler.
- * 
+ *
  * Key matrix assumes that the column line will be read, thus anti-ghosting
  * diode should be placed with that in mind. Column invert can be used if
  * there are no row pins, and the pins are pulled high.
- * 
+ *
  * Columns are expected to be INPUT, rows are expected to by OUTPUT.
  */
 void keymatrix_initialise(pin_t *cols, pin_t *rows, uint8_t mode) {
     keymatrix_cols = cols;
     keymatrix_rows = rows;
     keymatrix_mode = mode;
-    
+
     switch(keymatrix_mode) {
         case KEYMODE_COL_TO_ROW:
             keymatrix_init_col_to_row();
             break;
         case KEYMODE_COL_ONLY:
-            keymatrix_init_col_only();            
+            keymatrix_init_col_only();
             break;
     }
 }
@@ -65,71 +65,71 @@ void keymatrix_initialise(pin_t *cols, pin_t *rows, uint8_t mode) {
 void keymatrix_service(void) {
     if (!tick_100hz) {
         return;
-    }   
-    
+    }
+
     switch(keymatrix_mode) {
         case KEYMODE_COL_TO_ROW:
             keymatrix_service_col_to_row();
             break;
         case KEYMODE_COL_ONLY:
-            keymatrix_service_col_only();            
+            keymatrix_service_col_only();
             break;
-    }   
+    }
 }
 
 void keymatrix_init_col_to_row(void) {
     for (uint8_t r = 0; r < KEYMATRIX_MAX_ROWS && keymatrix_rows[r] != KPIN_NONE; r++) {
         kpin_write(keymatrix_rows[r], false);
-        kpin_mode(keymatrix_rows[r], PIN_INPUT, true);      
+        kpin_mode(keymatrix_rows[r], PIN_INPUT, true);
     }
-    
+
     for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
-        kpin_mode(keymatrix_cols[c], PIN_INPUT, true);      
+        kpin_mode(keymatrix_cols[c], PIN_INPUT, true);
     }
 }
 
 void keymatrix_service_col_to_row(void) {
     bool this_read;
     uint8_t key = 0;
-    
+
     for (uint8_t r = 0; r < KEYMATRIX_MAX_ROWS && keymatrix_rows[r] != KPIN_NONE; r++) {
         /* Set row to output and low. */
-        kpin_mode(keymatrix_rows[r], PIN_OUTPUT, false);      
-        
+        kpin_mode(keymatrix_rows[r], PIN_OUTPUT, false);
+
         __delay_us(1);
-                
+
         for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
             this_read = kpin_read(keymatrix_cols[c]);
-            keymatrix_update_key(key, r, c, !this_read);            
-            key++;         
+            keymatrix_update_key(key, r, c, !this_read);
+            key++;
         }
-        
+
         /* Set row to input, and pulled high. */
-        kpin_mode(keymatrix_rows[r], PIN_INPUT, true);      
+        kpin_mode(keymatrix_rows[r], PIN_INPUT, true);
     }
 }
 
 void keymatrix_init_col_only(void){
     for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
-        kpin_mode(keymatrix_cols[c], PIN_INPUT, true);      
+        kpin_mode(keymatrix_cols[c], PIN_INPUT, true);
     }
 }
 
 void keymatrix_service_col_only(void) {
     bool this_read;
     uint8_t key = 0;
-    
+
     for (uint8_t c = 0; c < KEYMATRIX_MAX_COLS && keymatrix_cols[c] != KPIN_NONE; c++) {
         this_read = kpin_read(keymatrix_cols[c]);
-        keymatrix_update_key(key, 0, c, !this_read);            
-        key++;       
-    }    
+        keymatrix_update_key(key, 0, c, !this_read);
+        key++;
+    }
 }
 
 /**
  * Allow the application to set the number of measured periods that must match
  * for a change to be accepted.
- * 
+ *
  * @param periods number of periods
  */
 void keymatrix_required_periods(uint8_t periods) {
@@ -138,7 +138,7 @@ void keymatrix_required_periods(uint8_t periods) {
 
 /**
  * Update key state with results from port read.
- * 
+ *
  * @param key key number
  * @param row row read
  * @param col col read
@@ -160,26 +160,26 @@ void keymatrix_update_key(uint8_t key, uint8_t row, uint8_t col, bool this_read)
             if (current_state != this_read) {
                 current_state = this_read;
                 consecutive_reads = 0;
-                
+
                 keymatrix_publish_key(row, col, current_state);
             }
         }
     }
-    
+
     keymatrix_state[key] = consecutive_reads;
-    
+
     if (this_read) {
-        keymatrix_state[key] |= 0b01000000;        
+        keymatrix_state[key] |= 0b01000000;
     }
-    
+
     if (current_state) {
-        keymatrix_state[key] |= 0b10000000;        
+        keymatrix_state[key] |= 0b10000000;
     }
 }
 
 /**
  * Publish the key event to the key buffer.
- * 
+ *
  * @param row row of button
  * @param col column of button
  * @param down down state
@@ -189,46 +189,46 @@ void keymatrix_publish_key(uint8_t row, uint8_t col, bool down) {
     if (down) {
         event |= KEY_DOWN_BIT;
     }
-    
+
     key_buffer[write] = event;
-    
+
     write++;
     if (write >= KEY_HISTORY) {
         write = 0;
-    }   
-    
+    }
+
     /* Handle overflowing the key history loop, move the read pointer on. */
     if (write == read) {
         read++;
         if (read >= KEY_HISTORY) {
             read = 0;
-        }   
-    }    
+        }
+    }
 }
 
 /**
  * Fetch a keymatrix press, a key number can essentially be calculated by AND
  * the result with KEY_NUM_BITS.
- * 
+ *
  * DxRRRCCC
  * D = Down/!Up
  * C = Column Bit
  * R = Row Bit
- * 
+ *
  * @return key matrix press
  */
 uint8_t keymatrix_fetch(void) {
     if (read == write) {
         return KEY_NO_PRESS;
     }
-    
+
     uint8_t ret = key_buffer[read];
-    
+
     read++;
     if (read >= KEY_HISTORY) {
         read = 0;
-    }    
-    
+    }
+
     return ret;
 }
 

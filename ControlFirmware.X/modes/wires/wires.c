@@ -98,7 +98,7 @@ void wires_initialise(void) {
 
 /**
  * Service the module when idle.
- * 
+ *
  * @param first true if first timed called
  */
 void wires_service_idle(bool first) {
@@ -106,7 +106,7 @@ void wires_service_idle(bool first) {
 
 /**
  * Service the module during the setup phase.
- * 
+ *
  * @param first true if first timed called
  */
 void wires_service_setup(bool first) {
@@ -130,13 +130,13 @@ void wires_service_setup(bool first) {
 
         /* Mark all wires required initially. */
         for (uint8_t i = 0; i < WIRES_COUNT; i++) {
-            if (mode_data.wires.wires[i].wiretype != NO_WIRE) { 
+            if (mode_data.wires.wires[i].wiretype != NO_WIRE) {
                 current_wires++;
                 mode_data.wires.wires[i].required = true;
                 mode_data.wires.wires[i].updated = 1;
                 mode_data.wires.wires[i].cutneeded = 0;
                 mode_data.wires.wires[i].cut = 0;
-            }            
+            }
         }
 
         if (current_wires > required_wires) {
@@ -166,11 +166,11 @@ void wires_service_setup(bool first) {
                 }
             }
         }
-        
+
         if (mode_data.wires.complex) {
             for (uint8_t i = 0; i < WIRES_COUNT; i++) {
                 if (mode_data.wires.wires[i].required) {
-                    uint8_t lights = rng_generate8(&seed, WIRES_RNG_MASK);               
+                    uint8_t lights = rng_generate8(&seed, WIRES_RNG_MASK);
                     mode_data.wires.wires[i].light_left = ((lights & 0b01) == 0b01);
                     mode_data.wires.wires[i].light_right = ((lights & 0b10) == 0b10);
                 }
@@ -243,14 +243,14 @@ void wires_service_setup(bool first) {
 void wires_calculate_solution_simple(void) {
     uint8_t wire_count = wires_get_wire_count();
     bool lastSerialDigitIsOdd = (edgework_serial_last_digit() % 2 == 1);
-    
+
     switch(wire_count) {
         case 3:
             /*
              If there are no red wires, cut the second wire.
              Otherwise, if the last wire is white, cut the last wire.
              Otherwise, if there is more than one blue wire, cut the last blue wire.
-             Otherwise, cut the last wire. 
+             Otherwise, cut the last wire.
              */
             if (wires_get_color_count(WIRE_COLOUR_RED) == 0) {
                 wires_set_cut(2);
@@ -262,13 +262,13 @@ void wires_calculate_solution_simple(void) {
                 wires_set_cut(-1);
             }
             break;
-        case 4:                        
+        case 4:
             /*
              If there is more than one red wire and the last digit of the serial number is odd, cut the last red wire.
              Otherwise, if the last wire is yellow and there are no red wires, cut the first wire.
              Otherwise, if there is exactly one blue wire, cut the first wire.
              Otherwise, if there is more than one yellow wire, cut the last wire.
-             Otherwise, cut the second wire. 
+             Otherwise, cut the second wire.
              */
             if (wires_get_color_count(WIRE_COLOUR_RED) > 1 && lastSerialDigitIsOdd) {
                 wires_set_cut_color(WIRE_COLOUR_RED, -1);
@@ -277,26 +277,26 @@ void wires_calculate_solution_simple(void) {
             } else if (wires_get_color_count(WIRE_COLOUR_BLUE) == 1) {
                 wires_set_cut(1);
             } else if(wires_get_color_count(WIRE_COLOUR_YELLOW) > 1) {
-                wires_set_cut(-1);                
+                wires_set_cut(-1);
             } else {
-                wires_set_cut(2);                
-            }            
+                wires_set_cut(2);
+            }
             break;
         case 5:
             /*
              If the last wire is black and the last digit of the serial number is odd, cut the fourth wire.
              Otherwise, if there is exactly one red wire and there is more than one yellow wire, cut the first wire.
              Otherwise, if there are no black wires, cut the second wire.
-             Otherwise, cut the first wire. 
+             Otherwise, cut the first wire.
              */
             if (wires_get_last_wire_color() == WIRE_COLOUR_BLACK && lastSerialDigitIsOdd) {
                 wires_set_cut(4);
             } else if (wires_get_color_count(WIRE_COLOUR_RED) == 1 && wires_get_color_count(WIRE_COLOUR_YELLOW) > 1) {
-                wires_set_cut(1);               
+                wires_set_cut(1);
             } else if (wires_get_color_count(WIRE_COLOUR_BLACK) == 0) {
-                wires_set_cut(2);               
+                wires_set_cut(2);
             } else {
-                wires_set_cut(1);                               
+                wires_set_cut(1);
             }
             break;
         case 6:
@@ -304,25 +304,25 @@ void wires_calculate_solution_simple(void) {
              If there are no yellow wires and the last digit of the serial number is odd, cut the third wire.
              Otherwise, if there is exactly one yellow wire and there is more than one white wire, cut the fourth wire.
              Otherwise, if there are no red wires, cut the last wire.
-             Otherwise, cut the fourth wire. 
+             Otherwise, cut the fourth wire.
              */
             if (wires_get_color_count(WIRE_COLOUR_YELLOW) == 0 && lastSerialDigitIsOdd) {
-                wires_set_cut(3);           
+                wires_set_cut(3);
             } else if (wires_get_color_count(WIRE_COLOUR_YELLOW) == 1 && wires_get_color_count(WIRE_COLOUR_WHITE) > 1) {
                 wires_set_cut(4);
             } else if (wires_get_color_count(WIRE_COLOUR_RED) == 0) {
                 wires_set_cut(-1);
             } else {
-                wires_set_cut(4);                
+                wires_set_cut(4);
             }
-            break;            
+            break;
     }
 }
 
 void wires_set_cut(int8_t wire) {
     uint8_t last = 0;
     uint8_t c = 0;
-    
+
     for (uint8_t i = 0; i < WIRES_COUNT; i++) {
         if (mode_data.wires.wires[i].wiretype != NO_WIRE) {
             c++;
@@ -333,7 +333,7 @@ void wires_set_cut(int8_t wire) {
             }
         }
     }
-    
+
     if (wire == -1) {
         mode_data.wires.wires[last].cutneeded = 1;
     }
@@ -342,10 +342,10 @@ void wires_set_cut(int8_t wire) {
 void wires_set_cut_color(uint8_t color, int8_t wire) {
     uint8_t last = 0;
     uint8_t c = 0;
-    
+
     for (uint8_t i = 0; i < WIRES_COUNT; i++) {
         if (mode_data.wires.wires[i].wiretype != NO_WIRE) {
-            if (wirelookup[mode_data.wires.wires[i].wiretype].colours.wire == color) {                       
+            if (wirelookup[mode_data.wires.wires[i].wiretype].colours.wire == color) {
                 c++;
                 last = i;
                 if (wire == c) {
@@ -355,59 +355,59 @@ void wires_set_cut_color(uint8_t color, int8_t wire) {
             }
         }
     }
-    
+
     if (wire == -1) {
         mode_data.wires.wires[last].cutneeded = 1;
-    } 
+    }
 }
 
 uint8_t wires_get_wire_count(void) {
     uint8_t c = 0;
-    
+
     for (uint8_t i = 0; i < WIRES_COUNT; i++) {
         if (mode_data.wires.wires[i].wiretype != NO_WIRE) {
             c++;
         }
     }
-    
+
     return c;
 }
 
 uint8_t wires_get_color_count(uint8_t color) {
     uint8_t c = 0;
-    
+
     for (uint8_t i = 0; i < WIRES_COUNT; i++) {
         uint8_t wt = mode_data.wires.wires[i].wiretype;
-        
+
         if (wirelookup[wt].colours.plug == color || wirelookup[wt].colours.wire == color) {
-            c++;            
+            c++;
         }
     }
-    
+
     return c;
 }
 
 uint8_t wires_get_last_wire_color(void) {
     uint8_t last = 0;
-    
+
     for (uint8_t i = 0; i < WIRES_COUNT; i++) {
         uint8_t wt = mode_data.wires.wires[i].wiretype;
-        
+
         if (wt != NO_WIRE) {
             last = wirelookup[wt].colours.wire;
         }
     }
-    
+
     return last;
 }
 
 void wires_calculate_solution_complex(void) {
-    
+
 }
 
 /**
  * Service the module during the starting phase.
- * 
+ *
  * @param first true if first time module has been called
  */
 void wires_service_start(bool first) {
@@ -432,7 +432,7 @@ void wires_service_start(bool first) {
 
 /**
  * Service the module during the running phase.
- * 
+ *
  * @param first true if first timed called
  */
 void wires_service_running(bool first) {
@@ -451,7 +451,7 @@ void wires_service_running(bool first) {
             /* Was a new wire just cut? */
             if (mode_data.wires.wires[1].required && mode_data.wires.wires[i].wiretype == NO_WIRE && !mode_data.wires.wires[i].cut) {
                 mode_data.wires.wires[i].cut = 1;
-                
+
                 /* If it should not have been cut, then strike. */
                 if (!mode_data.wires.wires[i].cutneeded) {
                     game_module_strike(1);

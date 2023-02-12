@@ -39,25 +39,25 @@ void game_module_update(uint8_t id, bool ready, bool solved);
 #define RESULT_FAILURE      1
 #define RESULT_SUCCESS      2
 
-typedef struct {   
+typedef struct {
     uint32_t seed;
     uint32_t module_seed;
-    
+
     uint8_t strikes_current;
     uint8_t strikes_total;
-    
+
     uint8_t state;
     bool state_first;
-    
+
     uint8_t result;
-    
+
     struct {
         uint8_t minutes;
         uint8_t seconds;
         uint8_t centiseconds;
         bool done;
-    } time_remaining;    
-    
+    } time_remaining;
+
     uint8_t time_ratio;
 } game_t;
 
@@ -68,7 +68,7 @@ typedef struct {
     uint8_t difficulty;
     struct {
         unsigned puzzle      :1;
-        unsigned needy       :1;        
+        unsigned needy       :1;
         unsigned enabled     :1;
         unsigned ready       :1;
         unsigned solved      :1;

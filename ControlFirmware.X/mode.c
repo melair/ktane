@@ -60,8 +60,8 @@ mode_names_t mode_names[MODE_COUNT+1] = {
 };
 
 /**
- * Find a modes name in the mode_name index. 
- * 
+ * Find a modes name in the mode_name index.
+ *
  * @param mode mode to find
  * @return name index in name array
  */
@@ -71,51 +71,51 @@ uint8_t mode_find_name_index(uint8_t mode) {
             return i;
         }
     }
-    
+
     return 0;
 }
 
 /**
  * Checks to see if the module is in bootstrap mode, this is done by shorting
- * pins A0 and A1 together. 
- * 
+ * pins A0 and A1 together.
+ *
  * @return true if module is in bootstrap
  */
 bool mode_check_if_bootstrap(void) {
     /* Set Port A1 (RA1) to be an input. */
     TRISAbits.TRISA1 = 1;
-    
+
     tick_wait(10);
-       
+
     /* Check to see if the port is high, if so abort. */
     if (PORTAbits.RA1 == 1) {
         TRISAbits.TRISA1 = 0;
         return false;
     }
-    
+
     /* Set Port A1 (RA0) to high. */
     LATAbits.LATA0 = 1;
-    
-    tick_wait(10);    
-    
+
+    tick_wait(10);
+
     /* Check to see if the port now low, if so abort. */
     if (PORTAbits.RA1 == 0) {
         TRISAbits.TRISA1 = 0;
         LATAbits.LATA0 = 0;
         return false;
     }
-    
+
     /* Set Port A1 (RA0) to low. */
     LATAbits.LATA0 = 0;
-    
-    tick_wait(10);    
-    
+
+    tick_wait(10);
+
     /* Check to see if the port is high again, if so abort. */
     if (PORTAbits.RA1 == 1) {
         TRISAbits.TRISA1 = 0;
         return false;
     }
-    
+
     /* Set port back to output. */
     TRISAbits.TRISA1 = 0;
 
@@ -125,7 +125,7 @@ bool mode_check_if_bootstrap(void) {
 
 /**
  * Get the current mode.
- * 
+ *
  * @return the current mode
  */
 uint8_t mode_get(void) {
@@ -134,7 +134,7 @@ uint8_t mode_get(void) {
 
 /**
  * Empty function for unused states in mode.
- * 
+ *
  * @param first true if first time called
  */
 void mode_unconfigured_state(bool first) {
@@ -144,19 +144,19 @@ void mode_unconfigured_state(bool first) {
  * Run any initialisation functions for the specific mode, an unrecognised mode
  * will be treated as a blank module and error and halt.
  */
-void mode_initialise(void) {       
+void mode_initialise(void) {
     configured_mode = nvm_read(EEPROM_LOC_MODE_CONFIGURATION);
-   
+
     if (mode_check_if_bootstrap()) {
         configured_mode = MODE_BOOTSTRAP;
     }
-    
+
     for (uint8_t i = 0; i < GAME_STATE_COUNT; i++) {
         mode_service_state_function[i] = mode_unconfigured_state;
     }
-    
+
     mode_service_always_function = mode_unconfigured_state;
-    
+
     switch(configured_mode) {
         /* Module is completely blank, do nothing. */
         default:
@@ -205,7 +205,7 @@ void mode_initialise(void) {
         case MODE_PUZZLE_OPERATOR:
             operator_initialise();
             break;
-        /* Module is needy, keys. */  
+        /* Module is needy, keys. */
         case MODE_NEEDY_KEYS:
             keys_initialise();
             break;
@@ -220,27 +220,27 @@ void mode_service(void) {
     if (service_always_first_call) {
         service_always_first_call = false;
     }
-    
+
     if (mode_service_tick[game.state] != NULL && *mode_service_tick[game.state] == false) {
         return;
     }
-        
+
     bool first = last_called_state != game.state;
-    last_called_state = game.state;        
+    last_called_state = game.state;
     mode_service_state_function[game.state](first);
 }
 
 /**
  * Register the modes callback against a game state. This prevents duplication
  * of state switching in modules.
- * 
+ *
  * @param state to call function for
  * @param func function to call
  */
 void mode_register_callback(uint8_t state, void (*func)(bool), bool *tick) {
     if (state == 0xff) {
         mode_service_always_function = func;
-    } else {        
+    } else {
         mode_service_state_function[state] = func;
         mode_service_tick[state] = tick;
     }

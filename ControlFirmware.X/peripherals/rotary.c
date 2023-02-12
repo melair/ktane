@@ -15,7 +15,7 @@ pin_t rotary_dat;
 void rotary_initialise(pin_t a, pin_t b) {
     rotary_clk = a;
     rotary_dat = b;
-    
+
     kpin_mode(rotary_clk, PIN_INPUT, true);
     kpin_mode(rotary_dat, PIN_INPUT, true);
 }
@@ -24,7 +24,7 @@ void rotary_service(void) {
     if (!tick_2khz) {
         return;
     }
-    
+
     static int8_t rot_enc_table[] = {0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0};
 
     rotary_next_code <<= 2;

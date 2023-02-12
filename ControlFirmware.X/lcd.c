@@ -1,5 +1,6 @@
 #include <xc.h>
 #include <stdbool.h>
+#include <math.h>
 #include "lcd.h"
 #include "nvm.h"
 #include "can.h"
@@ -147,7 +148,7 @@ const uint8_t big_font_characters[BIG_FONT_CHARACTERS][BIG_FONT_LINES] = {
         0b11111,
         0b11111,
         0b11111,
-    },    
+    },
 };
 
 #define BIG_FONT_CHARACTER_COUNT    36
@@ -157,146 +158,146 @@ const uint8_t big_font[BIG_FONT_CHARACTER_COUNT][4] = {
         0x70, 0x1e,
         0x23, 0x4e,
     },
-    { // 1 
+    { // 1
         0x01, 0xee,
         0xef, 0xee,
     },
     { // 2
-        0x55, 0x1e,  
+        0x55, 0x1e,
         0x26, 0x6e,
     },
     { // 3
-        0x55, 0x1e,  
+        0x55, 0x1e,
         0x66, 0x4e,
     },
     { // 4
-        0x23, 0x1e,  
+        0x23, 0x1e,
         0xee, 0xfe,
     },
-    { // 5 
-        0xf5, 0x5e,  
+    { // 5
+        0xf5, 0x5e,
         0x66, 0x4e,
-    },    
+    },
     { // 6
-        0x75, 0x5e,  
+        0x75, 0x5e,
         0x26, 0x4e,
     },
     { // 7
-        0x00, 0x1e,  
+        0x00, 0x1e,
         0xe7, 0xee,
     },
     { // 8
-        0x75, 0x1e,  
+        0x75, 0x1e,
         0x25, 0x4e,
     },
     { // 9
-        0x75, 0x1e,  
+        0x75, 0x1e,
         0xee, 0xfe,
-    },  
+    },
     { // A
-        0x75, 0x1e,  
+        0x75, 0x1e,
         0xfe, 0xfe,
-    }, 
+    },
     { // B
-        0xf5, 0x4e,  
+        0xf5, 0x4e,
         0xf6, 0x1e,
-    }, 
+    },
     { // C
-        0x70, 0x0e,  
+        0x70, 0x0e,
         0x23, 0x3e,
-    }, 
+    },
     { // D
-        0xf0, 0x1e,  
+        0xf0, 0x1e,
         0xf3, 0x4e,
-    }, 
+    },
     { // E
-        0xf5, 0x5e,  
+        0xf5, 0x5e,
         0xf6, 0x6e,
-    }, 
+    },
     { // F
-        0xf5, 0x5e,  
+        0xf5, 0x5e,
         0xfe, 0xee,
-    }, 
+    },
     { // G
-        0x70, 0x0e,  
+        0x70, 0x0e,
         0x23, 0x1e,
-    }, 
+    },
     { // H
-        0xf3, 0xfe,  
+        0xf3, 0xfe,
         0xfe, 0xfe,
-    }, 
+    },
     { // I
-        0x0f, 0x0e,  
+        0x0f, 0x0e,
         0x3f, 0x3e,
-    }, 
+    },
     { // J
-        0xee, 0xfe,  
+        0xee, 0xfe,
         0x33, 0x4e,
-    }, 
+    },
     { // K
-        0xf3, 0x4e,  
+        0xf3, 0x4e,
         0xfe, 0x1e,
-    }, 
+    },
     { // L
-        0xfe, 0xee,  
+        0xfe, 0xee,
         0xf3, 0x3e,
-    }, 
+    },
     { // M
-        0x72, 0x41,  
+        0x72, 0x41,
         0xfe, 0xef,
-    }, 
+    },
     { // N
-        0x71, 0xef,  
+        0x71, 0xef,
         0xfe, 0x24,
-    }, 
+    },
     { // O
         0x70, 0x1e,
         0x23, 0x4e,
-    }, 
+    },
     { // P
-        0xf5, 0x1e,  
+        0xf5, 0x1e,
         0xfe, 0xee,
-    }, 
+    },
     { // Q
-        0x70, 0x1e,  
+        0x70, 0x1e,
         0x23, 0xf3,
-    }, 
+    },
     { // R
-        0xf5, 0x1e,  
+        0xf5, 0x1e,
         0xfe, 0x1e,
-    }, 
+    },
     { // S
-        0x75, 0x5e,  
+        0x75, 0x5e,
         0x66, 0x4e,
-    }, 
+    },
     { // T
-        0x0f, 0x0e,  
+        0x0f, 0x0e,
         0xef, 0xee,
-    }, 
+    },
     { // U
-        0xfe, 0xfe,  
+        0xfe, 0xfe,
         0x23, 0x4e,
-    }, 
+    },
     { // V
-        0x2e, 0xe4,  
+        0x2e, 0xe4,
         0xe1, 0x7e,
-    }, 
+    },
     { // W
-        0xfe, 0xef,  
+        0xfe, 0xef,
         0x27, 0x14,
-    }, 
+    },
     { // X
-        0x23, 0x4e,  
+        0x23, 0x4e,
         0x7e, 0x1e,
-    }, 
+    },
     { // Y
-        0x23, 0x4e,  
+        0x23, 0x4e,
         0xef, 0xee,
-    }, 
+    },
     { // Z
-        0x05, 0x4e,  
+        0x05, 0x4e,
         0x76, 0x3e,
-    }, 
+    },
 };
 
 /**
@@ -307,7 +308,7 @@ void lcd_initialize(void) {
     /* Load LCD brightness and contrast from NVM, load into current. */
     lcd_default_brightness = nvm_read(EEPROM_LOC_LCD_BRIGHTNESS);
     lcd_default_contrast = nvm_read(EEPROM_LOC_LCD_CONTRAST);
-    
+
     /* Initialise ports. */
     TRISBbits.TRISB5 = 0;
     TRISBbits.TRISB7 = 0;
@@ -315,41 +316,41 @@ void lcd_initialize(void) {
     TRISEbits.TRISE0 = 0;
     TRISEbits.TRISE1 = 0;
     TRISEbits.TRISE2 = 0;
-    
+
     /* Disable pull up on RB7. */
     ODCONBbits.ODCB7 = 1;
-    
-    /* Set RB4 to use PWM3SP1. */      
+
+    /* Set RB4 to use PWM3SP1. */
     RB5PPS = 0x1c;
-    /* Set RB7 to use PWM3SP2. */   
+    /* Set RB7 to use PWM3SP2. */
     RB7PPS = 0x1d;
- 
+
     /* Disable external reset. */
     PWM3ERS = 0;
-    
+
     /* Set PWM clock to FSOC, 64MHz. */
     PWM3CLKbits.CLK = 0b00010;
-    
+
     /* Disable auto load. */
     PWM3LDS = 1;
-    
+
     /* Prescale to 1:128. */
-    PWM3CPRE = 127; 
-    
+    PWM3CPRE = 127;
+
     /* PWM at ~1kHz. */
     PWM3PR = 512;
-       
+
     /* Initial duty to zero.*/
     PWM3S1P1 = 0;
-            
+
     /* Enable PWM. */
     PWM3CONbits.EN = 1;
-    
+
     /* Set defaults. */
     lcd_set_brightness(lcd_default_brightness);
-    lcd_set_contrast(lcd_default_contrast);     
-    
-    lcd_start();   
+    lcd_set_contrast(lcd_default_contrast);
+
+    lcd_start();
 }
 
 /**
@@ -359,7 +360,7 @@ void lcd_initialize(void) {
 void lcd_start(void) {
     /* Initial driver start up delay. */
     __delay_ms(50);
-    
+
     /* Initial configuration, 2 line, 5*8 font, 8 bit.*/
     LCD_RS = 0;
     LCD_RW = 0;
@@ -367,19 +368,19 @@ void lcd_start(void) {
     LCD_E = 1;
     __delay_us(1);
     LCD_E = 0;
-    
+
     __delay_ms(1);
-    
+
     /* Reset init. */
     LCD_E = 1;
     __delay_us(1);
     LCD_E = 0;
-       
+
     /* Reset init. */
     LCD_E = 1;
     __delay_us(1);
     LCD_E = 0;
-     
+
     __delay_ms(1);
 
     /* Set display on, cursor off. */
@@ -387,14 +388,14 @@ void lcd_start(void) {
     LCD_E = 1;
     __delay_us(1);
     LCD_E = 0;
-      
+
     __delay_ms(1);
 
     /* Clear display. */
     LCD_DATA = 0b00000001;
     LCD_E = 1;
     __delay_us(1);
-    LCD_E = 0;  
+    LCD_E = 0;
 
     __delay_ms(1);
 
@@ -402,7 +403,7 @@ void lcd_start(void) {
     LCD_DATA = 0b00000110;
     LCD_E = 1;
     __delay_us(1);
-    LCD_E = 0;    
+    LCD_E = 0;
 }
 
 /**
@@ -419,31 +420,31 @@ void lcd_load_big(void) {
         LCD_E = 1;
         __delay_us(1);
         LCD_E = 0;
-        
+
         __delay_ms(1);
-        
+
         for (uint8_t l = 0; l < BIG_FONT_LINES; l++) {
             LCD_RS = 1;
             LCD_DATA = big_font_characters[c][l];
             LCD_E = 1;
             __delay_us(1);
             LCD_E = 0;
-            
+
             __delay_ms(1);
         }
-    }    
-    
+    }
+
     LCD_RS = 0;
 }
 
 /**
  * Set the brightness of the LCD backlight.
- * 
+ *
  * @param bri 0-255 brightness
  */
 void lcd_set_brightness(uint8_t bri) {
     lcd_current_brightness = bri;
-    uint16_t duty = bri * 2;    
+    uint16_t duty = bri * 2;
 
     PWM3S1P1 = duty;
     PWM3CONbits.LD = 1;
@@ -451,12 +452,12 @@ void lcd_set_brightness(uint8_t bri) {
 
 /**
  * Set the contract of the LCD display.
- * 
+ *
  * @param cont 0-255 contrast, lower numbers will be higher contrast
  */
 void lcd_set_contrast(uint8_t cont) {
     lcd_current_contrast = cont;
-    uint16_t duty = cont * 2;    
+    uint16_t duty = cont * 2;
 
     PWM3S1P2 = duty;
     PWM3CONbits.LD = 1;
@@ -466,7 +467,7 @@ void lcd_set_contrast(uint8_t cont) {
  * Service the LCD, if the shadow buffer is dirty then find changes and send
  * them to the LCD display. Only changes are sent so single character changes
  * are very quick.
- * 
+ *
  * This routine does us spinning CPU delays of 1uS, this is because the E line
  * must be held high for at least 450nS.
  */
@@ -475,15 +476,15 @@ void lcd_service(void) {
     if (!shadow_dirty) {
         return;
     }
-    
+
     /* If we're currently not sending something try, find what needs changing. */
     if (send_phase == PHASE_IDLE) {
         uint8_t next_pos = 0x00;
         uint8_t next_data = 0x00;
-        bool found_data = false;        
-        
+        bool found_data = false;
+
         /* Loop through the desired buffer, checking the shadow to see if it matches.
-         * This upon finding something to update, the current row/col are stored in 
+         * This upon finding something to update, the current row/col are stored in
          * the dirty_scan variables. This prevents us having to search through every-
          * thing again on the next service. */
         for (uint8_t row = dirty_scan_row; row < LINE_COUNT; row++) {
@@ -492,58 +493,58 @@ void lcd_service(void) {
                     /* Capture the new character to display, update the shadow buffer
                      * to match what we're about to send. */
                     next_data = buffer[LCD_BUFFER_DESIRED][row][col];
-                    buffer[LCD_BUFFER_SHADOW][row][col] = next_data;    
+                    buffer[LCD_BUFFER_SHADOW][row][col] = next_data;
                     found_data = true;
 
                     /* Calculate the position in DGRAM of the HD44780. */
                     next_pos = (0x40 * row) + col;
-                    
+
                     /* Support displays with > 2 row by offsetting the position lower. */
                     if (row > 1) {
                         next_pos -= 0x6c;
                     }
-                    
+
                     /* Store the scan position to shortcut next run. */
                     dirty_scan_row = row;
                     dirty_scan_col = col;
-                    
+
                     break;
                 }
             }
-            
+
             /* Break the loop if we find anything to change. */
             if (found_data) {
                  break;
             }
-            
+
             /* Manually reset the column. */
             dirty_scan_col = 0;
         }
-        
+
         /* If we found nothing at all, reset the scan and mark buffer clean. */
         if (!found_data) {
             dirty_scan_row = 0;
             dirty_scan_col = 0;
             shadow_dirty = false;
             return;
-        }    
+        }
 
         /* If the character we're about to send is the next character from
          * the previous we sent, we don't need to send the position. */
         if (next_pos == send_pos + 1) {
-            send_phase = PHASE_DATA_SEND;           
+            send_phase = PHASE_DATA_SEND;
         } else {
             send_phase = PHASE_POS_SEND;
         }
-                    
+
         send_pos = next_pos;
-        send_data = next_data;        
-    } 
-    
+        send_data = next_data;
+    }
+
     /* If we need to send the position. */
     if (send_phase == PHASE_POS_SEND) {
         LCD_BUSY_TRIS = 0;
-        
+
         LCD_RS = 0;
         LCD_RW = 0;
         LCD_DATA = 0b10000000 | send_pos;
@@ -551,15 +552,15 @@ void lcd_service(void) {
         __delay_us(1);
         LCD_E = 0;
         LCD_DATA = 0x00;
-           
+
         send_phase = PHASE_POS_SEND_AWAIT;
         return;
     }
-    
+
     /* If we need to send the character data. */
     if (send_phase == PHASE_DATA_SEND) {
         LCD_BUSY_TRIS = 0;
-        
+
         LCD_RS = 1;
         LCD_RW = 0;
         LCD_DATA = send_data;
@@ -568,16 +569,16 @@ void lcd_service(void) {
         LCD_E = 0;
         LCD_RS = 0;
         LCD_DATA = 0x00;
-        
+
         send_phase = PHASE_DATA_SEND_AWAIT;
         return;
     }
-    
+
     /* If we need to wait for the LCD busy signal, using the busy signal we can
      * avoid any spinning CPU for updating the CPU, or complex flow control. */
     if (send_phase == PHASE_POS_SEND_AWAIT || send_phase == PHASE_DATA_SEND_AWAIT) {
         LCD_BUSY_TRIS = 1;
-        
+
         /* Checking the busy signal requires us to change to R mode and set E,
          * checking the BUSY flag while E is high. Busy lags E by a few nS. */
         LCD_RS = 0;
@@ -585,9 +586,9 @@ void lcd_service(void) {
         LCD_DATA = 0x00;
         LCD_E = 1;
         __delay_us(1);
-        
+
         /* If we're not busy, we can move onto the next phase. */
-        if (!LCD_BUSY) {            
+        if (!LCD_BUSY) {
             if (send_phase == PHASE_POS_SEND_AWAIT) {
                 /* If we sent the position, we now need to send the data. */
                 send_phase = PHASE_DATA_SEND;
@@ -596,16 +597,16 @@ void lcd_service(void) {
                 send_phase = PHASE_IDLE;
             }
         }
-        
+
         LCD_E = 0;
         LCD_RW = 0;
-        
+
         /* We need to move TRIS back to OUTPUT, if we don't setting RW makes DB7/BUSY
          * high impedance, and our PIN would also be high impedance - meaning that
          * the busy signal may be high next time we read. Setting us to a low output
          * drains it. */
         LCD_BUSY_TRIS = 0;
-    }    
+    }
 }
 
 /**
@@ -621,7 +622,7 @@ void lcd_clear(void) {
 
 /**
  * Update the user buffer with new content.
- * 
+ *
  * @param row row of the LCD panel
  * @param col column in row to start content
  * @param size size of content
@@ -637,36 +638,51 @@ const uint8_t *hex_map = "0123456789ABCDEF";
 
 /**
  * Print a number to the LCD screen.
- * 
+ *
  * @param row row of the LCD panel
  * @param col column in row to start number
  * @param digits number of digits
  * @param number number to display
  */
-void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint8_t number) {    
+void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint16_t val) {
+    uint8_t out[8] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
+
+    uint8_t p = 0;
+    int32_t w = val;
+
     for (uint8_t i = 0; i < digits; i++) {
-        uint8_t displayNumber = 0;
-        uint8_t remaining = digits - (i+1);
-        
-        if (remaining == 0) {
-            displayNumber = number % 10;
-        } else {
-            displayNumber = number / 10;            
-        }
-        
-        lcd_update(row, col+i, 1, &hex_map[displayNumber]); 
+        int32_t mult = pow(10, digits - i - 1);
+
+        int8_t d = w / mult;
+        w -= (d * mult);
+
+        out[p++] = '0' + d;
     }
+
+    lcd_update(row, col, digits, &out);
+}
+
+/**
+ * Print a hex number to the LCD screen.
+ *
+ * @param row row of the LCD panel
+ * @param col column in row to start number
+ * @param number number to display
+ */
+void lcd_hex(uint8_t row, uint8_t col, uint8_t number) {
+    lcd_update(row, col, 1, &hex_map[(number >> 4) & 0x0f]);
+    lcd_update(row, col + 1, 1, &hex_map[number & 0x0f]);
 }
 
 /**
  * Use 4x2 font to display a character, on a 20x4 screen.
- * 
+ *
  * @param pos character position
  * @param ch character to display
  */
 void lcd_update_big(uint8_t pos, uint8_t ch) {
     uint8_t t[8];
-    
+
     t[0] = (big_font[ch][0] >> 4) & 0x0f;
     t[1] = big_font[ch][0] & 0x0f;
     t[2] = (big_font[ch][1] >> 4) & 0x0f;
@@ -675,7 +691,7 @@ void lcd_update_big(uint8_t pos, uint8_t ch) {
     t[5] = big_font[ch][2] & 0x0f;
     t[6] = (big_font[ch][3] >> 4) & 0x0f;
     t[7] = big_font[ch][3] & 0x0f;
-    
+
     for (uint8_t i = 0; i < 8; i++) {
         switch(t[i]) {
             case 0b1110:
@@ -683,12 +699,12 @@ void lcd_update_big(uint8_t pos, uint8_t ch) {
                 break;
             case 0b1111:
                 t[i] = 0xff;
-                break;  
+                break;
         }
     }
-    
+
     lcd_update(1, 4*pos, 4, &t[0]);
-    lcd_update(2, 4*pos, 4, &t[4]);    
+    lcd_update(2, 4*pos, 4, &t[4]);
 }
 
 /**
@@ -701,7 +717,7 @@ void lcd_sync(void) {
             buffer[LCD_BUFFER_DESIRED][row][col] = buffer[LCD_BUFFER_USER][row][col];
         }
     }
-    
+
     shadow_dirty = true;
 }
 
@@ -709,22 +725,22 @@ void lcd_sync(void) {
  * Initialise the LCD screen with useful data, this will remain on screen unless
  * the LCD screen is used by the module for the game.
  */
-void lcd_default(void) {    
+void lcd_default(void) {
     const uint8_t *welcome_first = "KTANE by Melair";
     const uint8_t *welcome_second_mode = "Mode:";
     const uint8_t *welcome_second_can = "CAN:";
 
     uint8_t can_id = can_get_id();
     uint8_t mode = mode_get();
-    
+
     lcd_update(0, 0, 15, welcome_first);
-    
+
     lcd_update(1, 0, 5, welcome_second_mode);
     lcd_update(1, 6, 1, &hex_map[(mode >> 4) & 0x0f]);
-    lcd_update(1, 7, 1, &hex_map[mode & 0x0f]);   
+    lcd_update(1, 7, 1, &hex_map[mode & 0x0f]);
     lcd_update(1, 9, 4, welcome_second_can);
     lcd_update(1, 14, 1, &hex_map[(can_id >> 4) & 0x0f]);
     lcd_update(1, 15, 1, &hex_map[can_id & 0x0f]);
-    
+
     lcd_sync();
 }

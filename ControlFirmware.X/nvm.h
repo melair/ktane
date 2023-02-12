@@ -13,7 +13,7 @@ void nvm_write_pfm(uint24_t addr, uint16_t data);
 /* PIC18F57Q84 EEPROM, 0x000-0x3ff. */
 
 #define EEPROM_LOC_VERSION_HIGH                     0x000 /* Version of EEPROM data, allowing setting of defaults. */
-#define EEPROM_LOC_VERSION_LOW                      0x001 
+#define EEPROM_LOC_VERSION_LOW                      0x001
 
 #define EEPROM_LOC_MODE_CONFIGURATION               0x010 /* Module configuration mode. */
 #define EEPROM_LOC_CAN_ID                           0x011 /* Configured CAN identifier. */

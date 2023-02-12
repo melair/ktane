@@ -17,7 +17,7 @@ void protocol_network_domain_announce_receive(uint8_t id, uint8_t size, uint8_t 
 
 /**
  * Handle reception of a new packet from CAN that is for the CAN address prefix.
- * 
+ *
  * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
  * @param size size of CAN payload received
  * @param payload pointer to payload
@@ -27,7 +27,7 @@ void protocol_network_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     if (size == 0) {
         return;
     }
-    
+
     /* Switch to the correct packet based on opcode in packet. */
     switch (payload[0]) {
         case OPCODE_NETWORK_ADDRESS_ANNOUNCE:
@@ -48,9 +48,9 @@ void protocol_network_receive(uint8_t id, uint8_t size, uint8_t *payload) {
 
 /*
  * CAN Address - Announcement Packet - (0x00)
- * 
+ *
  * Packet Layout:
- * 
+ *
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -65,9 +65,9 @@ void protocol_network_receive(uint8_t id, uint8_t size, uint8_t *payload) {
  */
 void protocol_network_address_announce_send(void) {
     uint8_t payload[5];
-    
+
     uint32_t serial = serial_get();
-    
+
     payload[0] = OPCODE_NETWORK_ADDRESS_ANNOUNCE;
     payload[1] = (serial >> 24) & 0xff;
     payload[2] = (serial >> 16) & 0xff;
@@ -79,27 +79,27 @@ void protocol_network_address_announce_send(void) {
 
 /**
  * Receive a CAN address announcement packet.
- * 
+ *
  * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
  * @param size size of CAN payload received
  * @param payload pointer to payload
  */
-void protocol_network_address_announce_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
+void protocol_network_address_announce_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check, if size is < 4 there is no mode. */
     if (size < 5) {
         return;
-    }              
+    }
 
     uint32_t serial = (uint32_t) (((uint32_t) payload[1] << 24) | ((uint32_t)payload[2] << 16) | ((uint32_t)payload[3] << 8) | (uint32_t) payload[4]);
-    
+
     can_address_check(id);
 }
 
 /*
  * CAN Address - NAK Packet - (0x01)
- * 
+ *
  * Packet Layout:
- * 
+ *
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -114,9 +114,9 @@ void protocol_network_address_announce_receive(uint8_t id, uint8_t size, uint8_t
  */
 void protocol_network_address_nak_send(void) {
     uint8_t payload[5];
-    
+
     uint32_t serial = serial_get();
-    
+
     payload[0] = OPCODE_NETWORK_ADDRESS_NAK;
     payload[1] = (serial >> 24) & 0xff;
     payload[2] = (serial >> 16) & 0xff;
@@ -128,19 +128,19 @@ void protocol_network_address_nak_send(void) {
 
 /**
  * Receive a CAN address nak packet.
- * 
+ *
  * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
  * @param size size of CAN payload received
  * @param payload pointer to payload
  */
-void protocol_network_address_nak_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
+void protocol_network_address_nak_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check, if size is < 4 there is no mode. */
     if (size < 5) {
         return;
-    }              
+    }
 
     uint32_t serial = (uint32_t) (((uint32_t) payload[1] << 24) | ((uint32_t)payload[2] << 16) | ((uint32_t)payload[3] << 8) | (uint32_t) payload[4]);
-    
+
     can_address_conflict(id);
 }
 
@@ -149,7 +149,7 @@ void protocol_network_address_nak_receive(uint8_t id, uint8_t size, uint8_t *pay
  */
 void protocol_network_domain_announce_send(uint8_t domain) {
     uint8_t payload[2];
-        
+
     payload[0] = OPCODE_NETWORK_DOMAIN_ANNOUNCE;
     payload[1] = domain;
 
@@ -158,16 +158,16 @@ void protocol_network_domain_announce_send(uint8_t domain) {
 
 /**
  * Receive a CAN domain announcement packet.
- * 
+ *
  * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
  * @param size size of CAN payload received
  * @param payload pointer to payload
  */
-void protocol_network_domain_announce_receive(uint8_t id, uint8_t size, uint8_t *payload) {    
+void protocol_network_domain_announce_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check, if size is < 4 there is no mode. */
     if (size < 2) {
         return;
-    }      
+    }
 
     uint8_t domain = payload[1];
     can_domain_update(domain);

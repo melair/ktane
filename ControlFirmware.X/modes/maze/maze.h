@@ -5,12 +5,12 @@
 
 void maze_initialise(void);
 
-typedef struct {        
-    uint8_t maze;    
-    
+typedef struct {
+    uint8_t maze;
+
     uint8_t current;
     uint8_t destination;
-    
+
     uint8_t animation_frame;
 } mode_maze_t;
 

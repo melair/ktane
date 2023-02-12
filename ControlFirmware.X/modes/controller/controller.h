@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-typedef struct {        
+typedef struct {
 } mode_controller_control_t;
 
 void controller_initialise(void);

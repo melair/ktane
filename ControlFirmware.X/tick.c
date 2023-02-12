@@ -1,6 +1,6 @@
 /**
  * Provides 10ms tick for systems to build around.
- * 
+ *
  * Uses: TIMER2
  */
 #include <xc.h>
@@ -12,6 +12,8 @@
  * long enough not to care. */
 volatile uint32_t tick_value = 0;
 
+/* 2Hz tick flag. */
+volatile bool tick_2hz = false;
 /* 20Hz tick flag. */
 volatile bool tick_20hz = false;
 /* 100Hz tick flag. */
@@ -22,29 +24,29 @@ volatile bool tick_1khz = false;
 volatile bool tick_2khz = false;
 
 /* Internal tick counter, used to maintain above tick flags. */
-volatile uint8_t internal_tick = 0;
+volatile uint16_t internal_tick = 0;
 
 
 /**
- * Initialise the ticker to provide an asynchronous time, uses Timer0 ticking 
+ * Initialise the ticker to provide an asynchronous time, uses Timer0 ticking
  * at 2kHz.
  */
 void tick_initialise(void) {
     /* Set clock to 500kHz source. */
     T0CON1bits.CS = 0b101;
-    
+
     /* Set prescaler to 2, to 250kHz. */
     T0CON1bits.CKPS = 0b0001;
-    
+
     /* Set to 8 bit timer with period. */
     T0CON0bits.MD16 = 0;
-    
+
     /* Set period to 125. */
     TMR0H = 125;
-    
+
     /* Enable interrupt, require to wake us from IDLE mode. */
     PIE3bits.TMR0IE = 1;
-    
+
     /* Switch on timer. */
     T0CON0bits.EN = 1;
 }
@@ -54,41 +56,46 @@ void tick_initialise(void) {
  * increments internal counter, maintains ticks and main time source.
  */
 void tick_service(void) {
+    tick_2hz = false;
     tick_20hz = false;
     tick_100hz = false;
     tick_1khz = false;
     tick_2khz = false;
-    
+
     if(PIR3bits.TMR0IF == 1) {
         PIR3bits.TMR0IF = 0;
-                
+
         tick_2khz = true;
         if (internal_tick % 2 == 0) {
-            tick_1khz = true;            
+            tick_1khz = true;
             tick_value++;
         }
-        
+
         if (internal_tick % 20 == 0) {
             tick_100hz = true;
         }
-        
+
         if (internal_tick % 100 == 0) {
             tick_20hz = true;
+        }
+
+        if (internal_tick % 1000 == 0) {
+            tick_2hz = true;
             internal_tick = 0;
         }
-        
-        internal_tick++;                   
+
+        internal_tick++;
     }
 }
 
 /**
  * Block and wait the number of milliseconds provided.
- * 
+ *
  * @param delay number of milliseconds to wait
  */
 void tick_wait(uint8_t delay) {
     uint32_t target = tick_value + delay;
-    
+
     while (tick_value < target) {
         tick_service();
         CLRWDT();

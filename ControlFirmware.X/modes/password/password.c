@@ -39,28 +39,28 @@ void password_render_display(void);
 /* Keymatrix */
 pin_t password_cols[] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3, KPIN_NONE};
 pin_t password_rows[] = {KPIN_B4, KPIN_B5, KPIN_B6, KPIN_B7, KPIN_NONE};
-    
+
 /**
  * Initialise the password puzzle.
  */
 void password_initialise(void) {
     /* Load the big font into the LCD. */
     lcd_load_big();
-    
+
     mode_register_callback(GAME_ALWAYS, password_service, NULL);
     mode_register_callback(GAME_IDLE, password_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, password_service_setup, &tick_20hz);
-    mode_register_callback(GAME_RUNNING, password_service_running, &tick_20hz);       
-            
+    mode_register_callback(GAME_RUNNING, password_service_running, &tick_20hz);
+
     /* Initialise keymatrix. */
     keymatrix_initialise(&password_cols[0], &password_rows[0], KEYMODE_COL_TO_ROW);
-    
-    lcd_set_contrast(0x8a); 
+
+    lcd_set_contrast(0x8a);
 }
 
 /**
  * Service the password module.
- * 
+ *
  * @param first true if first run
  */
 void password_service(bool first) {
@@ -69,7 +69,7 @@ void password_service(bool first) {
 
 /**
  * Handle the idle state
- * 
+ *
  * @param first true if first call
  */
 void password_service_idle(bool first) {
@@ -80,14 +80,14 @@ void password_service_idle(bool first) {
 
 /**
  * Set up the password game.
- * 
+ *
  * @param first true if first call
  */
 void password_service_setup(bool first) {
     if (first) {
         password_generate();
         game_module_ready(true);
-        
+
         /* Preselect the password characters. */
         for (uint8_t i = 0; i < LENGTH; i++) {
             mode_data.password.selected[i] = rng_generate8(&game.module_seed, PASSWORD_RNG_MASK) % LETTER_OPTIONS;
@@ -100,20 +100,20 @@ void password_service_running(bool first) {
         keymatrix_clear();
         password_render_display();
     }
-    
+
     if (this_module->solved) {
         return;
     }
-    
+
     /* Handle moves. */
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
             /* Feedback to user button was accepted. */
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);           
-            
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+
             /* Map bits from keymatrix into a number. */
-            uint8_t button = ((press & KEY_ROW_BITS) >> 3) + ((press & KEY_COL_BITS) * 4);            
-            
+            uint8_t button = ((press & KEY_ROW_BITS) >> 3) + ((press & KEY_COL_BITS) * 4);
+
             if (button < 5) {
                 /* Down button pressed.*/
                 if (mode_data.password.selected[button] != 0) {
@@ -130,7 +130,7 @@ void password_service_running(bool first) {
             } else if (button == 10) {
                 /* Solve button pressed. */
                 bool match = true;
-                
+
                 /* Check to see if each character matches. */
                 for (uint8_t i = 0; i < LENGTH; i++) {
                     if (words[mode_data.password.word][i] != mode_data.password.letters[i][mode_data.password.selected[i]]) {
@@ -138,11 +138,11 @@ void password_service_running(bool first) {
                         break;
                     }
                 }
-                
+
                 if (match) {
-                    game_module_solved(true); 
+                    game_module_solved(true);
                     lcd_clear();
-                    lcd_sync();                    
+                    lcd_sync();
                 } else {
                     game_module_strike(1);
                 }
@@ -156,11 +156,11 @@ void password_service_running(bool first) {
  */
 void password_render_display(void) {
     lcd_clear();
-    
+
     for (uint8_t i = 0; i < LENGTH; i++) {
         lcd_update_big(i, (mode_data.password.letters[i][mode_data.password.selected[i]] - 'A' + BIG_FONT_LETTER_BASE));
     }
-        
+
     lcd_sync();
 }
 
@@ -168,15 +168,15 @@ void password_render_display(void) {
  * Generate and initialise all password letters.
  */
 void password_generate(void) {
-    mode_data.password.word = rng_generate8(&game.module_seed, PASSWORD_RNG_MASK) % WORD_COUNT;        
+    mode_data.password.word = rng_generate8(&game.module_seed, PASSWORD_RNG_MASK) % WORD_COUNT;
 
     do {
-        password_generate_letters();       
+        password_generate_letters();
     } while (password_options_matches_other());
-    
+
     password_copy_and_shuffle();
-    
-    lcd_clear();   
+
+    lcd_clear();
 }
 
 /**
@@ -187,18 +187,18 @@ void password_generate_letters(void) {
     for (uint8_t i = 0; i < LENGTH; i++) {
         for (uint8_t j = 0; j < (LETTER_OPTIONS - 1); j++) {
             bool while_dup = true;
-            
+
             /* Generate a new character that is unique for this column, and does not match word. */
             while(while_dup) {
                 mode_data.password.letters[i][j] = (rng_generate8(&game.module_seed, PASSWORD_RNG_MASK) % ALPHABET) + 'A';
-                
+
                 /* Ensure character does not match target word. */
                 if (mode_data.password.letters[i][j] == words[mode_data.password.word][i]) {
                     continue;
                 }
-                
+
                 /* Ensure generated character is not already in set. */
-                while_dup = false;                
+                while_dup = false;
                 for (uint8_t k = 0; k < j; k++) {
                     if (mode_data.password.letters[i][j] == mode_data.password.letters[i][k]) {
                         while_dup = true;
@@ -212,7 +212,7 @@ void password_generate_letters(void) {
 
 /**
  * Check that the letters only match the password we need to find.
- * 
+ *
  * @return true if letters match another password
  */
 bool password_options_matches_other(void) {
@@ -220,24 +220,24 @@ bool password_options_matches_other(void) {
         if (i == mode_data.password.word) {
             continue;
         }
-        
+
         uint8_t match_count = 0;
-        
+
         for (uint8_t j = 0; j < LENGTH; j++) {
             for (uint8_t k = 0; k < (LETTER_OPTIONS - 1); k++) {
                 if (mode_data.password.letters[i][k] == words[i][k]) {
                     match_count++;
                     break;
                 }
-            }                       
-        }        
-        
+            }
+        }
+
         if (match_count == LENGTH) {
             return true;
-        }        
+        }
     }
-    
-    
+
+
     return false;
 }
 
@@ -247,13 +247,13 @@ bool password_options_matches_other(void) {
 void password_copy_and_shuffle(void) {
     for (uint8_t i = 0; i < LENGTH; i++) {
         mode_data.password.letters[i][LETTER_OPTIONS - 1] = words[mode_data.password.word][i];
-     
+
         for (uint8_t j = 0; j < LETTER_OPTIONS; j++) {
             uint8_t new_pos = rng_generate8(&game.module_seed, PASSWORD_RNG_MASK) % LETTER_OPTIONS;
-            
+
             uint8_t t = mode_data.password.letters[i][j];
             mode_data.password.letters[i][j] = mode_data.password.letters[i][new_pos];
             mode_data.password.letters[i][new_pos] = t;
-        }                
-    }   
+        }
+    }
 }

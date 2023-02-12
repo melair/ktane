@@ -4,6 +4,35 @@
 #include <stdbool.h>
 #include "game.h"
 
+/* Number of errors in each module to track. */
+#define ERROR_COUNT  8
+
+/* Structure for an error received from a module. */
+typedef struct {
+    uint16_t        code;
+    struct {
+        unsigned count  :7;
+        unsigned active :1;
+    };
+} module_error_t;
+
+/* Structure for a module. */
+typedef struct {
+    struct {
+        unsigned    INUSE :1;
+        unsigned    LOST  :1;
+    }               flags;
+    uint8_t         id;
+    uint8_t         mode;
+    uint16_t        firmware;
+    uint32_t        last_seen;
+    uint32_t        serial;
+    uint8_t         domain;
+
+    module_error_t  errors[ERROR_COUNT];
+    module_game_t   game;
+} module_t;
+
 void module_initialise(void);
 void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain);
 void module_error_record(uint8_t id, uint16_t code, bool active);
@@ -14,6 +43,8 @@ void module_set_self_can_id(uint8_t id);
 void module_set_self_domain(uint8_t domain);
 module_game_t *module_get_game(uint8_t idx);
 module_game_t *module_get_game_by_id(uint8_t id);
+module_t *module_get(uint8_t idx);
+module_error_t *module_get_errors(uint8_t idx, uint8_t err);
 
 /* Total number of modules that can be part of the network. */
 #define MODULE_COUNT 24

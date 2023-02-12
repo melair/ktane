@@ -1,10 +1,10 @@
 /**
  * Main file for KTANE, containing main loop and MCU initialisation functions.
- * 
+ *
  * Firmware is designed to be non blocking, there should be no loops to wait
  * for either time, or a register bit to clear/set. The PICs peripherals all
  * support interrupt driven operation.
- * 
+ *
  * As a result, code tends to be split between an interrupt for handling things
  * that can be processed very quickly (such as incrementing a value, moving
  * along a buffer), and operations which can take a longer time, or can be
@@ -24,8 +24,6 @@
 #include "mode.h"
 #include "module.h"
 #include "nvm.h"
-#include "peripherals/timer/segment.h"
-#include "protocol_module.h"
 #include "serial.h"
 #include "status.h"
 #include "tick.h"
@@ -64,121 +62,121 @@ void pmd_initialise(void);
 void main(void) {
     /* Drive everything unused to low. */
     safe_unused_pins();
-    
+
     /* Reconfigure system arbiter. */
     arbiter_initialise();
-    
+
     /* Configure sleep behaviour, put CPU in IDLE. */
     CPUDOZEbits.IDLEN = 1;
-    
+
     /* Disable unused peripherals. */
     pmd_initialise();
-    
+
     /* Initialise interrupts. */
-    int_initialise();   
-          
+    int_initialise();
+
     /* Initialise firmware. */
     firmware_initialise();
-    
+
     /* Unlock PPS during initialisation. */
     pps_unlock();
-                                  
+
     /* Initialise tick. */
     tick_initialise();
-    
+
     /* Initialise EEPROM, including data migrations. */
-    nvm_initialise();    
-    
+    nvm_initialise();
+
     /* Initialise RNG. */
     rng_initialise();
-    
+
     /* Initialise LCD control. */
     lcd_initialize();
-        
+
     /* Initialise ARGB. */
     argb_initialise();
-    
+
     /* Initialise serial number. */
     serial_initialise();
-    
+
     /* Initialise CAN bus. */
     can_initialise();
 
     /* Initialise Buzzer. */
     buzzer_initialise();
-   
-    /* Initialise modules. */
-    module_initialise();
-       
+
     /* Initialise the mode. */
     mode_initialise();
-    
+
+    /* Initialise modules. */
+    module_initialise();
+
     /* Initialise game state. */
     game_initialise();
-    
+
     /* Lock PPS during main execution. */
-    pps_lock();      
-      
+    pps_lock();
+
     /* Beep on start. */
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);
-    
+
     /* Set status led to ready. */
     status_set(STATUS_READY);
-           
+
     /* Main loop. */
     while(true) {
         /* Clear watchdog. */
-        CLRWDT();    
-        
+        CLRWDT();
+
         /* Service the tick. */
         tick_service();
-                
+
         /* Service CAN buffers. */
         can_service();
-        
+
         /* Service module subsystem. */
         module_service();
-                
+
         /* Service the game state. */
         game_service();
-        
+
         /* Update ARGB string if needed. */
-        argb_service();    
+        argb_service();
 
         /* Service LCD driver. */
         lcd_service();
-        
+
         /* Service buzzer driver. */
         buzzer_service();
-        
+
         /* Service status LED. */
         status_service();
-        
+
         /* Service edgework. */
         edgework_service();
-        
+
         /* Service the mode. */
-        mode_service();   
-        
+        mode_service();
+
         /* Service RNG. */
         rng_service();
-        
+
         /* Put MCU into IDLE mode, no CPU instructions but peripherals continue.
-         * 
+         *
          * Full SLEEP would be ideal, but is incompatible with the CAN peripheral
          * as SLEEP disables the memory controller. CAN can wake upon start of
          * message but the packet would likely be lost. This behaviour would be
          * suitable for a device that comes on once every few seconds, but for
          * something that needs to wake up at least every 200ms, it wont work.
-         * 
-         * CPU will wake from the tick timer. This doesn't save much power, but 
-         * it prevents functions spinning that don't need to operate faster than 
+         *
+         * CPU will wake from the tick timer. This doesn't save much power, but
+         * it prevents functions spinning that don't need to operate faster than
          * the tick refresh. */
         SLEEP();
     }
 }
-                
-/** 
+
+/**
  * Safe unused pins.
  */
 void safe_unused_pins(void) {
@@ -189,7 +187,7 @@ void safe_unused_pins(void) {
     ANSELD = 0;
     ANSELE = 0;
     ANSELF = 0;
-    
+
     /* Set all pins to output. */
     TRISA = 0;
     TRISB = 0;
@@ -197,7 +195,7 @@ void safe_unused_pins(void) {
     TRISD = 0;
     TRISE = 0;
     TRISF = 0;
-            
+
     /* Drive all pins low. */
     LATA = 0;
     LATB = 0;
@@ -233,20 +231,20 @@ void arbiter_initialise(void) {
     PRLOCK = 0x55;
     PRLOCK = 0xAA;
     PRLOCKbits.PRLOCKED = 0;
-    
+
     DMA1PR = 0;
     DMA2PR = 1;
     ISRPR = 2;
     MAINPR = 3;
-    SCANPR = 4;    
-    
+    SCANPR = 4;
+
     PRLOCK = 0x55;
     PRLOCK = 0xAA;
     PRLOCKbits.PRLOCKED = 1;
 }
 
 /**
- * Disable peripherals not used, this saves some power. 
+ * Disable peripherals not used, this saves some power.
  */
 void pmd_initialise(void) {
     PMD0 = 0b01101111; // Keep FOSC and CRC

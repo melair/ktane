@@ -42,7 +42,7 @@ void buzzer_initialise(void) {
  */
 void buzzer_on(uint8_t volume, uint16_t frequency) {
     PWM2CONbits.EN = 0;
-    
+
     PWM2PR = (uint16_t) ((uint24_t) 500000 / (uint24_t) frequency);
     if (PWM2PR == 0) {
         return;

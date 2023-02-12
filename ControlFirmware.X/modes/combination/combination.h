@@ -3,7 +3,7 @@
 
 void combination_initialise(void);
 
-typedef struct {        
+typedef struct {
     int8_t value;
     bool clockwise_traveled;
     bool anticlockwise_traveled;

@@ -100,7 +100,7 @@ const uint8_t maze_layouts[MAZE_COUNT][18] = {
 
 /* Location of the maze beacons, used by players to identify the maze layout. */
 const uint8_t maze_beacons[MAZE_COUNT][2] = {
-    { 
+    {
         6,
         17,
     },
@@ -145,10 +145,10 @@ pin_t maze_rows[] = {KPIN_NONE};
 /**
  * Initialise the maze mode.
  */
-void maze_initialise(void) {    
+void maze_initialise(void) {
     /* Register game states. */
     mode_register_callback(GAME_ALWAYS, maze_service, NULL);
-    mode_register_callback(GAME_SETUP, maze_service_setup, &tick_20hz);    
+    mode_register_callback(GAME_SETUP, maze_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, maze_service_running, &tick_20hz);
 
     /* Initialise keymatrix. */
@@ -164,20 +164,20 @@ void maze_service(bool first) {
 
 /**
  * Set up the maze, choose the maze, start and finish positions.
- * 
+ *
  * @param first true if first time the function is called
  */
 void maze_service_setup(bool first) {
     if (first) {
-        mode_data.maze.maze = rng_generate8(&game.module_seed, MAZE_RNG_MASK) % MAZE_COUNT;        
+        mode_data.maze.maze = rng_generate8(&game.module_seed, MAZE_RNG_MASK) % MAZE_COUNT;
         mode_data.maze.destination = rng_generate8(&game.module_seed, MAZE_RNG_MASK) % MAZE_SIZE;
         mode_data.maze.current = mode_data.maze.destination;
-        
+
         /* Ensure that puzzle does not self solve. */
         while (mode_data.maze.current == mode_data.maze.destination) {
             mode_data.maze.current = rng_generate8(&game.module_seed, MAZE_RNG_MASK) % MAZE_SIZE;
         }
-        
+
         game_module_ready(true);
     }
 }
@@ -185,24 +185,24 @@ void maze_service_setup(bool first) {
 /**
  * Remap the position in the array to an argb position, this is needed due to
  * the argb matrix being a snake.
- * 
+ *
  * @param array array position
  * @return argb position
  */
 uint8_t maze_map_array_to_argb(uint8_t array) {
     uint8_t row = array / 6;
-       
+
     if (row % 2 == 0) {
         return array;
-    } else {     
-        return ((row + 1) * 6) - 1 - (array % 6);        
+    } else {
+        return ((row + 1) * 6) - 1 - (array % 6);
     }
 }
 
 /**
- * Service the maze game, check for new input, check for solved and animate 
+ * Service the maze game, check for new input, check for solved and animate
  * display.
- * 
+ *
  * @param first true if first time function is called
  */
 void maze_service_running(bool first) {
@@ -210,27 +210,27 @@ void maze_service_running(bool first) {
     if (first) {
         keymatrix_clear();
     }
-    
+
     if (this_module->solved) {
         return;
     }
-    
+
     /* Handle moves. */
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
             /* Feedback to user button was accepted. */
             buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
-           
+
             /* Calculate the bits to check. */
             uint8_t i = mode_data.maze.current / 2;
             uint8_t permitted = maze_layouts[mode_data.maze.maze][i];
-            
+
             if (mode_data.maze.current % 2 == 0) {
                 permitted = permitted >> 4;
             }
-            
+
             uint8_t check = 1 << 3 - (press & KEY_NUM_BITS);
-            
+
             /* Verify if direction is valid to move. */
             if ((permitted & check) != 0) {
                 uint8_t new_pos = mode_data.maze.current;
@@ -248,7 +248,7 @@ void maze_service_running(bool first) {
                         new_pos--;
                         break;
                 }
-                
+
                 /* Sanity check new position, strike if it would be illegal. */
                 if (new_pos > MAZE_SIZE) {
                     game_module_strike(1);
@@ -258,20 +258,20 @@ void maze_service_running(bool first) {
             } else {
                 /* It was not, strike. */
                 game_module_strike(1);
-            }                          
+            }
         }
     }
-    
+
     /* Check location, mark as solved if solved. */
     if (mode_data.maze.current == mode_data.maze.destination && !this_module->solved) {
-        game_module_solved(true);       
+        game_module_solved(true);
     }
-    
+
     for (uint8_t i = 0; i < MAZE_SIZE; i++) {
         argb_set(1 + i, 0, 0, 0, 0);
     }
 
-    if (!this_module->solved) {        
+    if (!this_module->solved) {
         /* Draw the beacons regardless. */
         argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][0]), 31, 0, 255, 0);
         argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][1]), 31, 0, 255, 0);
@@ -279,58 +279,58 @@ void maze_service_running(bool first) {
         /* Draw the cursor. */
         maze_animate_cursor(mode_data.maze.current, (mode_data.maze.current == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.current == maze_beacons[mode_data.maze.maze][1]));
         /* Draw the destination. */
-        maze_animate_destination(mode_data.maze.destination, (mode_data.maze.destination == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.destination == maze_beacons[mode_data.maze.maze][1]));                      
+        maze_animate_destination(mode_data.maze.destination, (mode_data.maze.destination == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.destination == maze_beacons[mode_data.maze.maze][1]));
     }
 
     mode_data.maze.animation_frame++;
 
     if (mode_data.maze.animation_frame == 20) {
         mode_data.maze.animation_frame = 0;
-    } 
+    }
 }
 
 /**
  * Animate the players cursor in the maze, this cursor breaths white. If on
  * top of a beacon it will breath between white and green.
- * 
+ *
  * @param loc cursor location
  * @param beacon true if on beacon
  */
 void maze_animate_cursor(uint8_t loc, bool beacon) {
     uint8_t sec_g = 0;
-    
+
     if (beacon) {
         sec_g = 255;
     }
-   
+
     uint8_t i = mode_data.maze.animation_frame;
     if (i > 9) {
         i = 19 - i;
     }
-    
+
     uint8_t r = (255 / 10) * i;
     uint8_t g = (255 / 10) * i;
     if (beacon) {
         g = 255;
     }
     uint8_t b = (255 / 10) * i;
-        
+
     argb_set(1 + maze_map_array_to_argb(loc), 31, r, g, b);
 }
 
 /**
  * Animate the destination in the maze, this blinks red. If on top of a beacon
  * it will blink between red and green.
- * 
+ *
  * @param loc destination location
  * @param beacon true if on beacon
  */
 void maze_animate_destination(uint8_t loc, bool beacon) {
     if (mode_data.maze.animation_frame < 10) {
-        argb_set(1 + maze_map_array_to_argb(loc), 31, 255, 0, 0);    
+        argb_set(1 + maze_map_array_to_argb(loc), 31, 255, 0, 0);
     } else {
         if (beacon) {
-            argb_set(1 + maze_map_array_to_argb(loc), 31, 0, 255, 0);    
+            argb_set(1 + maze_map_array_to_argb(loc), 31, 0, 255, 0);
         }
     }
 }

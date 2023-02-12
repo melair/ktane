@@ -5,10 +5,10 @@ void whosonfirst_initialise(void);
 
 #define WHOSONFIRST_WORD_COUNT 6
 
-typedef struct {        
+typedef struct {
     uint8_t stage;
-    
-    uint8_t topword;    
+
+    uint8_t topword;
     uint8_t words[WHOSONFIRST_WORD_COUNT];
 } mode_whosonfirst_t;
 

@@ -12,14 +12,14 @@
 
 /**
  * Provide configuration support for pins on KTANE ports.
- * 
+ *
  * @param port port to change
  * @param mode INPUT or OUTPUT mode
  * @param pullup true if weak pull up should be enabled
  */
 void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
     uint8_t mask = KPIN_PIN_MASK(pin);
-    
+
     switch(pin & KPIN_PORT_MASK) {
         case 0b00000000:
             if (mode == PIN_OUTPUT) {
@@ -27,7 +27,7 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
             } else {
                 KTRISA |= mask;
             }
-            
+
             if (pullup) {
                 KWPUA |= mask;
             } else {
@@ -40,63 +40,63 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
             } else {
                 KTRISB |= mask;
             }
-            
+
             if (pullup) {
                 KWPUB |= mask;
             } else {
                 KWPUB &= ~mask;
-            }         
-            break;            
+            }
+            break;
         case 0b00010000:
             if (mode == PIN_OUTPUT) {
                 KTRISC &= ~mask;
             } else {
                 KTRISC |= mask;
             }
-            
+
             if (pullup) {
                 KWPUC |= mask;
             } else {
                 KWPUC &= ~mask;
             }
-            break;            
+            break;
     }
 }
 
 /**
  * Read from KTANE pin.
- * 
+ *
  * @param pin to read from
  * @return  true if read value is high
  */
 bool kpin_read(pin_t pin) {
     uint8_t mask = KPIN_PIN_MASK(pin);
     uint8_t val;
-    
+
     switch(pin & KPIN_PORT_MASK) {
         case 0b00000000:
             val = KPORTA;
             break;
         case 0b00001000:
-            val = KPORTB;         
-            break;            
+            val = KPORTB;
+            break;
         case 0b00010000:
             val = KPORTC;
-            break;            
+            break;
     }
-    
+
     return ((val & mask) == mask);
 }
 
 /**
  * Write to KTANE pin.
- * 
+ *
  * @param pin to write to
  * @param value high or low value to write
  */
 void kpin_write(pin_t pin, bool value) {
     uint8_t mask = KPIN_PIN_MASK(pin);
-    
+
     switch(pin & KPIN_PORT_MASK) {
         case 0b00000000:
             if (value) {
@@ -111,13 +111,13 @@ void kpin_write(pin_t pin, bool value) {
             } else {
                 KLATB &= ~mask;
             }
-            break;           
+            break;
         case 0b00010000:
             if (value) {
                 KLATC |= mask;
             } else {
                 KLATC &= ~mask;
             }
-            break;         
+            break;
     }
 }
