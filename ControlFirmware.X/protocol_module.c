@@ -8,16 +8,19 @@
 #include "can.h"
 #include "serial.h"
 #include "status.h"
+#include "nvm.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_reset_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_identify_receive(uint8_t id, uint8_t size, uint8_t *payload);
+void protocol_module_mode_set_receive(uint8_t id, uint8_t size, uint8_t *payload);
 
 #define OPCODE_MODULE_ANNOUNCEMENT 0x00
 #define OPCODE_MODULE_RESET        0x10
 #define OPCODE_MODULE_IDENTIFY     0x11
+#define OPCODE_MODULE_MODE_SET     0x12
 #define OPCODE_MODULE_ERROR        0xf0
 
 /* Store if we need to announce our reset. */
@@ -50,6 +53,9 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
             break;
         case OPCODE_MODULE_IDENTIFY:
             protocol_module_identify_receive(id, size, payload);
+            break;
+        case OPCODE_MODULE_MODE_SET:
+            protocol_module_mode_set_receive(id, size, payload);
             break;
         default:
             /* Alert an unknown opcode has been received. */
@@ -271,4 +277,58 @@ void protocol_module_identify_receive(uint8_t id, uint8_t size, uint8_t *payload
     }
 
     status_identify(payload[1] == can_get_id());
+}
+
+/*
+ * Module - Mode Set - (0x12)
+ *
+ * Packet Layout:
+ *
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Op Code      |  CAN Id       |  Mode         |               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+
+/**
+ * Notify a module that it should change mode
+ *
+ * @param id can id to set mode on
+ * @param mode new mode to set
+ */
+void protocol_module_mode_set_send(uint8_t id, uint8_t mode) {
+    uint8_t payload[3];
+
+    payload[0] = OPCODE_MODULE_MODE_SET;
+    payload[1] = id;
+    payload[2] = mode;
+
+    can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);
+
+    /* Send packet to self. */
+    protocol_module_identify_receive(0, sizeof(payload), &payload[0]);
+}
+
+/**
+ * Receive a mode that it should change its mode
+ *
+ * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
+ * @param size size of CAN payload received
+ * @param payload pointer to payload
+ */
+void protocol_module_mode_set_receive(uint8_t id, uint8_t size, uint8_t *payload) {
+    /* Safety check. */
+    if (size < 3) {
+        return;
+    }
+
+    /* If targeted at this module. */
+    if (payload[1] == can_get_id()) {
+        /* Change module mode in EEPROM. */
+        nvm_write(EEPROM_LOC_MODE_CONFIGURATION, payload[2]);
+
+        /* Reset the MCU. */
+        RESET();
+    }
 }

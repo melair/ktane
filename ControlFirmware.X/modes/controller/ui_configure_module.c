@@ -4,6 +4,7 @@
 #include "../../lcd.h"
 #include "../../protocol_module.h"
 #include "../../module.h"
+#include "../../mode.h"
 #include "ui.h"
 #include "ui_configure_module.h"
 
@@ -36,6 +37,7 @@ uint8_t ui_action_configure_module_select_change(uint8_t current, action_t *a) {
 
 uint8_t ui_action_configure_module_select_press(uint8_t current, action_t *a) {
     if (ui_configure_module_selected == -1) {
+        ui_configure_module_selected = 0;        
         return a->alt_index;
     } else {
         return a->index;
@@ -88,6 +90,7 @@ uint8_t ui_render_configure_module_hardware_change(uint8_t current, action_t *a)
 
 uint8_t ui_render_configure_module_hardware_press(uint8_t current, action_t *a) {
     if (ui_configure_module_hardware == -1) {
+        ui_configure_module_hardware = 0;
         return a->alt_index;
     } else {
         return current;
@@ -148,6 +151,7 @@ uint8_t ui_render_configure_module_errors_change(uint8_t current, action_t *a) {
 
 uint8_t ui_render_configure_module_errors_press(uint8_t current, action_t *a) {
     if (ui_configure_module_errors == -1) {
+        ui_configure_module_errors = 0;
         return a->alt_index;
     } else {
         return current;
@@ -210,6 +214,7 @@ uint8_t ui_render_configure_module_can_stats_change(uint8_t current, action_t *a
 
 uint8_t ui_render_configure_module_can_stats_press(uint8_t current, action_t *a) {
     if (ui_configure_module_can_stats == -1) {
+        ui_configure_module_can_stats = 0;
         return a->alt_index;
     } else {
         return current;
@@ -269,5 +274,61 @@ void ui_render_configure_module_can_stats(interface_t *current) {
         }
     }
 
+    ui_render_menu_item_text(title, has_press, has_left, has_right);
+}
+
+int8_t ui_configure_module_mode_set = 0;
+#define MODES_STATS (MODE_COUNT)
+
+uint8_t ui_render_configure_module_mode_set_change(uint8_t current, action_t *a) {
+    if (a->value_direction) {
+        if (ui_configure_module_mode_set < MODES_STATS) {
+            ui_configure_module_mode_set++;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    } else {
+        if (ui_configure_module_mode_set >= 0) {
+            ui_configure_module_mode_set--;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    }
+
+    return current;
+}
+
+uint8_t ui_render_configure_module_mode_set_press(uint8_t current, action_t *a) {
+    if (ui_configure_module_mode_set != -1) {
+        module_t *module = module_get(ui_configure_module_selected);
+        protocol_module_mode_set_send(module->id, mode_id_by_index(ui_configure_module_mode_set));
+    }
+    
+    ui_configure_module_mode_set = 0;
+    return a->alt_index;
+}
+
+void ui_render_configure_module_mode_set(interface_t *current) {
+    bool has_left = (ui_configure_module_mode_set >= 0);
+    bool has_right = (ui_configure_module_mode_set < MODES_STATS);
+    bool has_press = true;
+
+    lcd_clear();
+    uint8_t *title;
+    
+    if (ui_configure_module_mode_set == -1) {
+        title = "Cancel";
+    } else {
+        title = "Change to";
+
+        uint8_t *name = mode_name_by_index(ui_configure_module_mode_set);
+        
+        uint8_t size = 0;
+        for (uint8_t *s = name; *s != '\0' && size < 16; *s++) {
+            size++;
+        }
+        
+        uint8_t start = (8 - (size / 2));        
+        lcd_update(1, start, size, name);
+    }
+    
     ui_render_menu_item_text(title, has_press, has_left, has_right);
 }

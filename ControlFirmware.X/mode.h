@@ -28,6 +28,8 @@ uint8_t mode_get(void);
 void mode_initialise(void);
 void mode_service(void);
 void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
+uint8_t mode_id_by_index(uint8_t idx);
+uint8_t *mode_name_by_index(uint8_t idx);
 
 #include "modes/controller/controller.h"
 #include "modes/controller/ui.h"

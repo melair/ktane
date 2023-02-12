@@ -6,6 +6,7 @@
 #include "../../buzzer.h"
 #include "../../lcd.h"
 #include "../../tick.h"
+#include "../../protocol_module.h"
 
 /* Keymatrix. */
 pin_t ui_cols[] = {KPIN_B2, KPIN_NONE};
@@ -15,6 +16,7 @@ pin_t ui_rows[] = {KPIN_NONE};
 uint8_t ui_resolve_action(uint8_t current, action_t *action);
 uint8_t ui_action_jump(uint8_t current, action_t *a);
 void ui_render_menu_item(interface_t *current);
+uint8_t ui_action_restart_ktane(uint8_t current, action_t *a);
 
 interface_t interface[] = {
     // 0
@@ -56,6 +58,10 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 1
         },
+        .press =
+        {
+            .action = &ui_action_restart_ktane,
+        },
         .render = &ui_render_menu_item,
         .render_data = "Reset KTANE",
         .render_check = &tick_2hz
@@ -83,11 +89,6 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 3
         },
-        .right =
-        {
-            .action = &ui_action_jump,
-            .index = 5
-        },
         .press =
         {
             .action = &ui_action_jump,
@@ -97,17 +98,8 @@ interface_t interface[] = {
         .render_data = "Modules",
         .render_check = &tick_2hz
     },
-    // 5
-    {
-        .left =
-        {
-            .action = &ui_action_jump,
-            .index = 4
-        },
-        .render = &ui_render_menu_item,
-        .render_data = "Chassis",
-        .render_check = &tick_2hz
-    },
+    // 5 (UNUSED)
+    {},
     // 6
     {
         .left =
@@ -123,7 +115,7 @@ interface_t interface[] = {
         .press =
         {
             .action = &ui_action_configure_module_select_press,
-            .index = 8, // TODO: Next
+            .index = 8,
             .alt_index = 4
         },
         .render = &ui_render_configure_module_select,
@@ -157,6 +149,11 @@ interface_t interface[] = {
         {
             .action = &ui_action_jump,
             .index = 9
+        },
+        .press = 
+        {
+            .action = &ui_action_jump,
+            .index = 16 
         },
         .render = &ui_render_menu_item,
         .render_data = "Configure",
@@ -280,6 +277,153 @@ interface_t interface[] = {
         .render = &ui_render_configure_module_can_stats,
         .render_check = &tick_2hz
     },
+    // 15
+    {
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 16
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 8
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Back",
+        .render_check = &tick_2hz
+    },
+    // 16
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 15
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 17
+        },
+        .press = {
+            .action = &ui_action_jump,
+            .index = 23
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Mode",
+        .render_check = &tick_2hz
+    },
+    // 17
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 16
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 18
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "ARGB LED Bri",
+        .render_check = &tick_2hz
+    },
+    // 18
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 17
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 19
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "PWM LED Bri",
+        .render_check = &tick_2hz
+    },
+    // 19
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 18
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 20
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "LCD Back Bri",
+        .render_check = &tick_2hz
+    },
+    // 20
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 19
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 21
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "LCD Contrast",
+        .render_check = &tick_2hz
+    },
+    // 21
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 20
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 22
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Buzzer Vol",
+        .render_check = &tick_2hz
+    },
+    // 22
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 21
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "DAC/DSP Vol",
+        .render_check = &tick_2hz
+    },
+    // 23
+    {
+        .left =
+        {
+            .action = &ui_render_configure_module_mode_set_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_module_mode_set_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_module_mode_set_press,
+            .alt_index = 16
+        },
+        .render = &ui_render_configure_module_mode_set,
+        .render_check = &tick_2hz
+    },
 };
 
 uint8_t current = 0;
@@ -348,6 +492,14 @@ void ui_service(void) {
 
 uint8_t ui_action_jump(uint8_t current, action_t *a) {
     return a->index;
+}
+
+uint8_t ui_action_restart_ktane(uint8_t current, action_t *a) {
+    // Send reset onto network.
+    protocol_module_reset_send();
+    
+    // Never reached.
+    return current;
 }
 
 const uint8_t *left_arrow = {0b01111111, 0};

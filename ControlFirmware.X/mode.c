@@ -76,6 +76,26 @@ uint8_t mode_find_name_index(uint8_t mode) {
 }
 
 /**
+ * Get the mode ID by index.
+ * 
+ * @param idx index to resolve
+ * @return mode ID
+ */
+uint8_t mode_id_by_index(uint8_t idx) {
+    return mode_names[idx].id;
+}
+
+/**
+ * Get the mode name by index.
+ * 
+ * @param idx name to resolve
+ * @return mode name
+ */
+uint8_t *mode_name_by_index(uint8_t idx) {
+    return mode_names[idx].name;
+}
+
+/**
  * Checks to see if the module is in bootstrap mode, this is done by shorting
  * pins A0 and A1 together.
  *
