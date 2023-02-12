@@ -20,7 +20,6 @@
 #include "firmware.h"
 #include "game.h"
 #include "interrupt.h"
-#include "lcd.h"
 #include "mode.h"
 #include "module.h"
 #include "nvm.h"
@@ -90,9 +89,6 @@ void main(void) {
     /* Initialise RNG. */
     rng_initialise();
 
-    /* Initialise LCD control. */
-    lcd_initialize();
-
     /* Initialise ARGB. */
     argb_initialise();
 
@@ -142,9 +138,6 @@ void main(void) {
 
         /* Update ARGB string if needed. */
         argb_service();
-
-        /* Service LCD driver. */
-        lcd_service();
 
         /* Service buzzer driver. */
         buzzer_service();

@@ -723,27 +723,3 @@ void lcd_sync(void) {
 
     shadow_dirty = true;
 }
-
-/**
- * Initialise the LCD screen with useful data, this will remain on screen unless
- * the LCD screen is used by the module for the game.
- */
-void lcd_default(void) {
-    const uint8_t *welcome_first = "KTANE by Melair";
-    const uint8_t *welcome_second_mode = "Mode:";
-    const uint8_t *welcome_second_can = "CAN:";
-
-    uint8_t can_id = can_get_id();
-    uint8_t mode = mode_get();
-
-    lcd_update(0, 0, 15, welcome_first);
-
-    lcd_update(1, 0, 5, welcome_second_mode);
-    lcd_update(1, 6, 1, &hex_map[(mode >> 4) & 0x0f]);
-    lcd_update(1, 7, 1, &hex_map[mode & 0x0f]);
-    lcd_update(1, 9, 4, welcome_second_can);
-    lcd_update(1, 14, 1, &hex_map[(can_id >> 4) & 0x0f]);
-    lcd_update(1, 15, 1, &hex_map[can_id & 0x0f]);
-
-    lcd_sync();
-}

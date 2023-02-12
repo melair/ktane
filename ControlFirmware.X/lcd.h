@@ -10,7 +10,6 @@ void lcd_update(uint8_t line, uint8_t col, uint8_t size, uint8_t *data);
 void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint16_t number);
 void lcd_hex(uint8_t row, uint8_t col, uint8_t number);
 void lcd_clear(void);
-void lcd_default(void);
 void lcd_update_big(uint8_t pos, uint8_t ch);
 void lcd_load_big(void);
 

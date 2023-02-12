@@ -138,6 +138,9 @@ void whosonfirst_update_stage_leds(void);
  * Initialise Who's On First.
  */
 void whosonfirst_initialise(void) {
+    /* Initialise the LCD. */
+    lcd_initialize();
+    
     /* Register callbacks for mode. */
     mode_register_callback(GAME_ALWAYS, whosonfirst_service, NULL);
     mode_register_callback(GAME_IDLE, whosonfirst_service_idle, &tick_20hz);
@@ -156,6 +159,7 @@ void whosonfirst_initialise(void) {
  * @param first true if first time called
  */
 void whosonfirst_service(bool first) {
+    lcd_service();
     keymatrix_service();
 }
 

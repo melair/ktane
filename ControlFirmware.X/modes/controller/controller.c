@@ -2,6 +2,7 @@
 #include "controller.h"
 #include "ui.h"
 #include "../../rng.h"
+#include "../../lcd.h"
 #include "../../argb.h"
 #include "../../buzzer.h"
 #include "../../can.h"
@@ -30,7 +31,10 @@ void controller_update_strikes(void);
 /**
  * Initialise any components or state that the controller will require.
  */
-void controller_initialise(void) {
+void controller_initialise(void) {   
+    /* Initialise the LCD. */
+    lcd_initialize();
+    
     /* Initialise the UI. */
     ui_initialise();
 
@@ -56,6 +60,9 @@ void controller_initialise(void) {
  * Service the controllers behaviour.
  */
 void controller_service(bool first) {
+    /* Service the LCD panel. */
+    lcd_service();
+    
     /* Service the seven segment display. */
     segment_service();
 

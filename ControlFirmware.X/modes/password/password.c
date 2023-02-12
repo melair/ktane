@@ -44,6 +44,9 @@ pin_t password_rows[] = {KPIN_B4, KPIN_B5, KPIN_B6, KPIN_B7, KPIN_NONE};
  * Initialise the password puzzle.
  */
 void password_initialise(void) {
+    /* Initialise the LCD. */
+    lcd_initialize();
+    
     /* Load the big font into the LCD. */
     lcd_load_big();
 
@@ -64,6 +67,7 @@ void password_initialise(void) {
  * @param first true if first run
  */
 void password_service(bool first) {
+    lcd_service();
     keymatrix_service();
 }
 

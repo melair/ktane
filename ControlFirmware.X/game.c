@@ -244,7 +244,6 @@ void game_module_strike(uint8_t strikes) {
 void game_service_init(void) {
     if (can_ready()) {
         game_set_state(GAME_IDLE, RESULT_NONE);
-        lcd_default();
     }
 }
 
