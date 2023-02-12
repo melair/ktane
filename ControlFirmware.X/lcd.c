@@ -1,6 +1,5 @@
 #include <xc.h>
 #include <stdbool.h>
-#include <math.h>
 #include "lcd.h"
 #include "nvm.h"
 #include "can.h"
@@ -651,7 +650,11 @@ void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint16_t val) {
     int32_t w = val;
 
     for (uint8_t i = 0; i < digits; i++) {
-        int32_t mult = pow(10, digits - i - 1);
+        int32_t mult = 10;
+
+        for (uint8_t j = 0; j < (digits - i - 1); j++) {
+            mult = mult * 10;
+        }
 
         int8_t d = w / mult;
         w -= (d * mult);
