@@ -354,7 +354,7 @@ void can_address_service(void) {
         can_address_clear_tick = tick_value + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);
         can_address_phase++;
         stats.id_cycles++;
-    } if (can_address_phase == 1) {
+    } else if (can_address_phase == 1) {
         if (can_address_clear_tick <= tick_value) {
             can_address_phase++;
 
