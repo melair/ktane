@@ -50,6 +50,7 @@
         <itemPath>peripherals/keymatrix.h</itemPath>
         <itemPath>peripherals/pwmled.h</itemPath>
         <itemPath>peripherals/rotary.h</itemPath>
+        <itemPath>peripherals/audio.h</itemPath>
       </logicalFolder>
       <itemPath>nvm.h</itemPath>
       <itemPath>argb.h</itemPath>
@@ -125,6 +126,7 @@
         <itemPath>peripherals/ports.c</itemPath>
         <itemPath>peripherals/pwmled.c</itemPath>
         <itemPath>peripherals/rotary.c</itemPath>
+        <itemPath>peripherals/audio.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>nvm.c</itemPath>
