@@ -2,7 +2,7 @@
 #include "controller.h"
 #include "ui.h"
 #include "../../rng.h"
-#include "../../lcd.h"
+#include "../../peripherals/lcd.h"
 #include "../../argb.h"
 #include "../../buzzer.h"
 #include "../../can.h"

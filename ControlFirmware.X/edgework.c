@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "edgework.h"
 #include "rng.h"
-#include "lcd.h"
+#include "peripherals/lcd.h"
 #include "game.h"
 #include "tick.h"
 #include "buzzer.h"

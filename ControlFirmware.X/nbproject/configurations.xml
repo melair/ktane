@@ -51,6 +51,7 @@
         <itemPath>peripherals/pwmled.h</itemPath>
         <itemPath>peripherals/rotary.h</itemPath>
         <itemPath>peripherals/audio.h</itemPath>
+        <itemPath>peripherals/lcd.h</itemPath>
       </logicalFolder>
       <itemPath>nvm.h</itemPath>
       <itemPath>argb.h</itemPath>
@@ -58,7 +59,6 @@
       <itemPath>can.h</itemPath>
       <itemPath>tick.h</itemPath>
       <itemPath>mode.h</itemPath>
-      <itemPath>lcd.h</itemPath>
       <itemPath>protocol.h</itemPath>
       <itemPath>firmware.h</itemPath>
       <itemPath>protocol_module.h</itemPath>
@@ -127,6 +127,7 @@
         <itemPath>peripherals/pwmled.c</itemPath>
         <itemPath>peripherals/rotary.c</itemPath>
         <itemPath>peripherals/audio.c</itemPath>
+        <itemPath>peripherals/lcd.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>nvm.c</itemPath>
@@ -135,7 +136,6 @@
       <itemPath>can.c</itemPath>
       <itemPath>tick.c</itemPath>
       <itemPath>mode.c</itemPath>
-      <itemPath>lcd.c</itemPath>
       <itemPath>protocol.c</itemPath>
       <itemPath>firmware.c</itemPath>
       <itemPath>protocol_module.c</itemPath>

@@ -1,9 +1,7 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "lcd.h"
-#include "nvm.h"
-#include "can.h"
-#include "mode.h"
+#include "../nvm.h"
 
 /* Big font adapter from: https://github.com/varind/LCDCustomLargeFont */
 

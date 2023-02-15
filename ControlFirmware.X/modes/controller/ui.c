@@ -4,7 +4,7 @@
 #include "../../peripherals/rotary.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../buzzer.h"
-#include "../../lcd.h"
+#include "../../peripherals/lcd.h"
 #include "../../tick.h"
 #include "../../protocol_module.h"
 

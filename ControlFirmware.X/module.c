@@ -9,7 +9,6 @@
 #include "mode.h"
 #include "buzzer.h"
 #include "argb.h"
-#include "lcd.h"
 #include "status.h"
 #include "game.h"
 #include "serial.h"

@@ -7,7 +7,6 @@
 #include "mode.h"
 #include "status.h"
 #include "can.h"
-#include "lcd.h"
 #include "edgework.h"
 #include "protocol_game.h"
 

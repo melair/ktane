@@ -1,7 +1,7 @@
 #include <xc.h>
 #include "../../buzzer.h"
 #include "../../can.h"
-#include "../../lcd.h"
+#include "../../peripherals/lcd.h"
 #include "../../protocol_module.h"
 #include "../../module.h"
 #include "../../mode.h"

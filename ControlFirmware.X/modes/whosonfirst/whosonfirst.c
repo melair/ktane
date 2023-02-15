@@ -6,7 +6,7 @@
 #include "../../argb.h"
 #include "../../mode.h"
 #include "../../game.h"
-#include "../../lcd.h"
+#include "../../peripherals/lcd.h"
 #include "../../rng.h"
 #include "../../tick.h"
 #include "../../peripherals/keymatrix.h"
