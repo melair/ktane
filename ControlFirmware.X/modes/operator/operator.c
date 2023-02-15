@@ -42,6 +42,9 @@ const uint8_t operator_lookup[] = {
 #define OPERATOR_DIAL_LENGTH 5
 
 void operator_initialise(void) {
+    /* Initialise ARGB expanded memory. */
+    argb_expand(OPERATOR_ARGB_COUNT, &mode_data.operator.argb_leds[0], &mode_data.operator.argb_output[0]);
+    
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, operator_service, NULL);
     mode_register_callback(GAME_RUNNING, operator_service_running, &tick_20hz);
@@ -55,9 +58,6 @@ void operator_initialise(void) {
      * to 1 seems wrong, but it would unlikely that we would detect an initial
      * bounce and for it to still be bouncing 10ms later. */
     keymatrix_required_periods(1);
-
-    /* Enable the six LEDs. */
-    argb_module_leds(6);
 }
 
 void operator_service(void) {
@@ -106,8 +106,8 @@ void operator_display_leds(void) {
         bool x_on = mode_data.operator.offset_x & (1 << (2 - i));
         bool y_on = mode_data.operator.offset_y & (1 << (2 - i));
 
-        argb_set(1 + i, 31, 0, 0, (x_on ? 0xff : 0));
-        argb_set(1 + 3 + i, 31, 0, 0, (y_on ? 0xff : 0));
+        argb_set_module(i, 0, 0, (x_on ? 0xff : 0));
+        argb_set_module(3 + i, 0, 0, (y_on ? 0xff : 0));
     }
 }
 
@@ -162,7 +162,7 @@ void operator_service_running(bool first) {
                         game_module_solved(true);
 
                         for (uint8_t i = 0; i < 6; i++) {
-                            argb_set(1+i, 0, 0, 0, 0);
+                            argb_set_module(i, 0, 0, 0);
                         }
                     } else {
                         game_module_strike(1);
@@ -172,7 +172,7 @@ void operator_service_running(bool first) {
                 } else {
                     for (uint8_t i = 0; i < 6; i++) {
                         uint8_t c = (i < mode_data.operator.dialed_pos ? 0xff : 0x00);
-                        argb_set(1+i, 31, 0, c, c);
+                        argb_set_module(i, 0, c, c);
                     }
                 }
             }

@@ -15,58 +15,21 @@
 #include <stdint.h>
 #include "argb.h"
 
-/* Structure for storing the state of an ARGB LED. */
-typedef struct {
-    uint8_t brightness;
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-} argb_led_t;
+/* Allocate the default ARGB buffers. */
+argb_led_t ARGB_DEFAULT_LEDS[ARGB_MODULE_COUNT(0)];
+uint8_t    ARGB_DEFAULT_OUTPUT[ARGB_BUFFER_SIZE(0)];
 
-/* Maximum number of ARGBs supported by a control board, effects RAM usage. */
-/* 37 = Status + (6*6 Maze) */
-#define ARGB_MAX_LED (1 + (6*6))
-#define ARGB_BUFFER_SIZE ((ARGB_MAX_LED * 4) + 8)
-
-/* Frame buffer for ARGB LEDs, can be changed during SPI frame output. */
-argb_led_t leds_buffer[ARGB_MAX_LED];
-/* Number of LEDs redirect by module. */
-uint8_t leds_count = 1;
-/* If LEDs have had changes and an output is required. */
-bool leds_dirty;
-
-/* Buffer for writing to SPI, only updated by SPI start process. */
-uint8_t led_spi_buffer[ARGB_BUFFER_SIZE];
-/* Size of SPI buffer to write, including start and end frames. */
-uint8_t led_spi_size = 9;
-
-/* LED brightness reduction. */
-uint8_t led_brightness_reduction = 3;
+/* Use the default LEDs. */
+uint8_t argb_brightness = 0b11111;
+uint8_t argb_count = 0;
+bool argb_dirty = false;
+argb_led_t *argb_leds = NULL;
+uint8_t *argb_buffer = NULL;
 
 /**
  * Initialise the port and configure SPI ready for ARGB.
  */
 void argb_initialise(void) {
-    /* Clear buffer memory, may have LED state from previous boot. */
-    for (uint8_t i = 0; i < ARGB_MAX_LED; i++) {
-        leds_buffer[i].brightness = 0;
-        leds_buffer[i].r = 0;
-        leds_buffer[i].g = 0;
-        leds_buffer[i].b = 0;
-    }
-
-    /* Initialise SPI buffer, 32 0 bits, and the rest 1 bits. */
-    led_spi_buffer[0] = 0x00;
-    led_spi_buffer[1] = 0x00;
-    led_spi_buffer[2] = 0x00;
-    led_spi_buffer[3] = 0x00;
-
-    for (uint8_t i = 4; i < ARGB_BUFFER_SIZE; i++) {
-        led_spi_buffer[i] = 0xff;
-    }
-
-    argb_module_leds(36);
-
     /* Configure source for RB2/RB3 to be SPI1 SCK/SDO. */
     RB2PPS = 0x32; // DAT
     RB3PPS = 0x31; // CLK
@@ -98,8 +61,7 @@ void argb_initialise(void) {
     /* Reset DMA1. */
     DMAnCON0 = 0;
 
-    /* Set source and destination address of data. */
-    DMAnSSA = &led_spi_buffer[0];
+    /* Set destination address of data. */
     DMAnDSA = &SPI1TXB;
 
     /* Set source address to general purpose register space. */
@@ -110,8 +72,7 @@ void argb_initialise(void) {
     /* Keep destination address static after every transfer. */
     DMAnCON1bits.DMODE = 0b00;
 
-    /* Set source and destination sizes, source to the size of the buffer. */
-    DMAnSSZ = led_spi_size;
+    /* Set destination sizes, source to the size of the buffer. */
     DMAnDSZ = 1;
 
     /* Set clearing of SIREQEN bit when source counter is reloaded, don't when
@@ -128,39 +89,87 @@ void argb_initialise(void) {
 
     /* Enable DMA module. */
     DMAnCON0bits.EN = 1;
+    
+    /* Init ARGB with default buffers. */
+    argb_expand(0, &ARGB_DEFAULT_LEDS[0], &ARGB_DEFAULT_OUTPUT[0]);
 }
 
-/**
- * Set the number of required ARGBs by the modules specific function, internally
- * account for status LED. Mark buffer as dirty to cause send of all.
- *
- * @param module_led_count number of ARGB LEDs needed by module
- */
-void argb_module_leds(uint8_t module_led_count) {
-    leds_count = module_led_count + 1;
-    led_spi_size = 4 + (leds_count * 4) + 4;
-    leds_dirty = true;
+void argb_expand(uint8_t count, argb_led_t *leds, uint8_t *output) {
+    /* Store references to buffers. */
+    argb_leds = leds;
+    argb_buffer = output;
+    
+    /* Add the status LED onto our count. */
+    argb_count = count + 1;
+    
+    /* Clear buffer memory, may have LED state from previous boot. */
+    for (uint8_t i = 0; i < ARGB_MODULE_COUNT(count); i++) {
+        argb_leds[i].r = 0;
+        argb_leds[i].g = 0;
+        argb_leds[i].b = 0;
+    }
+
+    /* Initialise SPI buffer, 32 0 bits, and the rest 1 bits. */
+    argb_buffer[0] = 0x00;
+    argb_buffer[1] = 0x00;
+    argb_buffer[2] = 0x00;
+    argb_buffer[3] = 0x00;
+
+    for (uint8_t i = 4; i < ARGB_BUFFER_SIZE(count); i++) {
+        argb_buffer[i] = 0xff;
+    }
+    
+    /* Mark it dirty so its send. */
+    argb_dirty = true;
+    
+    /* Select DMA1 for configuration. */
+    DMASELECT = 0;
+    
+    /* Disable DMA module. */
+    DMAnCON0bits.EN = 0;
+    
+    /* Set source and size of output buffer. */
+    DMAnSSA = &argb_buffer[0];
+    DMAnSSZ = ARGB_BUFFER_SIZE(count);
+    
+    /* Enable DMA module. */
+    DMAnCON0bits.EN = 1;
 }
 
+
 /**
- * Set an LEDs output.
+ * Set an LEDs output on module.
  *
- * @param led led number to set 0 is status, 1+ are module LEDs
- * @param bri 0-31 global brightness setting
+ * @param led led number to set, 0 is first module LED.
  * @param r red value
  * @param g green value
  * @param b blue value
  */
-void argb_set(uint8_t led, uint8_t bri, uint8_t r, uint8_t g, uint8_t b) {
-    if (led > leds_count) {
+void argb_set_module(uint8_t led, uint8_t r, uint8_t g, uint8_t b) {
+    led++;
+    
+    if (led > argb_count) {
         return;
     }
 
-    leds_buffer[led].brightness = (bri >> led_brightness_reduction) & 0x1f;
-    leds_buffer[led].r = r;
-    leds_buffer[led].g = g;
-    leds_buffer[led].b = b;
-    leds_dirty = true;
+    argb_leds[led].r = r;
+    argb_leds[led].g = g;
+    argb_leds[led].b = b;
+    argb_dirty = true;
+}
+
+/**
+ * Set an LEDs output for the status LED.
+ *
+ * @param r red value
+ * @param g green value
+ * @param b blue value
+ */
+void argb_set_status(uint8_t r, uint8_t g, uint8_t b) {
+    argb_leds[0].r = r;
+    argb_leds[0].g = g;
+    argb_leds[0].b = b;
+    argb_dirty = true;
 }
 
 /**
@@ -169,7 +178,7 @@ void argb_set(uint8_t led, uint8_t bri, uint8_t r, uint8_t g, uint8_t b) {
  */
 void argb_service(void) {
     /* Check to see if update is needed. */
-    if (!leds_dirty) {
+    if (!argb_dirty) {
         return;
     }
 
@@ -180,20 +189,20 @@ void argb_service(void) {
     }
 
     /* Copy data from the LED buffer into the SPI buffer, and mark as clean. */
-    for (uint8_t i = 0; i < leds_count; i++) {
+    for (uint8_t i = 0; i < argb_count; i++) {
         uint8_t b = 4 + (i*4);
 
         /* First bit of LED must be 1, keep other 2 unused bits 1 as well. */
-        led_spi_buffer[b] = 0b11100000 | leds_buffer[i].brightness;
-        led_spi_buffer[b+1] = leds_buffer[i].b;
-        led_spi_buffer[b+2] = leds_buffer[i].g;
-        led_spi_buffer[b+3] = leds_buffer[i].r;
+        argb_buffer[b] = 0b11100000 | argb_brightness;
+        argb_buffer[b+1] = argb_leds[i].b;
+        argb_buffer[b+2] = argb_leds[i].g;
+        argb_buffer[b+3] = argb_leds[i].r;
     }
 
     /* Mark buffer as clean.*/
-    leds_dirty = false;
+    argb_dirty = false;
 
     /* Start SPI DMA, ensure that length is correct. */
-    DMAnSSZ = led_spi_size;
+    DMAnSSZ = ARGB_BUFFER_SIZE(argb_count - 1);
     DMAnCON0bits.SIRQEN = 1;
 }

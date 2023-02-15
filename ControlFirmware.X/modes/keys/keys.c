@@ -23,6 +23,9 @@ pin_t keys_cols[] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_NONE};
 pin_t keys_rows[] = {KPIN_NONE};
 
 void keys_initialise(void) {
+    /* Initialise ARGB expanded memory. */
+    argb_expand(KEYS_ARGB_COUNT, &mode_data.keys.argb_leds[0], &mode_data.keys.argb_output[0]);
+    
     /* Initialise the seven segment display. */
     segment_initialise();
 
@@ -40,7 +43,7 @@ void keys_service(void) {
     keymatrix_service();
 }
 
-const uint8_t led_index[3] = {6,4,2};
+const uint8_t led_index[3] = {5,3,1};
 
 void key_create_next(void) {
     uint16_t delay = KEYS_MIN_INTERVAL + (rng_generate8(&game.module_seed, KEYS_RNG_MASK) % (KEYS_MAX_INTERVAL - KEYS_MIN_INTERVAL));
@@ -70,9 +73,9 @@ void key_create_next(void) {
     segment_set_digit(2, characters[DIGIT_0 + tenseconds]);
     segment_set_digit(3, characters[DIGIT_0 + seconds]);
 
-    argb_set(led_index[0], 31, 0, 0, 0);
-    argb_set(led_index[1], 31, 0, 0, 0);
-    argb_set(led_index[2], 31, 0, 0, 0);
+    argb_set_module(led_index[0], 0, 0, 0);
+    argb_set_module(led_index[1], 0, 0, 0);
+    argb_set_module(led_index[2], 0, 0, 0);
 }
 
 void key_service_setup(bool first) {
@@ -101,7 +104,7 @@ void key_service_running(bool first) {
     }
 
     if (time - key_at <= KEYS_LIGHT_WARNING) {
-        argb_set(led_index[mode_data.keys.key], 31, 0, 255, 0);
+        argb_set_module(led_index[mode_data.keys.key], 0, 255, 0);
     }
 
     /* Handle moves. */

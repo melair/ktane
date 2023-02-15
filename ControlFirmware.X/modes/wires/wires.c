@@ -75,6 +75,9 @@ uint8_t wires_get_last_wire_color(void);
  * Initialise Wires.
  */
 void wires_initialise(void) {
+    /* Initialise ARGB expanded memory. */
+    argb_expand(WIRES_ARGB_COUNT, &mode_data.wires.argb_leds[0], &mode_data.wires.argb_output[0]);
+    
     /* Register callbacks for mode. */
     mode_register_callback(GAME_IDLE, wires_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, wires_service_setup, &tick_20hz);
@@ -209,27 +212,27 @@ void wires_service_setup(bool first) {
     for (uint8_t i = 0; i < WIRES_COUNT; i++) {
         if (mode_data.wires.wires[i].wiretype == NO_WIRE && mode_data.wires.wires[i].required) {
             if (mode_data.wires.process.animation_tick == 0) {
-                argb_set(1 + i, 31, 0x00, 0xff, 0x00);
-                argb_set(7 + i, 31, 0x00, 0xff, 0x00);
+                argb_set_module(i, 0x00, 0xff, 0x00);
+                argb_set_module(6 + i, 0x00, 0xff, 0x00);
             } else if (mode_data.wires.process.animation_tick == 5) {
-                argb_set(1 + i, 31, 0x00, 0x00, 0x00);
-                argb_set(7 + i, 31, 0x00, 0x00, 0x00);
+                argb_set_module(i, 0x00, 0x00, 0x00);
+                argb_set_module(6 + i, 0x00, 0x00, 0x00);
             }
         } else if (!mode_data.wires.wires[i].required) {
             if (mode_data.wires.process.animation_tick == 0) {
-                argb_set(1 + i, 31, 0xff, 0x00, 0x00);
-                argb_set(7 + i, 31, 0xff, 0x00, 0x00);
+                argb_set_module(i, 0xff, 0x00, 0x00);
+                argb_set_module(6 + i, 0xff, 0x00, 0x00);
             } else if (mode_data.wires.process.animation_tick == 5) {
-                argb_set(1 + i, 31, 0x00, 0x00, 0x00);
-                argb_set(7 + i, 31, 0x00, 0x00, 0x00);
+                argb_set_module(i, 0x00, 0x00, 0x00);
+                argb_set_module(6 + i, 0x00, 0x00, 0x00);
             }
         } else {
             uint8_t j = mode_data.wires.wires[i].wiretype;
             uint8_t p = wirelookup[j].colours.plug;
             uint8_t w = wirelookup[j].colours.wire;
 
-            argb_set(1 + i, 31, wire_colors[p][0], wire_colors[p][1], wire_colors[p][2]);
-            argb_set(7 + i, 31, wire_colors[w][0], wire_colors[w][1], wire_colors[w][2]);
+            argb_set_module(i, wire_colors[p][0], wire_colors[p][1], wire_colors[p][2]);
+            argb_set_module(6 + i, wire_colors[w][0], wire_colors[w][1], wire_colors[w][2]);
         }
     }
 
@@ -414,15 +417,15 @@ void wires_service_start(bool first) {
     if (first) {
         for (uint8_t i = 0; i < WIRES_COUNT; i++) {
             if (mode_data.wires.wires[i].light_left) {
-                argb_set(1 + i, 31, 0xff, 0xff, 0xff);
+                argb_set_module(i, 0xff, 0xff, 0xff);
             } else {
-                argb_set(1 + i, 31, 0, 0, 0);
+                argb_set_module(i, 0, 0, 0);
             }
 
             if (mode_data.wires.wires[i].light_right) {
-                argb_set(7 + i, 31, 0xff, 0xff, 0xff);
+                argb_set_module(6 + i, 0xff, 0xff, 0xff);
             } else {
-                argb_set(7 + i, 31, 0, 0, 0);
+                argb_set_module(6 + i, 0, 0, 0);
             }
 
             mode_data.wires.wires[i].updated = false;

@@ -13,7 +13,6 @@
 #include "../../protocol_module.h"
 #include "../../peripherals/timer/segment.h"
 
-
 #define GAME_RNG_MASK 0x89b1a96c
 
 uint8_t last_strikes_current = 0;
@@ -31,7 +30,10 @@ void controller_update_strikes(void);
 /**
  * Initialise any components or state that the controller will require.
  */
-void controller_initialise(void) {   
+void controller_initialise(void) {  
+    /* Initialise ARGB expanded memory. */
+    argb_expand(CONTROLLER_ARGB_COUNT, &mode_data.controller.ctrl.argb_leds[0], &mode_data.controller.ctrl.argb_output[0]);
+
     /* Initialise the LCD. */
     lcd_initialize();
     
@@ -194,9 +196,9 @@ void controller_service_start(bool first) {
 void controller_update_strikes(void) {
     for (uint8_t i = 0; i < game.strikes_total; i++) {
         if (i < game.strikes_current) {
-            argb_set(1 + i, 31, 255, 0, 0);
+            argb_set_module(i, 255, 0, 0);
         } else {
-            argb_set(1 + i, 31, 0, 255, 0);
+            argb_set_module(i, 0, 255, 0);
         }
     }
 }

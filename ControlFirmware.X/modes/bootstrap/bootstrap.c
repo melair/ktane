@@ -49,10 +49,10 @@ void bootstrap_initialise(void) {
 
     /* Toggle between red and green for bootstrap. */
     while(true) {
-        argb_set(0, 31, 0xff, 0x00, 0x00);
+        argb_set_status(0xff, 0x00, 0x00);
         argb_service();
         tick_wait(250);
-        argb_set(0, 31, 0x00, 0xff, 0x00);
+        argb_set_status(0x00, 0xff, 0x00);
         argb_service();
         tick_wait(250);
     }

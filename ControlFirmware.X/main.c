@@ -118,7 +118,7 @@ void main(void) {
 
     /* Set status led to ready. */
     status_set(STATUS_READY);
-
+    
     /* Main loop. */
     while(true) {
         /* Clear watchdog. */
@@ -227,9 +227,11 @@ void arbiter_initialise(void) {
 
     DMA1PR = 0;
     DMA2PR = 1;
-    ISRPR = 2;
-    MAINPR = 3;
-    SCANPR = 4;
+    DMA3PR = 2;
+    DMA4PR = 3;
+    ISRPR  = 4;
+    MAINPR = 5;
+    SCANPR = 6;
 
     PRLOCK = 0x55;
     PRLOCK = 0xAA;
@@ -240,13 +242,13 @@ void arbiter_initialise(void) {
  * Disable peripherals not used, this saves some power.
  */
 void pmd_initialise(void) {
-    PMD0 = 0b01101111; // Keep FOSC and CRC
+    PMD0 = 0b00101111; // Keep FOSC, FVR and CRC
     PMD1 = 0b10000000; // Keep Timers
     PMD2 = 0b01111111; // Keep CAN
-    PMD3 = 0b11011111; // Keep ADC
+    PMD3 = 0b10011111; // Keep ADC and DAC
     PMD4 = 0b11111111; // Keep Nothing
     PMD5 = 0b00001111; // Keep PWM1-4
     PMD6 = 0b00000001; // Keep UART1-5 and SPI1/1
     PMD7 = 0b11111111; // Keep Nothing
-    PMD8 = 0b11111110; // Keep DMA1
+    PMD8 = 0b11110000; // Keep all DMAs.
 }

@@ -81,15 +81,15 @@ void status_service(void) {
     if (current_error == ERROR_NONE) {
         switch(phase) {
             case 0:
-                argb_set(0, 31, led_colors[current_status][0], led_colors[current_status][1], led_colors[current_status][2]);
+                argb_set_status(led_colors[current_status][0], led_colors[current_status][1], led_colors[current_status][2]);
                 break;
             case 1:
                 if (current_status == 1 || current_status == 2) {
-                    argb_set(0, 31, 0, 0, 0);
+                    argb_set_status(0, 0, 0);
                 }
             case 2:
                 if (identify == true) {
-                    argb_set(0, 31, 0, 0, 255);
+                    argb_set_status(0, 0, 255);
                 }
                 break;
         }
@@ -101,42 +101,42 @@ void status_service(void) {
     } else {
         switch(phase) {
             case 0:
-                argb_set(0, 31, led_colors[current_status][0], led_colors[current_status][1], led_colors[current_status][2]);
+                argb_set_status(led_colors[current_status][0], led_colors[current_status][1], led_colors[current_status][2]);
                 break;
             case 1:
-                argb_set(0, 31, 0, 0, 0);
+                argb_set_status(0, 0, 0);
                 break;
             case 2:
-                argb_set(0, 31, 255, 0, 0);
+                argb_set_status(255, 0, 0);
                 break;
             case 3:
-                argb_set(0, 31, 0, 0, 0);
+                argb_set_status(0, 0, 0);
                 break;
             case 4:
-                argb_set(0, 31, 255, 0, 0);
+                argb_set_status(255, 0, 0);
                 break;
             case 5:
-                argb_set(0, 31, 0, 0, 0);
+                argb_set_status(0, 0, 0);
                 break;
             case 6:
                 if (current_error == ERROR_LOCAL) {
-                    argb_set(0, 31, 0, 255, 0);
+                    argb_set_status(0, 255, 0);
                 } else if (current_error == ERROR_REMOTE_ACTIVE) {
-                    argb_set(0, 31, 0, 0, 255);
+                    argb_set_status(0, 0, 255);
                 } else {
-                    argb_set(0, 31, 255, 0, 255);
+                    argb_set_status(255, 0, 255);
                 }
                 break;
             case 7:
-                argb_set(0, 31, 0, 0, 0);
+                argb_set_status(0, 0, 0);
                 break;
             case 8:
                 if (identify == true) {
-                    argb_set(0, 31, 0, 0, 255);
+                    argb_set_status(0, 0, 255);
                 }
                 break;
             case 12:
-                argb_set(0, 31, 0, 0, 0);
+                argb_set_status(0, 0, 0);
                 break;
         }
 

@@ -146,6 +146,9 @@ pin_t maze_rows[] = {KPIN_NONE};
  * Initialise the maze mode.
  */
 void maze_initialise(void) {
+    /* Initialise ARGB expanded memory. */
+    argb_expand(MAZE_ARGB_COUNT, &mode_data.maze.argb_leds[0], &mode_data.maze.argb_output[0]);
+    
     /* Register game states. */
     mode_register_callback(GAME_ALWAYS, maze_service, NULL);
     mode_register_callback(GAME_SETUP, maze_service_setup, &tick_20hz);
@@ -268,13 +271,13 @@ void maze_service_running(bool first) {
     }
 
     for (uint8_t i = 0; i < MAZE_SIZE; i++) {
-        argb_set(1 + i, 0, 0, 0, 0);
+        argb_set_module(i, 0, 0, 0);
     }
 
     if (!this_module->solved) {
         /* Draw the beacons regardless. */
-        argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][0]), 31, 0, 255, 0);
-        argb_set(1 + maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][1]), 31, 0, 255, 0);
+        argb_set_module(maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][0]), 0, 255, 0);
+        argb_set_module(maze_map_array_to_argb(maze_beacons[mode_data.maze.maze][1]), 0, 255, 0);
 
         /* Draw the cursor. */
         maze_animate_cursor(mode_data.maze.current, (mode_data.maze.current == maze_beacons[mode_data.maze.maze][0] || mode_data.maze.current == maze_beacons[mode_data.maze.maze][1]));
@@ -315,7 +318,7 @@ void maze_animate_cursor(uint8_t loc, bool beacon) {
     }
     uint8_t b = (255 / 10) * i;
 
-    argb_set(1 + maze_map_array_to_argb(loc), 31, r, g, b);
+    argb_set_module(maze_map_array_to_argb(loc), r, g, b);
 }
 
 /**
@@ -327,10 +330,10 @@ void maze_animate_cursor(uint8_t loc, bool beacon) {
  */
 void maze_animate_destination(uint8_t loc, bool beacon) {
     if (mode_data.maze.animation_frame < 10) {
-        argb_set(1 + maze_map_array_to_argb(loc), 31, 255, 0, 0);
+        argb_set_module(1 + maze_map_array_to_argb(loc), 255, 0, 0);
     } else {
         if (beacon) {
-            argb_set(1 + maze_map_array_to_argb(loc), 31, 0, 255, 0);
+            argb_set_module(1 + maze_map_array_to_argb(loc), 0, 255, 0);
         }
     }
 }

@@ -138,6 +138,9 @@ void whosonfirst_update_stage_leds(void);
  * Initialise Who's On First.
  */
 void whosonfirst_initialise(void) {
+    /* Initialise ARGB expanded memory. */
+    argb_expand(WHOSONFIRST_ARGB_COUNT, &mode_data.whosonfirst.argb_leds[0], &mode_data.whosonfirst.argb_output[0]);
+    
     /* Initialise the LCD. */
     lcd_initialize();
     
@@ -354,9 +357,9 @@ void whosonfirst_stage_generate_and_display(void) {
 void whosonfirst_update_stage_leds(void) {
     for (uint8_t i = 0; i < STAGE_COUNT; i++) {
         if (i < mode_data.whosonfirst.stage) {
-            argb_set(1+i, 31, 0, 255, 0);
+            argb_set_module(i, 0, 255, 0);
         } else {
-            argb_set(1+i, 31, 255, 0, 0);
+            argb_set_module(i, 255, 0, 0);
         }
     }
 }
