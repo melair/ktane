@@ -20,6 +20,7 @@
 #include "firmware.h"
 #include "game.h"
 #include "interrupt.h"
+#include "main.h"
 #include "mode.h"
 #include "module.h"
 #include "nvm.h"
@@ -27,6 +28,7 @@
 #include "status.h"
 #include "tick.h"
 #include "rng.h"
+#include "spi.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
@@ -49,8 +51,6 @@
 
 /* Function prototypes. */
 void safe_unused_pins(void);
-void pps_unlock(void);
-void pps_lock(void);
 void arbiter_initialise(void);
 void oscillator_initialise(void);
 void pmd_initialise(void);
@@ -97,7 +97,10 @@ void main(void) {
 
     /* Initialise CAN bus. */
     can_initialise();
-
+    
+    /* Initialise SPI. */
+    spi_initialise();
+    
     /* Initialise Buzzer. */
     buzzer_initialise();
 
@@ -118,9 +121,9 @@ void main(void) {
 
     /* Set status led to ready. */
     status_set(STATUS_READY);
-    
+
     /* Main loop. */
-    while(true) {
+    while (true) {
         /* Clear watchdog. */
         CLRWDT();
 
@@ -130,11 +133,14 @@ void main(void) {
         /* Service CAN buffers. */
         can_service();
 
+        /* Service SPI. */
+        spi_service();
+        
         /* Service module subsystem. */
         module_service();
 
         /* Service the game state. */
-        game_service();
+        game_service();       
 
         /* Update ARGB string if needed. */
         argb_service();
@@ -229,7 +235,7 @@ void arbiter_initialise(void) {
     DMA2PR = 1;
     DMA3PR = 2;
     DMA4PR = 3;
-    ISRPR  = 4;
+    ISRPR = 4;
     MAINPR = 5;
     SCANPR = 6;
 
@@ -248,7 +254,7 @@ void pmd_initialise(void) {
     PMD3 = 0b10011111; // Keep ADC and DAC
     PMD4 = 0b11111111; // Keep Nothing
     PMD5 = 0b00001111; // Keep PWM1-4
-    PMD6 = 0b00000001; // Keep UART1-5 and SPI1/1
+    PMD6 = 0b00000000; // Keep all.
     PMD7 = 0b11111111; // Keep Nothing
     PMD8 = 0b11110000; // Keep all DMAs.
 }

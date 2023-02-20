@@ -43,15 +43,13 @@
         <itemPath>modes/needy.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
-        <logicalFolder name="f1" displayName="timer" projectFiles="true">
-          <itemPath>peripherals/timer/segment.h</itemPath>
-        </logicalFolder>
         <itemPath>peripherals/ports.h</itemPath>
         <itemPath>peripherals/keymatrix.h</itemPath>
         <itemPath>peripherals/pwmled.h</itemPath>
         <itemPath>peripherals/rotary.h</itemPath>
         <itemPath>peripherals/audio.h</itemPath>
         <itemPath>peripherals/lcd.h</itemPath>
+        <itemPath>peripherals/segment.h</itemPath>
       </logicalFolder>
       <itemPath>nvm.h</itemPath>
       <itemPath>argb.h</itemPath>
@@ -72,6 +70,8 @@
       <itemPath>edgework.h</itemPath>
       <itemPath>serial.h</itemPath>
       <itemPath>protocol_network.h</itemPath>
+      <itemPath>spi.h</itemPath>
+      <itemPath>main.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -119,15 +119,13 @@
         <itemPath>modes/needy.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
-        <logicalFolder name="f1" displayName="timer" projectFiles="true">
-          <itemPath>peripherals/timer/segment.c</itemPath>
-        </logicalFolder>
         <itemPath>peripherals/keymatrix.c</itemPath>
         <itemPath>peripherals/ports.c</itemPath>
         <itemPath>peripherals/pwmled.c</itemPath>
         <itemPath>peripherals/rotary.c</itemPath>
         <itemPath>peripherals/audio.c</itemPath>
         <itemPath>peripherals/lcd.c</itemPath>
+        <itemPath>peripherals/segment.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>nvm.c</itemPath>
@@ -149,6 +147,7 @@
       <itemPath>edgework.c</itemPath>
       <itemPath>serial.c</itemPath>
       <itemPath>protocol_network.c</itemPath>
+      <itemPath>spi.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
