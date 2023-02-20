@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "segment.h"
-#include "../ports.h"
-#include "../../tick.h"
+#include "ports.h"
+#include "../tick.h"
 
 /*
  * Character Bank

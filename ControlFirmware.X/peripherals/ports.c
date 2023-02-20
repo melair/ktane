@@ -3,11 +3,16 @@
 #include <stdbool.h>
 #include "ports.h"
 
-#define kpin_is_porta(PIN)      ((PIN & 0b00111000) == 0b00000000)
-#define kpin_is_portb(PIN)      ((PIN & 0b00111000) == 0b00001000)
-#define kpin_is_portc(PIN)      ((PIN & ) == 0b00010000)
-
 #define KPIN_PORT_MASK          0b00111000
+
+#define KPIN_PORT_A             0b00000000
+#define KPIN_PORT_B             0b00001000
+#define KPIN_PORT_C             0b00010000
+
+#define kpin_is_porta(PIN)      ((PIN & KPIN_PORT_MASK) == KPIN_PORT_A)
+#define kpin_is_portb(PIN)      ((PIN & KPIN_PORT_MASK) == KPIN_PORT_B)
+#define kpin_is_portc(PIN)      ((PIN & KPIN_PORT_MASK) == KPIN_PORT_C)
+
 #define KPIN_PIN_MASK(PIN)      (1 << (PIN & 0b00000111))
 
 /**
@@ -18,10 +23,14 @@
  * @param pullup true if weak pull up should be enabled
  */
 void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
+    if (pin == KPIN_NONE) {
+        return;
+    }
+    
     uint8_t mask = KPIN_PIN_MASK(pin);
 
     switch(pin & KPIN_PORT_MASK) {
-        case 0b00000000:
+        case KPIN_PORT_A:
             if (mode == PIN_OUTPUT) {
                 KTRISA &= ~mask;
             } else {
@@ -34,7 +43,7 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
                 KWPUA &= ~mask;
             }
             break;
-        case 0b00001000:
+        case KPIN_PORT_B:
             if (mode == PIN_OUTPUT) {
                 KTRISB &= ~mask;
             } else {
@@ -47,7 +56,7 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
                 KWPUB &= ~mask;
             }
             break;
-        case 0b00010000:
+        case KPIN_PORT_C:
             if (mode == PIN_OUTPUT) {
                 KTRISC &= ~mask;
             } else {
@@ -70,17 +79,21 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
  * @return  true if read value is high
  */
 bool kpin_read(pin_t pin) {
+    if (pin == KPIN_NONE) {
+        return false;
+    }
+    
     uint8_t mask = KPIN_PIN_MASK(pin);
     uint8_t val;
 
     switch(pin & KPIN_PORT_MASK) {
-        case 0b00000000:
+        case KPIN_PORT_A:
             val = KPORTA;
             break;
-        case 0b00001000:
+        case KPIN_PORT_B:
             val = KPORTB;
             break;
-        case 0b00010000:
+        case KPIN_PORT_C:
             val = KPORTC;
             break;
     }
@@ -95,24 +108,28 @@ bool kpin_read(pin_t pin) {
  * @param value high or low value to write
  */
 void kpin_write(pin_t pin, bool value) {
+    if (pin == KPIN_NONE) {
+        return;
+    }
+    
     uint8_t mask = KPIN_PIN_MASK(pin);
 
     switch(pin & KPIN_PORT_MASK) {
-        case 0b00000000:
+        case KPIN_PORT_A:
             if (value) {
                 KLATA |= mask;
             } else {
                 KLATA &= ~mask;
             }
             break;
-        case 0b00001000:
+        case KPIN_PORT_B:
             if (value) {
                 KLATB |= mask;
             } else {
                 KLATB &= ~mask;
             }
             break;
-        case 0b00010000:
+        case KPIN_PORT_C:
             if (value) {
                 KLATC |= mask;
             } else {

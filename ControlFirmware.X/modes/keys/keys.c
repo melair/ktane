@@ -1,6 +1,6 @@
 #include <xc.h>
 #include "keys.h"
-#include "../../peripherals/timer/segment.h"
+#include "../../peripherals/segment.h"
 #include "../../peripherals/ports.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../mode.h"

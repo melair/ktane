@@ -1,7 +1,7 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "combination.h"
-#include "../../peripherals/timer/segment.h"
+#include "../../peripherals/segment.h"
 #include "../../peripherals/ports.h"
 #include "../../peripherals/rotary.h"
 #include "../../peripherals/keymatrix.h"

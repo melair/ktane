@@ -11,7 +11,7 @@
 #include "../../game.h"
 #include "../../tick.h"
 #include "../../protocol_module.h"
-#include "../../peripherals/timer/segment.h"
+#include "../../peripherals/segment.h"
 
 #define GAME_RNG_MASK 0x89b1a96c
 
