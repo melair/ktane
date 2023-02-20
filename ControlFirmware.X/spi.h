@@ -28,7 +28,6 @@ typedef struct {
 #define SPI_OPERATION_WRITE 0
 #define SPI_OPERATION_READ  1
 
-
 typedef struct spi_command_t spi_command_t;
 
 struct spi_command_t {
