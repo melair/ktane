@@ -6,50 +6,62 @@
 #define KPORTA PORTA
 #define KPORTB PORTF
 #define KPORTC PORTD
+#define KPORTD PORTC
 
 #define KPORTAbits PORTAbits
 #define KPORTBbits PORTFbits
 #define KPORTCbits PORTDbits
+#define KPORTDbits PORTCbits
 
 #define KTRISA TRISA
 #define KTRISB TRISF
 #define KTRISC TRISD
+#define KTRISD TRISC
 
 #define KTRISAbits TRISAbits
 #define KTRISBbits TRISFbits
 #define KTRISCbits TRISDbits
+#define KTRISDbits TRISCbits
 
 #define KLATA LATA
 #define KLATB LATF
 #define KLATC LATD
+#define KLATD LATC
 
 #define KLATAbits LATAbits
 #define KLATBbits LATFbits
 #define KLATCbits LATDbits
+#define KLATDbits LATCbits
 
 #define KODCONA ODCONA
 #define KODCONB ODCONF
 #define KODCONC ODCOND
+#define KODCOND ODCONC
 
 #define KODCONAbits ODCONAbits
 #define KODCONBbits ODCONFbits
 #define KODCONCbits ODCONDbits
+#define KODCONDbits ODCONCbits
 
 #define KWPUA WPUA
 #define KWPUB WPUF
 #define KWPUC WPUD
+#define KWPUD WPUC
 
 #define KWPUAbits WPUAbits
 #define KWPUBbits WPUFbits
 #define KWPUCbits WPUDbits
+#define KWPUDbits WPUCbits
 
 #define KANSELA ANSELA
 #define KANSELB ANSELF
 #define KANSELC ANSELD
+#define KANSELD ANSELC
 
 #define KANSELAbits ANSELAbits
 #define KANSELBbits ANSELFbits
 #define KANSELCbits ANSELDbits
+#define KANSELDbits ANSELCbits
 
 typedef uint8_t pin_t;
 
@@ -80,6 +92,15 @@ typedef uint8_t pin_t;
 #define KPIN_C6 ((pin_t) 0b00010110)
 #define KPIN_C7 ((pin_t) 0b00010111)
 
+#define KPIN_D0 ((pin_t) 0b00011000)
+#define KPIN_D1 ((pin_t) 0b00011001)
+#define KPIN_D2 ((pin_t) 0b00011010)
+#define KPIN_D3 ((pin_t) 0b00011011)
+#define KPIN_D4 ((pin_t) 0b00011100)
+#define KPIN_D5 ((pin_t) 0b00011101)
+#define KPIN_D6 ((pin_t) 0b00011110)
+#define KPIN_D7 ((pin_t) 0b00011111)
+
 #define KPIN_NONE 0b11111111
 
 #define PIN_OUTPUT 0
@@ -88,6 +109,8 @@ typedef uint8_t pin_t;
 void kpin_mode(pin_t port, uint8_t mode, bool pullup);
 bool kpin_read(pin_t port);
 void kpin_write(pin_t port, bool value);
+volatile unsigned char *kpin_to_rxypps(pin_t pin);
+uint8_t kpin_to_ppspin(pin_t pin);
 
 #endif	/* PORTS_H */
 
