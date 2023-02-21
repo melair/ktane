@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define MODE_COUNT 13
+#define MODE_COUNT 14
 
 #define MODE_BLANK               0
 #define MODE_BOOTSTRAP           1
@@ -19,6 +19,7 @@
 #define MODE_PUZZLE_WIRES        15
 #define MODE_PUZZLE_COMBINATION  16
 #define MODE_PUZZLE_OPERATOR     17
+#define MODE_PUZZLE_CARDSCAN     18
 
 #define MODE_NEEDY_KEYS          224
 
@@ -41,6 +42,7 @@ uint8_t *mode_name_by_index(uint8_t idx);
 #include "modes/keys/keys.h"
 #include "modes/combination/combination.h"
 #include "modes/operator/operator.h"
+#include "modes/cardscan/cardscan.h"
 
 typedef union {
     struct {
@@ -55,6 +57,7 @@ typedef union {
     mode_keys_t         keys;
     mode_combination_t  combination;
     mode_operator_t     operator;
+    mode_cardscan_t     cardscan;
 } mode_data_t;
 
 extern mode_data_t mode_data;

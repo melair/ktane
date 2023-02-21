@@ -56,6 +56,7 @@ mode_names_t mode_names[MODE_COUNT+1] = {
     { MODE_PUZZLE_WIRES, "Wires" },
     { MODE_PUZZLE_COMBINATION, "Combination" },
     { MODE_PUZZLE_OPERATOR, "Operator" },
+    { MODE_PUZZLE_CARDSCAN, "Card Scan" },
     { MODE_NEEDY_KEYS, "Keys" },
 };
 
@@ -224,6 +225,10 @@ void mode_initialise(void) {
         /* Module is a puzzle, operator.*/
         case MODE_PUZZLE_OPERATOR:
             operator_initialise();
+            break;
+        /* Module is a puzzle, card scan. */
+        case MODE_PUZZLE_CARDSCAN:
+            cardscan_initialise();
             break;
         /* Module is needy, keys. */
         case MODE_NEEDY_KEYS:
