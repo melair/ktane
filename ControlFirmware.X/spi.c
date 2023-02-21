@@ -68,16 +68,16 @@ void spi_service(void) {
     }
         
     if (spi_command != NULL && !spi_command->in_progress) {
-        if (spi_command->device != previous_device || (previous_device != 0xff && spi_devices[previous_device]->spi_cs_bounce_between)) {
-            kpin_write(spi_devices[previous_device]->spi_cs, true);
+        if (spi_command->device != previous_device || (previous_device != 0xff && spi_devices[previous_device]->cs_bounce)) {
+            kpin_write(spi_devices[previous_device]->cs_pin, true);
         }
                 
-        kpin_write(spi_devices[spi_command->device]->spi_cs, false);
+        kpin_write(spi_devices[spi_command->device]->cs_pin, false);
                 
-        *(spi_devices[spi_command->device]->spi_clk_pps_addr) = 0x34;
-        *(spi_devices[spi_command->device]->spi_mosi_pps_addr) = 0x35;        
-        SPI2SDIPPS = spi_devices[spi_command->device]->spi_miso_pps_port;
-                        
+        *(kpin_to_rxypps(spi_devices[spi_command->device]->clk_pin)) = 0x34;
+        *(kpin_to_rxypps(spi_devices[spi_command->device]->mosi_pin)) = 0x35;
+        SPI2SDIPPS = kpin_to_ppspin(spi_devices[spi_command->device]->miso_pin);
+                                
         SPI2TCNT = spi_command->size;
         SPI2BAUD = spi_baud[spi_devices[spi_command->device]->baud];
         

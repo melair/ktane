@@ -14,14 +14,13 @@
 #define SPI_BAUD_3200_KHZ   5
 
 typedef struct {
-    uint8_t spi_miso_pps_port;
-    uint8_t *spi_mosi_pps_addr;
-    uint8_t *spi_clk_pps_addr;
-    
-    bool spi_cs_bounce_between;
-    
-    pin_t spi_cs;
-    
+    pin_t miso_pin;
+    pin_t mosi_pin;
+    pin_t clk_pin;
+    pin_t cs_pin;
+
+    bool cs_bounce;
+        
     unsigned baud :3;        
 } spi_device_t;
 
