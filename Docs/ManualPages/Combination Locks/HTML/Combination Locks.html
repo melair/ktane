@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>Combination Locks — Keep Talking and Nobody Explodes Module</title>
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/ktane-utils.js"></script>
+    <style>
+        .dark table, table {
+            margin: 1em auto;
+            border: none;
+        }
+
+        .page-footer::before { content: 'Page '; }
+        .page-footer::after { content: ' of 1'; }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Physical</span>
+                <span class="page-header-section-title">Combination Locks</span>
+            </div>
+            <div class="page-content">
+                <img src="img/Component/Combination Locks.svg" class="diagram">
+                <h2>On the Subject of Combination Locks</h2>
+                <p class="flavour-text">This looks like a combination lock. I thought I was disarming this bomb, not unlocking it.</p>
+
+                <p>Like a typical combination lock, this requires 3 numbers to unlock.</p>
+                
+                <p>Turn the dial to the first number, push on the dial, turn to the second number and push the dial. Finally, turn it to the last number and push the dial. That will unlock it!
+                    If sequential numbers in the code are the same, perform a full revolution back to the same number. </p>
+
+                <b><u>Which direction to turn:</u></b>
+                <ul>
+                    <li>Before turning the dial, each digit of the initial number displayed must be summed, if it can be evenly divided by three then the initial direction should be clockwise, otherwise anti-clockwise.</li>
+                    <li>Each subsequent direction should alternate.</li>
+                    <li>The dial must not be turned both directions, if a number is missed perform another revolution in the same direction.</li>
+                </ul>
+                <b><u>How to decode the combination:</u></b>
+                <p>
+                    Each number ranges from 0-19. Refer to the table to determine each number.
+                </p>            
+                <table>
+                    <tr>
+                        <td>
+                            <b><u>First number:</u></b>
+                            <ol>
+                                <li>Add the first two digits of each two factor code together. If there are no two factor codes, use the last digit of the serial number plus the number of solved modules.</li>
+                                <li>If the result is over 19, keep subtracting 20 until the result is between 0-19.</li>
+                            </ol>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b><u>Second number:</u></b>
+                            <ol>
+                                <li>Add the last two digits of each two factor code together. If there are no two factor codes, use the number of modules on the bomb (including needy modules and timer).</li>
+                                <li>If the result is over 19, keep subtracting 20 until the result is between 0-19.</li>
+                            </ol>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b><u>Third number:</u></b>
+                            <ol>
+                                <li>Add the first two numbers together.</li>
+                                <li>If the result is over 19, keep subtracting 20 until the result is between 0-19.</li>
+                            </ol>
+                        </td>
+                    </tr>
+                </table>
+                <p>On incorrect entry the lock will reset and the whole process must begin again.</p>
+            </div>
+            <div class="page-footer relative-footer">1</div>
+        </div>
+    </div>
+</body>
+</html>

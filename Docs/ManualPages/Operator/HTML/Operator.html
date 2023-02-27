@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>Operator — Keep Talking and Nobody Explodes Module</title>
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/ktane-utils.js"></script>
+    <style>
+        .dark table, table {
+            margin: 1em auto;
+            border: none;
+        }
+
+        .page-footer::before { content: 'Page '; }
+        .page-footer::after { content: ' of 1'; }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Physical</span>
+                <span class="page-header-section-title">Operator</span>
+            </div>
+            <div class="page-content">
+                <img src="img/Component/Operator.svg" class="diagram">
+                <h2>On the Subject of Operators</h2>
+                <p class="flavour-text">You're pretty sure these rotary dials haven't been used since the 70's. You get the sense this might actually still be connect to a telephone.</p>
+               
+                <ul>
+                    <li>The LED sequence defines the start point in the dialing table.</li>
+                    <li>If the bomb had a 2FA code, then read left, otherwise down.</li>
+                    <li>If the bomb serial number does not have a vowel, then reverse the code.</li>
+                    <li>Dial the five digit number.</li>
+                </ul>
+
+                <b><u>Starting Point</u></b>
+                <p>Of the six LEDs, the first three show the column start, the last three show the row start.</p>
+                <table class="centered">
+                    <tr><td colspan="3">LEDs</td><td>Row/Column</td></tr>
+                    <tr><td>⭘</td><td>⭘</td><td>⬤</td><td>1</td></tr>
+                    <tr><td>⭘</td><td>⬤</td><td>⭘</td><td>2</td></tr>
+                    <tr><td>⭘</td><td>⬤</td><td>⬤</td><td>3</td></tr>
+                    <tr><td>⬤</td><td>⭘</td><td>⭘</td><td>4</td></tr>
+                    <tr><td>⬤</td><td>⭘</td><td>⬤</td><td>5</td></tr>
+                </table>
+
+                <b><u>Dialing Table</u></b>
+                <table class="centered">
+                    <tr><td>1</td><td>7</td><td>7</td><td>9</td><td>1</td><td>8</td><td>5</td><td>0</td><td>6</td><td>0</td></tr>
+                    <tr><td>4</td><td>1</td><td>2</td><td>9</td><td>8</td><td>4</td><td>1</td><td>5</td><td>7</td><td>6</td></tr>
+                    <tr><td>5</td><td>6</td><td>8</td><td>8</td><td>7</td><td>7</td><td>7</td><td>8</td><td>0</td><td>5</td></tr>
+                    <tr><td>1</td><td>8</td><td>7</td><td>1</td><td>9</td><td>6</td><td>7</td><td>1</td><td>5</td><td>6</td></tr>
+                    <tr><td>3</td><td>0</td><td>4</td><td>3</td><td>3</td><td>7</td><td>8</td><td>4</td><td>9</td><td>3</td></tr>
+                    <tr><td>7</td><td>1</td><td>9</td><td>9</td><td>0</td><td>5</td><td>8</td><td>8</td><td>3</td><td>5</td></tr>
+                    <tr><td>1</td><td>0</td><td>5</td><td>6</td><td>6</td><td>8</td><td>1</td><td>2</td><td>3</td><td>6</td></tr>
+                    <tr><td>3</td><td>6</td><td>2</td><td>8</td><td>7</td><td>4</td><td>7</td><td>3</td><td>6</td><td>0</td></tr>
+                    <tr><td>3</td><td>3</td><td>7</td><td>3</td><td>1</td><td>9</td><td>3</td><td>3</td><td>1</td><td>2</td></tr>
+                    <tr><td>8</td><td>6</td><td>6</td><td>7</td><td>0</td><td>3</td><td>2</td><td>3</td><td>5</td><td>8</td></tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer">1</div>
+        </div>
+    </div>
+</body>
+</html>

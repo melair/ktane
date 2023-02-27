@@ -1,0 +1,238 @@
+body {
+    background-color: rgb(50, 50, 50);
+}
+
+body, #main-table th::after, textarea, button, select, input {
+    color: rgb(150, 150, 150);
+}
+
+table th, table td, #main-table th, pre.diff, div.popup {
+    border-color: rgb(80, 80, 80);
+}
+
+#main-table, #main-table th, div.popup, textarea, div.error, button, input, select, pre.diff {
+    background-color: rgb(40, 40, 40);
+}
+
+    #main-table .manual-selector {
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 30"><path fill="rgb(100, 100, 100)" d="M0 10,24 10,12 30z" /></svg>');
+    }
+
+    #main-table td.infos-2 {
+        border-right-color: rgb(80, 80, 80);
+    }
+
+    #main-table th.infos {
+        border-right-color: rgb(80, 80, 80);
+    }
+
+#logo, .mod-icon, .icons > div.icon {
+    filter: brightness(0.8);
+}
+
+img.icon[alt="Tutorial video"] {
+    filter: brightness(1.8);
+}
+
+img.icon[alt="Source code"] {
+    filter: invert(1) brightness(0.4);
+}
+
+img.icon[alt="Steam Workshop"] {
+    filter: invert(0.75) brightness(0.6);
+}
+
+.manual-icon {
+    filter: brightness(0.6) contrast(1.5);
+}
+
+a:link, #top-controls > #tabs > .tab, .icons .icon > .icon-link, #filters .filter-profile.upload > label, #main-table .manual-selector, div.popup div.tutorial-select > a {
+    color: rgb(170, 170, 170);
+}
+
+    a:visited, .icons .icon > .icon-link:visited {
+        color: rgb(130, 130, 130);
+    }
+
+div.popup div.manual-select > div:hover, div.popup div.tutorial-select > a:hover {
+    background-color: #338;
+    color: #eee;
+}
+
+#top-controls > #tabs > .tab {
+    background-color: #444;
+    border-left-color: #666;
+    border-top-color: #555;
+    border-right-color: #282828;
+}
+
+#top-controls {
+    background-color: rgb(50, 50, 50);
+}
+
+#top-controls .search-container #search-field-mission {
+	color: rgb(170, 170, 170);
+}
+
+#top-controls .search-container #search-field-mission option.unsolved {
+    background-color: #500;
+}
+
+#top-controls .search-container #search-field-mission option.solved {
+    background-color: #050;
+}
+
+#top-controls .search-container #search-field-mission option.tp {
+    background-color: #505;
+}
+
+.ui-slider.ui-widget.ui-widget-content {
+    border-color: rgb(80, 80, 80);
+    background-color: rgb(130, 130, 130)
+}
+
+    .ui-slider.ui-widget.ui-widget-content .ui-widget-header {
+        background-color: rgb(100, 100, 100);
+        border-color: rgb(80, 80, 80);
+    }
+
+    .ui-slider.ui-widget.ui-widget-content .ui-state-default {
+        background-color: rgb(150, 150, 150);
+        border-color: rgb(80, 80, 80);
+    }
+
+    .ui-slider.ui-widget.ui-widget-content .ui-state-hover {
+        background-color: rgb(120, 120, 120);
+        border-color: rgb(50, 50, 50);
+    }
+
+    .ui-slider.ui-widget.ui-widget-content .ui-state-active {
+        background-color: rgb(180, 180, 180);
+        border-color: rgb(110, 110, 110);
+    }
+
+input[type="text"], input[type="number"], input[type="date"], select {
+    border: 1px solid;
+    border-color: #444;
+}
+
+div.popup h3 {
+    border-color: #666;
+}
+
+div.popup h4 {
+    border-color: #444;
+}
+
+ul.below-icons:not(.first) {
+    border-color: #666;
+}
+
+div.infos .inf-rule-seed::before {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path style="fill:%232c73ff" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+}
+
+/* Search */
+.search-field-clear, #search-switcher {
+    filter: invert(0.4);
+}
+
+/* JSON */
+button {
+    border-color: rgb(100, 100, 100);
+}
+
+span.sep, span.del, span.ins {
+    filter: brightness(0.75);
+}
+
+/* When RULE SEED is active */
+body.rule-seed-active tr.mod.rs td.infos-1 {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path style="fill:%23384b70" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+}
+
+body.rule-seed-active #top-controls #tabs > #rule-seed-link {
+    background-color: hsl(0, 80%, 27%);
+    border-top-color: hsl(0, 80%, 37%);
+    border-right-color: hsl(0, 80%, 20%);
+    border-left-color: hsl(0, 80%, 32%);
+}
+
+/* Periodic Table */
+#actual-periodic-table .module {
+    color: #aaa;
+    border-color: #aaa;
+}
+
+    #actual-periodic-table .module.highlight {
+        box-shadow: 0 0 12px rgba(128, 192, 255, 1);
+        border-color: #fff;
+    }
+
+#actual-periodic-table .VeryEasy {
+    background-color: #040;
+}
+
+#actual-periodic-table .Easy {
+    background-color: #240;
+}
+
+#actual-periodic-table .Medium {
+    background-color: #440;
+}
+
+#actual-periodic-table .Hard {
+    background-color: #420;
+}
+
+#actual-periodic-table .VeryHard {
+    background-color: #400;
+}
+
+#assignment-table td.module.clash {
+    background-color: #800;
+}
+
+#assignment-table th, #assignment-table td {
+    border-color: #555;
+}
+
+
+@media screen and (max-width: 1090px) and (min-width: 650.01px) {
+    #main-table td.infos-1 {
+        border-right-color: rgb(80, 80, 80);
+    }
+
+    #main-table th.modlink {
+        border-right-color: rgb(80, 80, 80);
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 650px) {
+    #main-table, #main-table tr.mod {
+        border-color: rgb(80, 80, 80);
+    }
+
+    .mobile-opt {
+        filter: invert(0.4);
+    }
+
+    body.rule-seed-active tr.mod.rs td.infos-1 {
+        background-image: none;
+    }
+
+        body.rule-seed-active tr.mod.rs td.infos-1::before {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><path style="fill:%23384b70" d="M 778 0 C 720 0 662 21 618 65 C 553 131 536 226 568 307 L 308 567 C 227 534 131 551 66 616 C 10 672 -10 748 4 819 L 172 652 L 312 687 L 313 688 L 348 829 L 181 996 C 252 1010 329 990 384 935 C 449 869 466 773 433 692 L 692 433 C 774 466 871 450 937 384 C 992 328 1012 252 998 181 L 831 348 L 689 313 L 654 172 L 822 4 C 807 1 792 0 778 0 z"/></svg>');
+        }
+
+    body.rule-seed-active #rule-seed-mobile {
+        background-color: hsl(0, 80%, 27%);
+        border-color: hsl(0,80%,35%);
+    }
+}
+
+::selection {
+  background: #2E58CC; /* WebKit/Blink Browsers */
+  color: white;
+}
