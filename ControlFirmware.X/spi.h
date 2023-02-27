@@ -24,8 +24,9 @@ typedef struct {
     unsigned baud :3;        
 } spi_device_t;
 
-#define SPI_OPERATION_WRITE 0
-#define SPI_OPERATION_READ  1
+#define SPI_OPERATION_WRITE           0
+#define SPI_OPERATION_WRITE_THEN_READ 1
+#define SPI_OPERATION_READ            2
 
 typedef struct spi_command_t spi_command_t;
 
@@ -35,7 +36,8 @@ struct spi_command_t {
     unsigned in_progress    :1;
     
     uint8_t *buffer;
-    uint16_t size;
+    uint16_t write_size;
+    uint16_t read_size;
     
     spi_command_t *(*callback)(spi_command_t *);
 };

@@ -53,7 +53,6 @@
 void safe_unused_pins(void);
 void arbiter_initialise(void);
 void oscillator_initialise(void);
-void pmd_initialise(void);
 
 /**
  * Main function, initialise and main loop.
@@ -67,9 +66,6 @@ void main(void) {
 
     /* Configure sleep behaviour, put CPU in IDLE. */
     CPUDOZEbits.IDLEN = 1;
-
-    /* Disable unused peripherals. */
-    pmd_initialise();
 
     /* Initialise interrupts. */
     int_initialise();
@@ -113,11 +109,10 @@ void main(void) {
     /* Initialise game state. */
     game_initialise();
 
-    /* Lock PPS during main execution. */
-    pps_lock();
-
+    #ifndef __DEBUG
     /* Beep on start. */
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);
+    #endif
 
     /* Set status led to ready. */
     status_set(STATUS_READY);
@@ -242,19 +237,4 @@ void arbiter_initialise(void) {
     PRLOCK = 0x55;
     PRLOCK = 0xAA;
     PRLOCKbits.PRLOCKED = 1;
-}
-
-/**
- * Disable peripherals not used, this saves some power.
- */
-void pmd_initialise(void) {
-    PMD0 = 0b00101111; // Keep FOSC, FVR and CRC
-    PMD1 = 0b10000000; // Keep Timers
-    PMD2 = 0b01111111; // Keep CAN
-    PMD3 = 0b10011111; // Keep ADC and DAC
-    PMD4 = 0b11111111; // Keep Nothing
-    PMD5 = 0b00001111; // Keep PWM1-4
-    PMD6 = 0b00000000; // Keep all.
-    PMD7 = 0b11111111; // Keep Nothing
-    PMD8 = 0b11110000; // Keep all DMAs.
 }

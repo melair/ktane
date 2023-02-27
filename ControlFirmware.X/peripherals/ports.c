@@ -4,6 +4,7 @@
 #include "ports.h"
 
 #define KPIN_PORT_MASK          0b00111000
+#define KPIN_ALL_PIN_MASK       0b00000111
 
 #define KPIN_PORT_A             0b00000000
 #define KPIN_PORT_B             0b00001000
@@ -165,7 +166,7 @@ void kpin_write(pin_t pin, bool value) {
 }
 
 volatile unsigned char *kpin_to_rxypps(pin_t pin) {
-    uint8_t mask = KPIN_PIN_MASK(pin);
+    uint8_t mask = pin & KPIN_ALL_PIN_MASK;
 
     switch(pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:
@@ -180,7 +181,7 @@ volatile unsigned char *kpin_to_rxypps(pin_t pin) {
 }
 
 uint8_t kpin_to_ppspin(pin_t pin) {
-    uint8_t mask = KPIN_PIN_MASK(pin);
+    uint8_t mask = pin & KPIN_ALL_PIN_MASK;
 
     switch(pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:

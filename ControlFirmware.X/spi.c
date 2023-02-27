@@ -14,10 +14,7 @@ uint8_t spi_last_device = 0xff;
 
 const uint8_t spi_baud[SPI_BAUD_COUNT] = { 255, 159, 79, 39, 19, 9 };
 
-void spi_initialise(void) {
-    /* Unlock PPS. */
-    pps_unlock();
-            
+void spi_initialise(void) {  
     for (uint8_t i = 0; i < SPI_DEVICE_COUNT; i++) {
         spi_devices[i] = NULL;
     }
@@ -25,6 +22,8 @@ void spi_initialise(void) {
     for (uint8_t i = 0; i < SPI_QUEUE_COUNT; i++) {
         spi_queue[i] = NULL;
     }
+    
+    spi_command = NULL;
     
     /* Set SPI clock ready for baud rates. */
     SPI2CLK = 0b000000; /* 64MhHz clock. */
@@ -42,21 +41,26 @@ void spi_service(void) {
     uint8_t previous_device = 0xff;
     
     if (spi_command != NULL && (
-            (spi_command->operation == SPI_OPERATION_WRITE && SPI2INTFbits.TCZIF == 1) || 
+            ((spi_command->operation == SPI_OPERATION_WRITE || spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) && SPI2INTFbits.TCZIF == 1) || 
             (spi_command->operation == SPI_OPERATION_READ && PIR6bits.DMA2DCNTIF == 1))) {
-        spi_command->in_progress = 0;
         
+        spi_command->in_progress = 0;
+
         SPI2CON0bits.EN = 0;
         DMASELECT = 1;
         DMAnCON0bits.EN = 0; 
         
-        previous_device = spi_command->device;
-                        
-        if (spi_command->callback != NULL) {
-            spi_command = spi_command->callback(spi_command);   
+        if (spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) {
+            spi_command->operation = SPI_OPERATION_READ;            
         } else {
-            spi_command = NULL;
-        }             
+            previous_device = spi_command->device;
+
+            if (spi_command->callback != NULL) {
+                spi_command = spi_command->callback(spi_command);   
+            } else {
+                spi_command = NULL;
+            }       
+        }
     }
     
     if (spi_command == NULL) {
@@ -65,12 +69,16 @@ void spi_service(void) {
         for (uint8_t i = 1; i < SPI_QUEUE_COUNT; i++) {
             spi_queue[i-1] = spi_queue[i];
         }
+        
+        spi_queue[SPI_QUEUE_COUNT - 1] = NULL;
     }
         
     if (spi_command != NULL && !spi_command->in_progress) {
         if (spi_command->device != previous_device || (previous_device != 0xff && spi_devices[previous_device]->cs_bounce)) {
             kpin_write(spi_devices[previous_device]->cs_pin, true);
         }
+        
+        previous_device = spi_command->device;
                 
         kpin_write(spi_devices[spi_command->device]->cs_pin, false);
                 
@@ -78,7 +86,6 @@ void spi_service(void) {
         *(kpin_to_rxypps(spi_devices[spi_command->device]->mosi_pin)) = 0x35;
         SPI2SDIPPS = kpin_to_ppspin(spi_devices[spi_command->device]->miso_pin);
                                 
-        SPI2TCNT = spi_command->size;
         SPI2BAUD = spi_baud[spi_devices[spi_command->device]->baud];
         
         DMASELECT = 1;        
@@ -86,14 +93,19 @@ void spi_service(void) {
         
         switch(spi_command->operation) {
             case SPI_OPERATION_WRITE:
+            case SPI_OPERATION_WRITE_THEN_READ:
                 SPI2CON2bits.RXR = 0;
                 SPI2CON2bits.TXR = 1;
                 
                 DMAnCON1bits.SMODE = 0b01;
                 DMAnCON1bits.DMODE = 0b00;
 
-                DMAnSSZ = spi_command->size;
+                SPI2TCNT = spi_command->write_size;
+                DMAnSSZ = spi_command->write_size;
                 DMAnDSZ = 1;
+                
+                DMAnSSA = spi_command->buffer;
+                DMAnDSA = &SPI2TXB;
 
                 DMAnCON1bits.SSTP = 1;
                 DMAnCON1bits.DSTP = 0;
@@ -108,8 +120,12 @@ void spi_service(void) {
                 DMAnCON1bits.SMODE = 0b00;
                 DMAnCON1bits.DMODE = 0b01;
                 
+                SPI2TCNT = spi_command->read_size;
                 DMAnSSZ = 1;
-                DMAnDSZ = spi_command->size;
+                DMAnDSZ = spi_command->read_size;
+                
+                DMAnSSA = &SPI2RXB;
+                DMAnDSA = spi_command->buffer;
 
                 DMAnCON1bits.SSTP = 0;
                 DMAnCON1bits.DSTP = 1;
@@ -141,7 +157,7 @@ void spi_enqueue(spi_command_t *c) {
     for (uint8_t i = 0; i < SPI_QUEUE_COUNT; i++) {
         if (spi_queue[i] == NULL) {
             spi_queue[i] = c;
-            break;
+            return;
         }
     }  
 }
