@@ -21,7 +21,8 @@ typedef struct {
 
     bool cs_bounce;
         
-    unsigned baud :3;        
+    unsigned baud       :3;     
+    unsigned lsb_first  :1;
 } spi_device_t;
 
 #define SPI_OPERATION_WRITE           0

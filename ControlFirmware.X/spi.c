@@ -4,6 +4,8 @@
 #include "main.h"
 #include "peripherals/ports.h"
 
+#define _XTAL_FREQ 64000000
+
 #define SPI_DEVICE_COUNT 4
 #define SPI_QUEUE_COUNT  8
 
@@ -35,13 +37,16 @@ void spi_initialise(void) {
     SPI2TWIDTHbits.TWIDTH = 0;    
     /* Enable zero count interrupt. */
     SPI2INTEbits.TCZIE = 1;
+    
+    PIE5bits.SPI2IE = 1;
+    PIE6bits.DMA2DCNTIE = 1;
 }
 
 void spi_service(void) {
     uint8_t previous_device = 0xff;
     
     if (spi_command != NULL && (
-            ((spi_command->operation == SPI_OPERATION_WRITE || spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) && SPI2INTFbits.TCZIF == 1) || 
+            ((spi_command->operation == SPI_OPERATION_WRITE || spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) && (SPI2INTFbits.TCZIF == 1 && SPI2CON2bits.BUSY == 0)) || 
             (spi_command->operation == SPI_OPERATION_READ && PIR6bits.DMA2DCNTIF == 1))) {
         
         spi_command->in_progress = 0;
@@ -51,15 +56,27 @@ void spi_service(void) {
         DMAnCON0bits.EN = 0; 
         
         if (spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) {
-            spi_command->operation = SPI_OPERATION_READ;            
+            spi_command->operation = SPI_OPERATION_READ;       
+            __delay_us(10);
         } else {
+            bool cs_high = true;
             previous_device = spi_command->device;
 
             if (spi_command->callback != NULL) {
                 spi_command = spi_command->callback(spi_command);   
+                
+                if (spi_command != NULL && spi_command->device == previous_device) {
+                    if (!spi_devices[previous_device]->cs_bounce) {
+                        cs_high = false;
+                    }
+                }
             } else {
                 spi_command = NULL;
-            }       
+            }   
+            
+            if (cs_high) {
+                kpin_write(spi_devices[previous_device]->cs_pin, true);                
+            }
         }
     }
     
@@ -73,24 +90,23 @@ void spi_service(void) {
         spi_queue[SPI_QUEUE_COUNT - 1] = NULL;
     }
         
-    if (spi_command != NULL && !spi_command->in_progress) {
-        if (spi_command->device != previous_device || (previous_device != 0xff && spi_devices[previous_device]->cs_bounce)) {
-            kpin_write(spi_devices[previous_device]->cs_pin, true);
-        }
-        
+    if (spi_command != NULL && !spi_command->in_progress) {    
         previous_device = spi_command->device;
                 
         kpin_write(spi_devices[spi_command->device]->cs_pin, false);
-                
+                        
         *(kpin_to_rxypps(spi_devices[spi_command->device]->clk_pin)) = 0x34;
         *(kpin_to_rxypps(spi_devices[spi_command->device]->mosi_pin)) = 0x35;
         SPI2SDIPPS = kpin_to_ppspin(spi_devices[spi_command->device]->miso_pin);
                                 
         SPI2BAUD = spi_baud[spi_devices[spi_command->device]->baud];
         
+        SPI2CON0bits.LSBF = spi_devices[spi_command->device]->lsb_first;
+        SPI2CON1bits.CKE = 1;
+        
         DMASELECT = 1;        
         DMAnCON1bits.SMR = 0b00;
-        
+                
         switch(spi_command->operation) {
             case SPI_OPERATION_WRITE:
             case SPI_OPERATION_WRITE_THEN_READ:
@@ -131,15 +147,19 @@ void spi_service(void) {
                 DMAnCON1bits.DSTP = 1;
                 
                 DMAnSIRQ = 0x28;       
+                
                 break;
         } 
+        
+        PIR6bits.DMA2DCNTIF = 0;
+        SPI2STATUSbits.CLRBF = 1;
         
         SPI2CON0bits.EN = 1;                
         DMAnCON0bits.SIRQEN = 1;
         DMAnCON0bits.EN = 1;        
         
         spi_command->in_progress = 1;
-    }
+    }    
 }
 
 uint8_t spi_register(spi_device_t *d) {
