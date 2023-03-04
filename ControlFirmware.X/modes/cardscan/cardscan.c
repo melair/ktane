@@ -14,6 +14,7 @@
 
 void cardscan_service(void);
 void cardscan_service_setup(bool first);
+void cardscan_special_function(uint8_t special_fn);
 
 const spi_device_t cardscan_device = {
     .clk_pin = KPIN_C0,
@@ -49,6 +50,11 @@ void cardscan_initialise(void) {
     /* Register callbacks. */
     mode_register_callback(GAME_ALWAYS, cardscan_service, NULL);
     mode_register_callback(GAME_SETUP, cardscan_service_setup, &tick_20hz);
+    mode_register_special_fn_callback(&cardscan_special_function);
+    
+    /* Clear LCD. */
+    lcd_clear();
+    lcd_sync();
 }
 
 void cardscan_service(void) {
@@ -72,5 +78,22 @@ void cardscan_service(void) {
 void cardscan_service_setup(bool first) {
     if (!this_module->ready && !mode_data.cardscan.cards.programming) {
         game_module_ready(true);
+    }
+}
+
+void cardscan_special_function(uint8_t special_fn) {
+    switch(special_fn) {
+        case 0:
+            mode_data.cardscan.cards.programming = !mode_data.cardscan.cards.programming;
+            
+            if (!mode_data.cardscan.cards.programming) {
+                /* Clear LCD. */
+                lcd_clear();
+                lcd_sync();
+            } else {               
+                /* Set initial card back to 0. */
+                mode_data.cardscan.cards.programming_id = 0;
+            }
+            break;
     }
 }

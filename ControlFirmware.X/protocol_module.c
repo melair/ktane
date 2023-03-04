@@ -16,12 +16,14 @@ void protocol_module_error_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_reset_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_identify_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_module_mode_set_receive(uint8_t id, uint8_t size, uint8_t *payload);
+void protocol_module_special_function_receive(uint8_t id, uint8_t size, uint8_t *payload);
 
-#define OPCODE_MODULE_ANNOUNCEMENT 0x00
-#define OPCODE_MODULE_RESET        0x10
-#define OPCODE_MODULE_IDENTIFY     0x11
-#define OPCODE_MODULE_MODE_SET     0x12
-#define OPCODE_MODULE_ERROR        0xf0
+#define OPCODE_MODULE_ANNOUNCEMENT      0x00
+#define OPCODE_MODULE_RESET             0x10
+#define OPCODE_MODULE_IDENTIFY          0x11
+#define OPCODE_MODULE_MODE_SET          0x12
+#define OPCODE_MODULE_SPECIAL_FUNCTION  0x13
+#define OPCODE_MODULE_ERROR             0xf0
 
 /* Store if we need to announce our reset. */
 bool announce_reset = true;
@@ -56,6 +58,9 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
             break;
         case OPCODE_MODULE_MODE_SET:
             protocol_module_mode_set_receive(id, size, payload);
+            break;
+        case OPCODE_MODULE_SPECIAL_FUNCTION:
+            protocol_module_special_function_receive(id, size, payload);
             break;
         default:
             /* Alert an unknown opcode has been received. */
@@ -330,5 +335,58 @@ void protocol_module_mode_set_receive(uint8_t id, uint8_t size, uint8_t *payload
 
         /* Reset the MCU. */
         RESET();
+    }
+}
+
+/*
+ * Module - Special Function - (0x13)
+ *
+ * Packet Layout:
+ *
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Op Code      |  CAN Id       |  Special Fn   |               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+
+/**
+ * Notify a module that a special function has been activated.
+ *
+ * @param id can id to set mode on
+ * @param special_fn special function to activate
+ */
+void protocol_module_special_function_send(uint8_t id, uint8_t special_fn) {
+    uint8_t payload[3];
+
+    payload[0] = OPCODE_MODULE_SPECIAL_FUNCTION;
+    payload[1] = id;
+    payload[2] = special_fn;
+
+    can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);
+
+    /* Send packet to self. */
+    protocol_module_special_function_receive(id, sizeof(payload), &payload[0]);
+}
+
+/**
+ * Receive a special function message to a module
+ *
+ * @param id CAN id for the source module, from the 8 least significant bits of the raw 11-bit CAN id
+ * @param size size of CAN payload received
+ * @param special_fn special function to activate
+ */
+void protocol_module_special_function_receive(uint8_t id, uint8_t size, uint8_t *payload) {
+    /* Safety check. */
+    if (size < 3) {
+        return;
+    }
+
+    uint8_t can_id = payload[1];
+    uint8_t fn = payload[2];
+    
+    /* If targeted at this module. */
+    if (can_id == can_get_id()) {
+        mode_call_special_function(fn);        
     }
 }

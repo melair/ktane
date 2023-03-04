@@ -21,5 +21,9 @@ uint8_t ui_render_configure_module_mode_set_change(uint8_t current, action_t *a)
 uint8_t ui_render_configure_module_mode_set_press(uint8_t current, action_t *a);
 void ui_render_configure_module_mode_set(interface_t *current);
 
+uint8_t ui_render_configure_module_special_function_change(uint8_t current, action_t *a);
+uint8_t ui_render_configure_module_special_function_press(uint8_t current, action_t *a);
+void ui_render_configure_module_special_function(interface_t *current);
+
 #endif	/* UI_CONFIGURE_MODULE_H */
 

@@ -246,6 +246,7 @@ bool can_change_mode(uint8_t mode) {
 void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
     /* Check to see if payload is too large. */
     if (size > 20) {
+        stats.can_error++;
         return;
     }
 

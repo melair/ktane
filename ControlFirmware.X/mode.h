@@ -31,6 +31,8 @@ void mode_service(void);
 void mode_register_callback(uint8_t stage, void (*func)(bool), bool *tick);
 uint8_t mode_id_by_index(uint8_t idx);
 uint8_t *mode_name_by_index(uint8_t idx);
+void mode_register_special_fn_callback(void (*func)(uint8_t));
+void mode_call_special_function(uint8_t special_function);
 
 #include "modes/controller/controller.h"
 #include "modes/controller/ui.h"

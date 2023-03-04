@@ -332,3 +332,52 @@ void ui_render_configure_module_mode_set(interface_t *current) {
     
     ui_render_menu_item_text(title, has_press, has_left, has_right);
 }
+
+int16_t ui_configure_module_special_function = 0;
+#define MAX_SPECIAL_FUNCTION 255
+
+uint8_t ui_render_configure_module_special_function_change(uint8_t current, action_t *a) {
+    if (a->value_direction) {
+        if (ui_configure_module_special_function < MAX_SPECIAL_FUNCTION) {
+            ui_configure_module_special_function++;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    } else {
+        if (ui_configure_module_special_function >= 0) {
+            ui_configure_module_special_function--;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    }
+
+    return current;
+}
+
+uint8_t ui_render_configure_module_special_function_press(uint8_t current, action_t *a) {
+    if (ui_configure_module_special_function != -1) {
+        module_t *module = module_get(ui_configure_module_selected);
+        protocol_module_special_function_send(module->id, (ui_configure_module_special_function & 0xff));
+        return current;
+    } else {    
+        ui_configure_module_special_function = 0;
+        return a->alt_index;
+    }
+}
+
+void ui_render_configure_module_special_function(interface_t *current) {
+    bool has_left = (ui_configure_module_special_function >= 0);
+    bool has_right = (ui_configure_module_special_function < MAX_SPECIAL_FUNCTION);
+    bool has_press = true;
+
+    lcd_clear();
+    uint8_t *title;
+    
+    if (ui_configure_module_special_function == -1) {
+        title = "Back";
+    } else {
+        title = "Special Fn";
+
+        lcd_hex(1, 7, ui_configure_module_special_function);
+    }
+    
+    ui_render_menu_item_text(title, has_press, has_left, has_right);
+}

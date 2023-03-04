@@ -400,6 +400,11 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 21
         },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 24
+        },
         .render = &ui_render_menu_item,
         .render_data = "DAC/DSP Vol",
         .render_check = &tick_2hz
@@ -422,6 +427,42 @@ interface_t interface[] = {
             .alt_index = 16
         },
         .render = &ui_render_configure_module_mode_set,
+        .render_check = &tick_2hz
+    },
+    // 24
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 22
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 25
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Special Fn",
+        .render_check = &tick_2hz
+    },
+    // 25
+    {
+        .left =
+        {
+            .action = &ui_render_configure_module_special_function_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_module_special_function_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_module_special_function_press,
+            .alt_index = 24
+        },
+        .render = &ui_render_configure_module_special_function,
         .render_check = &tick_2hz
     },
 };

@@ -35,6 +35,8 @@ void (*mode_service_state_function[GAME_STATE_COUNT])(bool);
 bool *mode_service_tick[GAME_STATE_COUNT];
 /* Function pointer to service every loop. */
 void (*mode_service_always_function)(bool);
+/* Pointer to special function receiver. */
+void (*mode_special_fn_function)(uint8_t);
 
 /* Last called stage. */
 uint8_t last_called_state = 0xff;
@@ -177,6 +179,7 @@ void mode_initialise(void) {
     }
 
     mode_service_always_function = mode_unconfigured_state;
+    mode_special_fn_function = NULL;
 
     switch(configured_mode) {
         /* Module is completely blank, do nothing. */
@@ -268,5 +271,25 @@ void mode_register_callback(uint8_t state, void (*func)(bool), bool *tick) {
     } else {
         mode_service_state_function[state] = func;
         mode_service_tick[state] = tick;
+    }
+}
+
+/**
+ * Register the modes callback function for receiving special function messages.
+ * 
+ * @param func special function call back
+ */
+void mode_register_special_fn_callback(void (*func)(uint8_t)) {
+    mode_special_fn_function = func;   
+}
+
+/**
+ * Receive special function message, call the callback.
+ * 
+ * @param special_function special function id called
+ */
+void mode_call_special_function(uint8_t special_function) {
+    if (mode_special_fn_function != NULL) {
+        mode_special_fn_function(special_function);
     }
 }
