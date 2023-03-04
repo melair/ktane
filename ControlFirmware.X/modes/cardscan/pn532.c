@@ -7,6 +7,7 @@
 #include "../../peripherals/ports.h"
 #include "../../mode.h"
 #include "../../tick.h"
+#include "../../buzzer.h"
 
 #define PN532_STATE_POWER_ON_WAIT        0
 #define PN532_STATE_CONFIG               1
@@ -28,6 +29,13 @@
 #define CARDSCAN_SIZE 16
 bool cardscan_prog = false;
 uint8_t cardscan_prog_id = 0;
+
+#define CARDSCAN_SAME_CARD_COOLDOWN 2500
+
+uint32_t cardscan_last_scan;
+uint8_t cardscan_last_uid[7];
+uint8_t cardscan_game_id;
+bool cardscan_game_id_new = false;
 
 void pn532_service(void) {  
     uint8_t size;
@@ -107,22 +115,6 @@ void pn532_service(void) {
     }        
 }
 
-/*
- * d5 = pn532 to host
- * 4b = response to in passive target
- * 01 = number of cards
- * 01 = card 1
- * 00 44 = ATQA (0x00 0x44 == Mifare Ultralight)
- * 00 = SAK (0x00 == Mifare Ultralight)
- * 07 = UID Len (0x07 == Mifare Ultralight)
- * XX(0-6) = UID
- * 
- * We can validate ATQA, SAK AND UID Len to verify if we want to talk to card.
- * 
- * Store data in 4 bytes at block 4, first user slot. Either we store the
- * card number, or we store the facts. Card number is probably simpler.
- */
-
 void pn532_service_inpassivetarget_callback(bool ok) {
     if (ok) {
         mode_data.cardscan.pn532_state = PN532_STATE_DETECT_WAIT;   
@@ -151,12 +143,31 @@ void pn532_service_detect_callback(bool ok) {
             uint8_t uid_len = mode_data.cardscan.spi_buffer[12];
 
             /* Verify if a Mifare Ultralight. */
-            if (atqa == 0x0044 && sak == 0x00 && uid_len == 0x07) {                
-                if (cardscan_prog) {
-                    mode_data.cardscan.pn532_state = PN532_STATE_BLOCK_WRITE;
-                } else {
-                    mode_data.cardscan.pn532_state = PN532_STATE_BLOCK_READ;
+            if (atqa == 0x0044 && sak == 0x00 && uid_len == 0x07) {                   
+                bool different_card = false;
+                
+                // Check if card is different, if it is set flag so. Also update
+                // the last scanned UID in same sweep. If the UID is the same
+                // then this doesn't matter, and if it is we want it updated.
+                for (uint8_t i = 0; i < uid_len; i++) {
+                    if (mode_data.cardscan.spi_buffer[13+i] != cardscan_last_uid[i]) {
+                        different_card = true;
+                    }
+                    
+                    cardscan_last_uid[i] = mode_data.cardscan.spi_buffer[13+i];
                 }
+                
+                if (different_card || (cardscan_last_scan + CARDSCAN_SAME_CARD_COOLDOWN < tick_value)) {                    
+                    if (cardscan_prog) {
+                        mode_data.cardscan.pn532_state = PN532_STATE_BLOCK_WRITE;
+                    } else {
+                        mode_data.cardscan.pn532_state = PN532_STATE_BLOCK_READ;
+                    }
+                    
+                    cardscan_last_scan = tick_value;
+                } else {
+                    mode_data.cardscan.pn532_state = PN532_STATE_COOLDOWN;
+                }               
             } else {
                 mode_data.cardscan.pn532_state = PN532_STATE_COOLDOWN;
             }
@@ -175,13 +186,12 @@ void pn532_service_mfu_read_callback(bool ok) {
                 mode_data.cardscan.spi_buffer[10] == 0xee) {
 
                 // Read Success
-                uint8_t card_id = mode_data.cardscan.spi_buffer[10];
-            } else {
+                cardscan_game_id = mode_data.cardscan.spi_buffer[10];
+                cardscan_game_id_new = true;
+                
+                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
             }
-        } else {
-            
         }
-    } else {
     }
     
     mode_data.cardscan.pn532_state = PN532_STATE_COOLDOWN;
@@ -194,15 +204,13 @@ void pn532_service_mfu_write_callback(bool ok) {
                 // Write Success!
                 cardscan_prog_id++;
                 
-                if (cardscan_prog_id == CARDSCAN_SIZE) {
-                    cardscan_prog = false;
+                if (cardscan_prog_id >= CARDSCAN_SIZE) {
+                    cardscan_prog = 0;
                 }
-            } else {
-            }
-        } else {
-            
-        }
-    } else {
+                
+                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
+            } 
+        } 
     }
     
     mode_data.cardscan.pn532_state = PN532_STATE_COOLDOWN;

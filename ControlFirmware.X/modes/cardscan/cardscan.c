@@ -49,6 +49,10 @@ void cardscan_initialise(void) {
     mode_register_callback(GAME_ALWAYS, cardscan_service, NULL);
 
     mode_data.cardscan.pn532_wait_time = tick_value;
+    
+    /* Clear the LCD. */
+    lcd_clear();
+    lcd_sync();
 }
 
 void cardscan_service(void) {
