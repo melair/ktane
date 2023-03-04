@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "cardscan.h"
 #include "pn532.h"
-#include "pn532_spi.h"
+#include "pn532_cmd.h"
 #include "pn532_packet.h"
 #include "../../game.h"
 #include "../../mode.h"
@@ -40,7 +40,7 @@ void cardscan_initialise(void) {
     kpin_write(KPIN_C3, true);
     
     /* Initialise SPI. */
-    mode_data.cardscan.spi_device = spi_register(&cardscan_device);
+    mode_data.cardscan.spi_device_id = spi_register(&cardscan_device);
     
     /* Initialise IRQ. */
     kpin_mode(KPIN_C4, PIN_INPUT, false);
@@ -57,6 +57,6 @@ void cardscan_initialise(void) {
 
 void cardscan_service(void) {
      lcd_service();   
-     pn532_spi_service();
+     pn532_cmd_service();
      pn532_service();
 }

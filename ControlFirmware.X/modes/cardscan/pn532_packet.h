@@ -5,7 +5,7 @@
 
 uint8_t *pn532_packet_prepare(uint8_t *buff, uint8_t cmd_len);
 void pn532_packet_finalise(uint8_t *buff);
-uint8_t pn532_size(uint8_t cmd_len);
+uint8_t pn532_packet_size(uint8_t cmd_len);
 
 uint8_t pn532_getfirmwareversion(uint8_t *buff);
 uint8_t pn532_samconfigure(uint8_t *buff);

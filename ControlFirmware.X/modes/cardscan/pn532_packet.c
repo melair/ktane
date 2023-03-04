@@ -37,7 +37,7 @@ void pn532_packet_finalise(uint8_t *buff) {
      buff[6 + cmd_len] = (~checksum) + 1;    
 }
 
-uint8_t pn532_size(uint8_t cmd_len) {
+uint8_t pn532_packet_size(uint8_t cmd_len) {
     return 9 + cmd_len;
 }
 
@@ -51,7 +51,7 @@ uint8_t pn532_samconfigure(uint8_t *buff) {
     cmd[3] = 0x01; // Enable IRQ
     pn532_packet_finalise(buff);
     
-    return pn532_size(4);
+    return pn532_packet_size(4);
 }
 
 #define PN532_COMMAND_GETFIRMWAREVERSION 0x02
@@ -61,7 +61,7 @@ uint8_t pn532_getfirmwareversion(uint8_t *buff) {
     cmd[0] = PN532_COMMAND_GETFIRMWAREVERSION;
     pn532_packet_finalise(buff);
     
-    return pn532_size(1);
+    return pn532_packet_size(1);
 }
 
 #define PN532_COMMAND_INLISTPASSIVETARGET 0x4A
@@ -73,7 +73,7 @@ uint8_t pn532_inlistpassivetarget(uint8_t *buff) {
     cmd[2] = 0x00; // 106 kbps type A (ISO/IEC14443 Type A)
     pn532_packet_finalise(buff);
     
-    return pn532_size(3);
+    return pn532_packet_size(3);
 }
 
 #define PN532_SPI_STATREAD 0x02
@@ -106,7 +106,7 @@ uint8_t pn532_mifareultralight_write(uint8_t *buff, uint8_t page, uint8_t *data)
     cmd[7] = data[3];   
     pn532_packet_finalise(buff);
     
-    return pn532_size(8);
+    return pn532_packet_size(8);
 }
 
 #define MIFARE_CMD_READ 0x30
@@ -119,5 +119,5 @@ uint8_t pn532_mifareultralight_read(uint8_t *buff, uint8_t page) {
     cmd[3] = page;                          // Page to write.
     pn532_packet_finalise(buff);
     
-    return pn532_size(4);
+    return pn532_packet_size(4);
 }

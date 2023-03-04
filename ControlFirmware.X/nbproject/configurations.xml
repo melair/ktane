@@ -10,9 +10,9 @@
         </logicalFolder>
         <logicalFolder name="f12" displayName="cardscan" projectFiles="true">
           <itemPath>modes/cardscan/cardscan.h</itemPath>
-          <itemPath>modes/cardscan/pn532_spi.h</itemPath>
           <itemPath>modes/cardscan/pn532_packet.h</itemPath>
           <itemPath>modes/cardscan/pn532.h</itemPath>
+          <itemPath>modes/cardscan/pn532_cmd.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f11" displayName="combination" projectFiles="true">
           <itemPath>modes/combination/combination.h</itemPath>
@@ -92,9 +92,9 @@
         </logicalFolder>
         <logicalFolder name="f12" displayName="cardscan" projectFiles="true">
           <itemPath>modes/cardscan/cardscan.c</itemPath>
-          <itemPath>modes/cardscan/pn532_spi.c</itemPath>
           <itemPath>modes/cardscan/pn532_packet.c</itemPath>
           <itemPath>modes/cardscan/pn532.c</itemPath>
+          <itemPath>modes/cardscan/pn532_cmd.c</itemPath>
         </logicalFolder>
         <logicalFolder name="f11" displayName="combination" projectFiles="true">
           <itemPath>modes/combination/combination.c</itemPath>
