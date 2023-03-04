@@ -23,14 +23,14 @@ spi_command_t *pn532_cmd_callback_write(spi_command_t *cmd);
 
 void pn532_cmd_send(uint8_t *buff, uint8_t write_size, uint8_t read_size, void (*callback)(bool)) {
     if (write_size > 0) {
-        mode_data.cardscan.pn532_cmd_state = PN532_CMD_STATE_WRITE;
+        mode_data.cardscan.pn532.cmd.state = PN532_CMD_STATE_WRITE;
     } else {
-        mode_data.cardscan.pn532_cmd_state = PN532_CMD_STATE_READ_RESPONSE;
+        mode_data.cardscan.pn532.cmd.state = PN532_CMD_STATE_READ_RESPONSE;
     }
-    mode_data.cardscan.pn532_cmd_buffer = buff;
-    mode_data.cardscan.pn532_cmd_write_size = write_size;
-    mode_data.cardscan.pn532_cmd_read_size = read_size;
-    mode_data.cardscan.pn532_cmd_callback = callback;
+    mode_data.cardscan.pn532.cmd.buffer = buff;
+    mode_data.cardscan.pn532.cmd.write_size = write_size;
+    mode_data.cardscan.pn532.cmd.read_size = read_size;
+    mode_data.cardscan.pn532.cmd.callback = callback;
     
     pn532_cmd_service();
 }
@@ -38,21 +38,21 @@ void pn532_cmd_send(uint8_t *buff, uint8_t write_size, uint8_t read_size, void (
 void pn532_cmd_service(void) {   
     uint8_t size = 0;
     
-    switch(mode_data.cardscan.pn532_cmd_state) {
+    switch(mode_data.cardscan.pn532.cmd.state) {
         case PN532_CMD_STATE_IDLE:
             // No Action
             break;
             
         case PN532_CMD_STATE_WRITE:           
-            mode_data.cardscan.spi_cmd.device = mode_data.cardscan.spi_device_id;
-            mode_data.cardscan.spi_cmd.operation = SPI_OPERATION_WRITE;
-            mode_data.cardscan.spi_cmd.buffer = mode_data.cardscan.pn532_cmd_buffer;
-            mode_data.cardscan.spi_cmd.write_size = mode_data.cardscan.pn532_cmd_write_size;
-            mode_data.cardscan.spi_cmd.read_size = 0;
-            mode_data.cardscan.spi_cmd.callback = &pn532_cmd_callback_write;
+            mode_data.cardscan.pn532.spi.cmd.device = mode_data.cardscan.pn532.spi.device_id;
+            mode_data.cardscan.pn532.spi.cmd.operation = SPI_OPERATION_WRITE;
+            mode_data.cardscan.pn532.spi.cmd.buffer = mode_data.cardscan.pn532.cmd.buffer;
+            mode_data.cardscan.pn532.spi.cmd.write_size = mode_data.cardscan.pn532.cmd.write_size;
+            mode_data.cardscan.pn532.spi.cmd.read_size = 0;
+            mode_data.cardscan.pn532.spi.cmd.callback = &pn532_cmd_callback_write;
             
-            spi_enqueue(&mode_data.cardscan.spi_cmd);
-            mode_data.cardscan.pn532_cmd_state = PN532_CMD_STATE_WRITE_IN_FLIGHT;
+            spi_enqueue(&mode_data.cardscan.pn532.spi.cmd);
+            mode_data.cardscan.pn532.cmd.state = PN532_CMD_STATE_WRITE_IN_FLIGHT;
             break;
             
         case PN532_CMD_STATE_WRITE_IN_FLIGHT:
@@ -60,44 +60,44 @@ void pn532_cmd_service(void) {
             
         case PN532_CMD_STATE_WAIT_FOR_ACK_IRQ:
             if (!kpin_read(KPIN_C4)) {
-                mode_data.cardscan.pn532_cmd_state = PN352_CMD_STATE_READ_ACK;
+                mode_data.cardscan.pn532.cmd.state = PN352_CMD_STATE_READ_ACK;
             }
             break;
                        
         case PN352_CMD_STATE_READ_ACK:
-            size = pn532_dataread(mode_data.cardscan.pn532_cmd_buffer);
-            mode_data.cardscan.spi_cmd.operation = SPI_OPERATION_WRITE_THEN_READ;
-            mode_data.cardscan.spi_cmd.write_size = size;
-            mode_data.cardscan.spi_cmd.read_size = 6;
-            mode_data.cardscan.spi_cmd.callback = &pn532_cmd_callback_ack;
+            size = pn532_dataread(mode_data.cardscan.pn532.cmd.buffer);
+            mode_data.cardscan.pn532.spi.cmd.operation = SPI_OPERATION_WRITE_THEN_READ;
+            mode_data.cardscan.pn532.spi.cmd.write_size = size;
+            mode_data.cardscan.pn532.spi.cmd.read_size = 6;
+            mode_data.cardscan.pn532.spi.cmd.callback = &pn532_cmd_callback_ack;
 
-            spi_enqueue(&mode_data.cardscan.spi_cmd);
-            mode_data.cardscan.pn532_cmd_state = PN352_CMD_STATE_READ_ACK_IN_FLIGHT;    
+            spi_enqueue(&mode_data.cardscan.pn532.spi.cmd);
+            mode_data.cardscan.pn532.cmd.state = PN352_CMD_STATE_READ_ACK_IN_FLIGHT;    
             break;
             
         case PN352_CMD_STATE_READ_ACK_IN_FLIGHT:
             break;                        
             
         case PN532_CMD_STATE_WAIT_FOR_RESPONSE_IRQ:
-            if (mode_data.cardscan.pn532_cmd_read_size == 0) {
-                mode_data.cardscan.pn532_cmd_state = PN532_CMD_STATE_DONE;
-                mode_data.cardscan.pn532_cmd_callback(true);
+            if (mode_data.cardscan.pn532.cmd.read_size == 0) {
+                mode_data.cardscan.pn532.cmd.state = PN532_CMD_STATE_DONE;
+                mode_data.cardscan.pn532.cmd.callback(true);
             } else {   
                 if (!kpin_read(KPIN_C4)) {
-                    mode_data.cardscan.pn532_cmd_state++;
+                    mode_data.cardscan.pn532.cmd.state++;
                 }
             }
             break;        
             
         case PN532_CMD_STATE_READ_RESPONSE:                
-            size = pn532_dataread(mode_data.cardscan.pn532_cmd_buffer);
-            mode_data.cardscan.spi_cmd.operation = SPI_OPERATION_WRITE_THEN_READ;
-            mode_data.cardscan.spi_cmd.write_size = 1;
-            mode_data.cardscan.spi_cmd.read_size = mode_data.cardscan.pn532_cmd_read_size;
-            mode_data.cardscan.spi_cmd.callback = &pn532_cmd_callback_response;
+            size = pn532_dataread(mode_data.cardscan.pn532.cmd.buffer);
+            mode_data.cardscan.pn532.spi.cmd.operation = SPI_OPERATION_WRITE_THEN_READ;
+            mode_data.cardscan.pn532.spi.cmd.write_size = 1;
+            mode_data.cardscan.pn532.spi.cmd.read_size = mode_data.cardscan.pn532.cmd.read_size;
+            mode_data.cardscan.pn532.spi.cmd.callback = &pn532_cmd_callback_response;
             
-            spi_enqueue(&mode_data.cardscan.spi_cmd);
-            mode_data.cardscan.pn532_cmd_state = PN532_CMD_STATE_READ_RESPONSE_IN_FLIGHT;
+            spi_enqueue(&mode_data.cardscan.pn532.spi.cmd);
+            mode_data.cardscan.pn532.cmd.state = PN532_CMD_STATE_READ_RESPONSE_IN_FLIGHT;
             break;
             
         case PN532_CMD_STATE_READ_RESPONSE_IN_FLIGHT:
@@ -110,24 +110,24 @@ void pn532_cmd_service(void) {
 }
 
 spi_command_t *pn532_cmd_callback_write(spi_command_t *cmd) {
-    mode_data.cardscan.pn532_cmd_state++;   
+    mode_data.cardscan.pn532.cmd.state++;   
     
     return NULL;
 }
 
 spi_command_t *pn532_cmd_callback_ack(spi_command_t *cmd) {
     if (cmd->buffer[0] == 0x00 && cmd->buffer[1] == 0x00 && cmd->buffer[2] == 0xff && cmd->buffer[3] == 0x00 && cmd->buffer[4] == 0xff && cmd->buffer[5] == 0x00) {
-        mode_data.cardscan.pn532_cmd_state++;        
+        mode_data.cardscan.pn532.cmd.state++;        
     } else {
-        mode_data.cardscan.pn532_cmd_callback(false);
+        mode_data.cardscan.pn532.cmd.callback(false);
     }        
     
     return NULL;
 }
 
 spi_command_t *pn532_cmd_callback_response(spi_command_t *cmd) {        
-    mode_data.cardscan.pn532_cmd_state++;
-    mode_data.cardscan.pn532_cmd_callback(true);
+    mode_data.cardscan.pn532.cmd.state++;
+    mode_data.cardscan.pn532.cmd.callback(true);
     
     return NULL;
 }

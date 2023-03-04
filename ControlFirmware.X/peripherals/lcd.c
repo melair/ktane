@@ -641,26 +641,13 @@ const uint8_t *hex_map = "0123456789ABCDEF";
  * @param digits number of digits
  * @param number number to display
  */
-void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint16_t val) {
-    uint8_t out[8] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
-
-    uint8_t p = 0;
-    int32_t w = val;
-
+void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint16_t number) {
     for (uint8_t i = 0; i < digits; i++) {
-        int32_t mult = 10;
-
-        for (uint8_t j = 0; j < (digits - i - 1); j++) {
-            mult = mult * 10;
-        }
-
-        int8_t d = w / mult;
-        w -= (d * mult);
-
-        out[p++] = '0' + d;
+        uint8_t remain = number % 10;
+        number = (number - remain) / 10;
+        
+        lcd_update(row, (col+digits)-(i+1), 1, &hex_map[remain]); 
     }
-
-    lcd_update(row, col, digits, &out);
 }
 
 /**
