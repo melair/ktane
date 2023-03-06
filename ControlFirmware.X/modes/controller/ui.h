@@ -34,6 +34,10 @@ typedef struct {
 void ui_initialise(void);
 void ui_service(void);
 void ui_render_menu_item_text(uint8_t *text, bool press_icons, bool left_icon, bool right_icon);
+void ui_force(uint8_t i);
+
+#define UI_IDX_ROOT     0
+#define UI_IDX_GAME_END 34
 
 #endif	/* UI_H */
 

@@ -164,11 +164,17 @@ void cardscan_service(void) {
 #define CARDSCAN_INITIAL_LIVES 3
 
 void cardscan_service_setup(bool first) {
-    if (!this_module->ready && !mode_data.cardscan.cards.programming) {
-        game_module_ready(true);        
+    if (first) {
+        lcd_clear();
+        lcd_sync();
+        
         mode_data.cardscan.cards.wanted_id = ((uint8_t) (game.module_seed & 0xff)) % CARDSCAN_CARD_COUNT;
         mode_data.cardscan.cards.lives = CARDSCAN_INITIAL_LIVES;
-        mode_data.cardscan.cards.last_id = 0xff;      
+        mode_data.cardscan.cards.last_id = 0xff;  
+    }
+    
+    if (!this_module->ready && !mode_data.cardscan.cards.programming) {
+        game_module_ready(true);            
     }
 }
 

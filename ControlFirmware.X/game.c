@@ -386,7 +386,7 @@ uint8_t note = 0;
  *  Service a game being over.
  */
 void game_service_over(void) {
-    if (game.state_first) {
+    if (game.state_first) {       
         note_last_play = 0;
         note = 0;
 

@@ -273,6 +273,12 @@ void controller_service_running(bool first) {
  */
 void controller_service_over(bool first){
     if(first) {
+        ui_force(UI_IDX_GAME_END);
+        
+        for (uint8_t i = 0; i < CONTROLLER_ARGB_COUNT; i++) {
+            argb_set_module(i, 0, 0, 0);       
+        }
+        
         segment_set_colon(false);
 
         switch(game.result) {
@@ -289,10 +295,10 @@ void controller_service_over(bool first){
                 segment_set_digit(3, characters[DIGIT_D]);
                 break;
             case RESULT_NONE:
-                segment_set_digit(0, characters[DIGIT_DASH]);
-                segment_set_digit(1, characters[DIGIT_DASH]);
-                segment_set_digit(2, characters[DIGIT_DASH]);
-                segment_set_digit(3, characters[DIGIT_DASH]);
+                segment_set_digit(0, characters[DIGIT_SPACE]);
+                segment_set_digit(1, characters[DIGIT_SPACE]);
+                segment_set_digit(2, characters[DIGIT_SPACE]);
+                segment_set_digit(3, characters[DIGIT_SPACE]);
                 break;
         }
     }

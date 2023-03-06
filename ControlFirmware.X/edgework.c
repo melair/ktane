@@ -264,11 +264,12 @@ bool edgework_port_present(port_t port) {
     return false;
 }
 
+uint8_t edgework_count(void) {
+    return MAX_EDGEWORK;
+}
+
 void edgework_display(uint8_t i) {
     lcd_clear();
-
-    uint8_t *text_edgework = "<--  Scroll  -->";
-    lcd_update(0, 0, 16, text_edgework);
 
     uint8_t ew = edgework_slots[i];
 

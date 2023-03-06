@@ -505,13 +505,121 @@ interface_t interface[] = {
     },
     // 28
     {
+        .left =
+        {
+            .action = &ui_game_edgework_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_game_edgework_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_game_edgework_press,
+            .index = 29
+        },        
+        .render = &ui_game_edgework_display,
+        .render_check = &tick_2hz
+    },
+    // 29
+    {
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 30
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 28
+        },
         .render = &ui_render_menu_item,
-        .render_data = "TODO: Edge Work",
+        .render_data = "Edgework",
+        .render_check = &tick_2hz
+    },
+    // 30
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 29
+        },      
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 31
+        },    
+        .press =
+        {
+            .action = &ui_game_abandon,
+            .index = 0
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Abandon Game",
+        .render_check = &tick_2hz
+    },
+    // 31
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 30
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 33
+        },  
+        .render = &ui_render_menu_item,
+        .render_data = "Debug",
+        .render_check = &tick_2hz
+    },
+    // 32
+    {
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 33
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 31
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Back",
+        .render_check = &tick_2hz
+    },
+    // 33
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 32
+        },
+        .press =
+        {
+            .action = &ui_game_force_strike,
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Force Strike",
+        .render_check = &tick_2hz
+    },
+    // 34
+    {
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 0
+        },
+        .render = &ui_game_endgame_display,
         .render_check = &tick_2hz
     }
 };
 
-uint8_t current = 0;
+uint8_t current = UI_IDX_ROOT;
 
 void ui_initialise(void) {
     /* Initialise the rotary encoder. */
@@ -520,7 +628,12 @@ void ui_initialise(void) {
     keymatrix_initialise(&ui_cols[0], &ui_rows[0], KEYMODE_COL_ONLY);
 
     /* Initial UI Sync. */
-    interface[current].render(&interface[current]);
+    ui_force(current);
+}
+
+void ui_force(uint8_t i) {
+    current = i;
+    interface[i].render(&interface[i]);
     lcd_sync();
 }
 
@@ -618,24 +731,3 @@ void ui_render_menu_item_text(uint8_t *text, bool press_icons, bool left_icon, b
     uint8_t mid = 8 - (size / 2);
     lcd_update(0, mid, size, text);
 }
-
-/* Game end screen.
-
-
-        lcd_clear();
-
-        uint8_t *text_strikes = "Strikes: X of X";
-        uint8_t *text_remaining = "Time: X:XX.XX";
-
-        lcd_update(0, 0, 15, text_strikes);
-        lcd_number(0, 9, 1, game.strikes_current);
-        lcd_number(0, 14, 1, game.strikes_total);
-
-        lcd_update(1, 0, 13, text_remaining);
-        lcd_number(1, 6, 1, game.time_remaining.minutes);
-        lcd_number(1, 8, 2, game.time_remaining.seconds);
-        lcd_number(1, 11, 2, game.time_remaining.centiseconds);
-
-        lcd_sync();
-
- */

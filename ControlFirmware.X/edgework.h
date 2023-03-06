@@ -40,5 +40,6 @@ uint8_t edgework_twofa_digit(uint8_t digit);
 bool edgework_twofa_present(void);
 void edgework_service(void);
 void edgework_display(uint8_t i);
+uint8_t edgework_count(void);
 
 #endif	/* EDGEWORK_H */
