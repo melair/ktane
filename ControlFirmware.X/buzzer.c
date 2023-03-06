@@ -61,8 +61,10 @@ void buzzer_on(uint8_t volume, uint16_t frequency) {
  * @param duration amount of time
  */
 void buzzer_on_timed(uint8_t volume, uint16_t frequency, uint16_t duration) {
+    #ifndef __DEBUG
     buzzer_on(volume, frequency);
     buzzer_off_tick = tick_value + duration;
+    #endif
 }
 
 /**

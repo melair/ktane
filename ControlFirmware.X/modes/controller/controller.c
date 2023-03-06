@@ -13,14 +13,11 @@
 #include "../../protocol_module.h"
 #include "../../peripherals/segment.h"
 
-#define GAME_RNG_MASK 0x89b1a96c
-
 uint8_t last_strikes_current = 0;
 uint32_t ready_at = 0;
 
 /* Local function prototypes. */
 void controller_service(bool first);
-void controller_service_idle(bool first);
 void controller_service_setup(bool first);
 void controller_service_start(bool first);
 void controller_service_running(bool first);
@@ -45,7 +42,6 @@ void controller_initialise(void) {
 
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, controller_service, NULL);
-    mode_register_callback(GAME_IDLE, controller_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, controller_service_setup, &tick_20hz);
     mode_register_callback(GAME_START, controller_service_start, &tick_20hz);
     mode_register_callback(GAME_RUNNING, controller_service_running, &tick_2khz);
@@ -72,34 +68,7 @@ void controller_service(bool first) {
     ui_service();
 }
 
-/* Maintain if a game request has already been sent. */
-bool controller_requested_setup = false;
-
 /**
- * *** TEMPORARY ***
- *
- * Handle idle phase of game, start a game after five seconds.
- *
- * @param first true if first call of the state
- */
-void controller_service_idle(bool first) {
-//    if (first) {
-//        controller_requested_setup = false;
-//    }
-//
-//    if (!controller_requested_setup && tick_value > 5000) {
-//        controller_requested_setup = true;
-//
-//        uint32_t seed = rng_generate(&base_seed, GAME_RNG_MASK);
-//
-//        /* Create the game. */
-//        game_create(seed, 3, 5, 0);
-//    }
-}
-
-/**
- * *** TEMPORARY ***
- *
  * Handle setup phase of game, enable all modules and wait for them to be ready.
  *
  * Once ready, move to start.

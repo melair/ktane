@@ -1,5 +1,6 @@
 #include <xc.h>
 #include "ui.h"
+#include "ui_game.h"
 #include "ui_configure_module.h"
 #include "../../peripherals/rotary.h"
 #include "../../peripherals/keymatrix.h"
@@ -26,6 +27,11 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 1
         },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 27
+        },        
         .render = &ui_render_menu_item,
         .render_data = "Start Game",
         .render_check = &tick_2hz
@@ -465,6 +471,44 @@ interface_t interface[] = {
         .render = &ui_render_configure_module_special_function,
         .render_check = &tick_2hz
     },
+    // 26
+    {
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 27
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 0
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Back",
+        .render_check = &tick_2hz
+    },
+    // 27
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 26
+        },
+        .press =
+        {
+            .action = &ui_game_quick_start,
+            .index = 28
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Quick Start",
+        .render_check = &tick_2hz
+    },
+    // 28
+    {
+        .render = &ui_render_menu_item,
+        .render_data = "TODO: Edge Work",
+        .render_check = &tick_2hz
+    }
 };
 
 uint8_t current = 0;

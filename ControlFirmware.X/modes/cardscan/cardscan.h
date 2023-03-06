@@ -6,7 +6,8 @@
 void cardscan_initialise(void);
 
 #define CARDSCAN_SPI_BUFFER 32
-#define CARDSCAN_POOL_SIZE  16
+#define CARDSCAN_CARD_COUNT 24
+
 
 #define CARDSCAN_MFU_UID_LEN 7
 
@@ -36,8 +37,15 @@ typedef struct {
     } rfid;
     
     struct {
+        bool                flash;
+        
+        uint8_t             wanted_id;
         uint8_t             last_id;
-        bool                last_updated;
+        
+        uint8_t             scanned_id;
+        bool                scanned_updated;
+              
+        uint8_t             lives;
 
         bool                programming;
         uint8_t             programming_id;

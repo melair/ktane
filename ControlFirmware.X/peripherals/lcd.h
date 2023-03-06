@@ -12,8 +12,10 @@ void lcd_hex(uint8_t row, uint8_t col, uint8_t number);
 void lcd_clear(void);
 void lcd_update_big(uint8_t pos, uint8_t ch);
 void lcd_load_big(void);
+void lcd_custom_character(uint8_t c, uint8_t *data);
 
 #define BIG_FONT_NUMBER_BASE        0
 #define BIG_FONT_LETTER_BASE        10
+#define LCD_CHARACTER_ROWS  8
 
 #endif	/* LCD_H */

@@ -109,10 +109,8 @@ void main(void) {
     /* Initialise game state. */
     game_initialise();
 
-    #ifndef __DEBUG
     /* Beep on start. */
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);
-    #endif
 
     /* Set status led to ready. */
     status_set(STATUS_READY);

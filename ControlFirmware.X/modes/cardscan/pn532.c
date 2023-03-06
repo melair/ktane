@@ -169,10 +169,8 @@ void pn532_service_mfu_read_callback(bool ok) {
                 mode_data.cardscan.pn532.spi.buffer[10] == 0xee) {
 
                 // Read Success
-                mode_data.cardscan.cards.last_id = mode_data.cardscan.pn532.spi.buffer[10];
-                mode_data.cardscan.cards.last_updated = true;
-                
-                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
+                mode_data.cardscan.cards.scanned_id = mode_data.cardscan.pn532.spi.buffer[11];
+                mode_data.cardscan.cards.scanned_updated = true;
             }
         }
     }
@@ -188,11 +186,9 @@ void pn532_service_mfu_write_callback(bool ok) {
                 mode_data.cardscan.cards.programming_id++;
                 mode_data.cardscan.cards.programming_update = true;
                 
-                if (mode_data.cardscan.cards.programming_id >= CARDSCAN_POOL_SIZE) {
+                if (mode_data.cardscan.cards.programming_id >= CARDSCAN_CARD_COUNT) {
                     mode_data.cardscan.cards.programming_id = 0;
-                }
-                
-                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
+                }                
             } 
         } 
     }

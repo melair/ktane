@@ -21,6 +21,7 @@
           <itemPath>modes/controller/controller.h</itemPath>
           <itemPath>modes/controller/ui.h</itemPath>
           <itemPath>modes/controller/ui_configure_module.h</itemPath>
+          <itemPath>modes/controller/ui_game.h</itemPath>
         </logicalFolder>
         <logicalFolder name="f4" displayName="debug" projectFiles="true">
           <itemPath>modes/debug/debug.h</itemPath>
@@ -103,6 +104,7 @@
           <itemPath>modes/controller/controller.c</itemPath>
           <itemPath>modes/controller/ui.c</itemPath>
           <itemPath>modes/controller/ui_configure_module.c</itemPath>
+          <itemPath>modes/controller/ui_game.c</itemPath>
         </logicalFolder>
         <logicalFolder name="f4" displayName="debug" projectFiles="true">
           <itemPath>modes/debug/debug.c</itemPath>

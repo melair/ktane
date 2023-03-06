@@ -63,9 +63,8 @@ uint8_t send_pos = 0x00;
 uint8_t send_data = 0x00;
 
 #define BIG_FONT_CHARACTERS 8
-#define BIG_FONT_LINES      8
 
-const uint8_t big_font_characters[BIG_FONT_CHARACTERS][BIG_FONT_LINES] = {
+const uint8_t big_font_characters[BIG_FONT_CHARACTERS][LCD_CHARACTER_ROWS] = {
     { // UB
         0b11111,
         0b11111,
@@ -408,27 +407,34 @@ void lcd_start(void) {
  * execution, it is assumed it will be done during initialisation.
  */
 void lcd_load_big(void) {
+    for (uint8_t c = 0; c < BIG_FONT_CHARACTERS; c++) {
+        lcd_custom_character(c, &big_font_characters[c]);
+    }
+}
+
+/* Load a customer character into character RAM in the LCD display. This will 
+ * block execution, it is assumed it will be done during initialisation.
+ */
+void lcd_custom_character(uint8_t c, uint8_t *data) {
     LCD_RW = 0;
 
-    for (uint8_t c = 0; c < BIG_FONT_CHARACTERS; c++) {
-        /* Move pointer to Character Generator RAM for character. */
-        LCD_RS = 0;
-        LCD_DATA = 0b01000000 | (c << 3);
+    /* Move pointer to Character Generator RAM for character. */
+    LCD_RS = 0;
+    LCD_DATA = 0b01000000 | (c << 3);
+    LCD_E = 1;
+    __delay_us(1);
+    LCD_E = 0;
+
+    __delay_ms(1);
+
+    for (uint8_t l = 0; l < LCD_CHARACTER_ROWS; l++) {
+        LCD_RS = 1;
+        LCD_DATA = data[l];
         LCD_E = 1;
         __delay_us(1);
         LCD_E = 0;
 
         __delay_ms(1);
-
-        for (uint8_t l = 0; l < BIG_FONT_LINES; l++) {
-            LCD_RS = 1;
-            LCD_DATA = big_font_characters[c][l];
-            LCD_E = 1;
-            __delay_us(1);
-            LCD_E = 0;
-
-            __delay_ms(1);
-        }
     }
 
     LCD_RS = 0;
