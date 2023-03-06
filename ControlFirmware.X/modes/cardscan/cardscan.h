@@ -38,8 +38,7 @@ typedef struct {
     
     struct {
         bool                flash;
-        
-        uint8_t             wanted_id;
+                uint8_t             wanted_id;
         uint8_t             last_id;
         
         uint8_t             scanned_id;
