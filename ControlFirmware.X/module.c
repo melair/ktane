@@ -256,7 +256,7 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, u
     modules[idx].serial = serial;
     modules[idx].last_seen = tick_value;
     modules[idx].flags.LOST = 0;
-    modules[idx].game.puzzle = (mode >= MODE_PUZZLE_DEBUG);
+    modules[idx].game.puzzle = (mode >= MODE_PUZZLE_BASE);
     modules[idx].game.needy = (mode >= MODE_NEEDY_KEYS);
     modules[idx].domain = domain;
 }

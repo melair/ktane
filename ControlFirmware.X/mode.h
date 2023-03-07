@@ -11,7 +11,8 @@
 #define MODE_CONTROLLER          3
 #define MODE_CONTROLLER_STANDBY  4
 
-#define MODE_PUZZLE_DEBUG        10
+
+#define MODE_PUZZLE_BASE         10
 #define MODE_PUZZLE_MAZE         11
 #define MODE_PUZZLE_SIMON        12
 #define MODE_PUZZLE_PASSWORD     13

@@ -8,7 +8,6 @@
 #include "game.h"
 #include "modes/bootstrap/bootstrap.h"
 #include "modes/controller/controller.h"
-#include "modes/debug/debug.h"
 #include "modes/maze/maze.h"
 #include "modes/simon/simon.h"
 #include "modes/password/password.h"
@@ -50,7 +49,6 @@ mode_names_t mode_names[MODE_COUNT+1] = {
     { MODE_BOOTSTRAP, "Bootstrap" },
     { MODE_CONTROLLER, "Controller" },
     { MODE_CONTROLLER_STANDBY, "Standby Controller" },
-    { MODE_PUZZLE_DEBUG, "Debug" },
     { MODE_PUZZLE_MAZE, "Maze" },
     { MODE_PUZZLE_SIMON, "Simon Says" },
     { MODE_PUZZLE_PASSWORD, "Password" },
@@ -196,10 +194,6 @@ void mode_initialise(void) {
             break;
         /* Module is a controller, but in stand by mode. */
         case MODE_CONTROLLER_STANDBY:
-            break;
-        /* Module is a puzzle, debug. */
-        case MODE_PUZZLE_DEBUG:
-            debug_initialise();
             break;
         /* Module is a puzzle, maze.*/
         case MODE_PUZZLE_MAZE:
