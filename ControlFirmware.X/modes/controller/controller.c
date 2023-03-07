@@ -87,6 +87,18 @@ void controller_service_setup(bool first) {
         this_module->ready = true;
 
         ready_at = 0;
+        
+        for (uint8_t i = 0; i < MODULE_COUNT; i++) {
+            module_game_t *that_module = module_get_game(i);
+
+            if (that_module == NULL) {
+                break;
+            }
+            
+            if (!that_module->enabled) {
+                game_module_config_send(that_module->id, true, 255);
+            }
+        }
     }
 
     bool all_ready = true;
@@ -102,10 +114,7 @@ void controller_service_setup(bool first) {
         if (that_module->puzzle) {
             at_least_one_puzzle = true;
 
-            if (!that_module->enabled) {
-                game_module_config_send(that_module->id, true, 255);
-                all_ready = false;
-            } else if (!that_module->ready) {
+            if (!(that_module->enabled && that_module->ready)) {
                 all_ready = false;
             }
         }
@@ -255,7 +264,7 @@ void controller_service_running(bool first) {
             break;
         }
 
-        if (!that_module->solved) {
+        if (that_module->enabled && !that_module->solved) {
             game_solved = false;
             break;
         }
