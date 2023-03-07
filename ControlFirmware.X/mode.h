@@ -11,7 +11,6 @@
 #define MODE_CONTROLLER          3
 #define MODE_CONTROLLER_STANDBY  4
 
-
 #define MODE_PUZZLE_BASE         10
 #define MODE_PUZZLE_MAZE         11
 #define MODE_PUZZLE_SIMON        12
@@ -24,6 +23,8 @@
 
 #define MODE_NEEDY_KEYS          224
 
+#define GAME_ENABLED             0xfd
+#define GAME_DISABLED            0xfe
 #define GAME_ALWAYS              0xff
 
 uint8_t mode_get(void);

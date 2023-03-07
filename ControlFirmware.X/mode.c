@@ -28,12 +28,16 @@ mode_data_t mode_data;
 /* Modules configured mode*/
 uint8_t configured_mode;
 
+#define SPECIAL_MODE_COUNT      3
+#define MODE_COUNTS             (GAME_STATE_COUNT + SPECIAL_MODE_COUNT)
+
+#define SPECIAL_MODE(mode)      ((mode - GAME_ENABLED) + GAME_STATE_COUNT)
+
 /* Function pointers to each stage. */
-void (*mode_service_state_function[GAME_STATE_COUNT])(bool);
+void (*mode_service_state_function[MODE_COUNTS])(bool);
 /* Pointers to tick variable to use to rate limit call. */
-bool *mode_service_tick[GAME_STATE_COUNT];
-/* Function pointer to service every loop. */
-void (*mode_service_always_function)(bool);
+bool *mode_service_tick[MODE_COUNTS];
+
 /* Pointer to special function receiver. */
 void (*mode_special_fn_function)(uint8_t);
 
@@ -172,11 +176,10 @@ void mode_initialise(void) {
         configured_mode = MODE_BOOTSTRAP;
     }
 
-    for (uint8_t i = 0; i < GAME_STATE_COUNT; i++) {
+    for (uint8_t i = 0; i < MODE_COUNTS; i++) {
         mode_service_state_function[i] = mode_unconfigured_state;
     }
 
-    mode_service_always_function = mode_unconfigured_state;
     mode_special_fn_function = NULL;
 
     switch(configured_mode) {
@@ -238,7 +241,7 @@ void mode_initialise(void) {
  * Service the mode.
  */
 void mode_service(void) {
-    mode_service_always_function(service_always_first_call);
+    mode_service_state_function[SPECIAL_MODE(GAME_ALWAYS)](service_always_first_call);    
     if (service_always_first_call) {
         service_always_first_call = false;
     }
@@ -259,13 +262,13 @@ void mode_service(void) {
  * @param state to call function for
  * @param func function to call
  */
-void mode_register_callback(uint8_t state, void (*func)(bool), bool *tick) {
-    if (state == 0xff) {
-        mode_service_always_function = func;
-    } else {
-        mode_service_state_function[state] = func;
-        mode_service_tick[state] = tick;
+void mode_register_callback(uint8_t state, void (*func)(bool), bool *tick) {        
+    if (state >= GAME_ENABLED) {
+        state = SPECIAL_MODE(state);
     }
+    
+    mode_service_state_function[state] = func;
+    mode_service_tick[state] = tick;
 }
 
 /**
