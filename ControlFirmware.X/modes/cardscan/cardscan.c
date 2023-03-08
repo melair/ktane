@@ -14,6 +14,7 @@
 #define CARDSCAN_RNG_MASK 0x96ea865c
 
 void cardscan_service(void);
+void cardscan_service_idle(bool first);
 void cardscan_service_setup(bool first);
 void cardscan_service_running(bool first);
 void cardscan_special_function(uint8_t special_fn);
@@ -125,6 +126,7 @@ void cardscan_initialise(void) {
     
     /* Register callbacks. */
     mode_register_callback(GAME_ALWAYS, cardscan_service, NULL);
+    mode_register_callback(GAME_IDLE, cardscan_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, cardscan_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, cardscan_service_running, &tick_20hz);
 
@@ -144,21 +146,25 @@ void cardscan_service(void) {
      lcd_service();   
      pn532_cmd_service();
      pn532_service();
-     
-     if (mode_data.cardscan.cards.programming && (tick_2hz || mode_data.cardscan.cards.programming_update)) {
-         lcd_update(0, 2, 12, "Program Card");
-         lcd_update(1, 4, 8, "XX of XX");
-         
-         lcd_number(1, 4, 2, mode_data.cardscan.cards.programming_id + 1);
-         lcd_number(1, 10, 2, CARDSCAN_CARD_COUNT);
-         
-         lcd_sync();
-         
-         if (mode_data.cardscan.cards.programming_update) {
+}
+
+void cardscan_service_idle(bool first) {
+    if (mode_data.cardscan.cards.programming && (tick_2hz || mode_data.cardscan.cards.programming_update)) {
+        lcd_clear();
+
+        lcd_update(0, 2, 12, "Program Card");
+        lcd_update(1, 4, 8, "XX of XX");
+
+        lcd_number(1, 4, 2, mode_data.cardscan.cards.programming_id + 1);
+        lcd_number(1, 10, 2, CARDSCAN_CARD_COUNT);
+
+        lcd_sync();
+
+        if (mode_data.cardscan.cards.programming_update) {
             mode_data.cardscan.cards.programming_update = false;
             buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
-         }
-     }
+        }
+    }
 }
 
 #define CARDSCAN_INITIAL_LIVES 3
@@ -167,6 +173,8 @@ void cardscan_service_setup(bool first) {
     if (first) {
         lcd_clear();
         lcd_sync();
+        
+        mode_data.cardscan.cards.programming = false;
         
         mode_data.cardscan.cards.wanted_id = ((uint8_t) (game.module_seed & 0xff)) % CARDSCAN_CARD_COUNT;
         mode_data.cardscan.cards.lives = CARDSCAN_INITIAL_LIVES;

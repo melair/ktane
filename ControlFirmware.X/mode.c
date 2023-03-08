@@ -19,7 +19,6 @@
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
-void mode_unconfigured_state(bool first);
 uint8_t mode_find_name_index(uint8_t mode);
 
 /* Mode data. */
@@ -45,6 +44,8 @@ void (*mode_special_fn_function)(uint8_t);
 uint8_t last_called_state = 0xff;
 /* If the service loop is called for the first time. */
 bool service_always_first_call = true;
+/* If module is currently enabled. */
+bool module_is_enabled = true;
 
 /* List of node names. */
 mode_names_t mode_names[MODE_COUNT+1] = {
@@ -158,14 +159,6 @@ uint8_t mode_get(void) {
 }
 
 /**
- * Empty function for unused states in mode.
- *
- * @param first true if first time called
- */
-void mode_unconfigured_state(bool first) {
-}
-
-/**
  * Run any initialisation functions for the specific mode, an unrecognised mode
  * will be treated as a blank module and error and halt.
  */
@@ -177,7 +170,7 @@ void mode_initialise(void) {
     }
 
     for (uint8_t i = 0; i < MODE_COUNTS; i++) {
-        mode_service_state_function[i] = mode_unconfigured_state;
+        mode_service_state_function[i] = NULL;
     }
 
     mode_special_fn_function = NULL;
@@ -246,13 +239,20 @@ void mode_service(void) {
         service_always_first_call = false;
     }
 
-    if (mode_service_tick[game.state] != NULL && *mode_service_tick[game.state] == false) {
+    if (mode_service_state_function[game.state] == NULL || mode_service_tick[game.state] == NULL || *mode_service_tick[game.state] == false) {
         return;
     }
-
-    bool first = last_called_state != game.state;
-    last_called_state = game.state;
-    mode_service_state_function[game.state](first);
+    
+    if (module_is_enabled != this_module->enabled) {      
+        module_is_enabled = this_module->enabled;
+        mode_service_state_function[(module_is_enabled ? GAME_ENABLED : GAME_DISABLED)](true);      
+    }
+    
+    if (this_module->enabled) {    
+        bool first = last_called_state != game.state;
+        last_called_state = game.state;
+        mode_service_state_function[game.state](first);
+    }
 }
 
 /**
