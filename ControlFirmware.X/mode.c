@@ -42,8 +42,6 @@ void (*mode_special_fn_function)(uint8_t);
 
 /* Last called stage. */
 uint8_t last_called_state = 0xff;
-/* If the service loop is called for the first time. */
-bool service_always_first_call = true;
 /* If module is currently enabled. */
 bool module_is_enabled = true;
 
@@ -234,30 +232,45 @@ void mode_initialise(void) {
  * Service the mode.
  */
 void mode_service(void) {
-    mode_service_state_function[SPECIAL_MODE(GAME_ALWAYS)](service_always_first_call);    
-    if (service_always_first_call) {
-        service_always_first_call = false;
-    }
-
-    if (mode_service_state_function[game.state] == NULL || mode_service_tick[game.state] == NULL || *mode_service_tick[game.state] == false) {
-        return;
-    }
+    uint8_t always_mode = SPECIAL_MODE(GAME_ALWAYS);
+    void (*state_fn)(bool) = mode_service_state_function[always_mode];
     
+    if (state_fn != NULL) {
+        if (mode_service_tick[always_mode] == NULL || *mode_service_tick[always_mode]) {
+            state_fn(false);    
+        }
+    }
+        
     if (module_is_enabled != this_module->enabled) {      
         module_is_enabled = this_module->enabled;
-        mode_service_state_function[(module_is_enabled ? GAME_ENABLED : GAME_DISABLED)](true);      
-    }
+        state_fn = mode_service_state_function[(module_is_enabled ? GAME_ENABLED : GAME_DISABLED)];
+        
+        if (state_fn != NULL) {
+            state_fn(false);     
+        }
+    }   
     
-    if (this_module->enabled) {    
-        bool first = last_called_state != game.state;
-        last_called_state = game.state;
-        mode_service_state_function[game.state](first);
+    state_fn = mode_service_state_function[game.state];
+    
+    if (module_is_enabled && state_fn != NULL) {
+        if (mode_service_tick[game.state] == NULL || *mode_service_tick[game.state]) {
+            bool first = last_called_state != game.state;
+            last_called_state = game.state;
+            mode_service_state_function[game.state](first);
+        }        
     }
 }
 
 /**
  * Register the modes callback against a game state. This prevents duplication
  * of state switching in modules.
+ * 
+ * GAME_ENABLED and GAME_DISABLED ignore the tick ptr value, they are always
+ * immediately called. GAME_ALWAYS obeys the value of tick ptr, or is unfiltered
+ * if NULL is provided.
+ * 
+ * Further GAME_ALWAYS, GAME_ENABLED and GAME_DISABLED always pass in false for
+ * the first parameter of the callback.
  *
  * @param state to call function for
  * @param func function to call
