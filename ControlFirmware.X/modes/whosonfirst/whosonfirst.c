@@ -133,6 +133,8 @@ void whosonfirst_service_running(bool first);
 void whosonfirst_stage_generate_and_display(void);
 uint8_t whosonfirst_word_len(uint8_t *s);
 void whosonfirst_update_stage_leds(void);
+void whosonfirst_enable(bool first);
+void whosonfirst_disable(bool first);
 
 /**
  * Initialise Who's On First.
@@ -149,7 +151,9 @@ void whosonfirst_initialise(void) {
     mode_register_callback(GAME_IDLE, whosonfirst_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, whosonfirst_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, whosonfirst_service_running, &tick_20hz);
-
+    mode_register_callback(GAME_ENABLE, whosonfirst_enable, NULL);
+    mode_register_callback(GAME_DISABLE, whosonfirst_disable, NULL);
+    
     /* Initialise keymatrix. */
     keymatrix_initialise(&whosonfirst_cols[0], &whosonfirst_rows[0], KEYMODE_COL_TO_ROW);
 
@@ -164,6 +168,21 @@ void whosonfirst_initialise(void) {
 void whosonfirst_service(bool first) {
     lcd_service();
     keymatrix_service();
+}
+
+void whosonfirst_enable(bool first) {
+    lcd_set_brightness(lcd_get_nominal_brightness());   
+}
+
+void whosonfirst_disable(bool first) {
+    lcd_set_brightness(0);
+    
+    lcd_clear();
+    lcd_sync();
+    
+    for (uint8_t i = 0; i < STAGE_COUNT; i++) {
+        argb_set_module(i, 0, 0, 0);
+    }
 }
 
 /**

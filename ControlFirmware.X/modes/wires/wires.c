@@ -69,6 +69,7 @@ void wires_set_cut_color(uint8_t color, int8_t wire);
 uint8_t wires_get_wire_count(void);
 uint8_t wires_get_color_count(uint8_t color);
 uint8_t wires_get_last_wire_color(void);
+void wires_disable(bool first);
 
 /**
  * Initialise Wires.
@@ -81,7 +82,8 @@ void wires_initialise(void) {
     mode_register_callback(GAME_SETUP, wires_service_setup, &tick_20hz);
     mode_register_callback(GAME_START, wires_service_start, &tick_20hz);
     mode_register_callback(GAME_RUNNING, wires_service_running, &tick_100hz);
-
+    mode_register_callback(GAME_DISABLE, wires_disable, NULL);
+    
     /* Set wire port pins to input and ADC. */
     KTRISB |= 0b00111111;
     KANSELB |= 0b00111111;
@@ -95,6 +97,12 @@ void wires_initialise(void) {
     ADACQ = 50;
     /* Enable ADC. */
     ADCON0bits.ON = 1;
+}
+
+void wires_disable(bool first) {
+    for (uint8_t i = 0; i < WIRES_ARGB_COUNT; i++) {
+        argb_set_module(i, 0, 0, 0);
+    }
 }
 
 /**

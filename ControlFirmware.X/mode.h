@@ -23,8 +23,8 @@
 
 #define MODE_NEEDY_KEYS          224
 
-#define GAME_ENABLED             0xfd
-#define GAME_DISABLED            0xfe
+#define GAME_ENABLE              0xfd
+#define GAME_DISABLE             0xfe
 #define GAME_ALWAYS              0xff
 
 uint8_t mode_get(void);

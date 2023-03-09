@@ -17,6 +17,7 @@ void keys_service(bool first);
 void key_create_next(void);
 void key_service_running(bool first);
 void key_service_setup(bool first);
+void key_disable(bool first);
 
 /* Keymatrix. */
 pin_t keys_cols[] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_NONE};
@@ -33,9 +34,20 @@ void keys_initialise(void) {
     mode_register_callback(GAME_ALWAYS, keys_service, NULL);
     mode_register_callback(GAME_RUNNING, key_service_running, &tick_20hz);
     mode_register_callback(GAME_SETUP, key_service_setup, &tick_20hz);
+    mode_register_callback(GAME_DISABLE, key_disable, NULL);
 
     /* Initialise keymatrix. */
     keymatrix_initialise(&keys_cols[0], &keys_rows[0], KEYMODE_COL_ONLY);
+}
+
+void key_disable(bool first) {
+    for (uint8_t i = 0; i < KEYS_ARGB_COUNT; i++) {
+        argb_set_module(i, 0, 0, 0);
+    }
+    
+    for (uint8_t i = 0; i < 4; i++) {
+        segment_set_digit(i, characters[DIGIT_SPACE]);
+    }
 }
 
 void keys_service(bool first) {

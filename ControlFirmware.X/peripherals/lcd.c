@@ -10,10 +10,10 @@
  * flow. */
 #define _XTAL_FREQ 64000000
 
-/* Default PWM duty for brightness, from EEPROM. */
-uint8_t lcd_default_brightness;
+/* Maximum PWM duty for brightness, from EEPROM. */
+uint8_t lcd_nominal_brightness;
 /* Default PWM duty for contrast, from EEPROM. */
-uint8_t lcd_default_contrast;
+uint8_t lcd_nominal_contrast;
 
 /* Current PWM duty for brightness. */
 uint8_t lcd_current_brightness;
@@ -302,8 +302,8 @@ const uint8_t big_font[BIG_FONT_CHARACTER_COUNT][4] = {
  */
 void lcd_initialize(void) {
     /* Load LCD brightness and contrast from NVM, load into current. */
-    lcd_default_brightness = nvm_read(EEPROM_LOC_LCD_BRIGHTNESS);
-    lcd_default_contrast = nvm_read(EEPROM_LOC_LCD_CONTRAST);
+    lcd_nominal_brightness = nvm_read(EEPROM_LOC_LCD_BRIGHTNESS);
+    lcd_nominal_contrast = nvm_read(EEPROM_LOC_LCD_CONTRAST);
 
     /* Initialise ports. */
     TRISBbits.TRISB5 = 0;
@@ -343,8 +343,8 @@ void lcd_initialize(void) {
     PWM3CONbits.EN = 1;
 
     /* Set defaults. */
-    lcd_set_brightness(lcd_default_brightness);
-    lcd_set_contrast(lcd_default_contrast);
+    lcd_set_brightness(lcd_nominal_brightness);
+    lcd_set_contrast(lcd_nominal_contrast);
 
     lcd_start();
 }
@@ -441,6 +441,15 @@ void lcd_custom_character(uint8_t c, uint8_t *data) {
 }
 
 /**
+ * Get the nominal brightness.
+ * 
+ * @return nominal brightness
+ */
+uint8_t lcd_get_nominal_brightness(void) {
+    return lcd_nominal_brightness;
+}
+
+/**
  * Set the brightness of the LCD backlight.
  *
  * @param bri 0-255 brightness
@@ -451,6 +460,15 @@ void lcd_set_brightness(uint8_t bri) {
 
     PWM3S1P1 = duty;
     PWM3CONbits.LD = 1;
+}
+
+/**
+ * Get the nominal contrast.
+ * 
+ * @return nominal contrast
+ */
+uint8_t lcd_get_nominal_contrast(void) {
+    return lcd_nominal_contrast;
 }
 
 /**

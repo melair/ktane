@@ -35,6 +35,8 @@ void password_generate_letters(void);
 bool password_options_matches_other(void);
 void password_copy_and_shuffle(void);
 void password_render_display(void);
+void password_enable(bool first);
+void password_disable(bool first);
 
 /* Keymatrix */
 pin_t password_cols[] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3, KPIN_NONE};
@@ -54,6 +56,8 @@ void password_initialise(void) {
     mode_register_callback(GAME_IDLE, password_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, password_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, password_service_running, &tick_20hz);
+    mode_register_callback(GAME_ENABLE, password_enable, NULL);
+    mode_register_callback(GAME_DISABLE, password_disable, NULL);
 
     /* Initialise keymatrix. */
     keymatrix_initialise(&password_cols[0], &password_rows[0], KEYMODE_COL_TO_ROW);
@@ -69,6 +73,17 @@ void password_initialise(void) {
 void password_service(bool first) {
     lcd_service();
     keymatrix_service();
+}
+
+void password_enable(bool first) {
+     lcd_set_brightness(lcd_get_nominal_brightness());      
+}
+
+void password_disable(bool first) {
+    lcd_set_brightness(0);
+    
+    lcd_clear();
+    lcd_sync();
 }
 
 /**

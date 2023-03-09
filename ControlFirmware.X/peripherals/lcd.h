@@ -13,7 +13,9 @@ void lcd_clear(void);
 void lcd_update_big(uint8_t pos, uint8_t ch);
 void lcd_load_big(void);
 void lcd_custom_character(uint8_t c, uint8_t *data);
-
+uint8_t lcd_get_nominal_brightness(void);
+uint8_t lcd_get_nominal_contrast(void);
+        
 #define BIG_FONT_NUMBER_BASE        0
 #define BIG_FONT_LETTER_BASE        10
 #define LCD_CHARACTER_ROWS  8

@@ -19,6 +19,7 @@ void operator_service(bool first);
 void operator_service_running(bool first);
 void operator_service_setup(bool first);
 void operator_display_leds(void);
+void operator_disable(bool first);
 
 #define OPERATOR_COL    10
 #define OPERATOR_ROW    10
@@ -49,6 +50,7 @@ void operator_initialise(void) {
     mode_register_callback(GAME_ALWAYS, operator_service, NULL);
     mode_register_callback(GAME_RUNNING, operator_service_running, &tick_20hz);
     mode_register_callback(GAME_SETUP, operator_service_setup, &tick_20hz);
+    mode_register_callback(GAME_DISABLE, operator_disable, NULL);
 
     /* Initialise keymatrix. */
     keymatrix_initialise(&operator_cols[0], &operator_rows[0], KEYMODE_COL_ONLY);
@@ -62,6 +64,12 @@ void operator_initialise(void) {
 
 void operator_service(bool first) {
     keymatrix_service();
+}
+
+void operator_disable(bool first) {
+    for (uint8_t i = 0; i < OPERATOR_ARGB_COUNT; i++) {
+        argb_set_module(i, 0, 0, 0);
+    }
 }
 
 void operator_service_setup(bool first) {

@@ -18,6 +18,8 @@ void cardscan_service_idle(bool first);
 void cardscan_service_setup(bool first);
 void cardscan_service_running(bool first);
 void cardscan_special_function(uint8_t special_fn);
+void cardscan_enable(bool first);
+void cardscan_disable(bool first);
 
 #define CARDSCAN_CHARACTERS 4
 
@@ -129,6 +131,8 @@ void cardscan_initialise(void) {
     mode_register_callback(GAME_IDLE, cardscan_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, cardscan_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, cardscan_service_running, &tick_20hz);
+    mode_register_callback(GAME_ENABLE, cardscan_enable, NULL);
+    mode_register_callback(GAME_DISABLE, cardscan_disable, NULL);
 
     mode_register_special_fn_callback(&cardscan_special_function);
     
@@ -140,6 +144,17 @@ void cardscan_initialise(void) {
     for (uint8_t i = 0; i < CARDSCAN_CHARACTERS; i++) {
         lcd_custom_character(i, &cardscan_character[i]);
     }
+}
+
+void cardscan_enable(bool first) {
+    lcd_set_brightness(lcd_get_nominal_brightness());   
+}
+
+void cardscan_disable(bool first) {
+    lcd_set_brightness(0);
+    
+    lcd_clear();
+    lcd_sync();
 }
 
 void cardscan_service(bool first) {

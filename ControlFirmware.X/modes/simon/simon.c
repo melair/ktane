@@ -59,7 +59,9 @@ void simon_service(bool first);
 void simon_service_setup(bool first);
 void simon_service_running(bool first);
 uint8_t simon_map_press(uint8_t pressed);
-void simon_display_clear(void);
+void simon_display_reset(void);
+void simon_enable(bool first);
+void simon_disable(bool first);
 
 pin_t simon_led_chs[4] = { KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3 };
 
@@ -73,9 +75,21 @@ void simon_initialise(void) {
     mode_register_callback(GAME_ALWAYS, simon_service, NULL);
     mode_register_callback(GAME_SETUP, simon_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, simon_service_running, &tick_20hz);
-
+    mode_register_callback(GAME_ENABLE, simon_enable, NULL);
+    mode_register_callback(GAME_DISABLE, simon_disable, NULL);
+    
     /* Initialise keymatrix. */
     keymatrix_initialise(&simon_cols[0], &simon_rows[0], KEYMODE_COL_ONLY);
+}
+
+void simon_enable(bool first) {
+    simon_display_reset();
+}
+
+void simon_disable(bool first) {
+    for (uint8_t i = 0; i < 4; i++) {
+        pwmled_set(i, SIMON_OFF, 0, 0, 0);
+    }
 }
 
 /**
@@ -99,7 +113,7 @@ void simon_service_setup(bool first) {
         mode_data.simon.order = rng_generate(&seed, SIMON_RNG_MASK) & 0xffff;
         mode_data.simon.count = 3 + (rng_generate8(&seed, SIMON_RNG_MASK) % 3);
 
-        simon_display_clear();
+        simon_display_reset();
         game_module_ready(true);
 
         mode_data.simon.next_display = 0;
@@ -128,7 +142,7 @@ void simon_service_running(bool first) {
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
             /* Force animation of sequence 2 seconds after button press. */
-            simon_display_clear();
+            simon_display_reset();
             mode_data.simon.next_animate = tick_value + 2000;
 
             /* Calculate the button that is required next. */
@@ -186,7 +200,7 @@ void simon_service_running(bool first) {
             mode_data.simon.next_display_stage = 1;
         } else {
             /* Stage 1, clear button display. */
-            simon_display_clear();
+            simon_display_reset();
 
             /* Limit delay between lights in sequence. */
             if (mode_data.simon.next_display == 0) {
@@ -200,9 +214,9 @@ void simon_service_running(bool first) {
 }
 
 /**
- * Clear RGB leds colours back to dim.
+ * Clear RGB leds colours back to bright.
  */
-void simon_display_clear(void) {
+void simon_display_reset(void) {
     pwmled_set(0, SIMON_BRIGHT, simon_colours[SIMON_RED][0], simon_colours[SIMON_RED][1], simon_colours[SIMON_RED][2]);
     pwmled_set(1, SIMON_BRIGHT, simon_colours[SIMON_BLUE][0], simon_colours[SIMON_BLUE][1], simon_colours[SIMON_BLUE][2]);
     pwmled_set(2, SIMON_BRIGHT, simon_colours[SIMON_GREEN][0], simon_colours[SIMON_GREEN][1], simon_colours[SIMON_GREEN][2]);

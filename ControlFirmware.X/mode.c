@@ -30,7 +30,7 @@ uint8_t configured_mode;
 #define SPECIAL_MODE_COUNT      3
 #define MODE_COUNTS             (GAME_STATE_COUNT + SPECIAL_MODE_COUNT)
 
-#define SPECIAL_MODE(mode)      ((mode - GAME_ENABLED) + GAME_STATE_COUNT)
+#define SPECIAL_MODE(mode)      ((mode - GAME_ENABLE) + GAME_STATE_COUNT)
 
 /* Function pointers to each stage. */
 void (*mode_service_state_function[MODE_COUNTS])(bool);
@@ -243,7 +243,7 @@ void mode_service(void) {
         
     if (module_is_enabled != this_module->enabled) {      
         module_is_enabled = this_module->enabled;
-        state_fn = mode_service_state_function[(module_is_enabled ? GAME_ENABLED : GAME_DISABLED)];
+        state_fn = mode_service_state_function[(module_is_enabled ? GAME_ENABLE : GAME_DISABLE)];
         
         if (state_fn != NULL) {
             state_fn(false);     
@@ -276,7 +276,7 @@ void mode_service(void) {
  * @param func function to call
  */
 void mode_register_callback(uint8_t state, void (*func)(bool), bool *tick) {        
-    if (state >= GAME_ENABLED) {
+    if (state >= GAME_ENABLE) {
         state = SPECIAL_MODE(state);
     }
     

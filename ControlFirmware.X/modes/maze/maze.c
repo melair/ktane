@@ -21,6 +21,7 @@ void maze_service_setup(bool first);
 void maze_service_running(bool first);
 void maze_animate_cursor(uint8_t loc, bool beacon);
 void maze_animate_destination(uint8_t loc, bool beacon);
+void maze_disable(bool first);
 
 /* Four bits per square, represent open paths for Up, Right, Down, Left. */
 const uint8_t maze_layouts[MAZE_COUNT][18] = {
@@ -153,9 +154,16 @@ void maze_initialise(void) {
     mode_register_callback(GAME_ALWAYS, maze_service, NULL);
     mode_register_callback(GAME_SETUP, maze_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, maze_service_running, &tick_20hz);
+    mode_register_callback(GAME_DISABLE, maze_disable, NULL);
 
     /* Initialise keymatrix. */
     keymatrix_initialise(&maze_cols[0], &maze_rows[0], KEYMODE_COL_ONLY);
+}
+
+void maze_disable(bool first) {
+    for (uint8_t i = 0; i < MAZE_ARGB_COUNT; i++) {
+        argb_set_module(i, 0, 0, 0);
+    }
 }
 
 /**
@@ -330,10 +338,10 @@ void maze_animate_cursor(uint8_t loc, bool beacon) {
  */
 void maze_animate_destination(uint8_t loc, bool beacon) {
     if (mode_data.maze.animation_frame < 10) {
-        argb_set_module(1 + maze_map_array_to_argb(loc), 255, 0, 0);
+        argb_set_module(maze_map_array_to_argb(loc), 255, 0, 0);
     } else {
         if (beacon) {
-            argb_set_module(1 + maze_map_array_to_argb(loc), 0, 255, 0);
+            argb_set_module(maze_map_array_to_argb(loc), 0, 255, 0);
         }
     }
 }

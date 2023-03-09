@@ -23,6 +23,7 @@ void combination_service_running(bool first);
 void combination_service_setup(bool first);
 void combination_check(void);
 void combination_setup(void);
+void combination_disable(bool first);
 
 #define COMBINATION_MAX_VALUE 20
 
@@ -38,6 +39,13 @@ void combination_initialise(void) {
     mode_register_callback(GAME_ALWAYS, combination_service, NULL);
     mode_register_callback(GAME_RUNNING, combination_service_running, &tick_20hz);
     mode_register_callback(GAME_SETUP, combination_service_setup, &tick_20hz);
+    mode_register_callback(GAME_DISABLE, combination_disable, NULL);
+}
+
+void combination_disable(bool first) {
+    for (uint8_t i = 0; i < 4; i++) {
+        segment_set_digit(i, characters[DIGIT_SPACE]);
+    }
 }
 
 void combination_service(bool first) {
