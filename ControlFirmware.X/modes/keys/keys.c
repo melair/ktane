@@ -13,7 +13,7 @@
 
 #define KEYS_RNG_MASK 0xe3236543
 
-void keys_service(void);
+void keys_service(bool first);
 void key_create_next(void);
 void key_service_running(bool first);
 void key_service_setup(bool first);
@@ -38,7 +38,7 @@ void keys_initialise(void) {
     keymatrix_initialise(&keys_cols[0], &keys_rows[0], KEYMODE_COL_ONLY);
 }
 
-void keys_service(void) {
+void keys_service(bool first) {
     segment_service();
     keymatrix_service();
 }

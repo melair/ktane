@@ -13,7 +13,7 @@
 
 #define CARDSCAN_RNG_MASK 0x96ea865c
 
-void cardscan_service(void);
+void cardscan_service(bool first);
 void cardscan_service_idle(bool first);
 void cardscan_service_setup(bool first);
 void cardscan_service_running(bool first);
@@ -142,7 +142,7 @@ void cardscan_initialise(void) {
     }
 }
 
-void cardscan_service(void) {
+void cardscan_service(bool first) {
      lcd_service();   
      pn532_cmd_service();
      pn532_service();

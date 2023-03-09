@@ -15,7 +15,7 @@
 pin_t operator_cols[] = {KPIN_A0, KPIN_A1, KPIN_NONE};
 pin_t operator_rows[] = {KPIN_NONE};
 
-void operator_service(void);
+void operator_service(bool first);
 void operator_service_running(bool first);
 void operator_service_setup(bool first);
 void operator_display_leds(void);
@@ -60,7 +60,7 @@ void operator_initialise(void) {
     keymatrix_required_periods(1);
 }
 
-void operator_service(void) {
+void operator_service(bool first) {
     keymatrix_service();
 }
 

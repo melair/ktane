@@ -18,7 +18,7 @@
 pin_t combination_cols[] = {KPIN_B2, KPIN_NONE};
 pin_t combination_rows[] = {KPIN_NONE};
 
-void combination_service(void);
+void combination_service(bool first);
 void combination_service_running(bool first);
 void combination_service_setup(bool first);
 void combination_check(void);
@@ -40,7 +40,7 @@ void combination_initialise(void) {
     mode_register_callback(GAME_SETUP, combination_service_setup, &tick_20hz);
 }
 
-void combination_service(void) {
+void combination_service(bool first) {
     segment_service();
     rotary_service();
     keymatrix_service();
