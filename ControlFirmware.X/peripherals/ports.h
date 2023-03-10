@@ -101,6 +101,27 @@ typedef uint8_t pin_t;
 #define KPIN_D6 ((pin_t) 0b00011110)
 #define KPIN_D7 ((pin_t) 0b00011111)
 
+#define KPIN_SYS_FLAG ((pin_t) 0b10000000)
+#define KPIN_SYS_MASK ((pin_t) 0b01111111)
+
+#define KPIN_SYS_B0 ((pin_t) 0b10001000)
+#define KPIN_SYS_B1 ((pin_t) 0b10001001)
+#define KPIN_SYS_B2 ((pin_t) 0b10001010)
+#define KPIN_SYS_B3 ((pin_t) 0b10001011)
+#define KPIN_SYS_B4 ((pin_t) 0b10001100)
+#define KPIN_SYS_B5 ((pin_t) 0b10001101)
+#define KPIN_SYS_B6 ((pin_t) 0b10001110)
+#define KPIN_SYS_B7 ((pin_t) 0b10001111)
+
+#define KPIN_SYS_C0 ((pin_t) 0b10010000)
+#define KPIN_SYS_C1 ((pin_t) 0b10010001)
+#define KPIN_SYS_C2 ((pin_t) 0b10010010)
+#define KPIN_SYS_C3 ((pin_t) 0b10010011)
+#define KPIN_SYS_C4 ((pin_t) 0b10010100)
+#define KPIN_SYS_C5 ((pin_t) 0b10010101)
+#define KPIN_SYS_C6 ((pin_t) 0b10010110)
+#define KPIN_SYS_C7 ((pin_t) 0b10010111)
+
 #define KPIN_NONE 0b11111111
 
 #define PIN_OUTPUT 0

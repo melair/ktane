@@ -29,6 +29,7 @@
 #include "tick.h"
 #include "rng.h"
 #include "spi.h"
+#include "opts.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
 
@@ -85,9 +86,6 @@ void main(void) {
     /* Initialise RNG. */
     rng_initialise();
 
-    /* Initialise ARGB. */
-    argb_initialise();
-
     /* Initialise serial number. */
     serial_initialise();
 
@@ -97,8 +95,14 @@ void main(void) {
     /* Initialise SPI. */
     spi_initialise();
     
+    /* Initialise ARGB. */
+    argb_initialise();
+    
     /* Initialise Buzzer. */
     buzzer_initialise();
+    
+    /* Initialise optional modules. */
+    opts_initialise();
 
     /* Initialise the mode. */
     mode_initialise();
@@ -128,6 +132,9 @@ void main(void) {
 
         /* Service SPI. */
         spi_service();
+        
+        /* Service optional modules. */
+        opts_service();
         
         /* Service module subsystem. */
         module_service();

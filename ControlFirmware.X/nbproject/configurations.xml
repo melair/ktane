@@ -76,6 +76,7 @@
       <itemPath>protocol_network.h</itemPath>
       <itemPath>spi.h</itemPath>
       <itemPath>main.h</itemPath>
+      <itemPath>opts.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -156,6 +157,7 @@
       <itemPath>serial.c</itemPath>
       <itemPath>protocol_network.c</itemPath>
       <itemPath>spi.c</itemPath>
+      <itemPath>opts.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

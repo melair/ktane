@@ -25,6 +25,11 @@ void nvm_write_pfm(uint24_t addr, uint16_t data);
 
 #define EEPROM_LOC_CAN_DOMAIN                       0x016 /* Configured CAN domain. */
 
+#define EEPROM_LOC_OPT_KPORTA                       0x018 /* Optional module on KPORTA. */
+#define EEPROM_LOC_OPT_KPORTB                       0x019 /* Optional module on KPORTB. */
+#define EEPROM_LOC_OPT_KPORTC                       0x01a /* Optional module on KPORTC. */
+#define EEPROM_LOC_OPT_KPORTD                       0x01b /* Optional module on KPORTD. */
+
 #define EEPROM_LOC_LCD_BRIGHTNESS                   0x020 /* LCD Backlight Brightness. */
 #define EEPROM_LOC_LCD_CONTRAST                     0x021 /* LCD Contrast. */
 

@@ -13,7 +13,9 @@
 #include <xc.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "peripherals/ports.h"
 #include "argb.h"
+#include "spi.h"
 
 /* Allocate the default ARGB buffers. */
 argb_led_t ARGB_DEFAULT_LEDS[ARGB_MODULE_COUNT(0)];
@@ -23,73 +25,35 @@ uint8_t    ARGB_DEFAULT_OUTPUT[ARGB_BUFFER_SIZE(0)];
 uint8_t argb_brightness = 0b11111;
 uint8_t argb_count = 0;
 bool argb_dirty = false;
+bool argb_spi_queued = false;
 argb_led_t *argb_leds = NULL;
 uint8_t *argb_buffer = NULL;
+
+
+/* Local function prototypes. */
+spi_command_t *argb_spi_callback(spi_command_t *);
+
+const spi_device_t argb_spi_device = {
+    .clk_pin = KPIN_SYS_B3,
+    .miso_pin = KPIN_NONE,
+    .mosi_pin = KPIN_SYS_B2,
+    .cs_pin = KPIN_NONE,
+    .baud = SPI_BAUD_1600_KHZ,
+};
+
+spi_command_t argb_spi_cmd;
 
 /**
  * Initialise the port and configure SPI ready for ARGB.
  */
 void argb_initialise(void) {
-    /* Configure source for RB2/RB3 to be SPI1 SCK/SDO. */
-    RB2PPS = 0x32; // DAT
-    RB3PPS = 0x31; // CLK
-
-    /* Configure to output mode. */
+    /* Configure SPI pins to output mode. */
     TRISBbits.TRISB2 = 0;
     TRISBbits.TRISB3 = 0;
-
-    /* Set SPI baud to ~2MHz. */
-    SPI1CLK = 0b000000; /* 64MhHz clock. */
-    SPI1BAUD = 16;      /* 2.13MHz SPI baud. */
-
-    /* Set to TX only. */
-    SPI1CON2bits.TXR = 1;
-    SPI1CON2bits.RXR = 0;
-
-    /* Act as bus master. */
-    SPI1CON0bits.MST = 1;
-
-    /* Set BMODE to 1, counting in bytes. */
-    SPI1CON0bits.BMODE = 1;
-
-    /* Enable SPI1 peripheral. */
-    SPI1CON0bits.EN = 1;
-
-    /* Select DMA1 for configuration. */
-    DMASELECT = 0;
-
-    /* Reset DMA1. */
-    DMAnCON0 = 0;
-
-    /* Set destination address of data. */
-    DMAnDSA = &SPI1TXB;
-
-    /* Set source address to general purpose register space. */
-    DMAnCON1bits.SMR = 0b00;
-
-    /* Increment source address after every transfer. */
-    DMAnCON1bits.SMODE = 0b01;
-    /* Keep destination address static after every transfer. */
-    DMAnCON1bits.DMODE = 0b00;
-
-    /* Set destination sizes, source to the size of the buffer. */
-    DMAnDSZ = 1;
-
-    /* Set clearing of SIREQEN bit when source counter is reloaded, don't when
-     * destination counter is reloaded. */
-    DMAnCON1bits.SSTP = 1;
-    DMAnCON1bits.DSTP = 0;
-
-    /* Set start and abort IRQ triggers, SPI1TX and None, respectively. */
-    DMAnSIRQ = 0x19;
-    DMAnAIRQ = 0x00;
-
-    /* Prevent hardware triggers starting DMA transfer. */
-    DMAnCON0bits.SIRQEN = 0;
-
-    /* Enable DMA module. */
-    DMAnCON0bits.EN = 1;
     
+    argb_spi_cmd.device = spi_register(&argb_spi_device);
+    argb_spi_cmd.operation = SPI_OPERATION_WRITE;
+   
     /* Init ARGB with default buffers. */
     argb_expand(0, &ARGB_DEFAULT_LEDS[0], &ARGB_DEFAULT_OUTPUT[0]);
 }
@@ -119,21 +83,12 @@ void argb_expand(uint8_t count, argb_led_t *leds, uint8_t *output) {
         argb_buffer[i] = 0xff;
     }
     
-    /* Mark it dirty so its send. */
-    argb_dirty = true;
+    argb_spi_cmd.buffer = argb_buffer;
+    argb_spi_cmd.write_size = ARGB_BUFFER_SIZE(count);
+    argb_spi_cmd.callback = argb_spi_callback;
     
-    /* Select DMA1 for configuration. */
-    DMASELECT = 0;
-    
-    /* Disable DMA module. */
-    DMAnCON0bits.EN = 0;
-    
-    /* Set source and size of output buffer. */
-    DMAnSSA = &argb_buffer[0];
-    DMAnSSZ = ARGB_BUFFER_SIZE(count);
-    
-    /* Enable DMA module. */
-    DMAnCON0bits.EN = 1;
+    /* Mark it dirty so its sent. */
+    argb_dirty = true;       
 }
 
 
@@ -182,12 +137,10 @@ void argb_service(void) {
         return;
     }
 
-    /* Check to see if a DMA transfer is in progress (i.e. SPI is busy). */
-    DMASELECT = 0;
-    if (DMAnCON0bits.DGO == 1) {
+    if (argb_spi_queued) {
         return;
     }
-
+    
     /* Copy data from the LED buffer into the SPI buffer, and mark as clean. */
     for (uint8_t i = 0; i < argb_count; i++) {
         uint8_t b = 4 + (i*4);
@@ -198,11 +151,17 @@ void argb_service(void) {
         argb_buffer[b+2] = argb_leds[i].g;
         argb_buffer[b+3] = argb_leds[i].r;
     }
-
+  
+    spi_enqueue(&argb_spi_cmd);
+    
+    /* Mark as SPI in flight. */
+    argb_spi_queued = true;
+       
     /* Mark buffer as clean.*/
     argb_dirty = false;
+}
 
-    /* Start SPI DMA, ensure that length is correct. */
-    DMAnSSZ = ARGB_BUFFER_SIZE(argb_count - 1);
-    DMAnCON0bits.SIRQEN = 1;
+spi_command_t *argb_spi_callback(spi_command_t *cmd) {
+    argb_spi_queued = false;
+    return NULL;
 }

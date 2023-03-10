@@ -20,7 +20,7 @@ typedef struct {
     pin_t cs_pin;
 
     bool cs_bounce;
-        
+            
     unsigned baud       :3;     
     unsigned lsb_first  :1;
 } spi_device_t;
@@ -39,6 +39,8 @@ struct spi_command_t {
     uint8_t *buffer;
     uint16_t write_size;
     uint16_t read_size;
+    
+    uint16_t cs_delay;
     
     spi_command_t *(*callback)(spi_command_t *);
 };

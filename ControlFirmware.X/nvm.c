@@ -9,7 +9,7 @@
 #include "nvm.h"
 
 /* Current version of EEPROM data, bump when new EEPROM parameters are added. */
-#define EEPROM_CURRENT_VERSION 2
+#define EEPROM_CURRENT_VERSION 4
 
 /**
  * Initialise any EEPROM data required, used to migrate EEPROM data versions
@@ -54,6 +54,17 @@ void nvm_initialise(void) {
         if (read_version < 2) {
             nvm_write(EEPROM_LOC_LCD_BRIGHTNESS, 0xff);
             nvm_write(EEPROM_LOC_LCD_CONTRAST, 0x3f);
+        }
+        
+        if (read_version < 3) {
+            nvm_write(EEPROM_LOC_CAN_DOMAIN, 0x00);
+        }
+        
+        if (read_version < 4) {
+            nvm_write(EEPROM_LOC_OPT_KPORTA, 0x00);
+            nvm_write(EEPROM_LOC_OPT_KPORTB, 0x00);
+            nvm_write(EEPROM_LOC_OPT_KPORTC, 0x00);
+            nvm_write(EEPROM_LOC_OPT_KPORTD, 0x00);
         }
     }
 }

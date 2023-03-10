@@ -42,9 +42,7 @@ void spi_initialise(void) {
     PIE6bits.DMA2DCNTIE = 1;
 }
 
-void spi_service(void) {
-    uint8_t previous_device = 0xff;
-    
+void spi_service(void) {   
     if (spi_command != NULL && (
             ((spi_command->operation == SPI_OPERATION_WRITE || spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) && (SPI2INTFbits.TCZIF == 1 && SPI2CON2bits.BUSY == 0)) || 
             (spi_command->operation == SPI_OPERATION_READ && PIR6bits.DMA2DCNTIF == 1))) {
@@ -60,8 +58,8 @@ void spi_service(void) {
             __delay_us(10);
         } else {
             bool cs_high = true;
-            previous_device = spi_command->device;
-
+            uint8_t previous_device = spi_command->device;
+                                
             if (spi_command->callback != NULL) {
                 spi_command = spi_command->callback(spi_command);   
                 
@@ -75,6 +73,9 @@ void spi_service(void) {
             }   
             
             if (cs_high) {
+                *(kpin_to_rxypps(spi_devices[previous_device]->clk_pin)) = 0x00;
+                *(kpin_to_rxypps(spi_devices[previous_device]->mosi_pin)) = 0x00;
+            
                 kpin_write(spi_devices[previous_device]->cs_pin, true);                
             }
         }
@@ -90,11 +91,13 @@ void spi_service(void) {
         spi_queue[SPI_QUEUE_COUNT - 1] = NULL;
     }
         
-    if (spi_command != NULL && !spi_command->in_progress) {    
-        previous_device = spi_command->device;
-                
+    if (spi_command != NULL && !spi_command->in_progress) {                   
         kpin_write(spi_devices[spi_command->device]->cs_pin, false);
-                        
+
+        for (uint16_t i = 0; i < spi_command->cs_delay; i++) {
+            __delay_us(1);
+        }
+        
         *(kpin_to_rxypps(spi_devices[spi_command->device]->clk_pin)) = 0x34;
         *(kpin_to_rxypps(spi_devices[spi_command->device]->mosi_pin)) = 0x35;
         SPI2SDIPPS = kpin_to_ppspin(spi_devices[spi_command->device]->miso_pin);

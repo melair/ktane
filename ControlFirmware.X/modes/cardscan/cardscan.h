@@ -8,7 +8,6 @@ void cardscan_initialise(void);
 #define CARDSCAN_SPI_BUFFER 32
 #define CARDSCAN_CARD_COUNT 24
 
-
 #define CARDSCAN_MFU_UID_LEN 7
 
 typedef struct {
@@ -38,7 +37,7 @@ typedef struct {
     
     struct {
         bool                flash;
-                uint8_t             wanted_id;
+        uint8_t             wanted_id;
         uint8_t             last_id;
         
         uint8_t             scanned_id;

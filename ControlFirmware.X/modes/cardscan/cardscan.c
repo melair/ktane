@@ -100,7 +100,7 @@ const spi_device_t cardscan_device = {
     .miso_pin = KPIN_C1,
     .mosi_pin = KPIN_C2,
     .cs_pin = KPIN_C3,
-    .baud = SPI_BAUD_125_KHZ,
+    .baud = SPI_BAUD_800_KHZ,
     .lsb_first = 1,
 };
 

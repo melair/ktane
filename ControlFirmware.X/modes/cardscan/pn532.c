@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "cardscan.h"
 #include "pn532.h"
 #include "pn532_cmd.h"
 #include "pn532_packet.h"
@@ -41,7 +42,7 @@ void pn532_service(void) {
             break;
             
         case PN532_STATE_CONFIG:
-            kpin_write(KPIN_C3, false);
+            mode_data.cardscan.pn532.spi.cmd.cs_delay = 500;
             mode_data.cardscan.pn532.state = PN532_STATE_CONFIG_WAIT;
             size = pn532_samconfigure(&mode_data.cardscan.pn532.spi.buffer);
             pn532_cmd_send(&mode_data.cardscan.pn532.spi.buffer[0], size, 9, &pn532_service_samconfigure_callback);         
@@ -51,7 +52,7 @@ void pn532_service(void) {
             break;
             
         case PN532_STATE_DETECT_START:
-            kpin_write(KPIN_C3, false);
+            mode_data.cardscan.pn532.spi.cmd.cs_delay = 0;
             mode_data.cardscan.pn532.state = PN532_STATE_DETECT_START_ACK;
             size = pn532_inlistpassivetarget(&mode_data.cardscan.pn532.spi.buffer);
             pn532_cmd_send(&mode_data.cardscan.pn532.spi.buffer[0], size, 0, &pn532_service_inpassivetarget_callback);  
@@ -71,7 +72,6 @@ void pn532_service(void) {
             break;
             
         case PN532_STATE_BLOCK_READ:
-            kpin_write(KPIN_C3, false);
             mode_data.cardscan.pn532.state = PN532_STATE_BLOCK_READ_INFLIGHT;
             size = pn532_mifareultralight_read(&mode_data.cardscan.pn532.spi.buffer, 4);
             pn532_cmd_send(&mode_data.cardscan.pn532.spi.buffer[0], size, 26, &pn532_service_mfu_read_callback);              
@@ -83,7 +83,6 @@ void pn532_service(void) {
         case PN532_STATE_BLOCK_WRITE:
             writebuf[3] = mode_data.cardscan.cards.programming_id;
             
-            kpin_write(KPIN_C3, false);
             mode_data.cardscan.pn532.state = PN532_STATE_BLOCK_WRITE_INFLIGHT;
             size = pn532_mifareultralight_write(&mode_data.cardscan.pn532.spi.buffer, 4, &writebuf);
             pn532_cmd_send(&mode_data.cardscan.pn532.spi.buffer[0], size, 10, &pn532_service_mfu_write_callback); 

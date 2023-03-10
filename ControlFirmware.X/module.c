@@ -144,6 +144,11 @@ void module_service(void) {
             }
         }
     }
+    
+    /* If we are in OVER state, then set the module to be unready. */
+    if (game.state == GAME_OVER && this_module->ready) {
+        this_module->ready = false;
+    }
 
     if (tick_20hz) {
         error_state = module_determine_error_state();
