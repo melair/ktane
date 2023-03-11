@@ -56,6 +56,7 @@ pin_t simon_rows[] = {KPIN_NONE};
 
 /* Local function prototypes. */
 void simon_service(bool first);
+void simon_service_idle(bool first);
 void simon_service_setup(bool first);
 void simon_service_running(bool first);
 uint8_t simon_map_press(uint8_t pressed);
@@ -73,6 +74,7 @@ void simon_initialise(void) {
 
     /* Register our callbacks. */
     mode_register_callback(GAME_ALWAYS, simon_service, NULL);
+    mode_register_callback(GAME_IDLE, simon_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, simon_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, simon_service_running, &tick_20hz);
     mode_register_callback(GAME_ENABLE, simon_enable, NULL);
@@ -89,6 +91,12 @@ void simon_enable(bool first) {
 void simon_disable(bool first) {
     for (uint8_t i = 0; i < 4; i++) {
         pwmled_set(i, SIMON_OFF, 0, 0, 0);
+    }
+}
+
+void simon_service_idle(bool first) {
+    if (first) {
+        simon_disable(first);
     }
 }
 

@@ -17,6 +17,7 @@
 /* Local function pointers. */
 uint8_t maze_map_array_to_argb(uint8_t array);
 void maze_service(bool first);
+void maze_service_idle(bool first);
 void maze_service_setup(bool first);
 void maze_service_running(bool first);
 void maze_animate_cursor(uint8_t loc, bool beacon);
@@ -152,6 +153,7 @@ void maze_initialise(void) {
     
     /* Register game states. */
     mode_register_callback(GAME_ALWAYS, maze_service, NULL);
+    mode_register_callback(GAME_IDLE, maze_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, maze_service_setup, &tick_20hz);
     mode_register_callback(GAME_RUNNING, maze_service_running, &tick_20hz);
     mode_register_callback(GAME_DISABLE, maze_disable, NULL);
@@ -163,6 +165,12 @@ void maze_initialise(void) {
 void maze_disable(bool first) {
     for (uint8_t i = 0; i < MAZE_ARGB_COUNT; i++) {
         argb_set_module(i, 0, 0, 0);
+    }
+}
+
+void maze_service_idle(bool first) {
+    if (first) {
+        maze_disable(first);
     }
 }
 

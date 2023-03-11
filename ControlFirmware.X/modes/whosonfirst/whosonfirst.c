@@ -193,6 +193,11 @@ void whosonfirst_disable(bool first) {
 void whosonfirst_service_idle(bool first) {
     if (first) {
         lcd_clear();
+        lcd_sync();
+
+        for (uint8_t i = 0; i < STAGE_COUNT; i++) {
+            argb_set_module(i, 0, 0, 0);
+        }
     }
 }
 

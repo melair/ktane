@@ -149,6 +149,10 @@ void module_service(void) {
     if (game.state == GAME_OVER && this_module->ready) {
         this_module->ready = false;
     }
+    
+    if (game.state == GAME_IDLE && !this_module->enabled) {
+        this_module->enabled = true;
+    }
 
     if (tick_20hz) {
         error_state = module_determine_error_state();

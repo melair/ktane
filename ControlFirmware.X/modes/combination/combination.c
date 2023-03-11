@@ -19,6 +19,7 @@ pin_t combination_cols[] = {KPIN_B2, KPIN_NONE};
 pin_t combination_rows[] = {KPIN_NONE};
 
 void combination_service(bool first);
+void combination_service_idle(bool first);
 void combination_service_running(bool first);
 void combination_service_setup(bool first);
 void combination_check(void);
@@ -37,6 +38,7 @@ void combination_initialise(void) {
 
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, combination_service, NULL);
+    mode_register_callback(GAME_IDLE, combination_service_idle, &tick_20hz);
     mode_register_callback(GAME_RUNNING, combination_service_running, &tick_20hz);
     mode_register_callback(GAME_SETUP, combination_service_setup, &tick_20hz);
     mode_register_callback(GAME_DISABLE, combination_disable, NULL);
@@ -52,6 +54,12 @@ void combination_service(bool first) {
     segment_service();
     rotary_service();
     keymatrix_service();
+}
+
+void combination_service_idle(bool first) {
+    if (first) {
+        combination_disable(first); 
+    }
 }
 
 void combination_service_setup(bool first) {

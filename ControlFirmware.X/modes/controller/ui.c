@@ -611,7 +611,7 @@ interface_t interface[] = {
     {
         .press =
         {
-            .action = &ui_action_jump,
+            .action = &ui_game_idle,
             .index = 0
         },
         .render = &ui_game_endgame_display,

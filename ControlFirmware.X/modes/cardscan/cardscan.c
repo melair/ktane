@@ -136,10 +136,6 @@ void cardscan_initialise(void) {
 
     mode_register_special_fn_callback(&cardscan_special_function);
     
-    /* Clear LCD. */
-    lcd_clear();
-    lcd_sync();
-    
     /* Load custom symbols into RAM. */
     for (uint8_t i = 0; i < CARDSCAN_CHARACTERS; i++) {
         lcd_custom_character(i, &cardscan_character[i]);
@@ -164,6 +160,11 @@ void cardscan_service(bool first) {
 }
 
 void cardscan_service_idle(bool first) {
+    if (first) {
+        lcd_clear();
+        lcd_sync();   
+    }
+    
     if (mode_data.cardscan.cards.programming && (tick_2hz || mode_data.cardscan.cards.programming_update)) {
         lcd_clear();
 

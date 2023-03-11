@@ -58,6 +58,7 @@ const uint8_t wire_colors[6][3] = {
 };
 
 /* Local function prototypes. */
+void wires_service_idle(bool first);
 void wires_service_setup(bool first);
 void wires_service_start(bool first);
 void wires_service_running(bool first);
@@ -79,6 +80,7 @@ void wires_initialise(void) {
     argb_expand(WIRES_ARGB_COUNT, &mode_data.wires.argb_leds[0], &mode_data.wires.argb_output[0]);
     
     /* Register callbacks for mode. */
+    mode_register_callback(GAME_IDLE, wires_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, wires_service_setup, &tick_20hz);
     mode_register_callback(GAME_START, wires_service_start, &tick_20hz);
     mode_register_callback(GAME_RUNNING, wires_service_running, &tick_100hz);
@@ -102,6 +104,12 @@ void wires_initialise(void) {
 void wires_disable(bool first) {
     for (uint8_t i = 0; i < WIRES_ARGB_COUNT; i++) {
         argb_set_module(i, 0, 0, 0);
+    }
+}
+
+void wires_service_idle(bool first) {
+    if (first) {
+        wires_disable(first);
     }
 }
 

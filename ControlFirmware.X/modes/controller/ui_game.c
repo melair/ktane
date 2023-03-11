@@ -82,6 +82,11 @@ uint8_t ui_game_abandon(uint8_t current, action_t *a) {
     return a->index;
 }
 
+uint8_t ui_game_idle(uint8_t current, action_t *a) {
+    game_set_state(GAME_IDLE, RESULT_NONE);
+    return a->index;
+}
+
 void ui_game_endgame_display(interface_t *current) {
     lcd_clear();
     

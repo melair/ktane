@@ -94,6 +94,7 @@ void password_disable(bool first) {
 void password_service_idle(bool first) {
     if (first) {
         lcd_clear();
+        lcd_sync();
     }
 }
 

@@ -1,4 +1,5 @@
 #include <xc.h>
+#include <stdbool.h>
 #include "keys.h"
 #include "../../peripherals/segment.h"
 #include "../../peripherals/ports.h"
@@ -14,10 +15,11 @@
 #define KEYS_RNG_MASK 0xe3236543
 
 void keys_service(bool first);
-void key_create_next(void);
-void key_service_running(bool first);
-void key_service_setup(bool first);
-void key_disable(bool first);
+void keys_create_next(void);
+void keys_service_idle(bool first);
+void keys_service_running(bool first);
+void keys_service_setup(bool first);
+void keys_disable(bool first);
 
 /* Keymatrix. */
 pin_t keys_cols[] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_NONE};
@@ -32,21 +34,28 @@ void keys_initialise(void) {
 
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, keys_service, NULL);
-    mode_register_callback(GAME_RUNNING, key_service_running, &tick_20hz);
-    mode_register_callback(GAME_SETUP, key_service_setup, &tick_20hz);
-    mode_register_callback(GAME_DISABLE, key_disable, NULL);
+    mode_register_callback(GAME_IDLE, keys_service_idle, &tick_20hz);
+    mode_register_callback(GAME_RUNNING, keys_service_running, &tick_20hz);
+    mode_register_callback(GAME_SETUP, keys_service_setup, &tick_20hz);
+    mode_register_callback(GAME_DISABLE, keys_disable, NULL);
 
     /* Initialise keymatrix. */
     keymatrix_initialise(&keys_cols[0], &keys_rows[0], KEYMODE_COL_ONLY);
 }
 
-void key_disable(bool first) {
+void keys_disable(bool first) {
     for (uint8_t i = 0; i < KEYS_ARGB_COUNT; i++) {
         argb_set_module(i, 0, 0, 0);
     }
     
     for (uint8_t i = 0; i < 4; i++) {
         segment_set_digit(i, characters[DIGIT_SPACE]);
+    }
+}
+
+void keys_service_idle(bool first) {
+    if (first) {
+        keys_disable(first);
     }
 }
 
@@ -57,7 +66,7 @@ void keys_service(bool first) {
 
 const uint8_t led_index[3] = {5,3,1};
 
-void key_create_next(void) {
+void keys_create_next(void) {
     uint16_t delay = KEYS_MIN_INTERVAL + (rng_generate8(&game.module_seed, KEYS_RNG_MASK) % (KEYS_MAX_INTERVAL - KEYS_MIN_INTERVAL));
     uint16_t key_at = (game.time_remaining.minutes * 60) + game.time_remaining.seconds;
 
@@ -90,16 +99,16 @@ void key_create_next(void) {
     argb_set_module(led_index[2], 0, 0, 0);
 }
 
-void key_service_setup(bool first) {
+void keys_service_setup(bool first) {
     if (first) {
         game_module_ready(true);
     }
 }
 
-void key_service_running(bool first) {
+void keys_service_running(bool first) {
     if (first) {
         keymatrix_clear();
-        key_create_next();
+        keys_create_next();
     }
 
     if (needy_all_other_modules_complete()) {
@@ -112,7 +121,7 @@ void key_service_running(bool first) {
 
     if (time < key_at) {
         game_module_strike(1);
-        key_create_next();
+        keys_create_next();
     }
 
     if (time - key_at <= KEYS_LIGHT_WARNING) {
@@ -129,11 +138,11 @@ void key_service_running(bool first) {
 
         if (key != mode_data.keys.key || time != key_at) {
             game_module_strike(1);
-            key_create_next();
+            keys_create_next();
             continue;
         }
 
-        key_create_next();
+        keys_create_next();
         continue;
     }
 }

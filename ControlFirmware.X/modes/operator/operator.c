@@ -16,6 +16,7 @@ pin_t operator_cols[] = {KPIN_A0, KPIN_A1, KPIN_NONE};
 pin_t operator_rows[] = {KPIN_NONE};
 
 void operator_service(bool first);
+void operator_service_idle(bool first);
 void operator_service_running(bool first);
 void operator_service_setup(bool first);
 void operator_display_leds(void);
@@ -48,6 +49,7 @@ void operator_initialise(void) {
     
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, operator_service, NULL);
+    mode_register_callback(GAME_IDLE, operator_service_idle, &tick_20hz);
     mode_register_callback(GAME_RUNNING, operator_service_running, &tick_20hz);
     mode_register_callback(GAME_SETUP, operator_service_setup, &tick_20hz);
     mode_register_callback(GAME_DISABLE, operator_disable, NULL);
@@ -69,6 +71,12 @@ void operator_service(bool first) {
 void operator_disable(bool first) {
     for (uint8_t i = 0; i < OPERATOR_ARGB_COUNT; i++) {
         argb_set_module(i, 0, 0, 0);
+    }
+}
+
+void operator_service_idle(bool first) {
+    if (first) {
+        operator_disable(first);
     }
 }
 
