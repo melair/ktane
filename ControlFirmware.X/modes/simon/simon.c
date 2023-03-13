@@ -7,7 +7,7 @@
 #include "../../tick.h"
 #include "../../rng.h"
 #include "../../buzzer.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 #include "../../peripherals/pwmled.h"
 #include "../../peripherals/keymatrix.h"
 

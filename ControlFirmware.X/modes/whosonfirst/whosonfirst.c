@@ -10,7 +10,7 @@
 #include "../../rng.h"
 #include "../../tick.h"
 #include "../../peripherals/keymatrix.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 
 #define WHOSONFIRST_RNG_MASK 0x183cc82a
 

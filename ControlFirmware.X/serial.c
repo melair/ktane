@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include "serial.h"
 #include "nvm.h"
-#include "rng.h"
 
 /* Module serial number, derived from DIA/MUI. */
 uint32_t serial_number;

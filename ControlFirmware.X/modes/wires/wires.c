@@ -7,7 +7,7 @@
 #include "../../tick.h"
 #include "../../game.h"
 #include "../../mode.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 #include "../../edgework.h"
 
 #define WIRES_RNG_MASK 0xbde83a1f

@@ -1,7 +1,7 @@
 #ifndef KEYMATRIX_H
 #define	KEYMATRIX_H
 
-#include "ports.h"
+#include "../hal/pins.h"
 
 void keymatrix_initialise(pin_t *cols, pin_t *rows, uint8_t mode);
 void keymatrix_service(void);

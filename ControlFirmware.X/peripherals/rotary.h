@@ -1,7 +1,7 @@
 #ifndef ROTARY_H
 #define	ROTARY_H
 
-#include "ports.h"
+#include "../hal/pins.h"
 
 void rotary_initialise(pin_t a, pin_t b);
 void rotary_service(void);

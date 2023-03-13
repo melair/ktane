@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "combination.h"
 #include "../../peripherals/segment.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 #include "../../peripherals/rotary.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../edgework.h"

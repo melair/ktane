@@ -7,7 +7,7 @@
 #include "../../buzzer.h"
 #include "../../game.h"
 #include "../../mode.h"
-#include "../../spi.h"
+#include "../../hal/spi.h"
 #include "../../tick.h"
 #include "../../peripherals/lcd.h"
 
@@ -95,15 +95,6 @@ const uint8_t cardscan_names[CARDSCAN_CARD_COUNT][CARDSCAN_MAX_NAME] = {
     "El Padre del Diablo"
 };
 
-const spi_device_t cardscan_device = {
-    .clk_pin = KPIN_C0,
-    .miso_pin = KPIN_C1,
-    .mosi_pin = KPIN_C2,
-    .cs_pin = KPIN_C3,
-    .baud = SPI_BAUD_800_KHZ,
-    .lsb_first = 1,
-};
-
 void cardscan_initialise(void) {
     /* Initialise the LCD. */
     lcd_initialize();
@@ -118,10 +109,7 @@ void cardscan_initialise(void) {
     kpin_mode(KPIN_C3, PIN_OUTPUT, false);    
         
     /* Set CS to high. */
-    kpin_write(KPIN_C3, true);
-    
-    /* Initialise SPI. */
-    mode_data.cardscan.pn532.spi.device_id = spi_register(&cardscan_device);
+    kpin_write(KPIN_C3, true);   
     
     /* Initialise IRQ. */
     kpin_mode(KPIN_C4, PIN_INPUT, false);

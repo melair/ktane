@@ -4,7 +4,7 @@
 #include "pn532_cmd.h"
 #include "pn532_packet.h"
 #include "../../mode.h"
-#include "../../spi.h"
+#include "../../hal/spi.h"
 
 spi_command_t *pn532_cmd_callback_ack(spi_command_t *cmd);
 spi_command_t *pn532_cmd_callback_response(spi_command_t *cmd);
@@ -20,6 +20,16 @@ spi_command_t *pn532_cmd_callback_write(spi_command_t *cmd);
 #define PN532_CMD_STATE_READ_RESPONSE           7
 #define PN532_CMD_STATE_READ_RESPONSE_IN_FLIGHT 8
 #define PN532_CMD_STATE_DONE                    9
+
+const spi_device_t cardscan_device = {
+    .clk_pin = KPIN_C0,
+    .miso_pin = KPIN_C1,
+    .mosi_pin = KPIN_C2,
+    .cs_pin = KPIN_C3,
+    .baud = SPI_BAUD_800_KHZ,
+    .lsb_first = 1,
+    .cke = 1,
+};
 
 void pn532_cmd_send(uint8_t *buff, uint8_t write_size, uint8_t read_size, void (*callback)(bool)) {
     if (write_size > 0) {
@@ -44,7 +54,7 @@ void pn532_cmd_service(void) {
             break;
             
         case PN532_CMD_STATE_WRITE:           
-            mode_data.cardscan.pn532.spi.cmd.device = mode_data.cardscan.pn532.spi.device_id;
+            mode_data.cardscan.pn532.spi.cmd.device = &cardscan_device;
             mode_data.cardscan.pn532.spi.cmd.operation = SPI_OPERATION_WRITE;
             mode_data.cardscan.pn532.spi.cmd.buffer = mode_data.cardscan.pn532.cmd.buffer;
             mode_data.cardscan.pn532.spi.cmd.write_size = mode_data.cardscan.pn532.cmd.write_size;

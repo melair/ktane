@@ -4,6 +4,10 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f4" displayName="hal" projectFiles="true">
+        <itemPath>hal/pins.h</itemPath>
+        <itemPath>hal/spi.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="modes" projectFiles="true">
         <logicalFolder name="f1" displayName="bootstrap" projectFiles="true">
           <itemPath>modes/bootstrap/bootstrap.h</itemPath>
@@ -46,8 +50,14 @@
         </logicalFolder>
         <itemPath>modes/needy.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f3" displayName="opts" projectFiles="true">
+        <logicalFolder name="f1" displayName="spi" projectFiles="true">
+          <itemPath>opts/spi/spi.h</itemPath>
+          <itemPath>opts/spi/spi_data.h</itemPath>
+          <itemPath>opts/spi/rtc.h</itemPath>
+        </logicalFolder>
+      </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
-        <itemPath>peripherals/ports.h</itemPath>
         <itemPath>peripherals/keymatrix.h</itemPath>
         <itemPath>peripherals/pwmled.h</itemPath>
         <itemPath>peripherals/rotary.h</itemPath>
@@ -74,7 +84,6 @@
       <itemPath>edgework.h</itemPath>
       <itemPath>serial.h</itemPath>
       <itemPath>protocol_network.h</itemPath>
-      <itemPath>spi.h</itemPath>
       <itemPath>main.h</itemPath>
       <itemPath>opts.h</itemPath>
     </logicalFolder>
@@ -85,6 +94,10 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f4" displayName="hal" projectFiles="true">
+        <itemPath>hal/pins.c</itemPath>
+        <itemPath>hal/spi.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="modes" projectFiles="true">
         <logicalFolder name="f1" displayName="bootstrap" projectFiles="true">
           <itemPath>modes/bootstrap/bootstrap.c</itemPath>
@@ -127,9 +140,14 @@
         </logicalFolder>
         <itemPath>modes/needy.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="f3" displayName="opts" projectFiles="true">
+        <logicalFolder name="f1" displayName="spi" projectFiles="true">
+          <itemPath>opts/spi/spi.c</itemPath>
+          <itemPath>opts/spi/rtc.c</itemPath>
+        </logicalFolder>
+      </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
         <itemPath>peripherals/keymatrix.c</itemPath>
-        <itemPath>peripherals/ports.c</itemPath>
         <itemPath>peripherals/pwmled.c</itemPath>
         <itemPath>peripherals/rotary.c</itemPath>
         <itemPath>peripherals/audio.c</itemPath>
@@ -156,7 +174,6 @@
       <itemPath>edgework.c</itemPath>
       <itemPath>serial.c</itemPath>
       <itemPath>protocol_network.c</itemPath>
-      <itemPath>spi.c</itemPath>
       <itemPath>opts.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

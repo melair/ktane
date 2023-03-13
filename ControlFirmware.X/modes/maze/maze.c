@@ -6,7 +6,7 @@
 #include "../../argb.h"
 #include "../../mode.h"
 #include "../../game.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 #include "../../peripherals/keymatrix.h"
 
 #define MAZE_RNG_MASK 0xb299a3d0

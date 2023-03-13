@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "keys.h"
 #include "../../peripherals/segment.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../mode.h"
 #include "../../game.h"

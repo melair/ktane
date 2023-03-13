@@ -54,16 +54,6 @@ uint8_t pn532_samconfigure(uint8_t *buff) {
     return pn532_packet_size(4);
 }
 
-#define PN532_COMMAND_GETFIRMWAREVERSION 0x02
-
-uint8_t pn532_getfirmwareversion(uint8_t *buff) {
-    uint8_t *cmd = pn532_packet_prepare(buff, 1);
-    cmd[0] = PN532_COMMAND_GETFIRMWAREVERSION;
-    pn532_packet_finalise(buff);
-    
-    return pn532_packet_size(1);
-}
-
 #define PN532_COMMAND_INLISTPASSIVETARGET 0x4A
 
 uint8_t pn532_inlistpassivetarget(uint8_t *buff) {
@@ -74,13 +64,6 @@ uint8_t pn532_inlistpassivetarget(uint8_t *buff) {
     pn532_packet_finalise(buff);
     
     return pn532_packet_size(3);
-}
-
-#define PN532_SPI_STATREAD 0x02
-
-uint8_t pn532_statread(uint8_t *buff) {
-    buff[0] = PN532_SPI_STATREAD;   
-    return 1;
 }
 
 #define PN532_SPI_DATAREAD 0x03

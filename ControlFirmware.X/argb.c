@@ -13,9 +13,9 @@
 #include <xc.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "peripherals/ports.h"
+#include "hal/pins.h"
+#include "hal/spi.h"
 #include "argb.h"
-#include "spi.h"
 
 /* Allocate the default ARGB buffers. */
 argb_led_t ARGB_DEFAULT_LEDS[ARGB_MODULE_COUNT(0)];
@@ -39,6 +39,7 @@ const spi_device_t argb_spi_device = {
     .mosi_pin = KPIN_SYS_B2,
     .cs_pin = KPIN_NONE,
     .baud = SPI_BAUD_1600_KHZ,
+    .cke = true,
 };
 
 spi_command_t argb_spi_cmd;
@@ -51,7 +52,7 @@ void argb_initialise(void) {
     TRISBbits.TRISB2 = 0;
     TRISBbits.TRISB3 = 0;
     
-    argb_spi_cmd.device = spi_register(&argb_spi_device);
+    argb_spi_cmd.device = &argb_spi_device;
     argb_spi_cmd.operation = SPI_OPERATION_WRITE;
    
     /* Init ARGB with default buffers. */

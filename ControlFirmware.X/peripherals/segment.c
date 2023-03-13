@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "segment.h"
-#include "ports.h"
+#include "../hal/pins.h"
 #include "../tick.h"
 
 /*

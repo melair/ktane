@@ -2,7 +2,8 @@
 #define	SPI_H
 
 #include <stdint.h>
-#include "peripherals/ports.h"
+#include <stdbool.h>
+#include "pins.h"
 
 #define SPI_BAUD_COUNT      6
 
@@ -21,8 +22,9 @@ typedef struct {
 
     bool cs_bounce;
             
-    unsigned baud       :3;     
-    unsigned lsb_first  :1;
+    uint8_t baud;     
+    bool lsb_first;
+    bool cke;
 } spi_device_t;
 
 #define SPI_OPERATION_WRITE           0
@@ -32,7 +34,6 @@ typedef struct {
 typedef struct spi_command_t spi_command_t;
 
 struct spi_command_t {
-    unsigned device         :4;
     unsigned operation      :3;
     unsigned in_progress    :1;
     
@@ -43,11 +44,14 @@ struct spi_command_t {
     uint16_t cs_delay;
     
     spi_command_t *(*callback)(spi_command_t *);
+    void *callback_ptr;
+    
+    spi_command_t *next_cmd;
+    spi_device_t *device;
 };
 
 void spi_initialise(void);
 void spi_service(void);
-uint8_t spi_register(spi_device_t *d);
 void spi_enqueue(spi_command_t *c);
 
 #endif	/* SPI_H */

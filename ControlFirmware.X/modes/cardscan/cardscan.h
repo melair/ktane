@@ -1,7 +1,7 @@
 #ifndef CARDSCAN_H
 #define	CARDSCAN_H
 
-#include "../../spi.h"
+#include "../../hal/spi.h"
 
 void cardscan_initialise(void);
 

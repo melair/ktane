@@ -7,7 +7,7 @@
 #include "../../rng.h"
 #include "../../tick.h"
 #include "../../peripherals/keymatrix.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 
 #define PASSWORD_RNG_MASK 0xa654e64d
 

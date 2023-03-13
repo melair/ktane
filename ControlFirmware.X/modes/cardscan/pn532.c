@@ -5,7 +5,7 @@
 #include "pn532.h"
 #include "pn532_cmd.h"
 #include "pn532_packet.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 #include "../../mode.h"
 #include "../../tick.h"
 #include "../../buzzer.h"

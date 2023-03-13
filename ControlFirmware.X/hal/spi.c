@@ -1,35 +1,20 @@
 #include <xc.h>
 #include <stdint.h>
 #include "spi.h"
-#include "main.h"
-#include "peripherals/ports.h"
+#include "pins.h"
 
 #define _XTAL_FREQ 64000000
 
-#define SPI_DEVICE_COUNT 4
-#define SPI_QUEUE_COUNT  8
-
-spi_device_t *spi_devices[SPI_DEVICE_COUNT];
-spi_command_t *spi_queue[SPI_QUEUE_COUNT];
+spi_command_t *spi_queue_head = NULL;
+spi_command_t *spi_queue_tail = NULL;
 spi_command_t *spi_command = NULL;
-uint8_t spi_last_device = 0xff;
 
 const uint8_t spi_baud[SPI_BAUD_COUNT] = { 255, 159, 79, 39, 19, 9 };
 
-void spi_initialise(void) {  
-    for (uint8_t i = 0; i < SPI_DEVICE_COUNT; i++) {
-        spi_devices[i] = NULL;
-    }
-    
-    for (uint8_t i = 0; i < SPI_QUEUE_COUNT; i++) {
-        spi_queue[i] = NULL;
-    }
-    
-    spi_command = NULL;
-    
+void spi_initialise(void) {    
     /* Set SPI clock ready for baud rates. */
     SPI2CLK = 0b000000; /* 64MhHz clock. */
-    SPI2BAUD = spi_baud[0]; /* Default to lowest speed. */
+    SPI2BAUD = spi_baud[0]; /* Default to lowest speed. */    
     /* Set to SPI master. */
     SPI2CON0bits.MST = 1;
     /* Set to bit mode, and set width to be 8. */
@@ -58,13 +43,13 @@ void spi_service(void) {
             __delay_us(10);
         } else {
             bool cs_high = true;
-            uint8_t previous_device = spi_command->device;
+            spi_device_t *previous_device = spi_command->device;
                                 
             if (spi_command->callback != NULL) {
                 spi_command = spi_command->callback(spi_command);   
                 
                 if (spi_command != NULL && spi_command->device == previous_device) {
-                    if (!spi_devices[previous_device]->cs_bounce) {
+                    if (!previous_device->cs_bounce) {
                         cs_high = false;
                     }
                 }
@@ -73,39 +58,41 @@ void spi_service(void) {
             }   
             
             if (cs_high) {
-                *(kpin_to_rxypps(spi_devices[previous_device]->clk_pin)) = 0x00;
-                *(kpin_to_rxypps(spi_devices[previous_device]->mosi_pin)) = 0x00;
+                *(kpin_to_rxypps(previous_device->clk_pin)) = 0x00;
+                *(kpin_to_rxypps(previous_device->mosi_pin)) = 0x00;
             
-                kpin_write(spi_devices[previous_device]->cs_pin, true);                
+                kpin_write(previous_device->cs_pin, true);                
             }
         }
     }
     
     if (spi_command == NULL) {
-        spi_command = spi_queue[0];
+        spi_command = spi_queue_head;
         
-        for (uint8_t i = 1; i < SPI_QUEUE_COUNT; i++) {
-            spi_queue[i-1] = spi_queue[i];
+        if (spi_command != NULL) {
+            spi_queue_head = spi_command->next_cmd;            
         }
         
-        spi_queue[SPI_QUEUE_COUNT - 1] = NULL;
+        if (spi_queue_head == NULL) {
+           spi_queue_tail = NULL;
+        }
     }
         
     if (spi_command != NULL && !spi_command->in_progress) {                   
-        kpin_write(spi_devices[spi_command->device]->cs_pin, false);
+        kpin_write(spi_command->device->cs_pin, false);
 
         for (uint16_t i = 0; i < spi_command->cs_delay; i++) {
             __delay_us(1);
         }
         
-        *(kpin_to_rxypps(spi_devices[spi_command->device]->clk_pin)) = 0x34;
-        *(kpin_to_rxypps(spi_devices[spi_command->device]->mosi_pin)) = 0x35;
-        SPI2SDIPPS = kpin_to_ppspin(spi_devices[spi_command->device]->miso_pin);
+        *(kpin_to_rxypps(spi_command->device->clk_pin)) = 0x34;
+        *(kpin_to_rxypps(spi_command->device->mosi_pin)) = 0x35;
+        SPI2SDIPPS = kpin_to_ppspin(spi_command->device->miso_pin);
                                 
-        SPI2BAUD = spi_baud[spi_devices[spi_command->device]->baud];
+        SPI2BAUD = spi_baud[spi_command->device->baud];
         
-        SPI2CON0bits.LSBF = spi_devices[spi_command->device]->lsb_first;
-        SPI2CON1bits.CKE = 1;
+        SPI2CON0bits.LSBF = spi_command->device->lsb_first ? 1 : 0;
+        SPI2CON1bits.CKE = spi_command->device->cke ? 1 : 0;
         
         DMASELECT = 1;        
         DMAnCON1bits.SMR = 0b00;
@@ -165,22 +152,14 @@ void spi_service(void) {
     }    
 }
 
-uint8_t spi_register(spi_device_t *d) {
-    for (uint8_t i = 0; i < SPI_DEVICE_COUNT; i++) {
-        if (spi_devices[i] == NULL) {
-            spi_devices[i] = d;
-            return i;
-        }
+void spi_enqueue(spi_command_t *c) {
+    c->next_cmd = NULL;
+    
+    if (spi_queue_tail == NULL) {
+        spi_queue_head = c;
+    } else {
+        spi_queue_tail->next_cmd = c;
     }
     
-    return 0xff;
-}
-
-void spi_enqueue(spi_command_t *c) {
-    for (uint8_t i = 0; i < SPI_QUEUE_COUNT; i++) {
-        if (spi_queue[i] == NULL) {
-            spi_queue[i] = c;
-            return;
-        }
-    }  
+    spi_queue_tail = c;
 }

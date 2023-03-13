@@ -1,5 +1,5 @@
-#ifndef PORTS_H
-#define	PORTS_H
+#ifndef PINS_H
+#define	PINS_H
 
 #include <stdbool.h>
 
@@ -65,6 +65,8 @@
 
 typedef uint8_t pin_t;
 
+#define KPORT_BUILD(port, pin) (port << 3 | (pin & 0b00000111))
+
 #define KPIN_A0 ((pin_t) 0b00000000)
 #define KPIN_A1 ((pin_t) 0b00000001)
 #define KPIN_A2 ((pin_t) 0b00000010)
@@ -128,10 +130,11 @@ typedef uint8_t pin_t;
 #define PIN_INPUT  1
 
 void kpin_mode(pin_t port, uint8_t mode, bool pullup);
+void kpin_opendrain(pin_t port, bool opendrain);
 bool kpin_read(pin_t port);
 void kpin_write(pin_t port, bool value);
 volatile unsigned char *kpin_to_rxypps(pin_t pin);
 uint8_t kpin_to_ppspin(pin_t pin);
 
-#endif	/* PORTS_H */
+#endif	/* PINS_H */
 

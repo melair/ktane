@@ -2,7 +2,7 @@
 #define	PWMLED_H
 
 #include <stdbool.h>
-#include "ports.h"
+#include "../hal/pins.h"
 
 void pwmled_initialise(pin_t r, pin_t g, pin_t b, pin_t *ch);
 void pwmled_service(void);

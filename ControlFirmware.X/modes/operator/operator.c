@@ -6,7 +6,7 @@
 #include "../../edgework.h"
 #include "../../game.h"
 #include "../../mode.h"
-#include "../../peripherals/ports.h"
+#include "../../hal/pins.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../rng.h"
 #include "../../tick.h"

@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "keymatrix.h"
 #include "../tick.h"
-#include "../peripherals/ports.h"
+#include "../hal/pins.h"
 
 #define _XTAL_FREQ 64000000
 

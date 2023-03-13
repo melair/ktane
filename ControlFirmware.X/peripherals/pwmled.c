@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "pwmled.h"
-#include "ports.h"
+#include "../hal/pins.h"
 
 /* Storage of pins that handle LED cathodes. */
 pin_t pwmled_rgb[3];

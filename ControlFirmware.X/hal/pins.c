@@ -1,7 +1,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "ports.h"
+#include "pins.h"
 
 #define KPIN_PORT_MASK          0b11111000
 #define KPIN_ALL_PIN_MASK       0b00000111
@@ -89,6 +89,45 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
             }
             break;
     }
+}
+
+void kpin_opendrain(pin_t pin, bool opendrain) {
+      if (pin == KPIN_NONE) {
+        return;
+    }
+    
+    uint8_t mask = KPIN_PIN_MASK(pin);
+
+    switch(pin & KPIN_PORT_MASK) {
+        case KPIN_PORT_A:
+            if (opendrain) {
+                KODCONA |= mask;
+            } else {
+                KODCONA &= ~mask;
+            }
+            break;
+        case KPIN_PORT_B:
+            if (opendrain) {
+                KODCONB |= mask;
+            } else {
+                KODCONB &= ~mask;
+            }
+            break;
+        case KPIN_PORT_C:
+            if (opendrain) {
+                KODCONC |= mask;
+            } else {
+                KODCONC &= ~mask;
+            }
+            break;
+        case KPIN_PORT_D:
+            if (opendrain) {
+                KODCOND |= mask;
+            } else {
+                KODCOND &= ~mask;
+            }
+            break;
+    }  
 }
 
 /**

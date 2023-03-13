@@ -28,7 +28,7 @@
 #include "status.h"
 #include "tick.h"
 #include "rng.h"
-#include "spi.h"
+#include "hal/spi.h"
 #include "opts.h"
 
 #pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan

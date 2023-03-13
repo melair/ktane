@@ -27,7 +27,7 @@ uint8_t edgework_serial[SERIAL_LENGTH];
 bool edgework_serial_has_vowel = false;
 uint8_t edgework_battery = 0;
 bool edgework_has_twofa = false;
-uint8_t edgework_twofa[TWOFA_LENGTH];
+uint8_t edgework_twofa[TWOFA_LENGTH] = {'0','0','0','0','0','0'};
 uint32_t edgework_twofa_seed;
 
 void edgework_generate_2fa(void);
