@@ -2,6 +2,7 @@
 #include "spi.h"
 #include "spi_data.h"
 #include "rtc.h"
+#include "sdcard.h"
 #include "../../hal/pins.h"
 #include "../../hal/spi.h"
 
@@ -9,7 +10,7 @@ bool opts_spi_rtc_present;
 bool opts_spi_sd_present;
 bool opts_spi_nf24_present;
 
-void opts_spi_initialise(opts_data_t *opt) {   
+void opts_spi_initialise(opt_data_t *opt) {   
     opt->spi.pins.rtc_cs = KPORT_BUILD(opt->port, 0);
     opt->spi.pins.sd_cs = KPORT_BUILD(opt->port, 1);
     opt->spi.pins.nf24_cs = KPORT_BUILD(opt->port, 2);
@@ -51,12 +52,15 @@ void opts_spi_initialise(opts_data_t *opt) {
     kpin_mode(opt->spi.pins.mosi, PIN_OUTPUT, false);
     kpin_mode(opt->spi.pins.miso, PIN_INPUT, false);
     
+    // TODO: OVERRIDE FOR SD CARD TESTING
+    opt->spi.present.rtc = false;
+    
     if (opt->spi.present.rtc) {
-        opts_spi_rtc_initialise(opt);
+        rtc_initialise(opt);
     }
     
     if (opt->spi.present.sd) {
-        
+        sdcard_initialise(opt);
     }
     
     if (opt->spi.present.nf24) {
@@ -64,15 +68,11 @@ void opts_spi_initialise(opts_data_t *opt) {
     }
 }
 
-void opts_spi_service(opts_data_t *opt) {
+void opts_spi_service(opt_data_t *opt) {
     if (opt->spi.present.rtc) {
-        opts_spi_rtc_service(opt);
+        rtc_service(opt);
     }
-    
-    if (opt->spi.present.sd) {
         
-    }
-    
     if (opt->spi.present.nf24) {
         
     }

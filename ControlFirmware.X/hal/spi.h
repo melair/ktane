@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "pins.h"
 
-#define SPI_BAUD_COUNT      6
+#define SPI_BAUD_COUNT      8
 
 #define SPI_BAUD_125_KHZ    0
 #define SPI_BAUD_200_KHZ    1
@@ -13,6 +13,8 @@
 #define SPI_BAUD_800_KHZ    3
 #define SPI_BAUD_1600_KHZ   4
 #define SPI_BAUD_3200_KHZ   5
+#define SPI_BAUD_6400_KHZ   6
+#define SPI_BAUD_10600_KHZ   7
 
 typedef struct {
     pin_t miso_pin;
@@ -22,6 +24,7 @@ typedef struct {
 
     bool cs_bounce;
             
+    uint8_t bits;    
     uint8_t baud;     
     bool lsb_first;
     bool cke;
@@ -41,7 +44,7 @@ struct spi_command_t {
     uint16_t write_size;
     uint16_t read_size;
     
-    uint16_t cs_delay;
+    uint16_t pre_delay;
     
     spi_command_t *(*callback)(spi_command_t *);
     void *callback_ptr;

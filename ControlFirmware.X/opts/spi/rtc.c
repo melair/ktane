@@ -4,10 +4,10 @@
 #include "../../hal/spi.h"
 
 /* Local function prototypes. */
-spi_command_t *opts_spi_rtc_initialise_callback(spi_command_t *cmd);
-spi_command_t *opts_spi_rtc_service_callback(spi_command_t *cmd);
+spi_command_t *rtc_init_callback(spi_command_t *cmd);
+spi_command_t *rtc_service_callback(spi_command_t *cmd);
 
-void opts_spi_rtc_initialise(opts_data_t *opt) {   
+void rtc_initialise(opt_data_t *opt) {   
     opt->spi.rtc.device.clk_pin = opt->spi.pins.sclk;
     opt->spi.rtc.device.mosi_pin = opt->spi.pins.mosi;
     opt->spi.rtc.device.miso_pin = opt->spi.pins.miso;
@@ -34,20 +34,20 @@ void opts_spi_rtc_initialise(opts_data_t *opt) {
     opt->spi.rtc.one.write_size = 8;
     opt->spi.rtc.one.read_size = 0;
     opt->spi.rtc.one.operation = SPI_OPERATION_WRITE;
-    opt->spi.rtc.one.callback = opts_spi_rtc_initialise_callback;
+    opt->spi.rtc.one.callback = rtc_init_callback;
     opt->spi.rtc.one.callback_ptr = opt;     
 
     spi_enqueue(&opt->spi.rtc.one);
 }
 
 
-spi_command_t *opts_spi_rtc_initialise_callback(spi_command_t *cmd) {
-    opts_data_t *opt = (opts_data_t *) cmd->callback_ptr;
+spi_command_t *rtc_init_callback(spi_command_t *cmd) {
+    opt_data_t *opt = (opt_data_t *) cmd->callback_ptr;
     opt->spi.rtc.flags.ready = true;    
     return NULL;    
 }
 
-void opts_spi_rtc_service(opts_data_t *opt) {
+void rtc_service(opt_data_t *opt) {
     if (!kpin_read(opt->spi.pins.i_r_q) && opt->spi.rtc.flags.ready && !opt->spi.rtc.flags.in_irq) {
         opt->spi.rtc.flags.in_irq = true;
                
@@ -65,15 +65,15 @@ void opts_spi_rtc_service(opts_data_t *opt) {
         opt->spi.rtc.two.write_size = 1;
         opt->spi.rtc.two.read_size = 7;
         opt->spi.rtc.two.operation = SPI_OPERATION_WRITE_THEN_READ;
-        opt->spi.rtc.two.callback = opts_spi_rtc_service_callback;
+        opt->spi.rtc.two.callback = rtc_service_callback;
         opt->spi.rtc.two.callback_ptr = opt;   
         
         spi_enqueue(&opt->spi.rtc.two);                               
     }
 }
 
-spi_command_t *opts_spi_rtc_service_callback(spi_command_t *cmd) {
-    opts_data_t *opt = (opts_data_t *) cmd->callback_ptr;
+spi_command_t *rtc_service_callback(spi_command_t *cmd) {
+    opt_data_t *opt = (opt_data_t *) cmd->callback_ptr;
     opt->spi.rtc.flags.in_irq = false;
     
     uint8_t seconds = (((opt->spi.rtc.two_buffer[0] & 0b01110000) >> 4) * 10) + (opt->spi.rtc.two_buffer[0] & 0b00001111);

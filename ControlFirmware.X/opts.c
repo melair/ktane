@@ -1,12 +1,14 @@
 #include <xc.h>
 #include "opts.h"
 #include "nvm.h"
+#include "opts/audio/mux.h"
+#include "opts/audio/audio.h"
 #include "opts/spi/spi.h"
 #include "opts/spi/spi_data.h"
 
 #define OPT_PORT_COUNT 4
 
-opts_data_t opts_data[OPT_PORT_COUNT];
+opt_data_t opts_data[OPT_PORT_COUNT];
 
 void opts_initialise_port(uint8_t port);
 
@@ -32,10 +34,13 @@ void opts_initialise(void) {
         opts_data[port].type = (setting & OPT_TYPE_MASK) >> 4;
         opts_data[port].data = setting & OPT_DATA_MASK;
 
+        opts_data[0].type = OPT_AUDIO;
         opts_data[2].type = OPT_SPI;
         
         opts_initialise_port(port);
     }
+    
+    mux_initialise();
 }
 
 void opts_initialise_port(uint8_t port) {     
@@ -60,7 +65,7 @@ void opts_initialise_port(uint8_t port) {
             opts_spi_initialise(&opts_data[port]);
             break;
         case OPT_AUDIO:
-            // opt_audio_initialise(&opts_data_t[port]);
+            audio_initialise(&opts_data[port]);
             break;
     }
 }
@@ -75,8 +80,48 @@ void opts_service(void) {
                 opts_spi_service(&opts_data[port]);
                 break;
             case OPT_AUDIO:
-                // opt_audio_service(&opts_data_t[port]);
+                audio_service(&opts_data[port]);
                 break;
         }
     }
+}
+
+opt_data_t *opts_find_audio(void) {
+    for (uint8_t port = 0; port < OPT_PORT_COUNT; port++) {
+        if (opts_data[port].type == OPT_AUDIO) {
+            return &opts_data[port];
+        }
+    }
+    
+    return NULL;
+}
+
+opt_data_t *opts_find_rtc(void) {
+    for (uint8_t port = 0; port < OPT_PORT_COUNT; port++) {
+        if (opts_data[port].type == OPT_SPI && opts_data[port].spi.present.rtc) {
+            return &opts_data[port];
+        }
+    }
+    
+    return NULL;
+}
+
+opt_data_t *opts_find_sdcard(void) {
+    for (uint8_t port = 0; port < OPT_PORT_COUNT; port++) {
+        if (opts_data[port].type == OPT_SPI && opts_data[port].spi.present.sd) {
+            return &opts_data[port];
+        }
+    }
+    
+    return NULL;
+}
+
+opt_data_t *opts_find_nf24(void) {
+    for (uint8_t port = 0; port < OPT_PORT_COUNT; port++) {
+        if (opts_data[port].type == OPT_SPI && opts_data[port].spi.present.nf24) {
+            return &opts_data[port];
+        }
+    }
+    
+    return NULL;
 }

@@ -42,7 +42,7 @@ void pn532_service(void) {
             break;
             
         case PN532_STATE_CONFIG:
-            mode_data.cardscan.pn532.spi.cmd.cs_delay = 500;
+            mode_data.cardscan.pn532.spi.cmd.pre_delay = 500;
             mode_data.cardscan.pn532.state = PN532_STATE_CONFIG_WAIT;
             size = pn532_samconfigure(&mode_data.cardscan.pn532.spi.buffer);
             pn532_cmd_send(&mode_data.cardscan.pn532.spi.buffer[0], size, 9, &pn532_service_samconfigure_callback);         
@@ -52,7 +52,7 @@ void pn532_service(void) {
             break;
             
         case PN532_STATE_DETECT_START:
-            mode_data.cardscan.pn532.spi.cmd.cs_delay = 0;
+            mode_data.cardscan.pn532.spi.cmd.pre_delay = 0;
             mode_data.cardscan.pn532.state = PN532_STATE_DETECT_START_ACK;
             size = pn532_inlistpassivetarget(&mode_data.cardscan.pn532.spi.buffer);
             pn532_cmd_send(&mode_data.cardscan.pn532.spi.buffer[0], size, 0, &pn532_service_inpassivetarget_callback);  

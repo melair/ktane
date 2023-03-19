@@ -5,6 +5,29 @@
 #include "../../hal/spi.h"
 
 #define SPI_RTC_BUFFER_SIZE 8
+#define SPI_SDCARD_BUFFER_SIZE 10
+
+#define SPI_SDCARD_CMD_SIZE 10
+#define SPI_SDCARD_SCRATCH_SIZE 2
+#define SPI_SDCARD_INIT_INBOUND_SIZE 4
+
+#define SDCARD_CMD_INPROGRESS   0x00
+#define SDCARD_CMD_ERROR        0x01
+#define SDCARD_CMD_COMPLETE     0x02
+
+typedef struct {
+    uint8_t state;
+    uint8_t response_type;
+    
+    uint8_t result;          
+    
+    uint8_t outbound_data[SPI_SDCARD_CMD_SIZE];
+    uint8_t scratch_data[SPI_SDCARD_SCRATCH_SIZE];
+    uint8_t *inbound_data;  
+    
+    spi_command_t spi_cmd;
+    pin_t spi_cs;
+} sd_transaction_t;
 
 typedef struct {
     struct {
@@ -38,7 +61,22 @@ typedef struct {
         uint8_t two_buffer[SPI_RTC_BUFFER_SIZE];
     } rtc;
     
-} opts_spi_t;
+    struct {
+        struct {
+            unsigned ready         :1;
+            unsigned high_capacity :1;
+            
+            uint8_t init_stage;
+        } flags;
+        
+        struct {
+            spi_device_t device;         
+        } spi;                
+                
+        sd_transaction_t init_transaction;    
+        uint8_t init_inbound_data[SPI_SDCARD_INIT_INBOUND_SIZE];
+    } sdcard;    
+} opt_spi_t;
 
 #endif	/* SPI_DATA_H */
 

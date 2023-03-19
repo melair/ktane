@@ -214,15 +214,6 @@ void pps_unlock(void) {
 }
 
 /**
- * Lock PPS registers, assumes global interrupts are disabled.
- */
-void pps_lock(void) {
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
-    PPSLOCKbits.PPSLOCKED = 1;
-}
-
-/**
  * Reconfigure the system arbiter, giving DMA1 and DMA2 priority over the
  * ISR and main CPU.
  */
