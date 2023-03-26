@@ -101,15 +101,18 @@ void audio_initialise(opt_data_t *opt) {
     T6CONbits.ON = 1;
     /* Switch on buffer reload timer. */
     T4CONbits.ON = 1;
+    
+    /* Enable interrupts for Timer4 to wake from idle. */
+    PIE11bits.TMR4IE = 1;
 }
 
-void audio_service(opt_data_t *opt) {
-    opt_audio_t *a = &opt->audio;
-    
+void audio_service(opt_data_t *opt) {   
     /* Start next buffer if last finished. */
     if (PIR11bits.TMR4IF) {
         /* Clear Timer 4 interrupt. */
         PIR11bits.TMR4IF = 0;
+        
+        opt_audio_t *a = &opt->audio;
                 
         /* Flip to the just played buffer. */
         a->buffer_next = (a->buffer_next == 0 ? 1 : 0);  

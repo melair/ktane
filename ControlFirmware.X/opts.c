@@ -40,7 +40,9 @@ void opts_initialise(void) {
         opts_initialise_port(port);
     }
     
-    mux_initialise();
+    if (opts_find_audio() != NULL && opts_find_sdcard() != NULL) {
+        mux_initialise();
+    }
 }
 
 void opts_initialise_port(uint8_t port) {     
@@ -81,6 +83,7 @@ void opts_service(void) {
                 break;
             case OPT_AUDIO:
                 audio_service(&opts_data[port]);
+                mux_service();
                 break;
         }
     }

@@ -32,6 +32,9 @@ void spi_service(void) {
             ((spi_command->operation == SPI_OPERATION_WRITE || spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) && (SPI2INTFbits.TCZIF == 1 && SPI2CON2bits.BUSY == 0)) || 
             (spi_command->operation == SPI_OPERATION_READ && PIR6bits.DMA2DCNTIF == 1))) {
         
+        SPI2INTFbits.TCZIF = 0;
+        PIR6bits.DMA2DCNTIF = 0;
+        
         spi_command->in_progress = 0;
 
         SPI2CON0bits.EN = 0;
@@ -40,7 +43,6 @@ void spi_service(void) {
         
         if (spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) {
             spi_command->operation = SPI_OPERATION_READ;       
-            __delay_us(10);
         } else {
             bool cs_high = true;
             spi_device_t *previous_device = spi_command->device;

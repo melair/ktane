@@ -51,10 +51,7 @@ void opts_spi_initialise(opt_data_t *opt) {
     kpin_mode(opt->spi.pins.sclk, PIN_OUTPUT, false);
     kpin_mode(opt->spi.pins.mosi, PIN_OUTPUT, false);
     kpin_mode(opt->spi.pins.miso, PIN_INPUT, false);
-    
-    // TODO: OVERRIDE FOR SD CARD TESTING
-    opt->spi.present.rtc = false;
-    
+        
     if (opt->spi.present.rtc) {
         rtc_initialise(opt);
     }
