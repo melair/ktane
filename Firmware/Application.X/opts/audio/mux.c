@@ -51,9 +51,6 @@ void mux_initialise(void) {
     
     mux_sd_trans.spi_cmd.callback = mux_sdcard_callback;
     mux_sd_trans.spi_cmd.callback_ptr = NULL;
-    
-    mux_channels[0].block = 0;
-    mux_channels[0].remaining = 0xffff;
 }
 
 void mux_play(uint32_t block, uint32_t count) {
