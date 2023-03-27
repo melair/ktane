@@ -31,7 +31,7 @@ void main(void) {
     STKPTR = 0x00;
     
     /* Reset interrupt return. */
-	BSR = 0x00;
+    BSR = 0x00;
     
     /* Jump to program. */
     if (program) {
