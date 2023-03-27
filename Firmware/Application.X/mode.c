@@ -33,7 +33,7 @@ uint8_t configured_mode;
 #define SPECIAL_MODE(mode)      ((mode - GAME_ENABLE) + GAME_STATE_COUNT)
 
 /* Function pointers to each stage. */
-static void (*mode_service_state_function[MODE_COUNTS])(bool);
+void (*mode_service_state_function[MODE_COUNTS])(bool);
 /* Pointers to tick variable to use to rate limit call. */
 bool *mode_service_tick[MODE_COUNTS];
 
