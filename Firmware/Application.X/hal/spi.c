@@ -176,3 +176,7 @@ void spi_enqueue(spi_command_t *c) {
     
     spi_queue_tail = c;
 }
+
+spi_command_t *spi_unused_callback(spi_command_t *cmd) {
+    return NULL;
+}

@@ -40,7 +40,6 @@ void rtc_initialise(opt_data_t *opt) {
     spi_enqueue(&opt->spi.rtc.one);
 }
 
-
 spi_command_t *rtc_init_callback(spi_command_t *cmd) {
     opt_data_t *opt = (opt_data_t *) cmd->callback_ptr;
     opt->spi.rtc.flags.ready = true;    
@@ -56,7 +55,7 @@ void rtc_service(opt_data_t *opt) {
         opt->spi.rtc.one.write_size = 2;
         opt->spi.rtc.one.read_size = 0;
         opt->spi.rtc.one.operation = SPI_OPERATION_WRITE;
-        opt->spi.rtc.one.callback = NULL;
+        opt->spi.rtc.one.callback = spi_unused_callback;
         opt->spi.rtc.one.callback_ptr = NULL;
         
         spi_enqueue(&opt->spi.rtc.one);

@@ -33,7 +33,7 @@ uint8_t configured_mode;
 #define SPECIAL_MODE(mode)      ((mode - GAME_ENABLE) + GAME_STATE_COUNT)
 
 /* Function pointers to each stage. */
-void (*mode_service_state_function[MODE_COUNTS])(bool);
+static void (*mode_service_state_function[MODE_COUNTS])(bool);
 /* Pointers to tick variable to use to rate limit call. */
 bool *mode_service_tick[MODE_COUNTS];
 
@@ -156,6 +156,14 @@ uint8_t mode_get(void) {
     return configured_mode;
 }
 
+void mode_unspecified_state(bool first) {
+    
+}
+
+void mode_unspecified_special_fn(uint8_t state) {
+    
+}
+
 /**
  * Run any initialisation functions for the specific mode, an unrecognised mode
  * will be treated as a blank module and error and halt.
@@ -168,10 +176,10 @@ void mode_initialise(void) {
     }
 
     for (uint8_t i = 0; i < MODE_COUNTS; i++) {
-        mode_service_state_function[i] = NULL;
+        mode_service_state_function[i] = mode_unspecified_state;
     }
 
-    mode_special_fn_function = NULL;
+    mode_special_fn_function = mode_unspecified_special_fn;
 
     switch(configured_mode) {
         /* Module is completely blank, do nothing. */

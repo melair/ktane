@@ -31,25 +31,6 @@
 #include "hal/spi.h"
 #include "opts.h"
 
-#pragma config JTAGEN = OFF             // Disable JTAG Boundary Scan
-
-#pragma config FEXTOSC = OFF            // External Oscillator Selection (Oscillator not enabled)
-#pragma config RSTOSC = HFINTOSC_64MHZ  // Reset Oscillator Selection (HFINTOSC with HFFRQ = 64 MHz and CDIV = 1:1)
-#pragma config MVECEN = ON             // Multi-vector enable bit (Interrupt contoller does use vector table to prioritze interrupts)
-
-#pragma config PWRTS = PWRT_16          // Power-up timer selection bits (PWRT set at 16ms)
-
-#ifdef __DEBUG
-#pragma config WDTE = OFF
-#else
-#pragma config WDTE = ON
-#pragma config WDTCPS = WDTCPS_11       // WDT Period selection bits (Divider ratio 1:65536)
-#pragma config WDTCCS = LFINTOSC        // WDT input clock selector (WDT reference clock is the 31.0 kHz LFINTOSC)
-#pragma config WDTCWS = WDTCWS_7        // WDT Window Select bits (window always open (100%); software control; keyed access not required)
-#endif
-
-#define _XTAL_FREQ 64000000
-
 /* Function prototypes. */
 void safe_unused_pins(void);
 void arbiter_initialise(void);

@@ -56,6 +56,7 @@ struct spi_command_t {
 void spi_initialise(void);
 void spi_service(void);
 void spi_enqueue(spi_command_t *c);
+spi_command_t *spi_unused_callback(spi_command_t *cmd);
 
 #endif	/* SPI_H */
 

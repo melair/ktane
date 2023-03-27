@@ -2,7 +2,7 @@
 #include "tick.h"
 
 /* Local prototype functions. */
-void __interrupt(irq(default),base(8)) int_default(void);
+void __interrupt(irq(default),base(0x108)) int_default(void);
 
 /**
  * Initialise interrupt control, using vectored tables. This allows us to
@@ -17,10 +17,10 @@ void int_initialise(void) {
     IVTLOCK = 0xAA;
     IVTLOCKbits.IVTLOCKED = 0x00;
 
-    /* Set base address to 8. */
-    IVTBASEU = 0;
-    IVTBASEH = 0;
-    IVTBASEL = 8;
+    /* Set base address to 0x108. */
+    IVTBASEU = 0x00;
+    IVTBASEH = 0x01;
+    IVTBASEL = 0x08;
 
     /* Enable lock on IVT base address. */
     IVTLOCK = 0x55;
@@ -36,5 +36,5 @@ void int_initialise(void) {
 /**
  * Default interrupt handler, should never be used.
  */
-void __interrupt(irq(default),base(8)) int_default(void) {
+void __interrupt(irq(default),base(0x108)) int_default(void) {
 }

@@ -18,6 +18,7 @@ void sdcard_initialise(opt_data_t *opt) {
     opt->spi.sdcard.spi.device.cke = true;
     
     opt->spi.sdcard.flags.init_stage = 0;
+    opt->spi.sdcard.init_transaction.spi_cmd.device = &opt->spi.sdcard.spi.device;
     opt->spi.sdcard.init_transaction.spi_cmd.callback = sdcard_init_callback;
     opt->spi.sdcard.init_transaction.spi_cmd.callback_ptr = (void *) opt;   
     

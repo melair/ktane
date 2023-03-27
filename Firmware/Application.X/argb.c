@@ -54,6 +54,7 @@ void argb_initialise(void) {
     
     argb_spi_cmd.device = &argb_spi_device;
     argb_spi_cmd.operation = SPI_OPERATION_WRITE;
+    argb_spi_cmd.callback = spi_unused_callback;
    
     /* Init ARGB with default buffers. */
     argb_expand(0, &ARGB_DEFAULT_LEDS[0], &ARGB_DEFAULT_OUTPUT[0]);

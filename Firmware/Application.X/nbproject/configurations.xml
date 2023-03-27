@@ -183,6 +183,7 @@
       <itemPath>serial.c</itemPath>
       <itemPath>protocol_network.c</itemPath>
       <itemPath>opts.c</itemPath>
+      <itemPath>config.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -220,6 +221,36 @@
         <archiverTool>
         </archiverTool>
         <loading>
+          <makeArtifact PL="../Bootloader.X"
+                        CT="1"
+                        CN="OMIT_DEVICE_CONFIGURATION"
+                        AC="false"
+                        BL="true"
+                        WD="../Bootloader.X"
+                        BC="${MAKE}  -f Makefile CONF=OMIT_DEVICE_CONFIGURATION"
+                        DBC="${MAKE}  -f Makefile CONF=OMIT_DEVICE_CONFIGURATION TYPE_IMAGE=DEBUG_RUN"
+                        CC="rm -rf &quot;build/OMIT_DEVICE_CONFIGURATION&quot; &quot;dist/OMIT_DEVICE_CONFIGURATION&quot;"
+                        OP="dist/OMIT_DEVICE_CONFIGURATION/production/Bootloader.X.production.hex"
+                        DOP="dist/OMIT_DEVICE_CONFIGURATION/debug/Bootloader.X.debug.elf"
+                        FL="dist/OMIT_DEVICE_CONFIGURATION/production/Bootloader.X.production.hex"
+                        PD="dist/OMIT_DEVICE_CONFIGURATION/production/Bootloader.X.production.elf"
+                        DD="dist/OMIT_DEVICE_CONFIGURATION/debug/Bootloader.X.debug.elf">
+          </makeArtifact>
+          <makeArtifact PL="../Flasher.X"
+                        CT="1"
+                        CN="OMIT_DEVICE_CONFIGURATION"
+                        AC="false"
+                        BL="true"
+                        WD="../Flasher.X"
+                        BC="${MAKE}  -f Makefile CONF=OMIT_DEVICE_CONFIGURATION"
+                        DBC="${MAKE}  -f Makefile CONF=OMIT_DEVICE_CONFIGURATION TYPE_IMAGE=DEBUG_RUN"
+                        CC="rm -rf &quot;build/OMIT_DEVICE_CONFIGURATION&quot; &quot;dist/OMIT_DEVICE_CONFIGURATION&quot;"
+                        OP="dist/OMIT_DEVICE_CONFIGURATION/production/Flasher.X.production.hex"
+                        DOP="dist/OMIT_DEVICE_CONFIGURATION/debug/Flasher.X.debug.elf"
+                        FL="dist/OMIT_DEVICE_CONFIGURATION/production/Flasher.X.production.hex"
+                        PD="dist/OMIT_DEVICE_CONFIGURATION/production/Flasher.X.production.elf"
+                        DD="dist/OMIT_DEVICE_CONFIGURATION/debug/Flasher.X.debug.elf">
+          </makeArtifact>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
           <parseOnProdLoad>false</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
@@ -273,7 +304,7 @@
       </HI-TECH-COMP>
       <HI-TECH-LINK>
         <property key="additional-options-checksum" value=""/>
-        <property key="additional-options-code-offset" value=""/>
+        <property key="additional-options-code-offset" value="100"/>
         <property key="additional-options-command-line" value=""/>
         <property key="additional-options-errata" value=""/>
         <property key="additional-options-extend-address" value="false"/>
@@ -284,7 +315,7 @@
         <property key="calibrate-oscillator-value" value="0x3400"/>
         <property key="clear-bss" value="true"/>
         <property key="code-model-external" value="wordwrite"/>
-        <property key="code-model-rom" value="0-fbff"/>
+        <property key="code-model-rom" value="100-1f7ff"/>
         <property key="create-html-files" value="false"/>
         <property key="data-model-ram" value=""/>
         <property key="data-model-size-of-double" value="32"/>
@@ -316,7 +347,6 @@
         <property key="opt-xc8-linker-serial" value=""/>
         <property key="program-the-device-with-default-config-words" value="true"/>
         <property key="remove-unused-sections" value="true"/>
-        <appendMe value="-Wl,-Pflasher=01f800h"/>
       </HI-TECH-LINK>
       <Tool>
         <property key="AutoSelectMemRanges" value="auto"/>

@@ -5,9 +5,9 @@
 #include "protocol_firmware.h"
 
 /* Location of actual firmware. */
-#define FIRMWARE_BASE       0x000000 // (0 - 63kb)
-#define FIRMWARE_NEW_BASE   0x00FC00 // (63 - 126kb)
-#define FIRMWARE_SIZE       0xFC00   // (63kb)
+#define FIRMWARE_BASE       0x000100 
+#define FIRMWARE_NEW_BASE   0x000100
+#define FIRMWARE_SIZE       0x01EF01  
 
 /* Location of flashing function. */
 #define FLASH_BASE          0x01F800 // (126kb-128kb)
@@ -342,7 +342,7 @@ uint32_t firmware_calculate_checksum(uint32_t base_addr, uint16_t size) {
  * This function can only call other functions in the "flasher" section, it
  * must not use any global variables. Function must reset MCU upon exit.
  */
-void __section("flasher") firmware_flash(void) {
+void firmware_flash(void) {
     /* Disable all interrupts. */
     INTCON0bits.IPEN = 0;
     INTCON0bits.GIEH = 0;

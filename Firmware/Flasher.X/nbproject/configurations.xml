@@ -177,6 +177,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="D:/Projects/ktane/GitHubReleased/Firmware/Flasher.X/debug/WITH_DEVICE_CONFIGURATION/Flasher_ptg"/>
         <property key="programmerToGoImageName" value="Flasher_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
@@ -262,8 +264,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="D:/Projects/ktane/GitHubReleased/Firmware/Flasher.X/debug/WITH_DEVICE_CONFIGURATION/Flasher_ptg"/>
         <property key="programmerToGoImageName" value="Flasher_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
@@ -413,7 +413,7 @@
         <property key="opt-xc8-linker-file" value="false"/>
         <property key="opt-xc8-linker-link_startup" value="false"/>
         <property key="opt-xc8-linker-serial" value=""/>
-        <property key="program-the-device-with-default-config-words" value="true"/>
+        <property key="program-the-device-with-default-config-words" value="false"/>
         <property key="remove-unused-sections" value="true"/>
       </HI-TECH-LINK>
       <Tool>
@@ -449,6 +449,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="D:/Projects/ktane/GitHubReleased/Firmware/Flasher.X/debug/OMIT_DEVICE_CONFIGURATION/Flasher_ptg"/>
         <property key="programmerToGoImageName" value="Flasher_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
@@ -534,8 +536,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="D:/Projects/ktane/GitHubReleased/Firmware/Flasher.X/debug/OMIT_DEVICE_CONFIGURATION/Flasher_ptg"/>
         <property key="programmerToGoImageName" value="Flasher_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
