@@ -1,0 +1,25 @@
+# .gitignore file
+
+# MPLAB X IDE (Netbeans) specific
+~*.*
+build/
+debug/
+dist/
+disassembly/
+.generated_files/
+nbproject/private/
+nbproject/*.mk
+nbproject/*.bash
+nbproject/Makefile-genesis.properties
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Executables
+*.exe
+
+# Misc
+*.bak
