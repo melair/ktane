@@ -16,14 +16,14 @@ The index starts at block 0 of the SD card, it continues until an End Of Index (
   * 8bits  - Module Type 0x00 (Unknown Module ID, never has resources), 0xff (All Module Resources)
   * 8bits  - File Index (256 files for a module.)
   * 4bits  - File Type (Up to 16 file types.)
-  * 3bits  - Unused
-  * 9bits  - Last Block Usage (Number of useful bytes in last block)
+  * 4bits  - Unused
+  * 8bits  - Unused  
   * 16bits - Block Size, including last incomplete block. (Up to 65535 blocks, 16Mb files)
-  * 16bits  - Unused
+  * 16bits - Last Block Usage (Number of useful bytes in last block)  
 
 An EOI marker is a FAT entry of all zeros, though only the File Type is actually checked to be 0x0.
 
 ## File Types
 
-0x0 - End of Index
-0x1 - Audio (12kHz / 8-bit / mono), all samples must use full block, i.e. 24fps audio. Max audio length at 65k blocks is ~= 45 minutes.
+ * 0x0 - End of Index
+ * 0x1 - Audio (12kHz / 8-bit / mono), all samples must use full block, i.e. 24fps audio. Max audio length at 65k blocks is ~= 45 minutes.
