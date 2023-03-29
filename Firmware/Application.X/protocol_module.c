@@ -9,6 +9,7 @@
 #include "serial.h"
 #include "status.h"
 #include "nvm.h"
+#include "../common/nvm_addrs.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);

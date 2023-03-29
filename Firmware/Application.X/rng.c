@@ -3,6 +3,7 @@
 #include "rng.h"
 #include "tick.h"
 #include "nvm.h"
+#include "../common/nvm_addrs.h"
 
 uint32_t base_seed = 0;
 uint32_t saved_seed = 0;

@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>../Common/segments.h</itemPath>
+      <itemPath>../Common/nvm_addrs.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -21,6 +23,9 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>../common</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="WITH_DEVICE_CONFIGURATION" type="2">

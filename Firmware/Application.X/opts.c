@@ -1,6 +1,7 @@
 #include <xc.h>
 #include "opts.h"
 #include "nvm.h"
+#include "../common/nvm_addrs.h"
 #include "opts/audio/mux.h"
 #include "opts/audio/audio.h"
 #include "opts/spi/spi.h"

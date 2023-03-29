@@ -90,6 +90,8 @@
       <itemPath>protocol_network.h</itemPath>
       <itemPath>main.h</itemPath>
       <itemPath>opts.h</itemPath>
+      <itemPath>../Common/segments.h</itemPath>
+      <itemPath>../Common/nvm_addrs.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -193,7 +195,7 @@
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>.</Elem>
+    <Elem>../common</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -315,7 +317,7 @@
         <property key="calibrate-oscillator-value" value="0x3400"/>
         <property key="clear-bss" value="true"/>
         <property key="code-model-external" value="wordwrite"/>
-        <property key="code-model-rom" value="100-1f7ff"/>
+        <property key="code-model-rom" value="100-1efff"/>
         <property key="create-html-files" value="false"/>
         <property key="data-model-ram" value=""/>
         <property key="data-model-size-of-double" value="32"/>

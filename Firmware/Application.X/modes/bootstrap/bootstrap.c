@@ -5,6 +5,7 @@
 #include "../../nvm.h"
 #include "../../mode.h"
 #include "../../tick.h"
+#include "../../../common/nvm_addrs.h"
 
 /* Local function prototypes. */
 uint8_t bootstrap_port_map(uint8_t);

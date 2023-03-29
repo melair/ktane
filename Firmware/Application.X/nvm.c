@@ -7,6 +7,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include "nvm.h"
+#include "../common/nvm_addrs.h"
 
 /* Current version of EEPROM data, bump when new EEPROM parameters are added. */
 #define EEPROM_CURRENT_VERSION 4

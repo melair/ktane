@@ -13,6 +13,7 @@
 #include "rng.h"
 #include "tick.h"
 #include "module.h"
+#include "../common/nvm_addrs.h"
 
 #define CAN_ADDRESS_RNG_MASK 0x74926411
 #define CAN_ADDRESS_CHECKS 4

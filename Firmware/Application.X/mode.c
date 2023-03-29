@@ -16,6 +16,7 @@
 #include "modes/combination/combination.h"
 #include "modes/operator/operator.h"
 #include "modes/keys/keys.h"
+#include "../common/nvm_addrs.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);

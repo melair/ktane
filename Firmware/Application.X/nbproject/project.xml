@@ -16,7 +16,7 @@
                 <make-dep-project>../Flasher.X</make-dep-project>
             </make-dep-projects>
             <sourceRootList>
-                <sourceRootElem>.</sourceRootElem>
+                <sourceRootElem>../common</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

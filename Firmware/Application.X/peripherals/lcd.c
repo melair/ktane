@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "lcd.h"
 #include "../nvm.h"
+#include "../../common/nvm_addrs.h"
 
 /* Big font adapter from: https://github.com/varind/LCDCustomLargeFont */
 
