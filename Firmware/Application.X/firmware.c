@@ -7,22 +7,22 @@
 /* Location of actual firmware. */
 #define FIRMWARE_BASE       0x000100 
 #define FIRMWARE_NEW_BASE   0x000100
-#define FIRMWARE_SIZE       0x01EF01  
+#define FIRMWARE_SIZE       0x01EF00  
 
 /* Location of flashing function. */
 #define FLASH_BASE          0x01F800 // (126kb-128kb)
-
-/* Ensure that the firmware_flash function is linked, even if not called. */
-asm("GLOBAL _firmware_flash");
 
 #define INVALID_FIRMWARE_VERSION 0x0000
 
 /* Current firmware version. */
 #ifdef __DEBUG
-const uint16_t firmware_version = INVALID_FIRMWARE_VERSION;
+const uint16_t application_version = INVALID_FIRMWARE_VERSION;
 #else
-const uint16_t firmware_version = 0x004c;
+const uint16_t application_version = 0x004c;
 #endif
+
+asm ("PSECT applicationversion");
+asm ("dw 0x004c");
 
 /* CRC32 checksum of firmware, first 63kb of program memory. */
 uint32_t firmware_checksum;
@@ -47,7 +47,7 @@ uint16_t firmware_current_page = 0;
 uint16_t firmware_total_pages = 0;
 
 /* Local function prototypes. */
-uint32_t firmware_calculate_checksum(uint32_t base_addr, uint16_t size);
+uint32_t firmware_calculate_checksum(uint32_t base_addr, uint32_t size);
 
 /**
  * Initialise firmware subsystem, this involves calculating a CRC of the
@@ -63,7 +63,7 @@ void firmware_initialise(void) {
  * @return the firmware version
  */
 uint16_t firmware_get_version(void) {
-    return firmware_version;
+    return application_version;
 }
 
 /**
@@ -120,13 +120,13 @@ void firmware_get_page(uint16_t page, uint8_t *data) {
 void firmware_check(uint16_t adv_version) {
     /* Ignore firmware checks if we are already in the process of a firmware
      * update. */
-    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION || firmware_version == INVALID_FIRMWARE_VERSION) {
+    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION || application_version == INVALID_FIRMWARE_VERSION) {
         return;
     }
 
     /* If the advertised version is later than ours, start the process and
      * request a firmware header. */
-    if (adv_version > firmware_version) {
+    if (adv_version > application_version) {
         firmware_new_version = adv_version;
         firmware_state = FIRMWARE_PROCESS_HEADER;
         protocol_firmware_request_send(adv_version);
@@ -254,7 +254,7 @@ void firmware_page_received(uint8_t id, uint16_t page, uint8_t *data) {
  *
  * @return 32bit checksum
  */
-uint32_t firmware_calculate_checksum(uint32_t base_addr, uint16_t size) {
+uint32_t firmware_calculate_checksum(uint32_t base_addr, uint32_t size) {
     /* Set polynomial length (-1). */
     CRCCON1bits.PLEN = 31;
 

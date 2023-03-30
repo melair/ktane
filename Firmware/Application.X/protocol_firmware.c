@@ -18,7 +18,7 @@ void protocol_firmware_page_response_send(uint16_t page);
 #define OPCODE_FIRMWARE_REQUEST         0x00
 #define OPCODE_FIRMWARE_HEADER          0x01
 #define OPCODE_FIRMWARE_PAGE_REQUEST    0x02
-#define OPCODE_FIRMWARE_PAGE_RESPONSE            0x03
+#define OPCODE_FIRMWARE_PAGE_RESPONSE   0x03
 
 /**
  * Handle reception of a new packet from CAN that is for the firmware management

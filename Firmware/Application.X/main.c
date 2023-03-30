@@ -30,6 +30,7 @@
 #include "rng.h"
 #include "hal/spi.h"
 #include "opts.h"
+#include "../common/device.h"
 
 /* Function prototypes. */
 void safe_unused_pins(void);

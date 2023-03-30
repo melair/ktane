@@ -1,8 +1,12 @@
+#ifndef DEVICE_H
+#define	DEVICE_H
+
 // PIC18F57Q84 Configuration Bit Settings
 
 #ifdef OMIT_DEVICE_CONFIGURATION
 // Device configuration has been omitted from build.
 #else
+
 // CONFIG1
 #pragma config FEXTOSC = OFF    // External Oscillator Selection (Oscillator not enabled)
 #pragma config RSTOSC = HFINTOSC_64MHZ// Reset Oscillator Selection (HFINTOSC with HFFRQ = 64 MHz and CDIV = 1:1)
@@ -150,3 +154,5 @@
 #pragma config CRCERESL = hFF   // Non-Boot Sector Expected Result for CRC on boot bits 7-0 (Bits 7:0 of CRCERES are 0xFF)
 
 #endif
+
+#endif	/* DEVICE_H */

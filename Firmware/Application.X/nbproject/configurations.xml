@@ -92,6 +92,7 @@
       <itemPath>opts.h</itemPath>
       <itemPath>../Common/segments.h</itemPath>
       <itemPath>../Common/nvm_addrs.h</itemPath>
+      <itemPath>../common/device.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -185,7 +186,6 @@
       <itemPath>serial.c</itemPath>
       <itemPath>protocol_network.c</itemPath>
       <itemPath>opts.c</itemPath>
-      <itemPath>config.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -317,7 +317,7 @@
         <property key="calibrate-oscillator-value" value="0x3400"/>
         <property key="clear-bss" value="true"/>
         <property key="code-model-external" value="wordwrite"/>
-        <property key="code-model-rom" value="100-1efff"/>
+        <property key="code-model-rom" value="100-1effd"/>
         <property key="create-html-files" value="false"/>
         <property key="data-model-ram" value=""/>
         <property key="data-model-size-of-double" value="32"/>
@@ -349,6 +349,7 @@
         <property key="opt-xc8-linker-serial" value=""/>
         <property key="program-the-device-with-default-config-words" value="true"/>
         <property key="remove-unused-sections" value="true"/>
+        <appendMe value="-Wl,-Papplicationversion=1effeh"/>
       </HI-TECH-LINK>
       <Tool>
         <property key="AutoSelectMemRanges" value="auto"/>
