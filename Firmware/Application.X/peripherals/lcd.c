@@ -1,8 +1,8 @@
 #include <xc.h>
 #include <stdbool.h>
 #include "lcd.h"
-#include "../nvm.h"
-#include "../../common/nvm_addrs.h"
+#include "../../common/nvm.h"
+#include "../../common/eeprom_addrs.h"
 
 /* Big font adapter from: https://github.com/varind/LCDCustomLargeFont */
 
@@ -303,8 +303,8 @@ const uint8_t big_font[BIG_FONT_CHARACTER_COUNT][4] = {
  */
 void lcd_initialize(void) {
     /* Load LCD brightness and contrast from NVM, load into current. */
-    lcd_nominal_brightness = nvm_read(EEPROM_LOC_LCD_BRIGHTNESS);
-    lcd_nominal_contrast = nvm_read(EEPROM_LOC_LCD_CONTRAST);
+    lcd_nominal_brightness = nvm_eeprom_read(EEPROM_LOC_LCD_BRIGHTNESS);
+    lcd_nominal_contrast = nvm_eeprom_read(EEPROM_LOC_LCD_CONTRAST);
 
     /* Initialise ports. */
     TRISBbits.TRISB5 = 0;

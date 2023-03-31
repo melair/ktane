@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include "argb.h"
 #include "mode.h"
-#include "nvm.h"
 #include "tick.h"
 #include "game.h"
 #include "modes/bootstrap/bootstrap.h"
@@ -16,7 +15,8 @@
 #include "modes/combination/combination.h"
 #include "modes/operator/operator.h"
 #include "modes/keys/keys.h"
-#include "../common/nvm_addrs.h"
+#include "../common/nvm.h"
+#include "../common/eeprom_addrs.h"
 
 /* Local function prototypes. */
 bool mode_check_if_bootstrap(void);
@@ -170,7 +170,7 @@ void mode_unspecified_special_fn(uint8_t state) {
  * will be treated as a blank module and error and halt.
  */
 void mode_initialise(void) {
-    configured_mode = nvm_read(EEPROM_LOC_MODE_CONFIGURATION);
+    configured_mode = nvm_eeprom_read(EEPROM_LOC_MODE_CONFIGURATION);
 
     if (mode_check_if_bootstrap()) {
         configured_mode = MODE_BOOTSTRAP;

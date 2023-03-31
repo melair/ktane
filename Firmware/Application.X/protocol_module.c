@@ -8,8 +8,8 @@
 #include "can.h"
 #include "serial.h"
 #include "status.h"
-#include "nvm.h"
-#include "../common/nvm_addrs.h"
+#include "../common/nvm.h"
+#include "../common/eeprom_addrs.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
@@ -332,7 +332,7 @@ void protocol_module_mode_set_receive(uint8_t id, uint8_t size, uint8_t *payload
     /* If targeted at this module. */
     if (payload[1] == can_get_id()) {
         /* Change module mode in EEPROM. */
-        nvm_write(EEPROM_LOC_MODE_CONFIGURATION, payload[2]);
+        nvm_eeprom_write(EEPROM_LOC_MODE_CONFIGURATION, payload[2]);
 
         /* Reset the MCU. */
         RESET();

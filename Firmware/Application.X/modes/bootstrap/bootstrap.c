@@ -2,10 +2,10 @@
 #include <stdbool.h>
 #include "bootstrap.h"
 #include "../../argb.h"
-#include "../../nvm.h"
 #include "../../mode.h"
 #include "../../tick.h"
-#include "../../../common/nvm_addrs.h"
+#include "../../../common/nvm.h"
+#include "../../../common/eeprom_addrs.h"
 
 /* Local function prototypes. */
 uint8_t bootstrap_port_map(uint8_t);
@@ -40,12 +40,12 @@ void bootstrap_initialise(void) {
 
     /* Check to see if CAN ID is being changed. */
     if (change_can && port_c > 0) {
-        nvm_write(EEPROM_LOC_CAN_ID, port_c);
+        nvm_eeprom_write(EEPROM_LOC_CAN_ID, port_c);
     }
 
     /* Check to see if mode is being changes. */
     if (change_mode) {
-        nvm_write(EEPROM_LOC_MODE_CONFIGURATION, port_b);
+        nvm_eeprom_write(EEPROM_LOC_MODE_CONFIGURATION, port_b);
     }
 
     /* Toggle between red and green for bootstrap. */

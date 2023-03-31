@@ -1,7 +1,7 @@
 #include <xc.h>
 #include "opts.h"
-#include "nvm.h"
-#include "../common/nvm_addrs.h"
+#include "../common/nvm.h"
+#include "../common/eeprom_addrs.h"
 #include "opts/audio/mux.h"
 #include "opts/audio/audio.h"
 #include "opts/spi/spi.h"
@@ -30,7 +30,7 @@ const uint8_t OPT_PORTS[4] = {
 
 void opts_initialise(void) {
     for (uint8_t port = 0; port < OPT_PORT_COUNT; port++) {
-        uint8_t setting = nvm_read(EEPROM_LOC_OPT_KPORTA + port);
+        uint8_t setting = nvm_eeprom_read(EEPROM_LOC_OPT_KPORTA + port);
 
         opts_data[port].type = (setting & OPT_TYPE_MASK) >> 4;
         opts_data[port].data = setting & OPT_DATA_MASK;

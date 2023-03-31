@@ -1,7 +1,7 @@
 #include <xc.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "../common/nvm_addrs.h"
+#include "../common/eeprom_addrs.h"
 #include "../common/segments.h"
 #include "../common/device.h"
 

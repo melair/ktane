@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "can.h"
-#include "nvm.h"
 #include "argb.h"
 #include "protocol.h"
 #include "protocol_network.h"
@@ -13,7 +12,8 @@
 #include "rng.h"
 #include "tick.h"
 #include "module.h"
-#include "../common/nvm_addrs.h"
+#include "../common/nvm.h"
+#include "../common/eeprom_addrs.h"
 
 #define CAN_ADDRESS_RNG_MASK 0x74926411
 #define CAN_ADDRESS_CHECKS 4
@@ -45,13 +45,13 @@ void can_initialise(void) {
     can_identifier = CAN_NO_ADDRESS;
 
     /* Retrieve the CAN EEPROM address. */
-    can_address_eeprom = nvm_read(EEPROM_LOC_CAN_ID);
+    can_address_eeprom = nvm_eeprom_read(EEPROM_LOC_CAN_ID);
     if (can_address_eeprom == 0x00) {
         can_address_eeprom = CAN_NO_ADDRESS;
     }
 
     /* Load last CAN domain. */
-    can_domain = nvm_read(EEPROM_LOC_CAN_DOMAIN);
+    can_domain = nvm_eeprom_read(EEPROM_LOC_CAN_DOMAIN);
 
     /* Set our address seed, our serial number. This should reduce/eliminate
      * conflicts. */
@@ -330,7 +330,7 @@ void can_service(void) {
 
         if (can_ready()) {
             if (can_identifier != can_address_eeprom) {
-                nvm_write(EEPROM_LOC_CAN_ID, can_identifier);
+                nvm_eeprom_write(EEPROM_LOC_CAN_ID, can_identifier);
             }
 
             module_set_self_can_id(can_get_id());
@@ -407,7 +407,7 @@ void can_domain_update(uint8_t domain) {
     if (domain != can_domain) {
         module_set_self_domain(domain);
         can_domain = domain;
-        nvm_write(EEPROM_LOC_CAN_DOMAIN, can_domain);
+        nvm_eeprom_write(EEPROM_LOC_CAN_DOMAIN, can_domain);
     }
 }
 

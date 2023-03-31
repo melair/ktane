@@ -23,7 +23,7 @@
 #include "main.h"
 #include "mode.h"
 #include "module.h"
-#include "nvm.h"
+#include "eeprom.h"
 #include "serial.h"
 #include "status.h"
 #include "tick.h"
@@ -63,7 +63,7 @@ void main(void) {
     tick_initialise();
 
     /* Initialise EEPROM, including data migrations. */
-    nvm_initialise();
+    eeprom_initialise();
 
     /* Initialise RNG. */
     rng_initialise();

@@ -69,7 +69,6 @@
         <itemPath>peripherals/lcd.h</itemPath>
         <itemPath>peripherals/segment.h</itemPath>
       </logicalFolder>
-      <itemPath>nvm.h</itemPath>
       <itemPath>argb.h</itemPath>
       <itemPath>buzzer.h</itemPath>
       <itemPath>can.h</itemPath>
@@ -91,8 +90,10 @@
       <itemPath>main.h</itemPath>
       <itemPath>opts.h</itemPath>
       <itemPath>../Common/segments.h</itemPath>
-      <itemPath>../Common/nvm_addrs.h</itemPath>
       <itemPath>../common/device.h</itemPath>
+      <itemPath>eeprom.h</itemPath>
+      <itemPath>../Common/eeprom_addrs.h</itemPath>
+      <itemPath>../common/nvm.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -166,7 +167,6 @@
         <itemPath>peripherals/segment.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
-      <itemPath>nvm.c</itemPath>
       <itemPath>argb.c</itemPath>
       <itemPath>buzzer.c</itemPath>
       <itemPath>can.c</itemPath>
@@ -186,6 +186,8 @@
       <itemPath>serial.c</itemPath>
       <itemPath>protocol_network.c</itemPath>
       <itemPath>opts.c</itemPath>
+      <itemPath>eeprom.c</itemPath>
+      <itemPath>../common/nvm.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -422,24 +424,6 @@
         <property key="coverage-enable" value=""/>
         <property key="stack-guidance" value="false"/>
       </XC8-CO>
-      <XC8-config-global>
-        <property key="advanced-elf" value="true"/>
-        <property key="constdata-progmem" value="true"/>
-        <property key="gcc-opt-driver-new" value="true"/>
-        <property key="gcc-opt-std" value="-std=c99"/>
-        <property key="gcc-output-file-format" value="dwarf-3"/>
-        <property key="mapped-progmem" value="false"/>
-        <property key="omit-pack-options" value="false"/>
-        <property key="omit-pack-options-new" value="1"/>
-        <property key="output-file-format" value="-mcof,+elf"/>
-        <property key="smart-io-format" value=""/>
-        <property key="stack-size-high" value="auto"/>
-        <property key="stack-size-low" value="auto"/>
-        <property key="stack-size-main" value="auto"/>
-        <property key="stack-type" value="compiled"/>
-        <property key="user-pack-device-support" value=""/>
-        <property key="wpo-lto" value="false"/>
-      </XC8-config-global>
       <pk4hybrid>
         <property key="AutoSelectMemRanges" value="auto"/>
         <property key="Freeze Peripherals" value="true"/>
