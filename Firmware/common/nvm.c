@@ -20,7 +20,9 @@ uint8_t nvm_eeprom_read(uint16_t addr) {
     NVMCON1bits.CMD = 0;
 
     /* Load address, EEPROM base is 0x380000. */
-    NVMADR = (addr & 0x03ff) | 0x380000;
+    NVMADRL = addr & 0xff;
+    NVMADRH = (addr >> 8) & 0x03;
+    NVMADRU = 0x38;
 
     /* Execute command, and wait until done. */
     NVMCON0bits.GO = 1;
@@ -42,7 +44,9 @@ uint8_t nvm_eeprom_read(uint16_t addr) {
  */
 void nvm_eeprom_write(uint16_t addr, uint8_t data) {
     /* Load address, EEPROM base is 0x380000. */
-    NVMADR = (addr & 0x03ff) | 0x380000;
+    NVMADRL = addr & 0xff;
+    NVMADRH = (addr >> 8) & 0x03;
+    NVMADRU = 0x38;
 
     /* Load byte to be written. */
     NVMDATL = data;
@@ -70,13 +74,15 @@ void nvm_eeprom_write(uint16_t addr, uint8_t data) {
  * 
  * @param addr base of address to wipe
  */
-void nvm_pfm_erase(uint24_t addr) {
+void nvm_pfm_erase(uint32_t addr) {
     /* Clear NVCON1, and set command to ERASE page. */
     NVMCON1 = 0;
     NVMCON1bits.CMD = 6;
 
     /* Load address of destination for firmware. */
-    NVMADR = addr;
+    NVMADRL = addr & 0xff;
+    NVMADRH = (addr >> 8) & 0xff;
+    NVMADRU = (addr >> 16) & 0xff;
 
     /* Perform unlock procedure. */
     __asm(" MOVLW   0x55");
@@ -99,13 +105,15 @@ void nvm_pfm_erase(uint24_t addr) {
  * @param addr PFM address
  * @return word read from program memory
  */
-uint16_t nvm_pfm_read(uint24_t addr) {
+uint16_t nvm_pfm_read(uint32_t addr) {
     /* Clear NVCON1, and set command to READ byte. */
     NVMCON1 = 0;
     NVMCON1bits.CMD = 0;
 
     /* Load address, EEPROM base is 0x380000. */
-    NVMADR = addr;
+    NVMADRL = addr & 0xff;
+    NVMADRH = (addr >> 8) & 0xff;
+    NVMADRU = (addr >> 16) & 0xff;
 
     /* Execute command, and wait until done. */
     NVMCON0bits.GO = 1;
@@ -125,9 +133,11 @@ uint16_t nvm_pfm_read(uint24_t addr) {
  * @param addr PFM address
  * @param data word to write to program memory
  */
-void nvm_pfm_write(uint24_t addr, uint16_t data) {
+void nvm_pfm_write(uint32_t addr, uint16_t data) {
     /* Load address. */
-    NVMADR = addr;
+    NVMADRL = addr & 0xff;
+    NVMADRH = (addr >> 8) & 0xff;
+    NVMADRU = (addr >> 16) & 0xff;
 
     /* Load byte to be written. */
     NVMDAT = data;

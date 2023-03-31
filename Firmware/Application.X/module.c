@@ -13,6 +13,7 @@
 #include "game.h"
 #include "serial.h"
 #include "firmware.h"
+#include "../common/versions.h"
 
 /* How frequent should lost modules be checked for, in 1ms units. */
 #define LOST_CHECK_PERIOD   100
@@ -59,12 +60,15 @@ void module_initialise(void) {
 
     /* Store this module in slot 0. */
     modules[0].flags.INUSE = 1;
-    modules[0].flags.LOST = 0;
+    modules[0].flags.LOST = 0;   
+#ifdef __DEBUG
+    modules[0].flags.DEBUG = 1;
+#endif
     modules[0].id = can_get_id();
     modules[0].mode = mode_get();
     modules[0].serial = serial_get();
     modules[0].domain = can_get_domain();
-    modules[0].firmware = firmware_get_version();
+    modules[0].firmware = versions_get(APPLICATION_VERSION);
 
     /* Set next module announce time, offsetting with modulus of CAN ID to
      * attempt to avoid collisions. */
@@ -249,7 +253,7 @@ uint8_t module_find_or_create(uint8_t id) {
  * @param firmware firmware version
  * @param serial serial number of the module
  */
-void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain) {
+void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain, bool debug) {
     uint8_t idx = module_find_or_create(id);
 
     if (idx == 0xff) {
@@ -265,6 +269,7 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, u
     modules[idx].serial = serial;
     modules[idx].last_seen = tick_value;
     modules[idx].flags.LOST = 0;
+    modules[idx].flags.DEBUG = (debug ? 1 : 0);
     modules[idx].game.puzzle = (mode >= MODE_PUZZLE_BASE);
     modules[idx].game.needy = (mode >= MODE_NEEDY_KEYS);
     modules[idx].domain = domain;

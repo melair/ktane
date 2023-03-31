@@ -31,6 +31,7 @@
 #include "hal/spi.h"
 #include "opts.h"
 #include "../common/device.h"
+#include "../common/versions.h"
 
 /* Function prototypes. */
 void safe_unused_pins(void);
@@ -53,6 +54,9 @@ void main(void) {
     /* Initialise interrupts. */
     int_initialise();
 
+    /* Load versions from PFM. */
+    versions_initialise();
+    
     /* Initialise firmware. */
     firmware_initialise();
 

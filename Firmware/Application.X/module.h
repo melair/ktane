@@ -21,7 +21,9 @@ typedef struct {
     struct {
         unsigned    INUSE :1;
         unsigned    LOST  :1;
+        unsigned    DEBUG :1;
     }               flags;
+    
     uint8_t         id;
     uint8_t         mode;
     uint16_t        firmware;
@@ -34,7 +36,7 @@ typedef struct {
 } module_t;
 
 void module_initialise(void);
-void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain);
+void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain, bool debug);
 void module_error_record(uint8_t id, uint16_t code, bool active);
 void module_error_raise(uint16_t code, bool active);
 void module_service(void);

@@ -10,6 +10,7 @@
 #include "status.h"
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
+#include "../common/versions.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
@@ -80,9 +81,9 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Op Code      |  Module Mode  |  Firmware Version             |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |R| | | | | | | |  Serial                                       |
-   |S| | | | | | | |                                               |
-   |T| | | | | | | |                                               |
+   |R|D| | | | | | |  Serial                                       |
+   |S|B| | | | | | |                                               |
+   |T|G| | | | | | |                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Serial       |                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -94,7 +95,7 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
 void protocol_module_announcement_send(void) {
     uint8_t payload[10];
 
-    uint16_t fw = firmware_get_version();
+    uint16_t fw = versions_get(APPLICATION_VERSION);
     uint32_t serial = serial_get();
     uint8_t domain = can_get_domain();
 
@@ -113,7 +114,10 @@ void protocol_module_announcement_send(void) {
         announce_reset = false;
         payload[4] |= 0b10000000;
     }
-
+    
+#ifdef __DEBUG
+    payload[4] |= 0b01000000;    
+#endif
     can_send(PREFIX_MODULE, sizeof(payload), &payload[0]);
 }
 
@@ -133,6 +137,7 @@ void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *pay
     uint8_t mode = payload[1];
     uint16_t fw = (uint16_t) ((payload[2] << 8) | payload[3]);
     bool reset = (payload[4] & 0b10000000);
+    bool debug = (payload[4] & 0b01000000);
     uint32_t serial = (uint32_t) (((uint32_t) payload[5] << 24) | ((uint32_t) payload[6] << 16) | ((uint32_t) payload[7] << 8) | (uint32_t) payload[8]);
     uint8_t domain = payload[9];
 
@@ -140,7 +145,7 @@ void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *pay
         module_errors_clear(id);
     }
 
-    module_seen(id, mode, fw, serial, domain);
+    module_seen(id, mode, fw, serial, domain, debug);
 
     if (mode == MODE_CONTROLLER) {
         firmware_check(fw);

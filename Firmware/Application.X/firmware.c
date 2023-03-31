@@ -3,6 +3,7 @@
 #include "firmware.h"
 #include "module.h"
 #include "protocol_firmware.h"
+#include "../common/versions.h"
 
 /* Location of actual firmware. */
 #define FIRMWARE_BASE       0x000100 
@@ -15,12 +16,6 @@
 #define INVALID_FIRMWARE_VERSION 0x0000
 
 /* Current firmware version. */
-#ifdef __DEBUG
-const uint16_t application_version = INVALID_FIRMWARE_VERSION;
-#else
-const uint16_t application_version = 0x004c;
-#endif
-
 asm ("PSECT applicationversion");
 asm ("dw 0x004c");
 
@@ -55,15 +50,6 @@ uint32_t firmware_calculate_checksum(uint32_t base_addr, uint32_t size);
  */
 void firmware_initialise(void) {
     firmware_checksum = firmware_calculate_checksum(FIRMWARE_BASE, FIRMWARE_SIZE);
-}
-
-/**
- * Get the current firmware version.
- *
- * @return the firmware version
- */
-uint16_t firmware_get_version(void) {
-    return application_version;
 }
 
 /**
@@ -120,13 +106,13 @@ void firmware_get_page(uint16_t page, uint8_t *data) {
 void firmware_check(uint16_t adv_version) {
     /* Ignore firmware checks if we are already in the process of a firmware
      * update. */
-    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION || application_version == INVALID_FIRMWARE_VERSION) {
+    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION || versions_get(0) == INVALID_FIRMWARE_VERSION) {
         return;
     }
 
     /* If the advertised version is later than ours, start the process and
      * request a firmware header. */
-    if (adv_version > application_version) {
+    if (adv_version > versions_get(0)) {
         firmware_new_version = adv_version;
         firmware_state = FIRMWARE_PROCESS_HEADER;
         protocol_firmware_request_send(adv_version);
