@@ -10,7 +10,7 @@
 #include "status.h"
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
-#include "../common/versions.h"
+#include "../common/fw.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
@@ -95,7 +95,7 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
 void protocol_module_announcement_send(void) {
     uint8_t payload[10];
 
-    uint16_t fw = versions_get(APPLICATION_VERSION);
+    uint16_t fw = fw_version(APPLICATION);
     uint32_t serial = serial_get();
     uint8_t domain = can_get_domain();
 

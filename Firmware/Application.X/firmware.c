@@ -3,7 +3,7 @@
 #include "firmware.h"
 #include "module.h"
 #include "protocol_firmware.h"
-#include "../common/versions.h"
+#include "../common/fw.h"
 
 /* Location of actual firmware. */
 #define FIRMWARE_BASE       0x000100 
@@ -106,13 +106,13 @@ void firmware_get_page(uint16_t page, uint8_t *data) {
 void firmware_check(uint16_t adv_version) {
     /* Ignore firmware checks if we are already in the process of a firmware
      * update. */
-    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION || versions_get(0) == INVALID_FIRMWARE_VERSION) {
+    if (firmware_state != FIRMWARE_PROCESS_IDLE || adv_version == INVALID_FIRMWARE_VERSION || fw_version(0) == INVALID_FIRMWARE_VERSION) {
         return;
     }
 
     /* If the advertised version is later than ours, start the process and
      * request a firmware header. */
-    if (adv_version > versions_get(0)) {
+    if (adv_version > fw_version(0)) {
         firmware_new_version = adv_version;
         firmware_state = FIRMWARE_PROCESS_HEADER;
         protocol_firmware_request_send(adv_version);

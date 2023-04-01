@@ -13,7 +13,7 @@
 #include "game.h"
 #include "serial.h"
 #include "firmware.h"
-#include "../common/versions.h"
+#include "../common/fw.h"
 
 /* How frequent should lost modules be checked for, in 1ms units. */
 #define LOST_CHECK_PERIOD   100
@@ -68,7 +68,7 @@ void module_initialise(void) {
     modules[0].mode = mode_get();
     modules[0].serial = serial_get();
     modules[0].domain = can_get_domain();
-    modules[0].firmware = versions_get(APPLICATION_VERSION);
+    modules[0].firmware = fw_version(APPLICATION);
 
     /* Set next module announce time, offsetting with modulus of CAN ID to
      * attempt to avoid collisions. */

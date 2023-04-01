@@ -6,7 +6,7 @@
 #include "firmware.h"
 #include "mode.h"
 #include "can.h"
-#include "../common/versions.h"
+#include "../common/fw.h"
 
 /* Local function prototypes. */
 void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payload);
@@ -98,7 +98,7 @@ void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payloa
 
     uint16_t fw = (uint16_t) ((payload[1] << 8) | payload[2]);
 
-    if (mode_get() != MODE_CONTROLLER || versions_get(APPLICATION_VERSION) != fw) {
+    if (mode_get() != MODE_CONTROLLER || fw_version(APPLICATION) != fw) {
         return;
     }
 
@@ -127,7 +127,7 @@ void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payloa
 void protocol_firmware_header_send(void) {
     uint8_t payload[9];
 
-    uint16_t fw = versions_get(APPLICATION_VERSION);
+    uint16_t fw = fw_version(APPLICATION);
     uint16_t pages = firmware_get_pages();
     uint32_t crc = firmware_get_checksum();
 

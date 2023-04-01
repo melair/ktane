@@ -1,6 +1,12 @@
 #ifndef SEGMENTS_H
 #define	SEGMENTS_H
 
+#define SEGMENT_COUNT 3
+
+#define BOOTLOADER  0
+#define APPLICATION 1
+#define FLASHER     2
+
 #define BOOTLOADER_OFFSET   0x00000
 #define BOOTLOADER_SIZE     0x000ff
 
