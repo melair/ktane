@@ -26,17 +26,22 @@ typedef struct {
     
     uint8_t         id;
     uint8_t         mode;
-    uint16_t        firmware;
     uint32_t        last_seen;
     uint32_t        serial;
     uint8_t         domain;
 
+    struct {
+        uint16_t    bootloader;
+        uint16_t    application;
+        uint16_t    flasher;
+    } firmware;    
+    
     module_error_t  errors[ERROR_COUNT];
     module_game_t   game;
 } module_t;
 
 void module_initialise(void);
-void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain, bool debug);
+void module_seen(uint8_t id, uint8_t mode, uint16_t app_fw, uint32_t serial, uint8_t domain, bool debug, uint16_t boot_fw, uint16_t flasher_fw);
 void module_error_record(uint8_t id, uint16_t code, bool active);
 void module_error_raise(uint16_t code, bool active);
 void module_service(void);

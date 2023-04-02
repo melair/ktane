@@ -3,7 +3,6 @@
 #include "module.h"
 #include "protocol.h"
 #include "protocol_module.h"
-#include "firmware.h"
 #include "mode.h"
 #include "can.h"
 #include "serial.h"
@@ -11,6 +10,7 @@
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
 #include "../common/fw.h"
+#include "../common/segments.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);
@@ -79,13 +79,15 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |  Op Code      |  Module Mode  |  Firmware Version             |
+   |  Op Code      |  Module Mode  |  Application Version          |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |R|D| | | | | | |  Serial                                       |
    |S|B| | | | | | |                                               |
    |T|G| | | | | | |                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |  Serial       |                                               |
+   |  Serial       |  Bootloader Version           |  Flasher Ver  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Flasher Ver  |                                               |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 
@@ -93,23 +95,30 @@ void protocol_module_receive(uint8_t id, uint8_t size, uint8_t *payload) {
  * Send a module announcement packet.
  */
 void protocol_module_announcement_send(void) {
-    uint8_t payload[10];
+    uint8_t payload[14];
 
-    uint16_t fw = fw_version(APPLICATION);
+    uint16_t app_fw = fw_version(APPLICATION);
+    uint16_t bootloader_fw = fw_version(BOOTLOADER);
+    uint16_t flasher_fw = fw_version(FLASHER);
+    
     uint32_t serial = serial_get();
     uint8_t domain = can_get_domain();
 
     payload[0] = OPCODE_MODULE_ANNOUNCEMENT;
     payload[1] = mode_get();
-    payload[2] = (fw >> 8) & 0xff;
-    payload[3] = fw & 0xff;
+    payload[2] = (app_fw >> 8) & 0xff;
+    payload[3] = app_fw & 0xff;
     payload[4] = 0x00;
     payload[5] = (serial >> 24) & 0xff;
     payload[6] = (serial >> 16) & 0xff;
     payload[7] = (serial >> 8) & 0xff;
     payload[8] = serial & 0xff;
     payload[9] = domain;
-
+    payload[10] = (bootloader_fw >> 8) & 0xff;
+    payload[11] = bootloader_fw & 0xff;
+    payload[12] = (flasher_fw >> 8) & 0xff;
+    payload[13] = flasher_fw & 0xff;
+    
     if (announce_reset) {
         announce_reset = false;
         payload[4] |= 0b10000000;
@@ -130,12 +139,14 @@ void protocol_module_announcement_send(void) {
  */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check, if size is < 10 there is no mode. */
-    if (size < 10) {
+    if (size < 14) {
         return;
     }
 
     uint8_t mode = payload[1];
-    uint16_t fw = (uint16_t) ((payload[2] << 8) | payload[3]);
+    uint16_t app_fw = (uint16_t) ((payload[2] << 8) | payload[3]);
+    uint16_t bootloader_fw = (uint16_t) ((payload[10] << 8) | payload[11]);
+    uint16_t flasher_fw = (uint16_t) ((payload[12] << 8) | payload[13]);
     bool reset = (payload[4] & 0b10000000);
     bool debug = (payload[4] & 0b01000000);
     uint32_t serial = (uint32_t) (((uint32_t) payload[5] << 24) | ((uint32_t) payload[6] << 16) | ((uint32_t) payload[7] << 8) | (uint32_t) payload[8]);
@@ -144,12 +155,8 @@ void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *pay
     if (reset) {
         module_errors_clear(id);
     }
-
-    module_seen(id, mode, fw, serial, domain, debug);
-
-    if (mode == MODE_CONTROLLER) {
-        firmware_check(fw);
-    }
+    
+    module_seen(id, mode, app_fw, serial, domain, debug, bootloader_fw, flasher_fw);     
 }
 
 /*

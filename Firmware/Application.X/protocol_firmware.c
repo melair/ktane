@@ -3,18 +3,18 @@
 #include "module.h"
 #include "protocol.h"
 #include "protocol_firmware.h"
-#include "firmware.h"
 #include "mode.h"
 #include "can.h"
 #include "../common/fw.h"
+#include "../common/segments.h"
 
 /* Local function prototypes. */
 void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_firmware_header_receive(uint8_t id, uint8_t size, uint8_t *payload);
-void protocol_firmware_header_send(void);
+void protocol_firmware_header_send(uint8_t segment);
 void protocol_firmware_page_request_receive(uint8_t id, uint8_t size, uint8_t *payload);
 void protocol_firmware_page_response_receive(uint8_t id, uint8_t size, uint8_t *payload);
-void protocol_firmware_page_response_send(uint16_t page);
+void protocol_firmware_page_response_send(uint16_t page, uint8_t segment);
 
 #define OPCODE_FIRMWARE_REQUEST         0x00
 #define OPCODE_FIRMWARE_HEADER          0x01
@@ -64,19 +64,20 @@ void protocol_firmware_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |  Op Code      |  Firmware Version             |               |
+   |  Op Code      |  Firmware Version             |  Segment      |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 
 /**
  * Send a firmware request.
  */
-void protocol_firmware_request_send(uint16_t requested_version) {
-    uint8_t payload[3];
+void protocol_firmware_request_send(uint16_t requested_version, uint8_t segment) {
+    uint8_t payload[4];
 
     payload[0] = OPCODE_FIRMWARE_REQUEST;
     payload[1] = (requested_version >> 8) & 0xff;
     payload[2] = requested_version & 0xff;
+    payload[3] = segment;
 
     can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
@@ -92,17 +93,22 @@ void protocol_firmware_request_send(uint16_t requested_version) {
  */
 void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check. */
-    if (size < 3) {
+    if (size < 4) {
         return;
     }
 
     uint16_t fw = (uint16_t) ((payload[1] << 8) | payload[2]);
-
-    if (mode_get() != MODE_CONTROLLER || fw_version(APPLICATION) != fw) {
+    uint8_t segment = payload[3];
+    
+    if (segment >= SEGMENT_COUNT) {
         return;
     }
 
-    protocol_firmware_header_send();
+    if (mode_get() != MODE_CONTROLLER || fw_version(segment) != fw) {
+        return;
+    }
+
+    protocol_firmware_header_send(segment);
 }
 
 /*
@@ -117,19 +123,19 @@ void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payloa
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Pages        |  CRC-32                                       |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |  CRC-32       |                                               |
+   |  CRC-32       |  Segment                                      |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 
 /**
  * Send a firmware header
  */
-void protocol_firmware_header_send(void) {
-    uint8_t payload[9];
+void protocol_firmware_header_send(uint8_t segment) {
+    uint8_t payload[10];
 
-    uint16_t fw = fw_version(APPLICATION);
-    uint16_t pages = firmware_get_pages();
-    uint32_t crc = firmware_get_checksum();
+    uint16_t fw = fw_version(segment);
+    uint16_t pages = fw_page_count(segment);
+    uint32_t crc = fw_checksum(segment);
 
     payload[0] = OPCODE_FIRMWARE_HEADER;
     payload[1] = (fw >> 8) & 0xff;
@@ -140,6 +146,7 @@ void protocol_firmware_header_send(void) {
     payload[6] = (crc >> 16) & 0xff;
     payload[7] = (crc >> 8) & 0xff;
     payload[8] = crc & 0xff;
+    payload[9] = segment;
 
     can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
@@ -153,7 +160,7 @@ void protocol_firmware_header_send(void) {
  */
 void protocol_firmware_header_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check. */
-    if (size < 9) {
+    if (size < 10) {
         return;
     }
 
@@ -163,10 +170,11 @@ void protocol_firmware_header_receive(uint8_t id, uint8_t size, uint8_t *payload
     uint8_t b = payload[6];
     uint8_t c = payload[7];
     uint8_t d = payload[8];
+    uint8_t segment = payload[9];
 
     uint32_t crc = ((uint32_t) a << 24) | ((uint32_t)b << 16) | ((uint32_t) c << 8) | ((uint32_t) d);
 
-    firmware_header_received(id, fw, pages, crc);
+    // TODO: Receive firmware header!   
 }
 
 /*
@@ -179,18 +187,21 @@ void protocol_firmware_header_receive(uint8_t id, uint8_t size, uint8_t *payload
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Op Code      |  Firmware Page                |  Source ID    |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Segment      |                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 
 /**
  * Send a firmware page request.
  */
-void protocol_firmware_page_request_send(uint16_t page, uint8_t source_id) {
-    uint8_t payload[4];
+void protocol_firmware_page_request_send(uint16_t page, uint8_t source_id, uint8_t segment) {
+    uint8_t payload[5];
 
     payload[0] = OPCODE_FIRMWARE_PAGE_REQUEST;
     payload[1] = (page >> 8) & 0xff;
     payload[2] = page & 0xff;
     payload[3] = source_id;
+    payload[4] = segment;
 
     can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
@@ -204,18 +215,23 @@ void protocol_firmware_page_request_send(uint16_t page, uint8_t source_id) {
  */
 void protocol_firmware_page_request_receive(uint8_t id, uint8_t size, uint8_t *payload) {
     /* Safety check. */
-    if (size < 4) {
+    if (size < 5) {
         return;
     }
 
     uint16_t page = (uint16_t) ((payload[1] << 8) | payload[2]);
     uint8_t source_id = payload[3];
+    uint8_t segment = payload[4];
+    
+    if (segment >= SEGMENT_COUNT) {
+        return;
+    }
 
     if (source_id != can_get_id()) {
         return;
     }
 
-    protocol_firmware_page_response_send(page);
+    protocol_firmware_page_response_send(page, segment);
 }
 
 /*
@@ -226,7 +242,7 @@ void protocol_firmware_page_request_receive(uint8_t id, uint8_t size, uint8_t *p
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |  Op Code      |  Firmware Page                | UNUSED        |
+   |  Op Code      |  Firmware Page                |  Segment      |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |  Firmware Page Data                                           |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -241,14 +257,15 @@ void protocol_firmware_page_request_receive(uint8_t id, uint8_t size, uint8_t *p
 /**
  * Send a firmware page.
  */
-void protocol_firmware_page_response_send(uint16_t page) {
+void protocol_firmware_page_response_send(uint16_t page, uint8_t segment) {
     uint8_t payload[20];
 
     payload[0] = OPCODE_FIRMWARE_PAGE_RESPONSE;
     payload[1] = (page >> 8) & 0xff;
     payload[2] = page & 0xff;
+    payload[3] = segment;
 
-    firmware_get_page(page, &payload[4]);
+    fw_page_read(segment, page, &payload[4]);
 
     can_send(PREFIX_FIRMWARE, sizeof(payload), &payload[0]);
 }
@@ -267,6 +284,11 @@ void protocol_firmware_page_response_receive(uint8_t id, uint8_t size, uint8_t *
     }
 
     uint16_t page = (uint16_t) ((payload[1] << 8) | payload[2]);
+    uint8_t segment = payload[3];
+    
+    if (segment >= SEGMENT_COUNT) {
+        return;
+    }
 
-    firmware_page_received(id, page, &payload[4]);
+    // TODO: Receive firmware page!   
 }

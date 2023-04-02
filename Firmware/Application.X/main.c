@@ -17,7 +17,6 @@
 #include "buzzer.h"
 #include "can.h"
 #include "edgework.h"
-#include "firmware.h"
 #include "game.h"
 #include "interrupt.h"
 #include "main.h"
@@ -32,6 +31,10 @@
 #include "opts.h"
 #include "../common/device.h"
 #include "../common/fw.h"
+
+/* Current firmware version. */
+asm ("PSECT applicationversion");
+asm ("dw 0x004d");
 
 /* Function prototypes. */
 void safe_unused_pins(void);
@@ -56,9 +59,6 @@ void main(void) {
 
     /* Load versions from PFM. */
     fw_initialise();
-    
-    /* Initialise firmware. */
-    firmware_initialise();
 
     /* Unlock PPS during initialisation. */
     pps_unlock();

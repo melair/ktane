@@ -114,8 +114,14 @@ void ui_render_configure_module_hardware(interface_t *current) {
         switch(ui_configure_module_hardware) {
             case 0:
                 title = "Firmware";
-                lcd_hex(1, 6, (module->firmware >> 8) & 0xff);
-                lcd_hex(1, 8, (module->firmware) & 0xff);
+                lcd_hex(1, 1, (module->firmware.bootloader >> 8) & 0xff);
+                lcd_hex(1, 3, (module->firmware.bootloader) & 0xff);
+                lcd_update(1, 5, 1, "/");
+                lcd_hex(1, 6, (module->firmware.application >> 8) & 0xff);
+                lcd_hex(1, 8, (module->firmware.application) & 0xff);               
+                lcd_update(1, 10, 1, "/");
+                lcd_hex(1, 11, (module->firmware.flasher >> 8) & 0xff);
+                lcd_hex(1, 13, (module->firmware.flasher) & 0xff);
                 break;
             case 1:
                 title = "Serial Number";

@@ -12,8 +12,8 @@
 #include "status.h"
 #include "game.h"
 #include "serial.h"
-#include "firmware.h"
 #include "../common/fw.h"
+#include "../common/segments.h"
 
 /* How frequent should lost modules be checked for, in 1ms units. */
 #define LOST_CHECK_PERIOD   100
@@ -68,7 +68,9 @@ void module_initialise(void) {
     modules[0].mode = mode_get();
     modules[0].serial = serial_get();
     modules[0].domain = can_get_domain();
-    modules[0].firmware = fw_version(APPLICATION);
+    modules[0].firmware.bootloader = fw_version(BOOTLOADER);
+    modules[0].firmware.application = fw_version(APPLICATION);
+    modules[0].firmware.flasher = fw_version(FLASHER);
 
     /* Set next module announce time, offsetting with modulus of CAN ID to
      * attempt to avoid collisions. */
@@ -253,7 +255,7 @@ uint8_t module_find_or_create(uint8_t id) {
  * @param firmware firmware version
  * @param serial serial number of the module
  */
-void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, uint8_t domain, bool debug) {
+void module_seen(uint8_t id, uint8_t mode, uint16_t app_fw, uint32_t serial, uint8_t domain, bool debug, uint16_t boot_fw, uint16_t flasher_fw) {
     uint8_t idx = module_find_or_create(id);
 
     if (idx == 0xff) {
@@ -265,7 +267,9 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t firmware, uint32_t serial, u
     }
 
     modules[idx].mode = mode;
-    modules[idx].firmware = firmware;
+    modules[idx].firmware.bootloader = boot_fw;
+    modules[idx].firmware.application = app_fw;
+    modules[idx].firmware.flasher = flasher_fw;
     modules[idx].serial = serial;
     modules[idx].last_seen = tick_value;
     modules[idx].flags.LOST = 0;
