@@ -3,7 +3,6 @@
 #include "module.h"
 #include "protocol.h"
 #include "protocol_firmware.h"
-#include "mode.h"
 #include "can.h"
 #include "../common/fw.h"
 #include "../common/segments.h"
@@ -91,7 +90,7 @@ void protocol_firmware_request_send(uint16_t requested_version, uint8_t segment)
  * @param size size of CAN payload received
  * @param payload pointer to payload
  */
-void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payload) {
+void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payload) {   
     /* Safety check. */
     if (size < 4) {
         return;
@@ -104,11 +103,13 @@ void protocol_firmware_request_receive(uint8_t id, uint8_t size, uint8_t *payloa
         return;
     }
 
-    if (mode_get() != MODE_CONTROLLER || fw_version(segment) != fw) {
+    if (fw_version(segment) != fw) {
         return;
     }
 
+#ifndef __DEBUG
     protocol_firmware_header_send(segment);
+#endif
 }
 
 /*

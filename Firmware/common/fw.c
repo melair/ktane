@@ -62,22 +62,11 @@ void fw_page_read(uint8_t segment, uint16_t page, uint8_t *data) {
     uint8_t off = 0;
     
     for (uint32_t addr = base_addr; addr < base_addr + FW_PAGE_SIZE; addr += 2) {
-        /* Clear NVCON1, and set command to READ word. */
-        NVMCON1 = 0;
-        NVMCON1bits.CMD = 0;
-
-        /* Load address of source firmware. */
-        NVMADRL = addr & 0xff;
-        NVMADRH = (addr >> 8) & 0xff;
-        NVMADRU = (addr >> 16) & 0xff;
-
-        /* Execute command, and wait until done. */
-        NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO == 1);
+        uint16_t pfm = nvm_pfm_read(addr);
 
         /* Store page data in array. */
-        data[off++] = NVMDATH;
-        data[off++] = NVMDATL;
+        data[off++] = (pfm >> 8) & 0xff;
+        data[off++] = pfm & 0xff;
     }
 }
 
@@ -86,48 +75,16 @@ void fw_page_write(uint8_t segment, uint16_t page, uint8_t *data) {
 
     /* For every new page (128 words), perform wipe. */
     if ((base_addr & 0xff) == 0) {
-        /* Clear NVCON1, and set command to ERASE page. */
-        NVMCON1 = 0;
-        NVMCON1bits.CMD = 6;
-
-        /* Load address of destination for firmware. */
-        NVMADRL = base_addr & 0xff;
-        NVMADRH = (base_addr >> 8) & 0xff;
-        NVMADRU = (base_addr >> 16) & 0xff;
-
-        /* Perform unlock procedure. */
-        NVMLOCK = 0x55;
-        NVMLOCK = 0xaa;
-
-        /* Execute command, and wait until done. */
-        NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO == 1);
+        nvm_pfm_erase(base_addr);
     }
     
     uint8_t off = 0;
 
     /* Loop through payload and store in PFM. */
     for (uint32_t addr = base_addr; addr < base_addr + FW_PAGE_SIZE; addr += 2) {
-         /* Clear NVCON1, and set command to WRITE word. */
-        NVMCON1 = 0;
-        NVMCON1bits.CMD = 3;
-
-        /* Load address of destination for firmware. */
-        NVMADRL = addr & 0xff;
-        NVMADRH = (addr >> 8) & 0xff;
-        NVMADRU = (addr >> 16) & 0xff;
-
-        /* Load word into NVMDAT. */
-        NVMDATH = data[off++];
-        NVMDATL = data[off++];
-
-        /* Perform unlock procedure. */
-        NVMLOCK = 0x55;
-        NVMLOCK = 0xaa;
-
-        /* Execute command, and wait until done. */
-        NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO == 1);
+        uint16_t out = (data[off] << 8) | data[off + 1];
+        nvm_pfm_write(addr, out);
+        off += 2;      
     }
 }
 
