@@ -220,6 +220,8 @@ bool can_change_mode(uint8_t mode) {
     return true;
 }
 
+static const uint8_t dlc_to_bytes[] = {0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U, 12U, 16U, 20U, 24U, 32U, 48U, 64U};
+
 /**
  * Send packet out on CAN network.
  *
@@ -246,13 +248,16 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
 
     /* Cast tx buffer. */
     uint8_t *txbuffer = (uint8_t *) C1TXQUA;
+    
+    uint8_t dlc = 0;    
+    for (dlc = 0; size > dlc_to_bytes[dlc]; dlc++);
 
     /* Set CAN header. */
     txbuffer[0] = can_identifier;
     txbuffer[1] = prefix & 0b00000111;
     txbuffer[2] = 0x00;
     txbuffer[3] = 0x00;
-    txbuffer[4] = 0b10001011; // FDF = 1, DLC = 11 (20 byte payload)
+    txbuffer[4] = 0b10000000 | dlc; // FDF = 1
     txbuffer[5] = 0x00;
     txbuffer[6] = 0x00;
     txbuffer[7] = 0x00;
@@ -274,8 +279,6 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
 
     can_stats.tx_packets++;
 }
-
-static const uint8_t dlc_to_bytes[] = {0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U, 12U, 16U, 20U, 24U, 32U, 48U, 64U};
 
 /**
  * Service the CAN bus, such as receive messages.
