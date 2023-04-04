@@ -4,7 +4,7 @@
 #include "protocol.h"
 #include "protocol_network.h"
 #include "serial.h"
-#include "can.h"
+#include "../common/can.h"
 
 /* Local function prototypes. */
 void protocol_network_address_announce_receive(uint8_t id, uint8_t size, uint8_t *payload);

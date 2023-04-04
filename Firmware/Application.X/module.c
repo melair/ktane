@@ -5,7 +5,6 @@
 #include "protocol_module.h"
 #include "module.h"
 #include "tick.h"
-#include "can.h"
 #include "mode.h"
 #include "buzzer.h"
 #include "argb.h"
@@ -14,6 +13,7 @@
 #include "serial.h"
 #include "../common/fw.h"
 #include "../common/segments.h"
+#include "../common/can.h"
 
 /* How frequent should lost modules be checked for, in 1ms units. */
 #define LOST_CHECK_PERIOD   100

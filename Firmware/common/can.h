@@ -3,8 +3,6 @@
 
 #include <stdbool.h>
 
-#define CAN_NO_ADDRESS 0xff
-
 /* Statistics structure for CAN bus. */
 typedef struct {
     uint16_t tx_packets;
@@ -32,6 +30,7 @@ void can_address_check(uint8_t id);
 uint8_t can_get_domain(void);
 void can_domain_update(uint8_t domain);
 can_statistics_t *can_get_statistics(void);
+bool can_dirty(void);
 
 #endif	/* CAN_H */
 

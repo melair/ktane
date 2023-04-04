@@ -4,13 +4,13 @@
 #include "protocol.h"
 #include "protocol_module.h"
 #include "mode.h"
-#include "can.h"
 #include "serial.h"
 #include "status.h"
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
 #include "../common/fw.h"
 #include "../common/segments.h"
+#include "../common/can.h"
 
 /* Local function prototypes. */
 void protocol_module_announcement_receive(uint8_t id, uint8_t size, uint8_t *payload);

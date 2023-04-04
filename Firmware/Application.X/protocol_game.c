@@ -1,10 +1,10 @@
 #include <xc.h>
 #include <stdint.h>
-#include "can.h"
 #include "module.h"
 #include "game.h"
 #include "protocol.h"
 #include "protocol_game.h"
+#include "../common/can.h"
 
 /* Local function prototypes. */
 void protocol_game_state_receive(uint8_t id, uint8_t size, uint8_t *payload);

@@ -3,7 +3,7 @@
 #include "module.h"
 #include "protocol.h"
 #include "protocol_firmware.h"
-#include "can.h"
+#include "../common/can.h"
 #include "../common/fw.h"
 #include "../common/segments.h"
 

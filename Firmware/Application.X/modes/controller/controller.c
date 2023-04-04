@@ -5,13 +5,13 @@
 #include "../../peripherals/lcd.h"
 #include "../../argb.h"
 #include "../../buzzer.h"
-#include "../../can.h"
 #include "../../module.h"
 #include "../../mode.h"
 #include "../../game.h"
 #include "../../tick.h"
 #include "../../protocol_module.h"
 #include "../../peripherals/segment.h"
+#include "../../../common/can.h"
 
 uint8_t last_strikes_current = 0;
 uint32_t ready_at = 0;

@@ -1,6 +1,6 @@
 #include <xc.h>
 #include "../../buzzer.h"
-#include "../../can.h"
+#include "../../../common/can.h"
 #include "../../peripherals/lcd.h"
 #include "../../protocol_module.h"
 #include "../../module.h"

@@ -6,12 +6,8 @@
 #include "protocol_module.h"
 #include "protocol_firmware.h"
 #include "protocol_network.h"
-#include "can.h"
-#include "mode.h"
-#include "tick.h"
 #include "module.h"
-#include "buzzer.h"
-#include "argb.h"
+#include "../common/can.h"
 
 /**
  * Handled reception of a new packet from CAN.

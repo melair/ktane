@@ -15,7 +15,6 @@
 #include <stdbool.h>
 #include "argb.h"
 #include "buzzer.h"
-#include "can.h"
 #include "edgework.h"
 #include "game.h"
 #include "interrupt.h"
@@ -29,17 +28,14 @@
 #include "rng.h"
 #include "hal/spi.h"
 #include "opts.h"
+#include "../common/can.h"
+#include "../common/mcu.h"
 #include "../common/device.h"
 #include "../common/fw.h"
 
 /* Current firmware version. */
 asm ("PSECT applicationversion");
 asm ("dw 0x004d");
-
-/* Function prototypes. */
-void safe_unused_pins(void);
-void arbiter_initialise(void);
-void oscillator_initialise(void);
 
 /**
  * Main function, initialise and main loop.
@@ -115,6 +111,12 @@ void main(void) {
 
         /* Service CAN buffers. */
         can_service();
+        
+        /* Update module if CAN details are dirty. */
+        if (can_dirty()) {
+            module_set_self_can_id(can_get_id());
+            module_set_self_domain(can_get_domain());
+        }
 
         /* Service SPI. */
         spi_service();
@@ -159,64 +161,4 @@ void main(void) {
          * the tick refresh. */
         SLEEP();
     }
-}
-
-/**
- * Safe unused pins.
- */
-void safe_unused_pins(void) {
-    /* Disable analogue functionality. */
-    ANSELA = 0;
-    ANSELB = 0;
-    ANSELC = 0;
-    ANSELD = 0;
-    ANSELE = 0;
-    ANSELF = 0;
-
-    /* Set all pins to output. */
-    TRISA = 0;
-    TRISB = 0;
-    TRISC = 0;
-    TRISD = 0;
-    TRISE = 0;
-    TRISF = 0;
-
-    /* Drive all pins low. */
-    LATA = 0;
-    LATB = 0;
-    LATC = 0;
-    LATD = 0;
-    LATE = 0;
-    LATF = 0;
-}
-
-/**
- * Unlock PPS registers, assumes global interrupts are disabled.
- */
-void pps_unlock(void) {
-    PPSLOCK = 0x55;
-    PPSLOCK = 0xAA;
-    PPSLOCKbits.PPSLOCKED = 0;
-}
-
-/**
- * Reconfigure the system arbiter, giving DMA1 and DMA2 priority over the
- * ISR and main CPU.
- */
-void arbiter_initialise(void) {
-    PRLOCK = 0x55;
-    PRLOCK = 0xAA;
-    PRLOCKbits.PRLOCKED = 0;
-
-    DMA1PR = 0;
-    DMA2PR = 1;
-    DMA3PR = 2;
-    DMA4PR = 3;
-    ISRPR = 4;
-    MAINPR = 5;
-    SCANPR = 6;
-
-    PRLOCK = 0x55;
-    PRLOCK = 0xAA;
-    PRLOCKbits.PRLOCKED = 1;
 }

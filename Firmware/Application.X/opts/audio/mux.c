@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include "audio.h"
+#include "mux.h"
 #include "../../opts.h"
 #include "../spi/sdcard.h"
 #include "../../hal/spi.h"

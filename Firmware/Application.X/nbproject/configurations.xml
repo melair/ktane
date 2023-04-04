@@ -71,7 +71,6 @@
       </logicalFolder>
       <itemPath>argb.h</itemPath>
       <itemPath>buzzer.h</itemPath>
-      <itemPath>can.h</itemPath>
       <itemPath>tick.h</itemPath>
       <itemPath>mode.h</itemPath>
       <itemPath>protocol.h</itemPath>
@@ -84,7 +83,6 @@
       <itemPath>game.h</itemPath>
       <itemPath>rng.h</itemPath>
       <itemPath>edgework.h</itemPath>
-      <itemPath>serial.h</itemPath>
       <itemPath>protocol_network.h</itemPath>
       <itemPath>main.h</itemPath>
       <itemPath>opts.h</itemPath>
@@ -94,6 +92,11 @@
       <itemPath>../Common/eeprom_addrs.h</itemPath>
       <itemPath>../common/nvm.h</itemPath>
       <itemPath>../common/fw.h</itemPath>
+      <itemPath>../common/mcu.h</itemPath>
+      <itemPath>serial.h</itemPath>
+      <itemPath>can_auto_address.h</itemPath>
+      <itemPath>../common/can.h</itemPath>
+      <itemPath>../common/can_private.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -169,7 +172,6 @@
       <itemPath>main.c</itemPath>
       <itemPath>argb.c</itemPath>
       <itemPath>buzzer.c</itemPath>
-      <itemPath>can.c</itemPath>
       <itemPath>tick.c</itemPath>
       <itemPath>mode.c</itemPath>
       <itemPath>protocol.c</itemPath>
@@ -182,12 +184,15 @@
       <itemPath>game.c</itemPath>
       <itemPath>rng.c</itemPath>
       <itemPath>edgework.c</itemPath>
-      <itemPath>serial.c</itemPath>
       <itemPath>protocol_network.c</itemPath>
       <itemPath>opts.c</itemPath>
       <itemPath>eeprom.c</itemPath>
       <itemPath>../common/nvm.c</itemPath>
       <itemPath>../common/fw.c</itemPath>
+      <itemPath>../common/mcu.c</itemPath>
+      <itemPath>serial.c</itemPath>
+      <itemPath>can_auto_address.c</itemPath>
+      <itemPath>../common/can.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -278,7 +283,7 @@
         <property key="call-prologues" value="false"/>
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
-        <property key="define-macros" value=""/>
+        <property key="define-macros" value="SUPPORT_CAN_AUTO_ADDRESS"/>
         <property key="disable-optimizations" value="false"/>
         <property key="extra-include-directories" value=""/>
         <property key="favor-optimization-for" value="-speed,+space"/>
@@ -476,6 +481,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="U:/workspace/melair/ktane/GitHubReleased/ControlFirmware.X/debug/default/ControlFirmware_ptg"/>
         <property key="programmerToGoImageName" value="ControlFirmware_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

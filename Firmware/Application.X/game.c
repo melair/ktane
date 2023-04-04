@@ -6,7 +6,7 @@
 #include "module.h"
 #include "mode.h"
 #include "status.h"
-#include "can.h"
+#include "../common/can.h"
 #include "edgework.h"
 #include "protocol_game.h"
 
