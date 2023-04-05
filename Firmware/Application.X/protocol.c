@@ -23,7 +23,7 @@ void protocol_receive(uint8_t prefix, uint8_t id, uint8_t size, uint8_t *payload
         protocol_network_receive(id, size, payload);
         return;
     }
-
+    
     /* Detect a CAN ID conflict, report as an error. This ignores the packet,
      * this might result in a desync of the game - but it's a critical error
      * and we can not continue.*/
