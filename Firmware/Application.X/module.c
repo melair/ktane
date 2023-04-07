@@ -1,8 +1,6 @@
 #include <xc.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "protocol.h"
-#include "protocol_module.h"
 #include "module.h"
 #include "tick.h"
 #include "mode.h"
@@ -11,9 +9,14 @@
 #include "status.h"
 #include "game.h"
 #include "serial.h"
+#include "status.h"
+#include "../common/nvm.h"
+#include "../common/eeprom_addrs.h"
 #include "../common/fw.h"
 #include "../common/segments.h"
 #include "../common/can.h"
+#include "../common/protocol.h"
+#include "../common/packet.h"
 
 /* How frequent should lost modules be checked for, in 1ms units. */
 #define LOST_CHECK_PERIOD   100
@@ -39,11 +42,26 @@ uint8_t error_state_prev = ERROR_NONE;
 uint8_t module_find(uint8_t id);
 uint8_t module_find_or_create(uint8_t id);
 uint8_t module_determine_error_state(void);
+void module_announce(void);
+void module_errors_clear(uint8_t id);
+void module_receive_announce(uint8_t id, packet_t *p);
+void module_receive_error(uint8_t id, packet_t *p);
+void module_receive_reset(uint8_t id, packet_t *p);
+void module_receive_identify(uint8_t id, packet_t *p);
+void module_receive_mode_set(uint8_t id, packet_t *p);
+void module_receive_special_function(uint8_t id, packet_t *p);
 
 /**
  * Initialise the module database, store self and set up next announcement time.
  */
 void module_initialise(void) {
+    packet_register(PREFIX_MODULE, OPCODE_MODULE_ANNOUNCEMENT, module_receive_announce);
+    packet_register(PREFIX_MODULE, OPCODE_MODULE_ERROR, module_receive_error);
+    packet_register(PREFIX_MODULE, OPCODE_MODULE_RESET, module_receive_reset);
+    packet_register(PREFIX_MODULE, OPCODE_MODULE_IDENTIFY, module_receive_identify);
+    packet_register(PREFIX_MODULE, OPCODE_MODULE_MODE_SET, module_receive_mode_set);
+    packet_register(PREFIX_MODULE, OPCODE_MODULE_SPECIAL_FUNCTION, module_receive_special_function);
+
     /* Init module structure. */
     for (uint8_t i = 0; i < MODULE_COUNT; i++) {
         modules[i].flags.INUSE = 0;
@@ -60,14 +78,13 @@ void module_initialise(void) {
 
     /* Store this module in slot 0. */
     modules[0].flags.INUSE = 1;
-    modules[0].flags.LOST = 0;   
+    modules[0].flags.LOST = 0;
 #ifdef __DEBUG
     modules[0].flags.DEBUG = 1;
 #endif
     modules[0].id = can_get_id();
     modules[0].mode = mode_get();
     modules[0].serial = serial_get();
-    modules[0].domain = can_get_domain();
     modules[0].firmware.bootloader = fw_version(BOOTLOADER);
     modules[0].firmware.application = fw_version(APPLICATION);
     modules[0].firmware.flasher = fw_version(FLASHER);
@@ -88,15 +105,6 @@ void module_initialise(void) {
 void module_set_self_can_id(uint8_t id) {
     modules[0].id = id;
     modules[0].game.id = id;
-}
-
-/**
- * Set this modules CAN domain in the module record.
- *
- * @param id new domain
- */
-void module_set_self_domain(uint8_t domain) {
-    modules[0].domain = domain;
 }
 
 /**
@@ -134,7 +142,7 @@ void module_service(void) {
         next_announce = tick_value + ANNOUNCE_PERIOD;
 
         /* Send module announcement. */
-        protocol_module_announcement_send();
+        module_announce();
     }
 
     /* Check for lost nodes frequently. */
@@ -150,12 +158,12 @@ void module_service(void) {
             }
         }
     }
-    
+
     /* If we are in OVER state, then set the module to be unready. */
     if (game.state == GAME_OVER && this_module->ready) {
         this_module->ready = false;
     }
-    
+
     if (game.state == GAME_IDLE && !this_module->enabled) {
         this_module->enabled = true;
     }
@@ -167,6 +175,24 @@ void module_service(void) {
             error_state_prev = error_state;
         }
     }
+}
+
+bool announce_reset = true;
+
+void module_announce(void) {
+    packet_outgoing.opcode = OPCODE_MODULE_ANNOUNCEMENT;
+    packet_outgoing.module.announcement.mode = mode_get();
+    packet_outgoing.module.announcement.application_version = fw_version(APPLICATION);
+    packet_outgoing.module.announcement.flags.reset = announce_reset;
+#ifdef __DEBUG
+    packet_outgoing.module.announcement.flags.debug = true;
+#endif
+    packet_outgoing.module.announcement.serial = serial_get();
+    packet_outgoing.module.announcement.bootloader_version = fw_version(BOOTLOADER);
+    packet_outgoing.module.announcement.flasher_version = fw_version(FLASHER);
+    packet_send(PREFIX_MODULE, &packet_outgoing);
+
+    announce_reset = false;
 }
 
 /**
@@ -255,7 +281,7 @@ uint8_t module_find_or_create(uint8_t id) {
  * @param firmware firmware version
  * @param serial serial number of the module
  */
-void module_seen(uint8_t id, uint8_t mode, uint16_t app_fw, uint32_t serial, uint8_t domain, bool debug, uint16_t boot_fw, uint16_t flasher_fw) {
+void module_receive_announce(uint8_t id, packet_t *p) {
     uint8_t idx = module_find_or_create(id);
 
     if (idx == 0xff) {
@@ -266,17 +292,20 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t app_fw, uint32_t serial, uin
         module_error_raise(MODULE_ERROR_CAN_LOST_BASE | id, false);
     }
 
-    modules[idx].mode = mode;
-    modules[idx].firmware.bootloader = boot_fw;
-    modules[idx].firmware.application = app_fw;
-    modules[idx].firmware.flasher = flasher_fw;
-    modules[idx].serial = serial;
+    modules[idx].mode = p->module.announcement.mode;
+    modules[idx].firmware.bootloader = p->module.announcement.bootloader_version;
+    modules[idx].firmware.application = p->module.announcement.application_version;
+    modules[idx].firmware.flasher = p->module.announcement.flasher_version;
+    modules[idx].serial = p->module.announcement.serial;
     modules[idx].last_seen = tick_value;
     modules[idx].flags.LOST = 0;
-    modules[idx].flags.DEBUG = (debug ? 1 : 0);
-    modules[idx].game.puzzle = (mode >= MODE_PUZZLE_BASE);
-    modules[idx].game.needy = (mode >= MODE_NEEDY_KEYS);
-    modules[idx].domain = domain;
+    modules[idx].flags.DEBUG = p->module.announcement.flags.debug;
+    modules[idx].game.puzzle = (modules[idx].mode >= MODE_PUZZLE_BASE);
+    modules[idx].game.needy = (modules[idx].mode >= MODE_NEEDY_KEYS);
+
+    if (p->module.announcement.flags.reset) {
+        module_errors_clear(id);
+    }
 }
 
 /**
@@ -287,8 +316,12 @@ void module_seen(uint8_t id, uint8_t mode, uint16_t app_fw, uint32_t serial, uin
  * @param code error code to raise
  */
 void module_error_raise(uint16_t code, bool active) {
-    protocol_module_error_send(code, active);
-    module_error_record(can_get_id(), code, active);
+    packet_outgoing.opcode = OPCODE_MODULE_ERROR;
+    packet_outgoing.module.error_announcement.error_code = code;
+    packet_outgoing.module.error_announcement.flags.active = active;
+    packet_send(PREFIX_MODULE, &packet_outgoing);
+
+    module_receive_error(can_get_id(), &packet_outgoing);
 }
 
 /**
@@ -297,7 +330,7 @@ void module_error_raise(uint16_t code, bool active) {
  * @param id CAN id
  * @param code error code received
  */
-void module_error_record(uint8_t id, uint16_t code, bool active) {
+void module_receive_error(uint8_t id, packet_t *p) {
     uint8_t idx = module_find_or_create(id);
 
     if (idx == 0xff) {
@@ -305,18 +338,18 @@ void module_error_record(uint8_t id, uint16_t code, bool active) {
     }
 
     for (uint8_t i = 0; i < ERROR_COUNT; i++) {
-        if (modules[idx].errors[i].code == code) {
-            if (active) {
+        if (modules[idx].errors[i].code == p->module.error_announcement.error_code) {
+            if (p->module.error_announcement.flags.active) {
                 modules[idx].errors[i].count++;
             }
-            modules[idx].errors[i].active = active;
+            modules[idx].errors[i].active = p->module.error_announcement.flags.active;
             return;
         }
 
         if (modules[idx].errors[i].code == MODULE_ERROR_NONE) {
-            modules[idx].errors[i].code = code;
+            modules[idx].errors[i].code = p->module.error_announcement.error_code;
             modules[idx].errors[i].count = 1;
-            modules[idx].errors[i].active = active;
+            modules[idx].errors[i].active = p->module.error_announcement.flags.active;
             return;
         }
     }
@@ -408,4 +441,60 @@ module_error_t *module_get_errors(uint8_t idx, uint8_t err) {
     }
 
     return &modules[idx].errors[err];
+}
+
+void module_send_reset(void) {
+    packet_outgoing.opcode = OPCODE_MODULE_RESET;
+    packet_send(PREFIX_MODULE, &packet_outgoing);
+
+    /* Wait until the CAN TX buffer is empty, i.e. the above packet has gone. */
+    while (!C1TXQSTALbits.TXQEIF);
+    /* Reset the MCU. */
+    RESET();
+}
+
+void module_receive_reset(uint8_t id, packet_t *p) {
+    RESET();
+}
+
+void module_send_identify(uint8_t id) {
+    packet_outgoing.opcode = OPCODE_MODULE_IDENTIFY;
+    packet_outgoing.module.identify.can_id = id;
+    packet_send(PREFIX_MODULE, &packet_outgoing);
+}
+
+void module_receive_identify(uint8_t id, packet_t *p) {
+    status_identify(p->module.identify.can_id == can_get_id());
+}
+
+void module_send_mode_set(uint8_t id, uint8_t mode) {
+    packet_outgoing.opcode = OPCODE_MODULE_MODE_SET;
+    packet_outgoing.module.set_mode.can_id = id;
+    packet_outgoing.module.set_mode.mode = mode;
+    packet_send(PREFIX_MODULE, &packet_outgoing);
+}
+
+void module_receive_mode_set(uint8_t id, packet_t *p) {
+    /* If targeted at this module. */
+    if (p->module.set_mode.can_id == can_get_id()) {
+        /* Change module mode in EEPROM. */
+        nvm_eeprom_write(EEPROM_LOC_MODE_CONFIGURATION, p->module.set_mode.mode);
+
+        /* Reset the MCU. */
+        RESET();
+    }
+}
+
+void module_send_special_function(uint8_t id, uint8_t special_fn) {
+    packet_outgoing.opcode = OPCODE_MODULE_SPECIAL_FUNCTION;
+    packet_outgoing.module.special_function.can_id = id;
+    packet_outgoing.module.special_function.special_function = special_fn;
+    packet_send(PREFIX_MODULE, &packet_outgoing);
+}
+
+void module_receive_special_function(uint8_t id, packet_t *p) {
+    /* If targeted at this module. */
+    if (p->module.special_function.can_id == can_get_id()) {
+        mode_call_special_function(p->module.special_function.special_function);
+    }
 }

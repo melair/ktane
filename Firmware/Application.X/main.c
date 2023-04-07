@@ -28,14 +28,15 @@
 #include "rng.h"
 #include "hal/spi.h"
 #include "opts.h"
+#include "fw_server.h"
 #include "../common/can.h"
 #include "../common/mcu.h"
 #include "../common/device.h"
 #include "../common/fw.h"
 
 /* Current firmware version. */
-asm ("PSECT applicationversion");
-asm ("dw 0x004d");
+asm("PSECT applicationversion");
+asm("dw 0x004d");
 
 /**
  * Main function, initialise and main loop.
@@ -73,16 +74,16 @@ void main(void) {
 
     /* Initialise CAN bus. */
     can_initialise();
-    
+
     /* Initialise SPI. */
     spi_initialise();
-    
+
     /* Initialise ARGB. */
     argb_initialise();
-    
+
     /* Initialise Buzzer. */
     buzzer_initialise();
-    
+
     /* Initialise optional modules. */
     opts_initialise();
 
@@ -94,6 +95,11 @@ void main(void) {
 
     /* Initialise game state. */
     game_initialise();
+
+#ifndef __DEBUG
+    /* Initialise firmware server. */
+    fw_server_initialise();
+#endif
 
     /* Beep on start. */
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);
@@ -111,24 +117,23 @@ void main(void) {
 
         /* Service CAN buffers. */
         can_service();
-        
+
         /* Update module if CAN details are dirty. */
         if (can_dirty()) {
             module_set_self_can_id(can_get_id());
-            module_set_self_domain(can_get_domain());
         }
 
         /* Service SPI. */
         spi_service();
-        
+
         /* Service optional modules. */
         opts_service();
-        
+
         /* Service module subsystem. */
         module_service();
 
         /* Service the game state. */
-        game_service();       
+        game_service();
 
         /* Update ARGB string if needed. */
         argb_service();

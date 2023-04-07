@@ -1,15 +1,33 @@
 #ifndef PROTOCOL_H
 #define	PROTOCOL_H
 
-void protocol_receive(uint8_t prefix, uint8_t id, uint8_t size, uint8_t *payload);
-
 #define PREFIX_MODULE       0b000
 #define PREFIX_GAME         0b010
-
 #define PREFIX_NETWORK      0b100
-
 #define PREFIX_FIRMWARE     0b110
 #define PREFIX_DEBUG        0b111
+
+#define OPCODE_COUNT 16
+
+#define OPCODE_NETWORK_ADDRESS_ANNOUNCE 0x00
+#define OPCODE_NETWORK_ADDRESS_NAK      0x01
+
+#define OPCODE_MODULE_ANNOUNCEMENT      0x00
+#define OPCODE_MODULE_RESET             0x10
+#define OPCODE_MODULE_IDENTIFY          0x11
+#define OPCODE_MODULE_MODE_SET          0x12
+#define OPCODE_MODULE_SPECIAL_FUNCTION  0x13
+#define OPCODE_MODULE_ERROR             0xf0
+
+#define OPCODE_GAME_STATE           0x00
+#define OPCODE_GAME_MODULE_CONFIG   0x10
+#define OPCODE_GAME_MODULE_STATE    0x11
+#define OPCODE_GAME_MODULE_STRIKE   0x12
+
+#define OPCODE_FIRMWARE_REQUEST         0x00
+#define OPCODE_FIRMWARE_HEADER          0x01
+#define OPCODE_FIRMWARE_PAGE_REQUEST    0x02
+#define OPCODE_FIRMWARE_PAGE_RESPONSE   0x03
 
 #include <stdint.h>
 
@@ -25,10 +43,6 @@ typedef struct {
             struct {
                 uint32_t serial;
             } address_nak;
-            
-            struct {
-                uint8_t domain;
-            } domain_announce;
         } network;
         
         union {
@@ -36,7 +50,7 @@ typedef struct {
                 uint8_t mode;
                 uint16_t application_version;
                 struct {
-                    unsigned ready  :1;
+                    unsigned reset  :1;
                     unsigned debug  :1;
                     unsigned unused :6;
                 } flags;
@@ -68,14 +82,15 @@ typedef struct {
             struct {
                 uint8_t can_id;
                 uint8_t special_function;
-            } special_function;
+            } special_function;                        
         } module;
         
         union {
             struct {
                 uint8_t state;
                 uint32_t seed;
-                uint8_t strikes;
+                uint8_t strikes_current;
+                uint8_t strikes_total;
                 uint8_t minutes;
                 uint8_t seconds;
                 uint8_t centiseconds;
@@ -131,6 +146,34 @@ typedef struct {
         } firmware;
     };
 } packet_t;
+
+typedef struct {
+    uint8_t prefix;
+    uint8_t opcode;
+    uint8_t size;
+} protocol_size_t;
+
+const protocol_size_t protocol_sizes[OPCODE_COUNT] = {
+    { PREFIX_NETWORK, OPCODE_NETWORK_ADDRESS_ANNOUNCE, sizeof(((packet_t *)0)->network.address_announce) + 1 },
+    { PREFIX_NETWORK, OPCODE_NETWORK_ADDRESS_NAK, sizeof(((packet_t *)0)->network.address_nak) + 1 },
+    
+    { PREFIX_MODULE, OPCODE_MODULE_ANNOUNCEMENT, sizeof(((packet_t *)0)->module.announcement) + 1 },
+    { PREFIX_MODULE, OPCODE_MODULE_RESET, sizeof(((packet_t *)0)->module.reset) + 1 },
+    { PREFIX_MODULE, OPCODE_MODULE_IDENTIFY, sizeof(((packet_t *)0)->module.identify) + 1 },
+    { PREFIX_MODULE, OPCODE_MODULE_MODE_SET, sizeof(((packet_t *)0)->module.set_mode) + 1 },
+    { PREFIX_MODULE, OPCODE_MODULE_SPECIAL_FUNCTION, sizeof(((packet_t *)0)->module.special_function) + 1 },
+    { PREFIX_MODULE, OPCODE_MODULE_ERROR, sizeof(((packet_t *)0)->module.error_announcement) + 1 },
+    
+    { PREFIX_GAME, OPCODE_GAME_STATE, sizeof(((packet_t *)0)->game.state) + 1 },
+    { PREFIX_GAME, OPCODE_GAME_MODULE_CONFIG, sizeof(((packet_t *)0)->game.module_config) + 1 },
+    { PREFIX_GAME, OPCODE_GAME_MODULE_STATE, sizeof(((packet_t *)0)->game.module_state) + 1 },
+    { PREFIX_GAME, OPCODE_GAME_MODULE_STRIKE, sizeof(((packet_t *)0)->game.module_strike) + 1 },
+
+    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_REQUEST, sizeof(((packet_t *)0)->firmware.request) + 1 },
+    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_HEADER, sizeof(((packet_t *)0)->firmware.header) + 1 },
+    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_PAGE_REQUEST, sizeof(((packet_t *)0)->firmware.page_request) + 1 },
+    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_PAGE_RESPONSE, sizeof(((packet_t *)0)->firmware.page_response) + 1 }
+};
 
 #endif	/* PROTOCOL_H */
 

@@ -73,17 +73,12 @@
       <itemPath>buzzer.h</itemPath>
       <itemPath>tick.h</itemPath>
       <itemPath>mode.h</itemPath>
-      <itemPath>protocol.h</itemPath>
-      <itemPath>protocol_module.h</itemPath>
-      <itemPath>protocol_firmware.h</itemPath>
       <itemPath>status.h</itemPath>
-      <itemPath>protocol_game.h</itemPath>
       <itemPath>interrupt.h</itemPath>
       <itemPath>module.h</itemPath>
       <itemPath>game.h</itemPath>
       <itemPath>rng.h</itemPath>
       <itemPath>edgework.h</itemPath>
-      <itemPath>protocol_network.h</itemPath>
       <itemPath>main.h</itemPath>
       <itemPath>opts.h</itemPath>
       <itemPath>../Common/segments.h</itemPath>
@@ -91,12 +86,15 @@
       <itemPath>eeprom.h</itemPath>
       <itemPath>../Common/eeprom_addrs.h</itemPath>
       <itemPath>../common/nvm.h</itemPath>
-      <itemPath>../common/fw.h</itemPath>
       <itemPath>../common/mcu.h</itemPath>
       <itemPath>serial.h</itemPath>
       <itemPath>can_auto_address.h</itemPath>
       <itemPath>../common/can.h</itemPath>
       <itemPath>../common/can_private.h</itemPath>
+      <itemPath>../common/protocol.h</itemPath>
+      <itemPath>../common/packet.h</itemPath>
+      <itemPath>../common/fw.h</itemPath>
+      <itemPath>fw_server.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -174,25 +172,22 @@
       <itemPath>buzzer.c</itemPath>
       <itemPath>tick.c</itemPath>
       <itemPath>mode.c</itemPath>
-      <itemPath>protocol.c</itemPath>
-      <itemPath>protocol_module.c</itemPath>
-      <itemPath>protocol_firmware.c</itemPath>
       <itemPath>status.c</itemPath>
-      <itemPath>protocol_game.c</itemPath>
       <itemPath>interrupt.c</itemPath>
       <itemPath>module.c</itemPath>
       <itemPath>game.c</itemPath>
       <itemPath>rng.c</itemPath>
       <itemPath>edgework.c</itemPath>
-      <itemPath>protocol_network.c</itemPath>
       <itemPath>opts.c</itemPath>
       <itemPath>eeprom.c</itemPath>
       <itemPath>../common/nvm.c</itemPath>
-      <itemPath>../common/fw.c</itemPath>
       <itemPath>../common/mcu.c</itemPath>
       <itemPath>serial.c</itemPath>
       <itemPath>can_auto_address.c</itemPath>
       <itemPath>../common/can.c</itemPath>
+      <itemPath>../common/packet.c</itemPath>
+      <itemPath>../common/fw.c</itemPath>
+      <itemPath>fw_server.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -203,6 +198,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>../common</Elem>
+    <Elem>.</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

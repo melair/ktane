@@ -2,7 +2,6 @@
 #include "../../buzzer.h"
 #include "../../../common/can.h"
 #include "../../peripherals/lcd.h"
-#include "../../protocol_module.h"
 #include "../../module.h"
 #include "../../mode.h"
 #include "ui.h"
@@ -37,7 +36,7 @@ uint8_t ui_action_configure_module_select_change(uint8_t current, action_t *a) {
 
 uint8_t ui_action_configure_module_select_press(uint8_t current, action_t *a) {
     if (ui_configure_module_selected == -1) {
-        ui_configure_module_selected = 0;        
+        ui_configure_module_selected = 0;
         return a->alt_index;
     } else {
         return a->index;
@@ -53,14 +52,14 @@ void ui_render_configure_module_select(interface_t *current) {
     ui_render_menu_item_text((uint8_t *) current->render_data, has_press, has_left, has_right);
 
     if (ui_configure_module_selected == -1) {
-        protocol_module_identify_send(0xff);
+        module_send_identify(0xff);
 
         uint8_t *template = "Back";
         lcd_update(1, 6, 4, template);
     } else {
         module_t *module = module_get(ui_configure_module_selected);
 
-        protocol_module_identify_send(module->id);
+        module_send_identify(module->id);
 
         uint8_t *template = "ID: -- Mode: --";
         lcd_update(1, 0, 15, template);
@@ -111,14 +110,14 @@ void ui_render_configure_module_hardware(interface_t *current) {
     } else {
         module_t *module = module_get(ui_configure_module_selected);
 
-        switch(ui_configure_module_hardware) {
+        switch (ui_configure_module_hardware) {
             case 0:
                 title = "Firmware";
                 lcd_hex(1, 1, (module->firmware.bootloader >> 8) & 0xff);
                 lcd_hex(1, 3, (module->firmware.bootloader) & 0xff);
                 lcd_update(1, 5, 1, "/");
                 lcd_hex(1, 6, (module->firmware.application >> 8) & 0xff);
-                lcd_hex(1, 8, (module->firmware.application) & 0xff);               
+                lcd_hex(1, 8, (module->firmware.application) & 0xff);
                 lcd_update(1, 10, 1, "/");
                 lcd_hex(1, 11, (module->firmware.flasher >> 8) & 0xff);
                 lcd_hex(1, 13, (module->firmware.flasher) & 0xff);
@@ -248,7 +247,7 @@ void ui_render_configure_module_can_stats(interface_t *current) {
 
             uint8_t *txrx_template = "T:-----  R:-----";
 
-            switch(ui_configure_module_can_stats) {
+            switch (ui_configure_module_can_stats) {
                 case 0:
                     title = "Packets";
                     lcd_update(1, 0, 15, txrx_template);
@@ -305,9 +304,9 @@ uint8_t ui_render_configure_module_mode_set_change(uint8_t current, action_t *a)
 uint8_t ui_render_configure_module_mode_set_press(uint8_t current, action_t *a) {
     if (ui_configure_module_mode_set != -1) {
         module_t *module = module_get(ui_configure_module_selected);
-        protocol_module_mode_set_send(module->id, mode_id_by_index(ui_configure_module_mode_set));
+        module_send_mode_set(module->id, mode_id_by_index(ui_configure_module_mode_set));
     }
-    
+
     ui_configure_module_mode_set = 0;
     return a->alt_index;
 }
@@ -319,23 +318,23 @@ void ui_render_configure_module_mode_set(interface_t *current) {
 
     lcd_clear();
     uint8_t *title;
-    
+
     if (ui_configure_module_mode_set == -1) {
         title = "Cancel";
     } else {
         title = "Change to";
 
         uint8_t *name = mode_name_by_index(ui_configure_module_mode_set);
-        
+
         uint8_t size = 0;
         for (uint8_t *s = name; *s != '\0' && size < 16; *s++) {
             size++;
         }
-        
-        uint8_t start = (8 - (size / 2));        
+
+        uint8_t start = (8 - (size / 2));
         lcd_update(1, start, size, name);
     }
-    
+
     ui_render_menu_item_text(title, has_press, has_left, has_right);
 }
 
@@ -361,9 +360,9 @@ uint8_t ui_render_configure_module_special_function_change(uint8_t current, acti
 uint8_t ui_render_configure_module_special_function_press(uint8_t current, action_t *a) {
     if (ui_configure_module_special_function != -1) {
         module_t *module = module_get(ui_configure_module_selected);
-        protocol_module_special_function_send(module->id, (ui_configure_module_special_function & 0xff));
+        module_send_special_function(module->id, (ui_configure_module_special_function & 0xff));
         return current;
-    } else {    
+    } else {
         ui_configure_module_special_function = 0;
         return a->alt_index;
     }
@@ -376,7 +375,7 @@ void ui_render_configure_module_special_function(interface_t *current) {
 
     lcd_clear();
     uint8_t *title;
-    
+
     if (ui_configure_module_special_function == -1) {
         title = "Back";
     } else {
@@ -384,6 +383,6 @@ void ui_render_configure_module_special_function(interface_t *current) {
 
         lcd_hex(1, 7, ui_configure_module_special_function);
     }
-    
+
     ui_render_menu_item_text(title, has_press, has_left, has_right);
 }

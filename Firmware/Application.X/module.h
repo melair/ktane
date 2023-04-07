@@ -28,7 +28,6 @@ typedef struct {
     uint8_t         mode;
     uint32_t        last_seen;
     uint32_t        serial;
-    uint8_t         domain;
 
     struct {
         uint16_t    bootloader;
@@ -41,17 +40,17 @@ typedef struct {
 } module_t;
 
 void module_initialise(void);
-void module_seen(uint8_t id, uint8_t mode, uint16_t app_fw, uint32_t serial, uint8_t domain, bool debug, uint16_t boot_fw, uint16_t flasher_fw);
-void module_error_record(uint8_t id, uint16_t code, bool active);
 void module_error_raise(uint16_t code, bool active);
 void module_service(void);
-void module_errors_clear(uint8_t id);
 void module_set_self_can_id(uint8_t id);
-void module_set_self_domain(uint8_t domain);
 module_game_t *module_get_game(uint8_t idx);
 module_game_t *module_get_game_by_id(uint8_t id);
 module_t *module_get(uint8_t idx);
 module_error_t *module_get_errors(uint8_t idx, uint8_t err);
+void module_send_reset(void);
+void module_send_identify(uint8_t id);
+void module_send_mode_set(uint8_t id, uint8_t mode);
+void module_send_special_function(uint8_t id, uint8_t special_fn);
 
 /* Total number of modules that can be part of the network. */
 #define MODULE_COUNT 24

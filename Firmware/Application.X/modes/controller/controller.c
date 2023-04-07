@@ -9,7 +9,6 @@
 #include "../../mode.h"
 #include "../../game.h"
 #include "../../tick.h"
-#include "../../protocol_module.h"
 #include "../../peripherals/segment.h"
 #include "../../../common/can.h"
 
@@ -27,13 +26,13 @@ void controller_update_strikes(void);
 /**
  * Initialise any components or state that the controller will require.
  */
-void controller_initialise(void) {  
+void controller_initialise(void) {
     /* Initialise ARGB expanded memory. */
     argb_expand(CONTROLLER_ARGB_COUNT, &mode_data.controller.ctrl.argb_leds[0], &mode_data.controller.ctrl.argb_output[0]);
 
     /* Initialise the LCD. */
     lcd_initialize();
-    
+
     /* Initialise the UI. */
     ui_initialise();
 
@@ -60,7 +59,7 @@ void controller_initialise(void) {
 void controller_service(bool first) {
     /* Service the LCD panel. */
     lcd_service();
-    
+
     /* Service the seven segment display. */
     segment_service();
 
@@ -87,14 +86,14 @@ void controller_service_setup(bool first) {
         this_module->ready = true;
 
         ready_at = 0;
-        
+
         for (uint8_t i = 0; i < MODULE_COUNT; i++) {
             module_game_t *that_module = module_get_game(i);
 
             if (that_module == NULL) {
                 break;
             }
-            
+
             if (!that_module->enabled) {
                 game_module_config_send(that_module->id, true, 255);
             }
@@ -280,17 +279,17 @@ void controller_service_running(bool first) {
  *
  * @param first true if first call of the state
  */
-void controller_service_over(bool first){
-    if(first) {
+void controller_service_over(bool first) {
+    if (first) {
         ui_force(UI_IDX_GAME_END);
-        
+
         for (uint8_t i = 0; i < CONTROLLER_ARGB_COUNT; i++) {
-            argb_set_module(i, 0, 0, 0);       
+            argb_set_module(i, 0, 0, 0);
         }
-        
+
         segment_set_colon(false);
 
-        switch(game.result) {
+        switch (game.result) {
             case RESULT_SUCCESS:
                 segment_set_digit(0, characters[DIGIT_S]);
                 segment_set_digit(1, characters[DIGIT_A]);

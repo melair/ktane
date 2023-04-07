@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "can.h"
-#include "../Application.X/protocol.h"
-#include "../common/nvm.h"
-#include "../common/eeprom_addrs.h"
+#include "packet.h"
+#include "nvm.h"
+#include "eeprom_addrs.h"
 #ifdef SUPPORT_CAN_AUTO_ADDRESS
 #include "../Application.X/can_auto_address.h"
 #endif
@@ -16,8 +16,6 @@
 can_statistics_t can_stats;
 /* Devices CAN ID. */
 uint8_t can_identifier;
-/* Devices CAN domain. */
-uint8_t can_domain;
 /* CAN details dirt. */
 bool can_is_dirty;
 
@@ -32,14 +30,11 @@ bool can_change_mode(uint8_t mode);
 void can_initialise(void) {
     /* Load last CAN id. */
     can_identifier = nvm_eeprom_read(EEPROM_LOC_CAN_ID);
-    
+
 #ifdef SUPPORT_CAN_AUTO_ADDRESS
     can_address_initialise(can_identifier);
 #endif
-    
-    /* Load last CAN domain. */
-    can_domain = nvm_eeprom_read(EEPROM_LOC_CAN_DOMAIN);
-    
+
     /* Configure CANTX/CANRX pins, RB0: RX, RB1: TX. */
     TRISBbits.TRISB0 = 1;
     TRISBbits.TRISB1 = 0;
@@ -248,8 +243,8 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
 
     /* Cast tx buffer. */
     uint8_t *txbuffer = (uint8_t *) C1TXQUA;
-    
-    uint8_t dlc = 0;    
+
+    uint8_t dlc = 0;
     for (dlc = 0; size > dlc_to_bytes[dlc]; dlc++);
 
     /* Set CAN header. */
@@ -265,12 +260,12 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
     /* Copy payload into CAN packet, ensure unused bytes are 0x00. */
     uint8_t i;
 
-    for (i = 0; i < size && i < 20; i++) {
-        txbuffer[8+i] = data[i];
+    for (i = 0; i < size && i < dlc_to_bytes[dlc]; i++) {
+        txbuffer[8 + i] = data[i];
     }
 
-    for (; i < 20; i++) {
-        txbuffer[8+i] = 0x00;
+    for (; i < dlc_to_bytes[dlc]; i++) {
+        txbuffer[8 + i] = 0x00;
     }
 
     /* Request packet is sent, and increment FIFO head. */
@@ -298,34 +293,19 @@ void can_service(void) {
         /* Decode data. */
         uint8_t id = rxbuffer[0];
         uint8_t prefix = rxbuffer[1] & 0b00000111;
-        uint8_t dlc = rxbuffer[4] & 0x0f;
-        uint8_t size = dlc_to_bytes[dlc];
 
         can_stats.rx_packets++;
 
         /* Pass packet to protocol handling. */
-        protocol_receive(prefix, id, size, &rxbuffer[8]);
+        packet_route(id, prefix, (packet_t *) & rxbuffer[8]);
 
         /* Increment the buffer. */
         C1FIFOCON1Hbits.UINC = 1;
     }
-    
-#ifdef SUPPORT_CAN_AUTO_ADDRESS
-        can_address_service();
-#endif
-}
 
-/**
- * Handle updates to the modules domain.
- *
- * @param domain can domain
- */
-void can_domain_update(uint8_t domain) {
-    if (domain != can_domain) {
-        can_domain = domain;
-        can_is_dirty = true;
-        nvm_eeprom_write(EEPROM_LOC_CAN_DOMAIN, can_domain);
-    }
+#ifdef SUPPORT_CAN_AUTO_ADDRESS
+    can_address_service();
+#endif
 }
 
 /**
@@ -338,21 +318,12 @@ uint8_t can_get_id(void) {
 }
 
 /**
- * Get the CAN domain of module.
- *
- * @return the CAN domain
- */
-uint8_t can_get_domain(void) {
-    return can_domain;
-}
-
-/**
  * Return true if the CAN bus is not ready, i.e. has no address id yet.
  *
  * @return true if read.
  */
 bool can_ready(void) {
-#ifdef SUPPORT_CAN_AUTO_ADDRESS    
+#ifdef SUPPORT_CAN_AUTO_ADDRESS
     return can_address_ready();
 #else
     return true;

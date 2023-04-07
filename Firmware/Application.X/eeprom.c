@@ -50,18 +50,14 @@ void eeprom_initialise(void) {
             nvm_eeprom_write(EEPROM_LOC_LCD_BRIGHTNESS, 0xff);
             nvm_eeprom_write(EEPROM_LOC_LCD_CONTRAST, 0x3f);
         }
-        
-        if (read_version < 3) {
-            nvm_eeprom_write(EEPROM_LOC_CAN_DOMAIN, 0x00);
-        }
-        
+
         if (read_version < 4) {
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTA, 0x00);
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTB, 0x00);
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTC, 0x00);
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTD, 0x00);
         }
-        
+
         /* Write the current EEPROM version. */
         nvm_eeprom_write(EEPROM_LOC_VERSION_HIGH, (EEPROM_CURRENT_VERSION >> 8) & 0xff);
         nvm_eeprom_write(EEPROM_LOC_VERSION_LOW, EEPROM_CURRENT_VERSION & 0xff);

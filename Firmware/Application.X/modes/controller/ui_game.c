@@ -15,12 +15,11 @@ uint8_t ui_game_quick_start(uint8_t current, action_t *a) {
 
     /* Create the game. */
     game_create(seed, 3, 5, 0);
-    
+
     return a->index;
 }
 
 uint8_t ui_game_force_strike(uint8_t current, action_t *a) {
-    game_strike_update(1);
     game_module_strike(1);
     return current;
 }
@@ -52,14 +51,14 @@ uint8_t ui_game_edgework_press(uint8_t current, action_t *a) {
     if (ui_game_edgework_last_press + UI_GAME_EDGEWORK_WITHIN < tick_value) {
         ui_game_edgework_presses = 0;
     }
-    
-    ui_game_edgework_presses++;   
+
+    ui_game_edgework_presses++;
     ui_game_edgework_last_press = tick_value;
-    
+
     if (ui_game_edgework_presses == 2) {
         return a->index;
     }
-    
+
     return current;
 }
 
@@ -68,13 +67,13 @@ void ui_game_edgework_display(interface_t *current) {
     bool has_right = (ui_game_edgework < edgework_count());
 
     lcd_clear();
-    
-    uint8_t *title = "Edgework X/X";   
+
+    uint8_t *title = "Edgework X/X";
     edgework_display(ui_game_edgework);
     ui_render_menu_item_text(title, false, has_left, has_right);
-    
+
     lcd_number(0, 11, 1, ui_game_edgework + 1);
-    lcd_number(0, 13, 1, edgework_count() + 1);  
+    lcd_number(0, 13, 1, edgework_count() + 1);
 }
 
 uint8_t ui_game_abandon(uint8_t current, action_t *a) {
@@ -89,7 +88,7 @@ uint8_t ui_game_idle(uint8_t current, action_t *a) {
 
 void ui_game_endgame_display(interface_t *current) {
     lcd_clear();
-    
+
     ui_render_menu_item_text("Strikes: X/X", true, false, false);
     lcd_number(0, 11, 1, game.strikes_current);
     lcd_number(0, 13, 1, game.strikes_total);

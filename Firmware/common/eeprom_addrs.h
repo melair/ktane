@@ -13,8 +13,6 @@
 #define EEPROM_LOC_RNG_C                            0x014 /* RNG Seed, C */
 #define EEPROM_LOC_RNG_D                            0x015 /* RNG Seed, D */
 
-#define EEPROM_LOC_CAN_DOMAIN                       0x016 /* Configured CAN domain. */
-
 #define EEPROM_LOC_OPT_KPORTA                       0x018 /* Optional module on KPORTA. */
 #define EEPROM_LOC_OPT_KPORTB                       0x019 /* Optional module on KPORTB. */
 #define EEPROM_LOC_OPT_KPORTC                       0x01a /* Optional module on KPORTC. */

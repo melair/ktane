@@ -7,7 +7,7 @@
 #include "../../buzzer.h"
 #include "../../peripherals/lcd.h"
 #include "../../tick.h"
-#include "../../protocol_module.h"
+#include "../../module.h"
 
 /* Keymatrix. */
 pin_t ui_cols[] = {KPIN_B2, KPIN_NONE};
@@ -31,7 +31,7 @@ interface_t interface[] = {
         {
             .action = &ui_action_jump,
             .index = 27
-        },        
+        },
         .render = &ui_render_menu_item,
         .render_data = "Start Game",
         .render_check = &tick_2hz
@@ -156,10 +156,10 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 9
         },
-        .press = 
+        .press =
         {
             .action = &ui_action_jump,
-            .index = 16 
+            .index = 16
         },
         .render = &ui_render_menu_item,
         .render_data = "Configure",
@@ -311,7 +311,8 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 17
         },
-        .press = {
+        .press =
+        {
             .action = &ui_action_jump,
             .index = 23
         },
@@ -519,7 +520,7 @@ interface_t interface[] = {
         {
             .action = &ui_game_edgework_press,
             .index = 29
-        },        
+        },
         .render = &ui_game_edgework_display,
         .render_check = &tick_2hz
     },
@@ -545,12 +546,12 @@ interface_t interface[] = {
         {
             .action = &ui_action_jump,
             .index = 29
-        },      
+        },
         .right =
         {
             .action = &ui_action_jump,
             .index = 31
-        },    
+        },
         .press =
         {
             .action = &ui_game_abandon,
@@ -571,7 +572,7 @@ interface_t interface[] = {
         {
             .action = &ui_action_jump,
             .index = 33
-        },  
+        },
         .render = &ui_render_menu_item,
         .render_data = "Debug",
         .render_check = &tick_2hz
@@ -694,8 +695,8 @@ uint8_t ui_action_jump(uint8_t current, action_t *a) {
 
 uint8_t ui_action_restart_ktane(uint8_t current, action_t *a) {
     // Send reset onto network.
-    protocol_module_reset_send();
-    
+    module_send_reset();
+
     // Never reached.
     return current;
 }

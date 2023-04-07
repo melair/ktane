@@ -4,11 +4,11 @@
 #include "serial.h"
 #include "tick.h"
 #include "rng.h"
-#include "protocol_network.h"
 #include "../common/can.h"
 #include "../common/can_private.h"
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
+#include "../common/packet.h"
 
 #define CAN_ADDRESS_RNG_MASK 0x74926411
 #define CAN_ADDRESS_CHECKS 4
@@ -20,13 +20,19 @@ uint8_t can_address_phase;
 uint32_t can_address_clear_tick;
 uint8_t can_address_eeprom;
 
+void can_address_receive_announce(uint8_t id, packet_t *p);
+void can_address_receive_nak(uint8_t id, packet_t *p);
+
 void can_address_initialise(uint8_t initial_id) {
+    packet_register(PREFIX_NETWORK, OPCODE_NETWORK_ADDRESS_ANNOUNCE, can_address_receive_announce);
+    packet_register(PREFIX_NETWORK, OPCODE_NETWORK_ADDRESS_NAK, can_address_receive_nak);
+
     /* Set our address to no address. */
     can_identifier = CAN_NO_ADDRESS;
 
     /* Retrieve the CAN EEPROM address. */
     can_address_eeprom = initial_id;
-    
+
     /* Sanity, if set to 0x00 assume no address. */
     if (can_address_eeprom == 0x00) {
         can_address_eeprom = CAN_NO_ADDRESS;
@@ -49,7 +55,7 @@ void can_address_service(void) {
             } else {
                 can_identifier = CAN_NO_ADDRESS;
 
-                while(can_identifier == CAN_NO_ADDRESS) {
+                while (can_identifier == CAN_NO_ADDRESS) {
                     can_identifier = rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK);
                 }
             }
@@ -62,7 +68,10 @@ void can_address_service(void) {
                 can_address_phase++;
 
                 can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);
-                protocol_network_address_announce_send();
+
+                packet_outgoing.opcode = OPCODE_NETWORK_ADDRESS_ANNOUNCE;
+                packet_outgoing.network.address_announce.serial = serial_get();
+                packet_send(PREFIX_NETWORK, &packet_outgoing);
             }
         } else {
             if (can_address_clear_tick <= tick_value) {
@@ -70,7 +79,10 @@ void can_address_service(void) {
 
                 if (can_address_phase <= CAN_ADDRESS_CHECKS) {
                     can_address_clear_tick = tick_value + 64 + (rng_generate8(&can_address_seed, CAN_ADDRESS_RNG_MASK) & 0x7f);
-                    protocol_network_address_announce_send();
+
+                    packet_outgoing.opcode = OPCODE_NETWORK_ADDRESS_ANNOUNCE;
+                    packet_outgoing.network.address_announce.serial = serial_get();
+                    packet_send(PREFIX_NETWORK, &packet_outgoing);
                 }
             }
         }
@@ -80,7 +92,7 @@ void can_address_service(void) {
                 nvm_eeprom_write(EEPROM_LOC_CAN_ID, can_identifier);
             }
 
-            can_is_dirty = true;                        
+            can_is_dirty = true;
         }
     }
 }
@@ -88,7 +100,7 @@ void can_address_service(void) {
 /**
  * Handle receiving notification that our candidate is in use.
  */
-void can_address_conflict(uint8_t id) {
+void can_address_receive_nak(uint8_t id, packet_t *p) {
     if (id == can_identifier) {
         /* Just reset our progress to selection if we're not decided. */
         if (can_address_phase <= CAN_ADDRESS_CHECKS) {
@@ -100,11 +112,13 @@ void can_address_conflict(uint8_t id) {
 /**
  * Handle an announcement and see if it's in conflict.
  */
-void can_address_check(uint8_t id) {
+void can_address_receive_announce(uint8_t id, packet_t *p) {
     if (id == can_identifier) {
-        protocol_network_address_nak_send();
+        packet_outgoing.opcode = OPCODE_NETWORK_ADDRESS_NAK;
+        packet_outgoing.network.address_nak.serial = serial_get();
+        packet_send(PREFIX_NETWORK, &packet_outgoing);
 
-        can_address_conflict(id);
+        can_address_receive_nak(id, p);
     }
 }
 
