@@ -13,6 +13,7 @@
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
 #include "../common/fw.h"
+#include "../common/fw_updater.h"
 #include "../common/segments.h"
 #include "../common/can.h"
 #include "../common/protocol.h"
@@ -305,6 +306,22 @@ void module_receive_announce(uint8_t id, packet_t *p) {
 
     if (p->module.announcement.flags.reset) {
         module_errors_clear(id);
+    }
+
+    if (!p->module.announcement.flags.debug && modules[idx].mode == MODE_CONTROLLER) {
+        /* Update the firmwares in the following order: BOOTLOADER, FLASHER, APPLICATION. */
+        if (modules[idx].firmware.bootloader > fw_version(BOOTLOADER)) {
+            fw_updater_start(BOOTLOADER, modules[idx].firmware.bootloader);
+        } else if (modules[idx].firmware.flasher > fw_version(FLASHER)) {
+            fw_updater_start(FLASHER, modules[idx].firmware.flasher);
+        } else {
+            /* Application can not update its self, bump to flasher. */
+            nvm_eeprom_write(EEPROM_LOC_BOOTLOADER_TARGET, 0x00);
+            nvm_eeprom_write(EEPROM_LOC_FLASHER_SEGMENT, APPLICATION);
+            nvm_eeprom_write(EEPROM_LOC_FLASHER_VERSION_HIGHER, (modules[idx].firmware.application >> 8) & 0xff);
+            nvm_eeprom_write(EEPROM_LOC_FLASHER_VERSION_LOWER, modules[idx].firmware.application & 0xff);
+            RESET();
+        }
     }
 }
 

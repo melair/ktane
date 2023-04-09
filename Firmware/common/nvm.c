@@ -26,7 +26,7 @@ uint8_t nvm_eeprom_read(uint16_t addr) {
 
     /* Execute command, and wait until done. */
     NVMCON0bits.GO = 1;
-    while(NVMCON0bits.GO == 1);
+    while (NVMCON0bits.GO == 1);
 
     /* Return read byte. */
     return NVMDATL;
@@ -65,13 +65,13 @@ void nvm_eeprom_write(uint16_t addr, uint8_t data) {
     __asm(" BSF     NVMCON0, 0");
 
     /* Wait until done, this blocks for update period. */
-    while(NVMCON0bits.GO == 1);
+    while (NVMCON0bits.GO == 1);
 }
 
 /**
  * Erase a page of the PFM, 256 bytes - they will be set to 0xff, as writing
  * to the PFM can only make bits go low.
- * 
+ *
  * @param addr base of address to wipe
  */
 void nvm_pfm_erase(uint32_t addr) {
@@ -92,8 +92,8 @@ void nvm_pfm_erase(uint32_t addr) {
 
     /* Start operation. */
     __asm(" BSF     NVMCON0, 0");
-    
-    while(NVMCON0bits.GO == 1);
+
+    while (NVMCON0bits.GO == 1);
 }
 
 /**
@@ -117,7 +117,7 @@ uint16_t nvm_pfm_read(uint32_t addr) {
 
     /* Execute command, and wait until done. */
     NVMCON0bits.GO = 1;
-    while(NVMCON0bits.GO == 1);
+    while (NVMCON0bits.GO == 1);
 
     /* Return read byte. */
     return NVMDAT;
@@ -156,5 +156,5 @@ void nvm_pfm_write(uint32_t addr, uint16_t data) {
     __asm(" BSF     NVMCON0, 0");
 
     /* Wait until done, this blocks for update period. */
-    while(NVMCON0bits.GO == 1);
+    while (NVMCON0bits.GO == 1);
 }

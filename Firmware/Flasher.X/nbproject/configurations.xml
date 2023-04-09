@@ -10,6 +10,10 @@
       <itemPath>../common/nvm.h</itemPath>
       <itemPath>../common/mcu.h</itemPath>
       <itemPath>../common/fw.h</itemPath>
+      <itemPath>../common/can.h</itemPath>
+      <itemPath>../common/packet.h</itemPath>
+      <itemPath>../common/protocol.h</itemPath>
+      <itemPath>../common/fw_updater.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -22,6 +26,9 @@
       <itemPath>../common/nvm.c</itemPath>
       <itemPath>../common/mcu.c</itemPath>
       <itemPath>../common/fw.c</itemPath>
+      <itemPath>../common/can.c</itemPath>
+      <itemPath>../common/packet.c</itemPath>
+      <itemPath>../common/fw_updater.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

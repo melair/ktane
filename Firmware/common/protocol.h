@@ -1,11 +1,11 @@
 #ifndef PROTOCOL_H
 #define	PROTOCOL_H
 
-#define PREFIX_MODULE       0b000
-#define PREFIX_GAME         0b010
-#define PREFIX_NETWORK      0b100
-#define PREFIX_FIRMWARE     0b110
-#define PREFIX_DEBUG        0b111
+#define PREFIX_MODULE       0x00
+#define PREFIX_GAME         0x02
+#define PREFIX_NETWORK      0x04
+#define PREFIX_FIRMWARE     0x06
+#define PREFIX_DEBUG        0x07 
 
 #define OPCODE_COUNT 16
 

@@ -78,14 +78,14 @@ void wires_disable(bool first);
 void wires_initialise(void) {
     /* Initialise ARGB expanded memory. */
     argb_expand(WIRES_ARGB_COUNT, &mode_data.wires.argb_leds[0], &mode_data.wires.argb_output[0]);
-    
+
     /* Register callbacks for mode. */
     mode_register_callback(GAME_IDLE, wires_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, wires_service_setup, &tick_20hz);
     mode_register_callback(GAME_START, wires_service_start, &tick_20hz);
     mode_register_callback(GAME_RUNNING, wires_service_running, &tick_100hz);
     mode_register_callback(GAME_DISABLE, wires_disable, NULL);
-    
+
     /* Set wire port pins to input and ADC. */
     KTRISB |= 0b00111111;
     KANSELB |= 0b00111111;
@@ -253,7 +253,7 @@ void wires_calculate_solution_simple(void) {
     uint8_t wire_count = wires_get_wire_count();
     bool lastSerialDigitIsOdd = (edgework_serial_last_digit() % 2 == 1);
 
-    switch(wire_count) {
+    switch (wire_count) {
         case 3:
             /*
              If there are no red wires, cut the second wire.
@@ -285,7 +285,7 @@ void wires_calculate_solution_simple(void) {
                 wires_set_cut(1);
             } else if (wires_get_color_count(WIRE_COLOUR_BLUE) == 1) {
                 wires_set_cut(1);
-            } else if(wires_get_color_count(WIRE_COLOUR_YELLOW) > 1) {
+            } else if (wires_get_color_count(WIRE_COLOUR_YELLOW) > 1) {
                 wires_set_cut(-1);
             } else {
                 wires_set_cut(2);

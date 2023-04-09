@@ -33,10 +33,11 @@
 #include "../common/mcu.h"
 #include "../common/device.h"
 #include "../common/fw.h"
+#include "../common/fw_updater.h"
 
-/* Current firmware version. */
+/* Current firmware version, little endian. */
 asm("PSECT applicationversion");
-asm("dw 0x004d");
+asm("dw 0x4d00");
 
 /**
  * Main function, initialise and main loop.
@@ -100,6 +101,9 @@ void main(void) {
     /* Initialise firmware server. */
     fw_server_initialise();
 #endif
+
+    /* Initialise the firmware updater. */
+    fw_updater_initialise();
 
     /* Beep on start. */
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);

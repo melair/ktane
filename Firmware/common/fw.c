@@ -9,10 +9,10 @@ uint16_t fw_versions[SEGMENT_COUNT];
 uint32_t fw_checksums[SEGMENT_COUNT];
 
 /* Locations in PFM memory for versions. */
-const uint32_t fw_version_locations[SEGMENT_COUNT] = { 
-    BOOTLOADER_OFFSET + BOOTLOADER_SIZE - 2, 
-    APPLICATION_OFFSET + APPLICATION_SIZE - 2, 
-    FLASHER_OFFSET + FLASHER_SIZE - 2 
+const uint32_t fw_version_locations[SEGMENT_COUNT] = {
+    BOOTLOADER_OFFSET + BOOTLOADER_SIZE - 2,
+    APPLICATION_OFFSET + APPLICATION_SIZE - 2,
+    FLASHER_OFFSET + FLASHER_SIZE - 2
 };
 
 const uint32_t fw_offsets[SEGMENT_COUNT] = {
@@ -35,13 +35,10 @@ const uint16_t fw_pages[SEGMENT_COUNT] = {
     FLASHER_SIZE / FW_PAGE_SIZE
 };
 
-/* Local function prototypes. */
-uint32_t fw_calculate_checksums(uint32_t base_addr, uint32_t size);
-
 void fw_initialise(void) {
     for (uint8_t i = 0; i < SEGMENT_COUNT; i++) {
         fw_versions[i] = nvm_pfm_read(fw_version_locations[i]);
-        fw_checksums[i] = fw_calculate_checksums(fw_offsets[i], fw_sizes[i]);
+        fw_checksums[i] = fw_calculate_checksum(fw_offsets[i], fw_sizes[i]);
     }
 }
 
@@ -60,7 +57,7 @@ uint16_t fw_page_count(uint8_t segment) {
 void fw_page_read(uint8_t segment, uint16_t page, uint8_t *data) {
     uint32_t base_addr = fw_offsets[segment] + (page * FW_PAGE_SIZE);
     uint8_t off = 0;
-    
+
     for (uint32_t addr = base_addr; addr < base_addr + FW_PAGE_SIZE; addr += 2) {
         uint16_t pfm = nvm_pfm_read(addr);
 
@@ -77,18 +74,18 @@ void fw_page_write(uint8_t segment, uint16_t page, uint8_t *data) {
     if ((base_addr & 0xff) == 0) {
         nvm_pfm_erase(base_addr);
     }
-    
+
     uint8_t off = 0;
 
     /* Loop through payload and store in PFM. */
     for (uint32_t addr = base_addr; addr < base_addr + FW_PAGE_SIZE; addr += 2) {
-        uint16_t out = (data[off] << 8) | data[off + 1];
+        uint16_t out = (uint16_t) (data[off] << 8) | data[off + 1];
         nvm_pfm_write(addr, out);
-        off += 2;      
+        off += 2;
     }
 }
 
-uint32_t fw_calculate_checksums(uint32_t base_addr, uint32_t size) {
+uint32_t fw_calculate_checksum(uint32_t base_addr, uint32_t size) {
     /* Set polynomial length (-1). */
     CRCCON1bits.PLEN = 31;
 
@@ -139,17 +136,17 @@ uint32_t fw_calculate_checksums(uint32_t base_addr, uint32_t size) {
 
         /* Execute command, and wait until done. */
         NVMCON0bits.GO = 1;
-        while(NVMCON0bits.GO == 1);
+        while (NVMCON0bits.GO == 1);
 
         /* Loop while buffer full, though shouldn't be. */
-        while(CRCCON0bits.FULL == 1);
+        while (CRCCON0bits.FULL == 1);
 
         /* Pass to CRC. */
         CRCDATAH = NVMDATH;
         CRCDATAL = NVMDATL;
 
         /* Wait while CRC is running. */
-        while(CRCCON0bits.BUSY == 1);
+        while (CRCCON0bits.BUSY == 1);
     }
 
     /* Stop CRC module. */

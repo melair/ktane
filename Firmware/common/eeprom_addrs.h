@@ -25,7 +25,9 @@
 #define EEPROM_LOC_BOOTLOADER_TARGET                0x3e0 /* Bootloader Target (0xFF = Application, 0x00 = Flasher). */
 
 /* Flasher (0x3f0-0x3ff) */
-#define EEPROM_LOC_FLASHER_CAN_ID                   0x3f0 /* CAN ID to assume during flashing. */
+#define EEPROM_LOC_FLASHER_SEGMENT                  0x3f0 /* Firmware segment to update. */
+#define EEPROM_LOC_FLASHER_VERSION_HIGHER           0x3f1 /* Firmware version to update. */
+#define EEPROM_LOC_FLASHER_VERSION_LOWER            0x3f2 /* Firmware version to update. */
 
 #endif	/* NVM_ADDRS_H */
 
