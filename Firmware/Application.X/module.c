@@ -314,7 +314,7 @@ void module_receive_announce(uint8_t id, packet_t *p) {
             fw_updater_start(BOOTLOADER, modules[idx].firmware.bootloader);
         } else if (modules[idx].firmware.flasher > fw_version(FLASHER)) {
             fw_updater_start(FLASHER, modules[idx].firmware.flasher);
-        } else {
+        } else if (modules[idx].firmware.application > fw_version(APPLICATION)) {
             /* Application can not update its self, bump to flasher. */
             nvm_eeprom_write(EEPROM_LOC_BOOTLOADER_TARGET, 0x00);
             nvm_eeprom_write(EEPROM_LOC_FLASHER_SEGMENT, APPLICATION);
