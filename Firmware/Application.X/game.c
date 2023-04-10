@@ -22,10 +22,10 @@ void game_service_setup(void);
 void game_service_running(void);
 void game_service_over(void);
 uint8_t game_find_or_create_module(uint8_t id);
-void game_update(uint8_t id, packet_t *p);
-void game_module_config(uint8_t id, packet_t *p);
-void game_module_update_state(uint8_t id, packet_t *p);
-void game_strike_update(uint8_t id, packet_t *p);
+void game_update(void);
+void game_module_config(void);
+void game_module_update_state(void);
+void game_strike_update(void);
 void game_module_state_send(void);
 
 /**
@@ -97,7 +97,9 @@ void game_create(uint32_t seed, uint8_t strikes_total, uint8_t minutes, uint8_t 
     packet_outgoing.game.state.seconds = seconds;
     packet_outgoing.game.state.centiseconds = 0;
     packet_outgoing.game.state.time_ratio = TIME_RATIO_1;
-    game_update(0, &packet_outgoing);
+    packet_incomming = &packet_outgoing;
+
+    game_update();
 }
 
 /**
@@ -138,7 +140,10 @@ void game_update_send(void) {
  * @param id can ID of sending node
  * @param p packet sent by node
  */
-void game_update(uint8_t id, packet_t *p) {
+void game_update(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     if (game.state != p->game.state.state) {
         game.state_first = true;
     }
@@ -165,7 +170,10 @@ void game_update(uint8_t id, packet_t *p) {
  * @param id CAN id of sending node
  *
  */
-void game_strike_update(uint8_t id, packet_t *p) {
+void game_strike_update(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     game.strikes_current += p->game.module_strike.strikes;
 }
 
@@ -175,7 +183,10 @@ void game_strike_update(uint8_t id, packet_t *p) {
  * @param id CAN id
  * @param p inbound can packet
  */
-void game_module_update_state(uint8_t id, packet_t *p) {
+void game_module_update_state(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     module_game_t *that_module = module_get_game_by_id(id);
 
     if (that_module == NULL) {
@@ -200,7 +211,10 @@ void game_module_config_send(uint8_t id, bool enabled, uint8_t difficulty) {
     packet_outgoing.game.module_config.flags.enabled = enabled;
     packet_outgoing.game.module_config.difficulty = difficulty;
     packet_send(PREFIX_GAME, &packet_outgoing);
-    game_module_config(0, &packet_outgoing);
+
+    packet_incomming = &packet_outgoing;
+
+    game_module_config();
 }
 
 /**
@@ -209,7 +223,10 @@ void game_module_config_send(uint8_t id, bool enabled, uint8_t difficulty) {
  * @param id CAN id
  * @param p inbound packet
  */
-void game_module_config(uint8_t id, packet_t *p) {
+void game_module_config(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     module_game_t *that_module = module_get_game_by_id(p->game.module_config.can_id);
 
     if (that_module == NULL) {

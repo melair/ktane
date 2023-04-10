@@ -11,7 +11,7 @@
 
 /* Bootloader firmware version, little endian. */
 asm("PSECT bootloaderversion");
-asm("dw 0x0100");
+asm("dw 0x0001");
 
 void main(void) {
     /* Read destination and reset back to application. */

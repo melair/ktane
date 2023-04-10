@@ -297,7 +297,7 @@ void can_service(void) {
         can_stats.rx_packets++;
 
         /* Pass packet to protocol handling. */
-        packet_route(id, prefix, (packet_t *) & rxbuffer[8]);
+        packet_route(id, prefix, (packet_t *) (&rxbuffer[8]));
 
         /* Increment the buffer. */
         C1FIFOCON1Hbits.UINC = 1;

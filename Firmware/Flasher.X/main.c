@@ -11,7 +11,7 @@
 
 /* Flasher Version, little endian. */
 asm("PSECT flasherversion");
-asm("dw 0x0100");
+asm("dw 0x0001");
 
 void main(void) {
     /* Drive everything unused to low. */

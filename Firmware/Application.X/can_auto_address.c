@@ -20,8 +20,8 @@ uint8_t can_address_phase;
 uint32_t can_address_clear_tick;
 uint8_t can_address_eeprom;
 
-void can_address_receive_announce(uint8_t id, packet_t *p);
-void can_address_receive_nak(uint8_t id, packet_t *p);
+void can_address_receive_announce(void);
+void can_address_receive_nak(void);
 
 void can_address_initialise(uint8_t initial_id) {
     packet_register(PREFIX_NETWORK, OPCODE_NETWORK_ADDRESS_ANNOUNCE, can_address_receive_announce);
@@ -100,7 +100,10 @@ void can_address_service(void) {
 /**
  * Handle receiving notification that our candidate is in use.
  */
-void can_address_receive_nak(uint8_t id, packet_t *p) {
+void can_address_receive_nak(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     if (id == can_identifier) {
         /* Just reset our progress to selection if we're not decided. */
         if (can_address_phase <= CAN_ADDRESS_CHECKS) {
@@ -112,13 +115,19 @@ void can_address_receive_nak(uint8_t id, packet_t *p) {
 /**
  * Handle an announcement and see if it's in conflict.
  */
-void can_address_receive_announce(uint8_t id, packet_t *p) {
+void can_address_receive_announce(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     if (id == can_identifier) {
         packet_outgoing.opcode = OPCODE_NETWORK_ADDRESS_NAK;
         packet_outgoing.network.address_nak.serial = serial_get();
         packet_send(PREFIX_NETWORK, &packet_outgoing);
 
-        can_address_receive_nak(id, p);
+        packet_incomming = &packet_outgoing;
+        packet_incomming_id = id;
+
+        can_address_receive_nak();
     }
 }
 

@@ -35,9 +35,9 @@
 #include "../common/fw.h"
 #include "../common/fw_updater.h"
 
-/* Current firmware version, little endian. */
+/* Current firmware version, big endian. */
 asm("PSECT applicationversion");
-asm("dw 0x4d00");
+asm("dw 0x004d");
 
 /**
  * Main function, initialise and main loop.

@@ -8,7 +8,7 @@
 #define FLASHER     2
 
 #define BOOTLOADER_OFFSET   0x00000
-#define BOOTLOADER_SIZE     0x000ff
+#define BOOTLOADER_SIZE     0x00100
 
 #define APPLICATION_OFFSET  0x00100
 #define APPLICATION_SIZE    0x1ef00

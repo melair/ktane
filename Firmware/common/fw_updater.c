@@ -25,8 +25,8 @@ uint16_t fw_updater_target_pages_current;
 uint8_t fw_updater_firmware_source;
 
 /* Location function prototypes. */
-void fw_updater_receive_header(uint8_t id, packet_t *p);
-void fw_updater_receive_page(uint8_t id, packet_t *p);
+void fw_updater_receive_header(void);
+void fw_updater_receive_page(void);
 void fw_updater_request_page(void);
 
 void fw_updater_initialise(void) {
@@ -48,7 +48,10 @@ void fw_updater_start(uint8_t segment, uint16_t version) {
     }
 }
 
-void fw_updater_receive_header(uint8_t id, packet_t *p) {
+void fw_updater_receive_header(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     if (fw_updater_state == FIRMWARE_PROCESS_HEADER) {
         if (p->firmware.header.segment == fw_updater_target_segment && p->firmware.header.version == fw_updater_target_version) {
             fw_updater_firmware_source = id;
@@ -71,7 +74,10 @@ void fw_updater_request_page(void) {
     packet_send(PREFIX_FIRMWARE, &packet_outgoing);
 }
 
-void fw_updater_receive_page(uint8_t id, packet_t *p) {
+void fw_updater_receive_page(void) {
+    uint8_t id = packet_incomming_id;
+    packet_t *p = packet_incomming;
+
     if (fw_updater_state == FIRMWARE_PROCESS_PAGES) {
         if (id == fw_updater_firmware_source && p->firmware.page_response.segment == fw_updater_target_segment && p->firmware.page_response.page == fw_updater_target_pages_current) {
             fw_page_write(fw_updater_target_segment, fw_updater_target_pages_current, &p->firmware.page_response.data[0]);

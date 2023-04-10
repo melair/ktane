@@ -5,11 +5,13 @@
 #include "packet.h"
 
 packet_t packet_outgoing;
+packet_t *packet_incomming;
+uint8_t packet_incomming_id;
 
 typedef struct {
     uint8_t prefix;
     uint8_t opcode;
-    void (*fn)(uint8_t, packet_t *);
+    void (*fn)(void);
 } packet_route_t;
 
 uint8_t packet_routes_used = 0;
@@ -30,9 +32,12 @@ void packet_route(uint8_t src, uint8_t prefix, packet_t *packet) {
         return;
     }
 
+    packet_incomming = packet;
+    packet_incomming_id = src;
+
     for (uint8_t i = 0; i < packet_routes_used; i++) {
         if (packet_routes[i].prefix == prefix && packet_routes[i].opcode == packet->opcode) {
-            packet_routes[i].fn(src, packet);
+            (*packet_routes[i].fn)();
             return;
         }
     }
@@ -41,7 +46,7 @@ void packet_route(uint8_t src, uint8_t prefix, packet_t *packet) {
     // module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (PREFIX_FIRMWARE << 8) | payload[0], true);
 }
 
-void packet_register(uint8_t prefix, uint8_t opcode, void (*fn)(uint8_t, packet_t *)) {
+void packet_register(uint8_t prefix, uint8_t opcode, void (*fn)(void)) {
     packet_routes[packet_routes_used].prefix = prefix;
     packet_routes[packet_routes_used].opcode = opcode;
     packet_routes[packet_routes_used].fn = fn;
