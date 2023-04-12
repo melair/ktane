@@ -45,24 +45,11 @@ uint8_t module_find_or_create(uint8_t id);
 uint8_t module_determine_error_state(void);
 void module_announce(void);
 void module_errors_clear(uint8_t id);
-void module_receive_announce(void);
-void module_receive_error(void);
-void module_receive_reset(void);
-void module_receive_identify(void);
-void module_receive_mode_set(void);
-void module_receive_special_function(void);
 
 /**
  * Initialise the module database, store self and set up next announcement time.
  */
 void module_initialise(void) {
-    packet_register(PREFIX_MODULE, OPCODE_MODULE_ANNOUNCEMENT, &module_receive_announce);
-    packet_register(PREFIX_MODULE, OPCODE_MODULE_ERROR, &module_receive_error);
-    packet_register(PREFIX_MODULE, OPCODE_MODULE_RESET, &module_receive_reset);
-    packet_register(PREFIX_MODULE, OPCODE_MODULE_IDENTIFY, &module_receive_identify);
-    packet_register(PREFIX_MODULE, OPCODE_MODULE_MODE_SET, &module_receive_mode_set);
-    packet_register(PREFIX_MODULE, OPCODE_MODULE_SPECIAL_FUNCTION, &module_receive_special_function);
-
     /* Init module structure. */
     for (uint8_t i = 0; i < MODULE_COUNT; i++) {
         modules[i].flags.INUSE = 0;
@@ -165,10 +152,6 @@ void module_service(void) {
         this_module->ready = false;
     }
 
-    if (game.state == GAME_IDLE && !this_module->enabled) {
-        this_module->enabled = true;
-    }
-
     if (tick_20hz) {
         error_state = module_determine_error_state();
         if (error_state_prev != error_state) {
@@ -181,7 +164,6 @@ void module_service(void) {
 bool announce_reset = true;
 
 void module_announce(void) {
-    packet_outgoing.opcode = OPCODE_MODULE_ANNOUNCEMENT;
     packet_outgoing.module.announcement.mode = mode_get();
     packet_outgoing.module.announcement.application_version = fw_version(APPLICATION);
     packet_outgoing.module.announcement.flags.reset = announce_reset;
@@ -191,7 +173,7 @@ void module_announce(void) {
     packet_outgoing.module.announcement.serial = serial_get();
     packet_outgoing.module.announcement.bootloader_version = fw_version(BOOTLOADER);
     packet_outgoing.module.announcement.flasher_version = fw_version(FLASHER);
-    packet_send(PREFIX_MODULE, &packet_outgoing);
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_ANNOUNCEMENT, SIZE_MODULE_ANNOUNCEMENT, &packet_outgoing);
 
     announce_reset = false;
 }
@@ -282,10 +264,7 @@ uint8_t module_find_or_create(uint8_t id) {
  * @param firmware firmware version
  * @param serial serial number of the module
  */
-void module_receive_announce(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void module_receive_announce(uint8_t id, packet_t *p) {
     uint8_t idx = module_find_or_create(id);
 
     if (idx == 0xff) {
@@ -336,15 +315,11 @@ void module_receive_announce(void) {
  * @param code error code to raise
  */
 void module_error_raise(uint16_t code, bool active) {
-    packet_outgoing.opcode = OPCODE_MODULE_ERROR;
     packet_outgoing.module.error_announcement.error_code = code;
     packet_outgoing.module.error_announcement.flags.active = active;
-    packet_send(PREFIX_MODULE, &packet_outgoing);
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_ERROR, SIZE_MODULE_ERROR, &packet_outgoing);
 
-    packet_incomming = &packet_outgoing;
-    packet_incomming_id = can_get_id();
-
-    module_receive_error();
+    module_receive_error(can_get_id(), &packet_outgoing);
 }
 
 /**
@@ -353,10 +328,7 @@ void module_error_raise(uint16_t code, bool active) {
  * @param id CAN id
  * @param code error code received
  */
-void module_receive_error(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void module_receive_error(uint8_t id, packet_t *p) {
     uint8_t idx = module_find_or_create(id);
 
     if (idx == 0xff) {
@@ -470,8 +442,7 @@ module_error_t *module_get_errors(uint8_t idx, uint8_t err) {
 }
 
 void module_send_reset(void) {
-    packet_outgoing.opcode = OPCODE_MODULE_RESET;
-    packet_send(PREFIX_MODULE, &packet_outgoing);
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_RESET, SIZE_MODULE_RESET, &packet_outgoing);
 
     /* Wait until the CAN TX buffer is empty, i.e. the above packet has gone. */
     while (!C1TXQSTALbits.TXQEIF);
@@ -479,34 +450,27 @@ void module_send_reset(void) {
     RESET();
 }
 
-void module_receive_reset(void) {
+void module_receive_reset(uint8_t id, packet_t *p) {
     RESET();
 }
 
 void module_send_identify(uint8_t id) {
-    packet_outgoing.opcode = OPCODE_MODULE_IDENTIFY;
     packet_outgoing.module.identify.can_id = id;
-    packet_send(PREFIX_MODULE, &packet_outgoing);
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_IDENTIFY, SIZE_MODULE_IDENTIFY, &packet_outgoing);
+    module_receive_identify(0, &packet_outgoing);
 }
 
-void module_receive_identify(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void module_receive_identify(uint8_t id, packet_t *p) {
     status_identify(p->module.identify.can_id == can_get_id());
 }
 
 void module_send_mode_set(uint8_t id, uint8_t mode) {
-    packet_outgoing.opcode = OPCODE_MODULE_MODE_SET;
     packet_outgoing.module.set_mode.can_id = id;
     packet_outgoing.module.set_mode.mode = mode;
-    packet_send(PREFIX_MODULE, &packet_outgoing);
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_MODE_SET, SIZE_MODULE_MODE_SET, &packet_outgoing);
 }
 
-void module_receive_mode_set(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void module_receive_mode_set(uint8_t id, packet_t *p) {
     /* If targeted at this module. */
     if (p->module.set_mode.can_id == can_get_id()) {
         /* Change module mode in EEPROM. */
@@ -518,16 +482,12 @@ void module_receive_mode_set(void) {
 }
 
 void module_send_special_function(uint8_t id, uint8_t special_fn) {
-    packet_outgoing.opcode = OPCODE_MODULE_SPECIAL_FUNCTION;
     packet_outgoing.module.special_function.can_id = id;
     packet_outgoing.module.special_function.special_function = special_fn;
-    packet_send(PREFIX_MODULE, &packet_outgoing);
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_SPECIAL_FUNCTION, SIZE_MODULE_SPECIAL_FUNCTION, &packet_outgoing);
 }
 
-void module_receive_special_function(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void module_receive_special_function(uint8_t id, packet_t *p) {
     /* If targeted at this module. */
     if (p->module.special_function.can_id == can_get_id()) {
         mode_call_special_function(p->module.special_function.special_function);

@@ -17,6 +17,7 @@ uint32_t ready_at = 0;
 
 /* Local function prototypes. */
 void controller_service(bool first);
+void controller_service_idle(bool first);
 void controller_service_setup(bool first);
 void controller_service_start(bool first);
 void controller_service_running(bool first);
@@ -41,6 +42,7 @@ void controller_initialise(void) {
 
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, controller_service, NULL);
+    mode_register_callback(GAME_IDLE, controller_service_idle, &tick_20hz);
     mode_register_callback(GAME_SETUP, controller_service_setup, &tick_20hz);
     mode_register_callback(GAME_START, controller_service_start, &tick_20hz);
     mode_register_callback(GAME_RUNNING, controller_service_running, &tick_2khz);
@@ -65,6 +67,21 @@ void controller_service(bool first) {
 
     /* Service the UI peripherals. */
     ui_service();
+}
+
+/** Handle the idle phase of the game, mostly used to blank out the segment
+ * display after a game has finished.
+ *
+ * @param first true if this is the first call of the state.
+ */
+void controller_service_idle(bool first) {
+    if (first) {
+        segment_set_colon(false);
+        segment_set_digit(0, characters[DIGIT_SPACE]);
+        segment_set_digit(1, characters[DIGIT_SPACE]);
+        segment_set_digit(2, characters[DIGIT_SPACE]);
+        segment_set_digit(3, characters[DIGIT_SPACE]);
+    }
 }
 
 /**
@@ -94,9 +111,7 @@ void controller_service_setup(bool first) {
                 break;
             }
 
-            if (!that_module->enabled) {
-                game_module_config_send(that_module->id, true, 255);
-            }
+            game_module_config_send(that_module->id, true, 255);
         }
     }
 

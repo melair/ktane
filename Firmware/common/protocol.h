@@ -7,8 +7,6 @@
 #define PREFIX_FIRMWARE     0x06
 #define PREFIX_DEBUG        0x07 
 
-#define OPCODE_COUNT 16
-
 #define OPCODE_NETWORK_ADDRESS_ANNOUNCE 0x00
 #define OPCODE_NETWORK_ADDRESS_NAK      0x01
 
@@ -28,6 +26,26 @@
 #define OPCODE_FIRMWARE_HEADER          0x01
 #define OPCODE_FIRMWARE_PAGE_REQUEST    0x02
 #define OPCODE_FIRMWARE_PAGE_RESPONSE   0x03
+
+#define SIZE_NETWORK_ADDRESS_ANNOUNCE sizeof(((packet_t *)0)->network.address_announce) + 1
+#define SIZE_NETWORK_ADDRESS_NAK      sizeof(((packet_t *)0)->network.address_nak) + 1
+
+#define SIZE_MODULE_ANNOUNCEMENT      sizeof(((packet_t *)0)->module.announcement) + 1
+#define SIZE_MODULE_RESET             sizeof(((packet_t *)0)->module.reset) + 1
+#define SIZE_MODULE_IDENTIFY          sizeof(((packet_t *)0)->module.identify) + 1
+#define SIZE_MODULE_MODE_SET          sizeof(((packet_t *)0)->module.set_mode) + 1
+#define SIZE_MODULE_SPECIAL_FUNCTION  sizeof(((packet_t *)0)->module.special_function) + 1
+#define SIZE_MODULE_ERROR             sizeof(((packet_t *)0)->module.error_announcement) + 1
+
+#define SIZE_GAME_STATE               sizeof(((packet_t *)0)->game.state) + 1
+#define SIZE_GAME_MODULE_CONFIG       sizeof(((packet_t *)0)->game.module_config) + 1
+#define SIZE_GAME_MODULE_STATE        sizeof(((packet_t *)0)->game.module_state) + 1
+#define SIZE_GAME_MODULE_STRIKE       sizeof(((packet_t *)0)->game.module_strike) + 1
+
+#define SIZE_FIRMWARE_REQUEST         sizeof(((packet_t *)0)->firmware.request) + 1
+#define SIZE_FIRMWARE_HEADER          sizeof(((packet_t *)0)->firmware.header) + 1
+#define SIZE_FIRMWARE_PAGE_REQUEST    sizeof(((packet_t *)0)->firmware.page_request) + 1
+#define SIZE_FIRMWARE_PAGE_RESPONSE   sizeof(((packet_t *)0)->firmware.page_response) + 1
 
 #include <stdint.h>
 
@@ -152,28 +170,6 @@ typedef struct {
     uint8_t opcode;
     uint8_t size;
 } protocol_size_t;
-
-const protocol_size_t protocol_sizes[OPCODE_COUNT] = {
-    { PREFIX_NETWORK, OPCODE_NETWORK_ADDRESS_ANNOUNCE, sizeof(((packet_t *)0)->network.address_announce) + 1 },
-    { PREFIX_NETWORK, OPCODE_NETWORK_ADDRESS_NAK, sizeof(((packet_t *)0)->network.address_nak) + 1 },
-    
-    { PREFIX_MODULE, OPCODE_MODULE_ANNOUNCEMENT, sizeof(((packet_t *)0)->module.announcement) + 1 },
-    { PREFIX_MODULE, OPCODE_MODULE_RESET, sizeof(((packet_t *)0)->module.reset) + 1 },
-    { PREFIX_MODULE, OPCODE_MODULE_IDENTIFY, sizeof(((packet_t *)0)->module.identify) + 1 },
-    { PREFIX_MODULE, OPCODE_MODULE_MODE_SET, sizeof(((packet_t *)0)->module.set_mode) + 1 },
-    { PREFIX_MODULE, OPCODE_MODULE_SPECIAL_FUNCTION, sizeof(((packet_t *)0)->module.special_function) + 1 },
-    { PREFIX_MODULE, OPCODE_MODULE_ERROR, sizeof(((packet_t *)0)->module.error_announcement) + 1 },
-    
-    { PREFIX_GAME, OPCODE_GAME_STATE, sizeof(((packet_t *)0)->game.state) + 1 },
-    { PREFIX_GAME, OPCODE_GAME_MODULE_CONFIG, sizeof(((packet_t *)0)->game.module_config) + 1 },
-    { PREFIX_GAME, OPCODE_GAME_MODULE_STATE, sizeof(((packet_t *)0)->game.module_state) + 1 },
-    { PREFIX_GAME, OPCODE_GAME_MODULE_STRIKE, sizeof(((packet_t *)0)->game.module_strike) + 1 },
-
-    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_REQUEST, sizeof(((packet_t *)0)->firmware.request) + 1 },
-    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_HEADER, sizeof(((packet_t *)0)->firmware.header) + 1 },
-    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_PAGE_REQUEST, sizeof(((packet_t *)0)->firmware.page_request) + 1 },
-    { PREFIX_FIRMWARE, OPCODE_FIRMWARE_PAGE_RESPONSE, sizeof(((packet_t *)0)->firmware.page_response) + 1 }
-};
 
 #endif	/* PROTOCOL_H */
 

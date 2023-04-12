@@ -22,21 +22,12 @@ void game_service_setup(void);
 void game_service_running(void);
 void game_service_over(void);
 uint8_t game_find_or_create_module(uint8_t id);
-void game_update(void);
-void game_module_config(void);
-void game_module_update_state(void);
-void game_strike_update(void);
 void game_module_state_send(void);
 
 /**
  * Initialise the game state.
  */
 void game_initialise(void) {
-    packet_register(PREFIX_GAME, OPCODE_GAME_STATE, game_update);
-    packet_register(PREFIX_GAME, OPCODE_GAME_MODULE_CONFIG, game_module_config);
-    packet_register(PREFIX_GAME, OPCODE_GAME_MODULE_STATE, game_module_update_state);
-    packet_register(PREFIX_GAME, OPCODE_GAME_MODULE_STRIKE, game_strike_update);
-
     game.state = GAME_INIT;
     this_module = module_get_game(0);
 }
@@ -97,9 +88,9 @@ void game_create(uint32_t seed, uint8_t strikes_total, uint8_t minutes, uint8_t 
     packet_outgoing.game.state.seconds = seconds;
     packet_outgoing.game.state.centiseconds = 0;
     packet_outgoing.game.state.time_ratio = TIME_RATIO_1;
-    packet_incomming = &packet_outgoing;
 
-    game_update();
+    game_receive_update(0, &packet_outgoing);
+    game_update_send();
 }
 
 /**
@@ -120,7 +111,6 @@ void game_set_state(uint8_t state, uint8_t result) {
  * For use by the controller, publish the games current state to the network.
  */
 void game_update_send(void) {
-    packet_outgoing.opcode = OPCODE_GAME_STATE;
     packet_outgoing.game.state.state = game.state;
     packet_outgoing.game.state.seed = game.seed;
     packet_outgoing.game.state.strikes_current = game.strikes_current;
@@ -129,7 +119,7 @@ void game_update_send(void) {
     packet_outgoing.game.state.seconds = game.time_remaining.seconds;
     packet_outgoing.game.state.centiseconds = game.time_remaining.centiseconds;
     packet_outgoing.game.state.time_ratio = game.time_ratio;
-    packet_send(PREFIX_GAME, &packet_outgoing);
+    packet_send(PREFIX_GAME, OPCODE_GAME_STATE, SIZE_GAME_STATE, &packet_outgoing);
 }
 
 /**
@@ -140,10 +130,7 @@ void game_update_send(void) {
  * @param id can ID of sending node
  * @param p packet sent by node
  */
-void game_update(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void game_receive_update(uint8_t id, packet_t *p) {
     if (game.state != p->game.state.state) {
         game.state_first = true;
     }
@@ -168,12 +155,9 @@ void game_update(void) {
  * Called from CAN/protocol, update the number of strikes the game has had.
  *
  * @param id CAN id of sending node
- *
+ * @param p inbound can packet
  */
-void game_strike_update(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void game_receive_strike_update(uint8_t id, packet_t *p) {
     game.strikes_current += p->game.module_strike.strikes;
 }
 
@@ -183,10 +167,7 @@ void game_strike_update(void) {
  * @param id CAN id
  * @param p inbound can packet
  */
-void game_module_update_state(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void game_receive_module_update_state(uint8_t id, packet_t *p) {
     module_game_t *that_module = module_get_game_by_id(id);
 
     if (that_module == NULL) {
@@ -206,15 +187,12 @@ void game_module_update_state(void) {
  *                   it supports variable difficulty.
  */
 void game_module_config_send(uint8_t id, bool enabled, uint8_t difficulty) {
-    packet_outgoing.opcode = OPCODE_GAME_MODULE_CONFIG;
     packet_outgoing.game.module_config.can_id = id;
     packet_outgoing.game.module_config.flags.enabled = enabled;
     packet_outgoing.game.module_config.difficulty = difficulty;
-    packet_send(PREFIX_GAME, &packet_outgoing);
+    packet_send(PREFIX_GAME, OPCODE_GAME_MODULE_CONFIG, SIZE_GAME_MODULE_CONFIG, &packet_outgoing);
 
-    packet_incomming = &packet_outgoing;
-
-    game_module_config();
+    game_receive_module_config(0, &packet_outgoing);
 }
 
 /**
@@ -223,10 +201,7 @@ void game_module_config_send(uint8_t id, bool enabled, uint8_t difficulty) {
  * @param id CAN id
  * @param p inbound packet
  */
-void game_module_config(void) {
-    uint8_t id = packet_incomming_id;
-    packet_t *p = packet_incomming;
-
+void game_receive_module_config(uint8_t id, packet_t *p) {
     module_game_t *that_module = module_get_game_by_id(p->game.module_config.can_id);
 
     if (that_module == NULL) {
@@ -238,10 +213,9 @@ void game_module_config(void) {
 }
 
 void game_module_state_send(void) {
-    packet_outgoing.opcode = OPCODE_GAME_MODULE_STATE;
     packet_outgoing.game.module_state.flags.ready = this_module->ready;
     packet_outgoing.game.module_state.flags.solved = this_module->solved;
-    packet_send(PREFIX_GAME, &packet_outgoing);
+    packet_send(PREFIX_GAME, OPCODE_GAME_MODULE_STATE, SIZE_GAME_MODULE_STATE, &packet_outgoing);
 }
 
 /**
@@ -282,9 +256,8 @@ void game_module_solved(bool solved) {
  * @param strikes the number of strikes to add to game
  */
 void game_module_strike(uint8_t strikes) {
-    packet_outgoing.opcode = OPCODE_GAME_MODULE_STRIKE;
     packet_outgoing.game.module_strike.strikes = strikes;
-    packet_send(PREFIX_GAME, &packet_outgoing);
+    packet_send(PREFIX_GAME, OPCODE_GAME_MODULE_STRIKE, SIZE_GAME_MODULE_STRIKE, &packet_outgoing);
 
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 750);
 }

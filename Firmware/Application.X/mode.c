@@ -33,8 +33,10 @@ uint8_t configured_mode;
 
 #define SPECIAL_MODE(mode)      ((mode - GAME_ENABLE) + GAME_STATE_COUNT)
 
+typedef void (*state_fn_t)(bool);
+
 /* Function pointers to each stage. */
-void (*mode_service_state_function[MODE_COUNTS])(bool);
+state_fn_t mode_service_state_function[MODE_COUNTS];
 /* Pointers to tick variable to use to rate limit call. */
 bool *mode_service_tick[MODE_COUNTS];
 
@@ -53,7 +55,7 @@ mode_names_t mode_names[MODE_COUNT + 1] = {
     { MODE_BOOTSTRAP, "Bootstrap"},
     { MODE_CONTROLLER, "Controller"},
     { MODE_CONTROLLER_STANDBY, "Standby Controller"},
-    { MODE_PUZZLE_BASE, "Puzzel Base"},
+    { MODE_PUZZLE_BASE, "Puzzle Base"},
     { MODE_PUZZLE_MAZE, "Maze"},
     { MODE_PUZZLE_SIMON, "Simon Says"},
     { MODE_PUZZLE_PASSWORD, "Password"},
@@ -253,7 +255,9 @@ void mode_service(void) {
 
     if (module_is_enabled != this_module->enabled) {
         module_is_enabled = this_module->enabled;
-        state_fn = mode_service_state_function[(module_is_enabled ? GAME_ENABLE : GAME_DISABLE)];
+
+        uint8_t idx = (module_is_enabled ? SPECIAL_MODE(GAME_ENABLE) : SPECIAL_MODE(GAME_DISABLE));
+        state_fn = mode_service_state_function[idx];
 
         if (state_fn != NULL) {
             state_fn(false);

@@ -16,7 +16,6 @@ asm("dw 0x0001");
 void main(void) {
     /* Read destination and reset back to application. */
     uint8_t destination = nvm_eeprom_read(EEPROM_LOC_BOOTLOADER_TARGET);
-    nvm_eeprom_write(EEPROM_LOC_BOOTLOADER_TARGET, 0xff);
 
     /* Reset stack pointer. */
     STKPTR = 0x00;
@@ -26,6 +25,7 @@ void main(void) {
 
     /* Jump to program. */
     if (destination == 0x00) {
+        nvm_eeprom_write(EEPROM_LOC_BOOTLOADER_TARGET, 0xff);
         asm("goto  " str(FLASHER_OFFSET));
     } else {
         asm("goto  " str(APPLICATION_OFFSET));

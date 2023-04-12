@@ -55,7 +55,9 @@ uint16_t fw_page_count(uint8_t segment) {
 }
 
 void fw_page_read(uint8_t segment, uint16_t page, uint8_t *data) {
-    uint32_t base_addr = fw_offsets[segment] + (page * FW_PAGE_SIZE);
+    uint32_t base_addr = page;
+    base_addr *= FW_PAGE_SIZE;
+    base_addr += fw_offsets[segment];
     uint8_t off = 0;
 
     for (uint32_t addr = base_addr; addr < base_addr + FW_PAGE_SIZE; addr += 2) {
@@ -68,7 +70,9 @@ void fw_page_read(uint8_t segment, uint16_t page, uint8_t *data) {
 }
 
 void fw_page_write(uint8_t segment, uint16_t page, uint8_t *data) {
-    uint32_t base_addr = fw_offsets[segment] + (page * FW_PAGE_SIZE);
+    uint32_t base_addr = page;
+    base_addr *= FW_PAGE_SIZE;
+    base_addr += fw_offsets[segment];
 
     /* For every new page (128 words), perform wipe. */
     if ((base_addr & 0xff) == 0) {

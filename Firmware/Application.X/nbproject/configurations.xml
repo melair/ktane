@@ -281,7 +281,8 @@
         <property key="call-prologues" value="false"/>
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
-        <property key="define-macros" value="SUPPORT_CAN_AUTO_ADDRESS"/>
+        <property key="define-macros"
+                  value="SUPPORT_CAN_AUTO_ADDRESS;SUPPORT_PROTOCOL_MODULE;SUPPORT_PROTOCOL_GAME;SUPPORT_PROTOCOL_NETWORK;SUPPORT_PROTOCOL_FIRMWARE;SUPPORT_FIRMWARE_SERVER"/>
         <property key="disable-optimizations" value="true"/>
         <property key="extra-include-directories" value=""/>
         <property key="favor-optimization-for" value="-speed,+space"/>
@@ -479,6 +480,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="D:/Projects/ktane/GitHubReleased/Firmware/Application.X/debug/default/ControlFirmware_ptg"/>
         <property key="programmerToGoImageName" value="ControlFirmware_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

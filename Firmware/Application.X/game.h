@@ -16,6 +16,13 @@ void game_module_ready(bool ready);
 void game_module_solved(bool solved);
 void game_module_strike(uint8_t strikes);
 
+#include "../common/packet.h"
+
+void game_receive_update(uint8_t id, packet_t *p);
+void game_receive_module_config(uint8_t id, packet_t *p);
+void game_receive_module_update_state(uint8_t id, packet_t *p);
+void game_receive_strike_update(uint8_t id, packet_t *p);
+
 #define GAME_STATE_COUNT 6
 
 #define GAME_INIT       0

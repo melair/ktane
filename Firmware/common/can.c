@@ -244,8 +244,8 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
     /* Cast tx buffer. */
     uint8_t *txbuffer = (uint8_t *) C1TXQUA;
 
-    uint8_t dlc = 0;
-    for (dlc = 0; size > dlc_to_bytes[dlc]; dlc++);
+    uint8_t dlc = 11;
+    //    for (dlc = 0; size > dlc_to_bytes[dlc]; dlc++);
 
     /* Set CAN header. */
     txbuffer[0] = can_identifier;

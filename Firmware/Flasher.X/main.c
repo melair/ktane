@@ -32,9 +32,6 @@ void main(void) {
     /* Initialise CAN bus. */
     can_initialise();
 
-    /* Initialise the firmware updater. */
-    fw_updater_initialise();
-
     /* Lock PPS for safety during flashing. */
     pps_lock();
 
@@ -63,7 +60,7 @@ void main(void) {
          * CPU will wake from the tick timer. This doesn't save much power, but
          * it prevents functions spinning that don't need to operate faster than
          * the tick refresh. */
-        SLEEP();
+        //  SLEEP();
     };
 }
 

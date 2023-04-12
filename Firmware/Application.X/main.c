@@ -37,7 +37,7 @@
 
 /* Current firmware version, big endian. */
 asm("PSECT applicationversion");
-asm("dw 0x004d");
+asm("dw 0x0051");
 
 /**
  * Main function, initialise and main loop.
@@ -96,14 +96,6 @@ void main(void) {
 
     /* Initialise game state. */
     game_initialise();
-
-#ifndef __DEBUG
-    /* Initialise firmware server. */
-    fw_server_initialise();
-#endif
-
-    /* Initialise the firmware updater. */
-    fw_updater_initialise();
 
     /* Beep on start. */
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);

@@ -65,8 +65,8 @@ const uint8_t characters[29] = {
 
 #define DIGIT_COUNT 5
 
-uint8_t digits[DIGIT_COUNT] = { 0x00, 0x00, 0x00, 0x00, 0x00 };
-const uint8_t select[DIGIT_COUNT] = { DIGIT0, DIGIT1, DIGIT2, DIGIT3, COLON };
+uint8_t digits[DIGIT_COUNT] = {0x00, 0x00, 0x00, 0x00, 0x00};
+const uint8_t select[DIGIT_COUNT] = {DIGIT0, DIGIT1, DIGIT2, DIGIT3, COLON};
 uint8_t digit = 0;
 bool colon = false;
 
