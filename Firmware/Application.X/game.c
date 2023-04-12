@@ -258,7 +258,7 @@ void game_module_solved(bool solved) {
 void game_module_strike(uint8_t strikes) {
     packet_outgoing.game.module_strike.strikes = strikes;
     packet_send(PREFIX_GAME, OPCODE_GAME_MODULE_STRIKE, SIZE_GAME_MODULE_STRIKE, &packet_outgoing);
-
+    game_receive_strike_update(0, &packet_outgoing);
     buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 750);
 }
 

@@ -22,8 +22,13 @@
 #define SIMON_DIM    15
 #define SIMON_BRIGHT 31
 
-const uint16_t simon_freqs[4] = { 550, 775, 660, 985 };
-const uint8_t simon_colours[4][3] = { { 255, 0, 0, }, { 0, 0, 255, }, { 0, 255, 0, }, { 255, 64, 0, } };
+const uint16_t simon_freqs[4] = {550, 775, 660, 985};
+const uint8_t simon_colours[4][3] = {
+    { 255, 0, 0,},
+    { 0, 0, 255,},
+    { 0, 255, 0,},
+    { 255, 64, 0,}
+};
 
 const uint8_t simon_map[2][3][4] = {
     { // No Vowel
@@ -64,7 +69,7 @@ void simon_display_reset(void);
 void simon_enable(bool first);
 void simon_disable(bool first);
 
-pin_t simon_led_chs[4] = { KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3 };
+pin_t simon_led_chs[4] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3};
 
 /**
  * Initialise the simon says puzzle.
@@ -79,7 +84,7 @@ void simon_initialise(void) {
     mode_register_callback(GAME_RUNNING, simon_service_running, &tick_20hz);
     mode_register_callback(GAME_ENABLE, simon_enable, NULL);
     mode_register_callback(GAME_DISABLE, simon_disable, NULL);
-    
+
     /* Initialise keymatrix. */
     keymatrix_initialise(&simon_cols[0], &simon_rows[0], KEYMODE_COL_ONLY);
 }
@@ -144,6 +149,7 @@ void simon_service_running(bool first) {
 
     if (first) {
         mode_data.simon.next_animate = tick_value + 1000;
+        keymatrix_clear();
     }
 
     /* Handle key presses. */
@@ -154,7 +160,7 @@ void simon_service_running(bool first) {
             mode_data.simon.next_animate = tick_value + 2000;
 
             /* Calculate the button that is required next. */
-            uint8_t expected = (mode_data.simon.order >> (2*mode_data.simon.next_correct_press)) & 0b11;
+            uint8_t expected = (mode_data.simon.order >> (2 * mode_data.simon.next_correct_press)) & 0b11;
             uint8_t remapped = simon_map_press(expected);
 
             /* Check to see if it matches. */
@@ -192,10 +198,10 @@ void simon_service_running(bool first) {
     if (tick_value >= mode_data.simon.next_animate) {
         /* Stage 0 is to display button, and beep. */
         if (mode_data.simon.next_display_stage == 0) {
-            uint8_t next = (mode_data.simon.order >> (2*mode_data.simon.next_display)) & 0b11;
+            uint8_t next = (mode_data.simon.order >> (2 * mode_data.simon.next_display)) & 0b11;
 
             pwmled_set(next, SIMON_OFF, simon_colours[next][0], simon_colours[next][1], simon_colours[next][2]);
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, simon_freqs[next], 300);
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, simon_freqs[next], 400);
 
             mode_data.simon.next_display++;
 
@@ -204,7 +210,7 @@ void simon_service_running(bool first) {
                 mode_data.simon.next_display = 0;
             }
 
-            mode_data.simon.next_animate += 300;
+            mode_data.simon.next_animate += 400;
             mode_data.simon.next_display_stage = 1;
         } else {
             /* Stage 1, clear button display. */
@@ -214,7 +220,7 @@ void simon_service_running(bool first) {
             if (mode_data.simon.next_display == 0) {
                 mode_data.simon.next_animate += 4750;
             } else {
-                mode_data.simon.next_animate += 1000;
+                mode_data.simon.next_animate += 400;
             }
             mode_data.simon.next_display_stage = 0;
         }
