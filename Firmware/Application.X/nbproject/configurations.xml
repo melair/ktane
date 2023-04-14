@@ -96,6 +96,7 @@
       <itemPath>../common/fw.h</itemPath>
       <itemPath>fw_server.h</itemPath>
       <itemPath>../common/fw_updater.h</itemPath>
+      <itemPath>modes/controller/ui_configure_global.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -126,6 +127,7 @@
           <itemPath>modes/controller/ui.c</itemPath>
           <itemPath>modes/controller/ui_configure_module.c</itemPath>
           <itemPath>modes/controller/ui_game.c</itemPath>
+          <itemPath>modes/controller/ui_configure_global.c</itemPath>
         </logicalFolder>
         <logicalFolder name="f10" displayName="keys" projectFiles="true">
           <itemPath>modes/keys/keys.c</itemPath>
@@ -283,7 +285,7 @@
         <property key="default-char-type" value="true"/>
         <property key="define-macros"
                   value="SUPPORT_CAN_AUTO_ADDRESS;SUPPORT_PROTOCOL_MODULE;SUPPORT_PROTOCOL_GAME;SUPPORT_PROTOCOL_NETWORK;SUPPORT_PROTOCOL_FIRMWARE;SUPPORT_FIRMWARE_SERVER"/>
-        <property key="disable-optimizations" value="true"/>
+        <property key="disable-optimizations" value="false"/>
         <property key="extra-include-directories" value=""/>
         <property key="favor-optimization-for" value="-speed,+space"/>
         <property key="garbage-collect-data" value="true"/>
@@ -297,7 +299,7 @@
         <property key="optimization-debug" value="false"/>
         <property key="optimization-invariant-enable" value="false"/>
         <property key="optimization-invariant-value" value="16"/>
-        <property key="optimization-level" value="-O0"/>
+        <property key="optimization-level" value="-O2"/>
         <property key="optimization-speed" value="true"/>
         <property key="optimization-stable-enable" value="false"/>
         <property key="preprocess-assembler" value="true"/>
@@ -480,8 +482,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="D:/Projects/ktane/GitHubReleased/Firmware/Application.X/debug/default/ControlFirmware_ptg"/>
         <property key="programmerToGoImageName" value="ControlFirmware_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

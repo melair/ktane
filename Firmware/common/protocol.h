@@ -15,6 +15,7 @@
 #define OPCODE_MODULE_IDENTIFY          0x11
 #define OPCODE_MODULE_MODE_SET          0x12
 #define OPCODE_MODULE_SPECIAL_FUNCTION  0x13
+#define OPCODE_MODULE_GLOBAL_CONFIG     0x14
 #define OPCODE_MODULE_ERROR             0xf0
 
 #define OPCODE_GAME_STATE           0x00
@@ -35,6 +36,7 @@
 #define SIZE_MODULE_IDENTIFY          sizeof(((packet_t *)0)->module.identify) + 1
 #define SIZE_MODULE_MODE_SET          sizeof(((packet_t *)0)->module.set_mode) + 1
 #define SIZE_MODULE_SPECIAL_FUNCTION  sizeof(((packet_t *)0)->module.special_function) + 1
+#define SIZE_MODULE_GLOBAL_CONFIG     sizeof(((packet_t *)0)->module.global_config) + 1
 #define SIZE_MODULE_ERROR             sizeof(((packet_t *)0)->module.error_announcement) + 1
 
 #define SIZE_GAME_STATE               sizeof(((packet_t *)0)->game.state) + 1
@@ -100,7 +102,13 @@ typedef struct {
             struct {
                 uint8_t can_id;
                 uint8_t special_function;
-            } special_function;                        
+            } special_function;             
+            
+            struct {
+                unsigned argb_brightness :5;
+                unsigned buzzer_volume :3;
+                unsigned store :1;                
+            } global_config;
         } module;
         
         union {

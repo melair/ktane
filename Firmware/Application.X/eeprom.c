@@ -8,7 +8,7 @@
 #include "../common/eeprom_addrs.h"
 
 /* Current version of EEPROM data, bump when new EEPROM parameters are added. */
-#define EEPROM_CURRENT_VERSION 4
+#define EEPROM_CURRENT_VERSION 5
 
 /**
  * Initialise any EEPROM data required, used to migrate EEPROM data versions
@@ -56,6 +56,11 @@ void eeprom_initialise(void) {
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTB, 0x00);
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTC, 0x00);
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTD, 0x00);
+        }
+
+        if (read_version < 5) {
+            nvm_eeprom_write(EEPROM_LOC_ARGB_BRIGHTNESS, 31);
+            nvm_eeprom_write(EEPROM_LOC_BUZZER_VOL, 7);
         }
 
         /* Write the current EEPROM version. */

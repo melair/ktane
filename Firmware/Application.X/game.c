@@ -75,8 +75,9 @@ void game_service(void) {
  * @param strikes maximum number of strikes
  * @param minutes number of minutes player has to solve game
  * @param seconds number of seconds on top of minutes player has to solve game
+ * @param desired_modules number of modules desired in this game
  */
-void game_create(uint32_t seed, uint8_t strikes_total, uint8_t minutes, uint8_t seconds) {
+void game_create(uint32_t seed, uint8_t strikes_total, uint8_t minutes, uint8_t seconds, uint8_t desired_modules) {
     /* To save a little firmware space, use the outgoing packet temporarily to
      * allow reuse of game_update. */
     packet_outgoing.opcode = OPCODE_GAME_STATE;
@@ -88,6 +89,8 @@ void game_create(uint32_t seed, uint8_t strikes_total, uint8_t minutes, uint8_t 
     packet_outgoing.game.state.seconds = seconds;
     packet_outgoing.game.state.centiseconds = 0;
     packet_outgoing.game.state.time_ratio = TIME_RATIO_1;
+
+    game.desired_modules = desired_modules;
 
     game_receive_update(0, &packet_outgoing);
     game_update_send();

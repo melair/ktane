@@ -107,6 +107,10 @@ void packet_route_module(uint8_t src, packet_t *packet) {
             module_receive_special_function(src, packet);
             break;
 
+        case OPCODE_MODULE_GLOBAL_CONFIG:
+            module_receive_global_config(src, packet);
+            break;
+
         case OPCODE_MODULE_ERROR:
             module_receive_error(src, packet);
             break;

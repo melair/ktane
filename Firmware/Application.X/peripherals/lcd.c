@@ -331,10 +331,10 @@ void lcd_initialize(void) {
     /* Disable auto load. */
     PWM3LDS = 1;
 
-    /* Prescale to 1:128. */
-    PWM3CPRE = 127;
+    /* Prescale to 1:31. */
+    PWM3CPRE = 15;
 
-    /* PWM at ~1kHz. */
+    /* PWM at ~8kHz. */
     PWM3PR = 512;
 
     /* Initial duty to zero.*/
@@ -413,7 +413,7 @@ void lcd_load_big(void) {
     }
 }
 
-/* Load a customer character into character RAM in the LCD display. This will 
+/* Load a customer character into character RAM in the LCD display. This will
  * block execution, it is assumed it will be done during initialisation.
  */
 void lcd_custom_character(uint8_t c, uint8_t *data) {
@@ -443,7 +443,7 @@ void lcd_custom_character(uint8_t c, uint8_t *data) {
 
 /**
  * Get the nominal brightness.
- * 
+ *
  * @return nominal brightness
  */
 uint8_t lcd_get_nominal_brightness(void) {
@@ -465,7 +465,7 @@ void lcd_set_brightness(uint8_t bri) {
 
 /**
  * Get the nominal contrast.
- * 
+ *
  * @return nominal contrast
  */
 uint8_t lcd_get_nominal_contrast(void) {
@@ -536,7 +536,7 @@ void lcd_service(void) {
 
             /* Break the loop if we find anything to change. */
             if (found_data) {
-                 break;
+                break;
             }
 
             /* Manually reset the column. */
@@ -670,8 +670,8 @@ void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint16_t number) {
     for (uint8_t i = 0; i < digits; i++) {
         uint8_t remain = number % 10;
         number = (number - remain) / 10;
-        
-        lcd_update(row, (col+digits)-(i+1), 1, &hex_map[remain]); 
+
+        lcd_update(row, (col + digits)-(i + 1), 1, &hex_map[remain]);
     }
 }
 
@@ -706,7 +706,7 @@ void lcd_update_big(uint8_t pos, uint8_t ch) {
     t[7] = big_font[ch][3] & 0x0f;
 
     for (uint8_t i = 0; i < 8; i++) {
-        switch(t[i]) {
+        switch (t[i]) {
             case 0b1110:
                 t[i] = 0xfe;
                 break;
@@ -716,8 +716,8 @@ void lcd_update_big(uint8_t pos, uint8_t ch) {
         }
     }
 
-    lcd_update(1, 4*pos, 4, &t[0]);
-    lcd_update(2, 4*pos, 4, &t[4]);
+    lcd_update(1, 4 * pos, 4, &t[0]);
+    lcd_update(2, 4 * pos, 4, &t[4]);
 }
 
 /**

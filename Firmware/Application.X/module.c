@@ -248,6 +248,7 @@ uint8_t module_find_or_create(uint8_t id) {
             modules[i].flags.INUSE = 1;
             modules[i].id = id;
             modules[i].game.id = id;
+            modules[i].last_seen = 0;
             return i;
         }
     }
@@ -274,6 +275,8 @@ void module_receive_announce(uint8_t id, packet_t *p) {
     if (modules[idx].flags.LOST) {
         module_error_raise(MODULE_ERROR_CAN_LOST_BASE | id, false);
     }
+
+    bool needs_config = (p->module.announcement.flags.reset || modules[idx].last_seen == 0);
 
     modules[idx].mode = p->module.announcement.mode;
     modules[idx].firmware.bootloader = p->module.announcement.bootloader_version;
@@ -304,6 +307,10 @@ void module_receive_announce(uint8_t id, packet_t *p) {
             nvm_eeprom_write(EEPROM_LOC_FLASHER_VERSION_LOWER, modules[idx].firmware.application & 0xff);
             RESET();
         }
+    }
+
+    if (needs_config && modules[0].mode == MODE_CONTROLLER) {
+        module_send_global_config(true);
     }
 }
 
@@ -491,5 +498,30 @@ void module_receive_special_function(uint8_t id, packet_t *p) {
     /* If targeted at this module. */
     if (p->module.special_function.can_id == can_get_id()) {
         mode_call_special_function(p->module.special_function.special_function);
+    }
+}
+
+void module_send_global_config(bool store) {
+    packet_outgoing.module.global_config.store = (store ? 1 : 0);
+    packet_outgoing.module.global_config.buzzer_volume = buzzer_get_volume();
+    packet_outgoing.module.global_config.argb_brightness = argb_get_brightness();
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_GLOBAL_CONFIG, SIZE_MODULE_GLOBAL_CONFIG, &packet_outgoing);
+}
+
+void module_receive_global_config(uint8_t id, packet_t *p) {
+    if (argb_get_brightness() != p->module.global_config.argb_brightness) {
+        argb_set_brightness(p->module.global_config.argb_brightness);
+
+        if (p->module.global_config.store) {
+            nvm_eeprom_write(EEPROM_LOC_ARGB_BRIGHTNESS, p->module.global_config.argb_brightness);
+        }
+    }
+
+    if (buzzer_get_volume() != p->module.global_config.buzzer_volume) {
+        buzzer_set_volume(p->module.global_config.buzzer_volume);
+
+        if (p->module.global_config.store) {
+            nvm_eeprom_write(EEPROM_LOC_BUZZER_VOL, p->module.global_config.buzzer_volume);
+        }
     }
 }

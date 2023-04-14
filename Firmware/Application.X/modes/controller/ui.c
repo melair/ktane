@@ -2,6 +2,7 @@
 #include "ui.h"
 #include "ui_game.h"
 #include "ui_configure_module.h"
+#include "ui_configure_global.h"
 #include "../../peripherals/rotary.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../buzzer.h"
@@ -100,12 +101,31 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 6
         },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 5
+        },
         .render = &ui_render_menu_item,
         .render_data = "Modules",
         .render_check = &tick_2hz
     },
-    // 5 (UNUSED)
-    {},
+    // 5
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 4
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 36
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Global",
+        .render_check = &tick_2hz
+    },
     // 6
     {
         .left =
@@ -309,7 +329,7 @@ interface_t interface[] = {
         .right =
         {
             .action = &ui_action_jump,
-            .index = 17
+            .index = 18
         },
         .press =
         {
@@ -320,28 +340,14 @@ interface_t interface[] = {
         .render_data = "Mode",
         .render_check = &tick_2hz
     },
-    // 17
-    {
-        .left =
-        {
-            .action = &ui_action_jump,
-            .index = 16
-        },
-        .right =
-        {
-            .action = &ui_action_jump,
-            .index = 18
-        },
-        .render = &ui_render_menu_item,
-        .render_data = "ARGB LED Bri",
-        .render_check = &tick_2hz
-    },
+    // 17 (UNUSED)
+    {},
     // 18
     {
         .left =
         {
             .action = &ui_action_jump,
-            .index = 17
+            .index = 16
         },
         .right =
         {
@@ -378,7 +384,7 @@ interface_t interface[] = {
         .right =
         {
             .action = &ui_action_jump,
-            .index = 21
+            .index = 22
         },
         .render = &ui_render_menu_item,
         .render_data = "LCD Contrast",
@@ -389,15 +395,15 @@ interface_t interface[] = {
         .left =
         {
             .action = &ui_action_jump,
-            .index = 20
+            .index = 27
         },
-        .right =
+        .press =
         {
             .action = &ui_action_jump,
-            .index = 22
+            .index = 40
         },
         .render = &ui_render_menu_item,
-        .render_data = "Buzzer Vol",
+        .render_data = "Custom",
         .render_check = &tick_2hz
     },
     // 22
@@ -405,7 +411,7 @@ interface_t interface[] = {
         .left =
         {
             .action = &ui_action_jump,
-            .index = 21
+            .index = 20
         },
         .right =
         {
@@ -499,6 +505,11 @@ interface_t interface[] = {
         {
             .action = &ui_game_quick_start,
             .index = 28
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 21
         },
         .render = &ui_render_menu_item,
         .render_data = "Quick Start",
@@ -617,7 +628,174 @@ interface_t interface[] = {
         },
         .render = &ui_game_endgame_display,
         .render_check = &tick_2hz
-    }
+    },
+    // 35
+    {
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 36
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 5
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Back",
+        .render_check = &tick_2hz
+    },
+    // 36
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 35
+        },
+        .press =
+        {
+            .action = &ui_render_configure_global_argb_brightness_initial,
+            .index = 38
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 37
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "ARGB LED Bri",
+        .render_check = &tick_2hz
+    },
+    // 37
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 36,
+        },
+        .press =
+        {
+            .action = &ui_render_configure_global_buzzer_vol_initial,
+            .index = 39
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Buzzer Vol",
+        .render_check = &tick_2hz
+    },
+    // 38
+    {
+        .left =
+        {
+            .action = &ui_render_configure_global_argb_brightness_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_global_argb_brightness_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_global_argb_brightness_press,
+            .alt_index = 36
+        },
+        .render = &ui_render_configure_global_argb_brightness,
+        .render_check = &tick_2hz
+    },
+    // 39
+    {
+        .left =
+        {
+            .action = &ui_render_configure_global_buzzer_vol_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_global_buzzer_vol_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_global_buzzer_vol_press,
+            .alt_index = 37
+        },
+        .render = &ui_render_configure_global_buzzer_vol,
+        .render_check = &tick_2hz
+    },
+    // 40
+    {
+        .left =
+        {
+            .action = &ui_game_custom_module_count_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_game_custom_module_count_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_game_custom_module_count_press,
+            .index = 41,
+            .alt_index = 21
+        },
+        .render = &ui_game_custom_module_count_display,
+        .render_check = &tick_2hz
+    },
+    // 41
+    {
+        .left =
+        {
+            .action = &ui_game_custom_time_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_game_custom_time_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_game_custom_time_press,
+            .index = 42,
+            .alt_index = 40
+        },
+        .render = &ui_game_custom_time_display,
+        .render_check = &tick_2hz
+    },
+    // 42
+    {
+        .left =
+        {
+            .action = &ui_game_custom_strikes_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_game_custom_strikes_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_game_custom_strikes_press,
+            .index = 43,
+            .alt_index = 41
+        },
+        .render = &ui_game_custom_strikes_display,
+        .render_check = &tick_2hz
+    },
+    // 43
+    {
+        .press =
+        {
+            .action = &ui_game_custom_start_press,
+            .index = 28
+        },
+        .render = &ui_game_custom_start_display,
+        .render_check = &tick_2hz
+    },
+
 };
 
 uint8_t current = UI_IDX_ROOT;

@@ -7,14 +7,20 @@
 #include <stdint.h>
 #include "buzzer.h"
 #include "tick.h"
+#include "../common/nvm.h"
+#include "../common/eeprom_addrs.h"
 
 /* Tick to turn buzzer off. */
 uint32_t buzzer_off_tick = 0;
+uint8_t buzzer_volume = 7;
 
 /**
  * Initialise buzzer pin, and PWM to support buzzer.
  */
 void buzzer_initialise(void) {
+    /* Load last buzzer volume from EEPROM. */
+    buzzer_volume = nvm_eeprom_read(EEPROM_LOC_BUZZER_VOL);
+
     /* Set RB4 to output. */
     TRISBbits.TRISB4 = 0;
 
@@ -41,7 +47,7 @@ void buzzer_initialise(void) {
  * @param frequency frequency of buzzer in Hz
  */
 void buzzer_on(uint8_t volume, uint16_t frequency) {
-    #ifndef __DEBUG
+#ifndef __DEBUG
     PWM2CONbits.EN = 0;
 
     PWM2PR = (uint16_t) ((uint24_t) 500000 / (uint24_t) frequency);
@@ -49,12 +55,22 @@ void buzzer_on(uint8_t volume, uint16_t frequency) {
         return;
     }
 
-    PWM2S1P1 = PWM2PR >> 1;
+    uint16_t max_vol = PWM2PR >> 1;
+    uint16_t vol_unit = max_vol / 7;
+    PWM2S1P1 = vol_unit * buzzer_volume;
 
     PWM2CONbits.EN = 1;
 
     buzzer_off_tick = 0;
-    #endif
+#endif
+}
+
+uint8_t buzzer_get_volume(void) {
+    return buzzer_volume;
+}
+
+void buzzer_set_volume(uint8_t new_vol) {
+    buzzer_volume = new_vol & 0b00000111;
 }
 
 /**

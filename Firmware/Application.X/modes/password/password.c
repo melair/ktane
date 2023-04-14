@@ -16,13 +16,13 @@
 
 /* Dictionary for passwords. */
 const uint8_t words[WORD_COUNT][5] = {
-  "ABOUT", "AFTER", "AGAIN", "BELOW", "COULD",
-  "EVERY", "FIRST", "FOUND", "GREAT", "HOUSE",
-  "LARGE", "LEARN", "NEVER", "OTHER", "PLACE",
-  "PLANT", "POINT", "RIGHT", "SMALL", "SOUND",
-  "SPELL", "STILL", "STUDY", "THEIR", "THERE",
-  "THESE", "THING", "THINK", "THREE", "WATER",
-  "WHERE", "WHICH", "WORLD", "WOULD", "WRITE",
+    "ABOUT", "AFTER", "AGAIN", "BELOW", "COULD",
+    "EVERY", "FIRST", "FOUND", "GREAT", "HOUSE",
+    "LARGE", "LEARN", "NEVER", "OTHER", "PLACE",
+    "PLANT", "POINT", "RIGHT", "SMALL", "SOUND",
+    "SPELL", "STILL", "STUDY", "THEIR", "THERE",
+    "THESE", "THING", "THINK", "THREE", "WATER",
+    "WHERE", "WHICH", "WORLD", "WOULD", "WRITE",
 };
 
 /* Local function prototypes. */
@@ -48,7 +48,7 @@ pin_t password_rows[] = {KPIN_B4, KPIN_B5, KPIN_B6, KPIN_B7, KPIN_NONE};
 void password_initialise(void) {
     /* Initialise the LCD. */
     lcd_initialize();
-    
+
     /* Load the big font into the LCD. */
     lcd_load_big();
 
@@ -76,12 +76,12 @@ void password_service(bool first) {
 }
 
 void password_enable(bool first) {
-     lcd_set_brightness(lcd_get_nominal_brightness());      
+    lcd_set_brightness(lcd_get_nominal_brightness());
 }
 
 void password_disable(bool first) {
     lcd_set_brightness(0);
-    
+
     lcd_clear();
     lcd_sync();
 }
@@ -179,6 +179,7 @@ void password_render_display(void) {
 
     for (uint8_t i = 0; i < LENGTH; i++) {
         lcd_update_big(i, (mode_data.password.letters[i][mode_data.password.selected[i]] - 'A' + BIG_FONT_LETTER_BASE));
+        lcd_update(3, 7 + i, 1, &mode_data.password.letters[i][mode_data.password.selected[i]]);
     }
 
     lcd_sync();
@@ -209,7 +210,7 @@ void password_generate_letters(void) {
             bool while_dup = true;
 
             /* Generate a new character that is unique for this column, and does not match word. */
-            while(while_dup) {
+            while (while_dup) {
                 mode_data.password.letters[i][j] = (rng_generate8(&game.module_seed, PASSWORD_RNG_MASK) % ALPHABET) + 'A';
 
                 /* Ensure character does not match target word. */

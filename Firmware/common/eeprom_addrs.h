@@ -21,6 +21,9 @@
 #define EEPROM_LOC_LCD_BRIGHTNESS                   0x020 /* LCD Backlight Brightness. */
 #define EEPROM_LOC_LCD_CONTRAST                     0x021 /* LCD Contrast. */
 
+#define EEPROM_LOC_ARGB_BRIGHTNESS                  0x022 /* ARGB Global Brightness. */
+#define EEPROM_LOC_BUZZER_VOL                       0x023 /* Buzzer Volume. */
+
 /* Bootloader (0x3e0-0x3ef) */
 #define EEPROM_LOC_BOOTLOADER_TARGET                0x3e0 /* Bootloader Target (0xFF = Application, 0x00 = Flasher). */
 

@@ -16,13 +16,15 @@
 #include "hal/pins.h"
 #include "hal/spi.h"
 #include "argb.h"
+#include "../common/nvm.h"
+#include "../common/eeprom_addrs.h"
 
 /* Allocate the default ARGB buffers. */
 argb_led_t ARGB_DEFAULT_LEDS[ARGB_MODULE_COUNT(0)];
-uint8_t    ARGB_DEFAULT_OUTPUT[ARGB_BUFFER_SIZE(0)];
+uint8_t ARGB_DEFAULT_OUTPUT[ARGB_BUFFER_SIZE(0)];
 
 /* Use the default LEDs. */
-uint8_t argb_brightness = 0b11111;
+uint8_t argb_brightness;
 uint8_t argb_count = 0;
 bool argb_dirty = false;
 bool argb_spi_queued = false;
@@ -48,14 +50,17 @@ spi_command_t argb_spi_cmd;
  * Initialise the port and configure SPI ready for ARGB.
  */
 void argb_initialise(void) {
+    /* Load last brightness from EEPROM. */
+    argb_brightness = nvm_eeprom_read(EEPROM_LOC_ARGB_BRIGHTNESS);
+
     /* Configure SPI pins to output mode. */
     TRISBbits.TRISB2 = 0;
     TRISBbits.TRISB3 = 0;
-    
+
     argb_spi_cmd.device = &argb_spi_device;
     argb_spi_cmd.operation = SPI_OPERATION_WRITE;
     argb_spi_cmd.callback = spi_unused_callback;
-   
+
     /* Init ARGB with default buffers. */
     argb_expand(0, &ARGB_DEFAULT_LEDS[0], &ARGB_DEFAULT_OUTPUT[0]);
 }
@@ -64,10 +69,10 @@ void argb_expand(uint8_t count, argb_led_t *leds, uint8_t *output) {
     /* Store references to buffers. */
     argb_leds = leds;
     argb_buffer = output;
-    
+
     /* Add the status LED onto our count. */
     argb_count = count + 1;
-    
+
     /* Clear buffer memory, may have LED state from previous boot. */
     for (uint8_t i = 0; i < ARGB_MODULE_COUNT(count); i++) {
         argb_leds[i].r = 0;
@@ -84,15 +89,14 @@ void argb_expand(uint8_t count, argb_led_t *leds, uint8_t *output) {
     for (uint8_t i = 4; i < ARGB_BUFFER_SIZE(count); i++) {
         argb_buffer[i] = 0xff;
     }
-    
+
     argb_spi_cmd.buffer = argb_buffer;
     argb_spi_cmd.write_size = ARGB_BUFFER_SIZE(count);
     argb_spi_cmd.callback = argb_spi_callback;
-    
-    /* Mark it dirty so its sent. */
-    argb_dirty = true;       
-}
 
+    /* Mark it dirty so its sent. */
+    argb_dirty = true;
+}
 
 /**
  * Set an LEDs output on module.
@@ -104,7 +108,7 @@ void argb_expand(uint8_t count, argb_led_t *leds, uint8_t *output) {
  */
 void argb_set_module(uint8_t led, uint8_t r, uint8_t g, uint8_t b) {
     led++;
-    
+
     if (led > argb_count) {
         return;
     }
@@ -129,6 +133,15 @@ void argb_set_status(uint8_t r, uint8_t g, uint8_t b) {
     argb_dirty = true;
 }
 
+uint8_t argb_get_brightness(void) {
+    return argb_brightness;
+}
+
+void argb_set_brightness(uint8_t new_bri) {
+    argb_brightness = new_bri & 0b00011111;
+    argb_dirty = true;
+}
+
 /**
  * Check to see if a new frame is available for ARGB LEDs, and initiate an SPI
  * transfer if so and DMA is idle.
@@ -142,23 +155,23 @@ void argb_service(void) {
     if (argb_spi_queued) {
         return;
     }
-    
+
     /* Copy data from the LED buffer into the SPI buffer, and mark as clean. */
     for (uint8_t i = 0; i < argb_count; i++) {
-        uint8_t b = 4 + (i*4);
+        uint8_t b = 4 + (i * 4);
 
         /* First bit of LED must be 1, keep other 2 unused bits 1 as well. */
         argb_buffer[b] = 0b11100000 | argb_brightness;
-        argb_buffer[b+1] = argb_leds[i].b;
-        argb_buffer[b+2] = argb_leds[i].g;
-        argb_buffer[b+3] = argb_leds[i].r;
+        argb_buffer[b + 1] = argb_leds[i].b;
+        argb_buffer[b + 2] = argb_leds[i].g;
+        argb_buffer[b + 3] = argb_leds[i].r;
     }
-  
+
     spi_enqueue(&argb_spi_cmd);
-    
+
     /* Mark as SPI in flight. */
     argb_spi_queued = true;
-       
+
     /* Mark buffer as clean.*/
     argb_dirty = false;
 }

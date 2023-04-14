@@ -52,6 +52,7 @@ void module_send_reset(void);
 void module_send_identify(uint8_t id);
 void module_send_mode_set(uint8_t id, uint8_t mode);
 void module_send_special_function(uint8_t id, uint8_t special_fn);
+void module_send_global_config(bool store);
 
 #include "../common/packet.h"
 
@@ -61,6 +62,7 @@ void module_receive_reset(uint8_t id, packet_t *p);
 void module_receive_identify(uint8_t id, packet_t *p);
 void module_receive_mode_set(uint8_t id, packet_t *p);
 void module_receive_special_function(uint8_t id, packet_t *p);
+void module_receive_global_config(uint8_t id, packet_t *p);
 
 /* Total number of modules that can be part of the network. */
 #define MODULE_COUNT 24

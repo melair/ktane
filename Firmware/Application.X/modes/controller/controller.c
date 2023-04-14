@@ -104,6 +104,9 @@ void controller_service_setup(bool first) {
 
         ready_at = 0;
 
+        uint8_t puzzle_modules = 0;
+        uint8_t max_idx = 0;
+
         for (uint8_t i = 0; i < MODULE_COUNT; i++) {
             module_game_t *that_module = module_get_game(i);
 
@@ -111,7 +114,28 @@ void controller_service_setup(bool first) {
                 break;
             }
 
-            game_module_config_send(that_module->id, true, 255);
+            if (that_module->puzzle) {
+                puzzle_modules++;
+            }
+
+            max_idx = i;
+        }
+
+        uint8_t make_active = (game.desired_modules > puzzle_modules ? puzzle_modules : game.desired_modules);
+
+        uint8_t activated_modules = 0;
+        uint32_t activate_seed = game.seed;
+
+        while (activated_modules < make_active) {
+            uint8_t i = rng_generate8(&activate_seed, 0x67812412) % (max_idx + 1);
+
+            module_game_t *that_module = module_get_game(i);
+
+            if (that_module->puzzle && !that_module->enabled) {
+                that_module->enabled = true;
+                game_module_config_send(that_module->id, true, 255);
+                activated_modules++;
+            }
         }
     }
 
@@ -125,10 +149,10 @@ void controller_service_setup(bool first) {
             break;
         }
 
-        if (that_module->puzzle) {
+        if (that_module->puzzle && that_module->enabled) {
             at_least_one_puzzle = true;
 
-            if (!(that_module->enabled && that_module->ready)) {
+            if (!that_module->ready) {
                 all_ready = false;
             }
         }
@@ -257,7 +281,7 @@ void controller_service_running(bool first) {
         game_set_state(GAME_OVER, RESULT_FAILURE);
     }
 
-    if (game.strikes_current >= game.strikes_total) {
+    if (game.strikes_current > game.strikes_total) {
         game_set_state(GAME_OVER, RESULT_FAILURE);
     }
 

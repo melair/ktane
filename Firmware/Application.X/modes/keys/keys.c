@@ -28,7 +28,7 @@ pin_t keys_rows[] = {KPIN_NONE};
 void keys_initialise(void) {
     /* Initialise ARGB expanded memory. */
     argb_expand(KEYS_ARGB_COUNT, &mode_data.keys.argb_leds[0], &mode_data.keys.argb_output[0]);
-    
+
     /* Initialise the seven segment display. */
     segment_initialise();
 
@@ -47,10 +47,12 @@ void keys_disable(bool first) {
     for (uint8_t i = 0; i < KEYS_ARGB_COUNT; i++) {
         argb_set_module(i, 0, 0, 0);
     }
-    
+
     for (uint8_t i = 0; i < 4; i++) {
         segment_set_digit(i, characters[DIGIT_SPACE]);
     }
+
+    segment_set_colon(false);
 }
 
 void keys_service_idle(bool first) {
@@ -64,7 +66,7 @@ void keys_service(bool first) {
     keymatrix_service();
 }
 
-const uint8_t led_index[3] = {5,3,1};
+const uint8_t led_index[3] = {5, 3, 1};
 
 void keys_create_next(void) {
     uint16_t delay = KEYS_MIN_INTERVAL + (rng_generate8(&game.module_seed, KEYS_RNG_MASK) % (KEYS_MAX_INTERVAL - KEYS_MIN_INTERVAL));

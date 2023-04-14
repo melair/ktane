@@ -58,7 +58,7 @@ void combination_service(bool first) {
 
 void combination_service_idle(bool first) {
     if (first) {
-        combination_disable(first); 
+        combination_disable(first);
     }
 }
 
@@ -70,34 +70,12 @@ void combination_service_setup(bool first) {
     }
 }
 
-void combination_setup(void){
+void combination_setup(void) {
     mode_data.combination.stage = 0;
     mode_data.combination.value = ((uint8_t) (game.module_seed & 0xff)) % COMBINATION_MAX_VALUE;
     mode_data.combination.even_clockwise = ((mode_data.combination.value / 10) + (mode_data.combination.value % 10)) % 3 == 0;
     mode_data.combination.clockwise_traveled = false;
     mode_data.combination.anticlockwise_traveled = false;
-
-    uint8_t module_count = 0;
-    uint8_t solved_count = 0;
-
-    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
-        module_game_t *that_module = module_get_game(i);
-
-        if (that_module == NULL) {
-            continue;
-        }
-
-        module_count++;
-
-        if (that_module->solved) {
-            solved_count++;
-        }
-    }
-
-    if (!edgework_twofa_present()) {
-        mode_data.combination.expected[0] = edgework_serial_last_digit() + solved_count;
-        mode_data.combination.expected[1] = module_count;
-    }
 }
 
 void combination_service_running(bool first) {
@@ -135,7 +113,7 @@ void combination_service_running(bool first) {
     /* Update segment display. */
     uint8_t edge_character = 0;
 
-    switch(mode_data.combination.stage) {
+    switch (mode_data.combination.stage) {
         case 0:
             edge_character = DIGIT_THREESCORE;
             break;
@@ -165,6 +143,26 @@ void combination_check(void) {
     if (edgework_twofa_present()) {
         mode_data.combination.expected[0] = edgework_twofa_digit(0) + edgework_twofa_digit(1);
         mode_data.combination.expected[1] = edgework_twofa_digit(4) + edgework_twofa_digit(5);
+    } else {
+        uint8_t module_count = 0;
+        uint8_t solved_count = 0;
+
+        for (uint8_t i = 0; i < MODULE_COUNT; i++) {
+            module_game_t *that_module = module_get_game(i);
+
+            if (that_module == NULL || !this_module->enabled) {
+                continue;
+            }
+
+            module_count++;
+
+            if (that_module->solved) {
+                solved_count++;
+            }
+        }
+
+        mode_data.combination.expected[0] = edgework_serial_last_digit() + solved_count;
+        mode_data.combination.expected[1] = module_count;
     }
 
     mode_data.combination.expected[2] = (mode_data.combination.entered[0] + mode_data.combination.entered[1]) % COMBINATION_MAX_VALUE;
