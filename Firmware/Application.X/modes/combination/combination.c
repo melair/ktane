@@ -144,23 +144,8 @@ void combination_check(void) {
         mode_data.combination.expected[0] = edgework_twofa_digit(0) + edgework_twofa_digit(1);
         mode_data.combination.expected[1] = edgework_twofa_digit(4) + edgework_twofa_digit(5);
     } else {
-        uint8_t module_count = 0;
-        uint8_t solved_count = 0;
-
-        for (uint8_t i = 0; i < MODULE_COUNT; i++) {
-            module_game_t *that_module = module_get_game(i);
-
-            if (that_module == NULL || !this_module->enabled) {
-                continue;
-            }
-
-            module_count++;
-
-            if (that_module->solved) {
-                solved_count++;
-            }
-        }
-
+        uint8_t module_count = module_get_count_enabled_module();
+        uint8_t solved_count = module_get_count_enabled_solved_puzzle();
         mode_data.combination.expected[0] = edgework_serial_last_digit() + solved_count;
         mode_data.combination.expected[1] = module_count;
     }

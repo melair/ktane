@@ -525,3 +525,51 @@ void module_receive_global_config(uint8_t id, packet_t *p) {
         }
     }
 }
+
+uint8_t module_get_count_enabled_module(void) {
+    uint8_t module_count = 0;
+
+    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
+        if (modules[i].flags.INUSE) {
+            if (modules[i].game.enabled) {
+                module_count++;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return module_count;
+}
+
+uint8_t module_get_count_enabled_puzzle(void) {
+    uint8_t module_count = 0;
+
+    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
+        if (modules[i].flags.INUSE) {
+            if (modules[i].game.enabled && modules[i].game.puzzle) {
+                module_count++;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return module_count;
+}
+
+uint8_t module_get_count_enabled_solved_puzzle(void) {
+    uint8_t module_count = 0;
+
+    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
+        if (modules[i].flags.INUSE) {
+            if (modules[i].game.enabled && modules[i].game.puzzle && modules[i].game.solved) {
+                module_count++;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return module_count;
+}

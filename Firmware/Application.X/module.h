@@ -48,6 +48,10 @@ module_game_t *module_get_game_by_id(uint8_t id);
 module_t *module_get(uint8_t idx);
 module_error_t *module_get_errors(uint8_t idx, uint8_t err);
 
+uint8_t module_get_count_enabled_module(void);
+uint8_t module_get_count_enabled_puzzle(void);
+uint8_t module_get_count_enabled_solved_puzzle(void);
+
 void module_send_reset(void);
 void module_send_identify(uint8_t id);
 void module_send_mode_set(uint8_t id, uint8_t mode);
