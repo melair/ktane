@@ -330,11 +330,13 @@ void game_service_start(void) {
 }
 
 /* Number of the Hz of the 2kHz ticker to count towards a centisecond on the clock. */
-const uint8_t quantum_per_ms_ratio[5] = {
+const uint8_t quantum_per_ms_ratio[7] = {
     20, // Target 1.0s   Actual 1.0s   Error: 0%
     16, // Target 0.8s   Actual 0.8s   Error: 0%
     13, // Target 0.67s  Actual 0.65s  Error: 3%
     11, // Target 0.57s  Actual 0.55s  Error: 3.5%
+    10, // Target 0.5s   Actual 0.5s   Error: 0%
+    10, // Target 0.5s   Actual 0.5s   Error: 0%
     10, // Target 0.5s   Actual 0.5s   Error: 0%
 };
 
