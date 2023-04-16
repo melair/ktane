@@ -293,22 +293,10 @@ void controller_service_running(bool first) {
         buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 750);
     }
 
-    bool game_solved = true;
+    uint8_t enabled_puzzles = module_get_count_enabled_puzzle();
+    uint8_t solved_puzzles = module_get_count_enabled_solved_puzzle();
 
-    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
-        module_game_t *that_module = module_get_game(i);
-
-        if (that_module == NULL) {
-            break;
-        }
-
-        if (that_module->enabled && !that_module->solved) {
-            game_solved = false;
-            break;
-        }
-    }
-
-    if (game_solved) {
+    if (enabled_puzzles == solved_puzzles) {
         game_set_state(GAME_OVER, RESULT_SUCCESS);
     }
 }

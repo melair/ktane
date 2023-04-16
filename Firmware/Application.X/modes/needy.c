@@ -4,17 +4,9 @@
 #include "../module.h"
 
 bool needy_all_other_modules_complete(void) {
-    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
-        module_game_t *that_module = module_get_game(i);
+    uint8_t enabled_count = module_get_count_enabled_puzzle();
+    uint8_t solved_count = module_get_count_enabled_solved_puzzle();
+    uint8_t needy_count = module_get_count_enabled_needy();
 
-        if (that_module == NULL) {
-            break;
-        }
-
-        if (that_module->enabled && !that_module->needy && !that_module->solved) {
-            return false;
-        }
-    }
-
-    return true;
+    return ((enabled_count - needy_count) == solved_count);
 }

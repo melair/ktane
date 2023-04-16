@@ -558,6 +558,22 @@ uint8_t module_get_count_enabled_puzzle(void) {
     return module_count;
 }
 
+uint8_t module_get_count_enabled_needy(void) {
+    uint8_t module_count = 0;
+
+    for (uint8_t i = 0; i < MODULE_COUNT; i++) {
+        if (modules[i].flags.INUSE) {
+            if (modules[i].game.enabled && modules[i].game.puzzle && modules[i].game.needy) {
+                module_count++;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return module_count;
+}
+
 uint8_t module_get_count_enabled_solved_puzzle(void) {
     uint8_t module_count = 0;
 
