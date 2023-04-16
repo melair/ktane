@@ -32,7 +32,7 @@
                
                 <ul>
                     <li>The LED sequence defines the start point in the dialing table.</li>
-                    <li>If the bomb had a 2FA code, then read left, otherwise down.</li>
+                    <li>If the bomb had a 2FA code, then read left to right (→), otherwise top to bottom (↓).</li>
                     <li>If the bomb serial number does not have a vowel, then reverse the code.</li>
                     <li>Dial the five digit number.</li>
                 </ul>
@@ -40,13 +40,17 @@
                 <b><u>Starting Point</u></b>
                 <p>Of the six LEDs, the first three show the column start, the last three show the row start.</p>
                 <table class="centered">
-                    <tr><td colspan="3">LEDs</td><td>Row/Column</td></tr>
+                    <tr><td colspan="3">LEDs</td><td>Column/Row</td></tr>
                     <tr><td>⭘</td><td>⭘</td><td>⬤</td><td>1</td></tr>
                     <tr><td>⭘</td><td>⬤</td><td>⭘</td><td>2</td></tr>
                     <tr><td>⭘</td><td>⬤</td><td>⬤</td><td>3</td></tr>
                     <tr><td>⬤</td><td>⭘</td><td>⭘</td><td>4</td></tr>
                     <tr><td>⬤</td><td>⭘</td><td>⬤</td><td>5</td></tr>
                 </table>
+                <p class="centered">
+                    (⬤ = lit up LED)
+                </p>
+
 
                 <b><u>Dialing Table</u></b>
                 <table class="centered">
