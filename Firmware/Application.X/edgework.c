@@ -24,35 +24,35 @@
 
 uint8_t edgework_slots[MAX_EDGEWORK];
 uint8_t edgework_serial[SERIAL_LENGTH];
-bool edgework_serial_has_vowel = false;
+bool edgework_serial_has_vowel;
 uint8_t edgework_battery = 0;
 bool edgework_has_twofa = false;
-uint8_t edgework_twofa[TWOFA_LENGTH] = {'0','0','0','0','0','0'};
+uint8_t edgework_twofa[TWOFA_LENGTH] = {'0', '0', '0', '0', '0', '0'};
 uint32_t edgework_twofa_seed;
 
 void edgework_generate_2fa(void);
 
 const uint8_t indicator_name[INDICATOR_MAX + 1][3] = {
-  "SND",
-  "CLR",
-  "CAR",
-  "IND",
-  "FRQ",
-  "SIG",
-  "NSA",
-  "MSA",
-  "TRN",
-  "BOB",
-  "FRK",
+    "SND",
+    "CLR",
+    "CAR",
+    "IND",
+    "FRQ",
+    "SIG",
+    "NSA",
+    "MSA",
+    "TRN",
+    "BOB",
+    "FRK",
 };
 
 const uint8_t port_name[PORT_MAX + 1][4] = {
-  "DVI ",
-  "PARA",
-  "PS2 ",
-  "RJ45",
-  "SERI",
-  "RCA ",
+    "DVI ",
+    "PARA",
+    "PS2 ",
+    "RJ45",
+    "SERI",
+    "RCA ",
 };
 
 /**
@@ -69,6 +69,7 @@ void edgework_generate(uint32_t seed, uint8_t difficulty) {
     edgework_battery = 0;
     edgework_has_twofa = false;
     edgework_twofa_seed = seed;
+    edgework_serial_has_vowel = false;
 
     /* Generate serial number. */
     for (uint8_t i = 0; i < (SERIAL_LENGTH - 1); i++) {
@@ -102,11 +103,11 @@ void edgework_generate(uint32_t seed, uint8_t difficulty) {
     edgework_slots[0] = SLOT_PREFIX_SERIAL;
 
     /* Generate edgework. */
-    for (uint8_t i = 1; i < DEFAULT_EDGEWORK; i++ ){
+    for (uint8_t i = 1; i < DEFAULT_EDGEWORK; i++) {
         uint8_t type = rng_generate8(&seed, EDGEWORK_RNG_MASK);
         uint8_t t = rng_generate8(&seed, EDGEWORK_RNG_MASK);
 
-        switch(type % 4) {
+        switch (type % 4) {
             case 0:
                 t = t % (PORT_MAX + 1);
                 edgework_slots[i] = SLOT_PREFIX_PORT | t;
@@ -150,6 +151,7 @@ void edgework_generate(uint32_t seed, uint8_t difficulty) {
  * 2fa numbers.
  */
 bool edgework_twofa_regenerated_this_tick = false;
+
 void edgework_service(void) {
     if (game.state == GAME_START && edgework_has_twofa && !edgework_twofa_regenerated_this_tick) {
         edgework_generate_2fa();
@@ -284,7 +286,7 @@ void edgework_display(uint8_t i) {
     uint8_t ind;
     uint8_t batteryCount;
 
-    switch(ew & SLOT_PREFIX_MASK) {
+    switch (ew & SLOT_PREFIX_MASK) {
         case SLOT_PREFIX_PORT:
             lcd_update(1, 0, 5, port);
 
