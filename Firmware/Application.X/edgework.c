@@ -25,7 +25,7 @@
 uint8_t edgework_slots[MAX_EDGEWORK];
 uint8_t edgework_serial[SERIAL_LENGTH];
 bool edgework_serial_has_vowel;
-uint8_t edgework_battery = 0;
+uint8_t edgework_battery;
 bool edgework_has_twofa = false;
 uint8_t edgework_twofa[TWOFA_LENGTH] = {'0', '0', '0', '0', '0', '0'};
 uint32_t edgework_twofa_seed;
