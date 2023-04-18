@@ -7,6 +7,7 @@
       <logicalFolder name="f4" displayName="hal" projectFiles="true">
         <itemPath>hal/pins.h</itemPath>
         <itemPath>hal/spi.h</itemPath>
+        <itemPath>hal/i2c.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="modes" projectFiles="true">
         <logicalFolder name="f1" displayName="bootstrap" projectFiles="true">
@@ -55,6 +56,10 @@
           <itemPath>opts/audio/audio.h</itemPath>
           <itemPath>opts/audio/mux.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="f3" displayName="power" projectFiles="true">
+          <itemPath>opts/power/power.h</itemPath>
+          <itemPath>opts/power/power_data.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="f1" displayName="spi" projectFiles="true">
           <itemPath>opts/spi/spi.h</itemPath>
           <itemPath>opts/spi/spi_data.h</itemPath>
@@ -97,6 +102,7 @@
       <itemPath>fw_server.h</itemPath>
       <itemPath>../common/fw_updater.h</itemPath>
       <itemPath>modes/controller/ui_configure_global.h</itemPath>
+      <itemPath>dma.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -108,6 +114,7 @@
       <logicalFolder name="f4" displayName="hal" projectFiles="true">
         <itemPath>hal/pins.c</itemPath>
         <itemPath>hal/spi.c</itemPath>
+        <itemPath>hal/i2c.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="modes" projectFiles="true">
         <logicalFolder name="f1" displayName="bootstrap" projectFiles="true">
@@ -156,6 +163,9 @@
         <logicalFolder name="f2" displayName="audio" projectFiles="true">
           <itemPath>opts/audio/audio.c</itemPath>
           <itemPath>opts/audio/mux.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="f3" displayName="power" projectFiles="true">
+          <itemPath>opts/power/power.c</itemPath>
         </logicalFolder>
         <logicalFolder name="f1" displayName="spi" projectFiles="true">
           <itemPath>opts/spi/spi.c</itemPath>

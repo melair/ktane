@@ -2,10 +2,11 @@
 #include <stdbool.h>
 #include "audio.h"
 #include "audio_data.h"
+#include "../../dma.h"
 
 /*
  * The audio peripheral can only operate in PortA as the DAC can't be routed.
- * 
+ *
  * Audio must be formatted as unsigned 8-bit at 16000 Samples/sec.
  */
 
@@ -22,22 +23,22 @@ void audio_initialise(opt_data_t *opt) {
     for (uint16_t i = 0; i < AUDIO_FRAME_SIZE * 2; i++) {
         audio_buffers[i] = 0x7f;
     }
-    
+
     opt->audio.size = AUDIO_FRAME_SIZE;
-    opt->audio.buffer = &audio_buffers[0]; 
-    
+    opt->audio.buffer = &audio_buffers[0];
+
     /* Configure the Voltage Reference to 1.024v. */
     FVRCONbits.CDAFVR = 0b01;
     FVRCONbits.EN = 1;
-    
+
     /* Initialise the DAC. */
     DAC1CONbits.OE = 0b10;
     DAC1CONbits.PSS = 0b10;
     DAC1CONbits.EN = 1;
-       
+
     /* Initial value to 0v. */
-    DAC1DATL = 0;    
-    
+    DAC1DATL = 0;
+
     /* Set up timer for driving the DMA. */
     /* Set timer to use MFINTOSC (32kHz). */
     T6CLKCONbits.CS = 0b00110;
@@ -53,10 +54,10 @@ void audio_initialise(opt_data_t *opt) {
     T4CONbits.CKPS = 0b010;
     /* Set period to 249, resulting in interrupting 32Hz. */
     T4PR = 249;
-    
+
     /* Configure DMA. */
-    DMASELECT = 2;
-    
+    DMASELECT = DMA_AUDIO;
+
     /* Reset DMA2. */
     DMAnCON0 = 0;
 
@@ -77,7 +78,7 @@ void audio_initialise(opt_data_t *opt) {
     /* Initialise DMA with source buffers. */
     DMAnSSZ = AUDIO_FRAME_SIZE * 2;
     DMAnSSA = &audio_buffers[0];
-    
+
     /* Set clearing of SIREQEN bit when source counter is reloaded, don't when
      * destination counter is reloaded. */
     DMAnCON1bits.SSTP = 0;
@@ -90,33 +91,33 @@ void audio_initialise(opt_data_t *opt) {
     /* Prevent hardware triggers starting DMA transfer. */
     DMAnCON0bits.SIRQEN = 1;
 
-    /* Enable DMA module. */   
+    /* Enable DMA module. */
     DMAnCON0bits.EN = 1;
-    
-    /* Set the next free buffer to be the second, so that the Timer int can 
+
+    /* Set the next free buffer to be the second, so that the Timer int can
      * flip it. */
     opt->audio.buffer_next = 1;
-    
+
     /* Switch on timer, which starts audio playback. */
     T6CONbits.ON = 1;
     /* Switch on buffer reload timer. */
     T4CONbits.ON = 1;
-    
+
     /* Enable interrupts for Timer4 to wake from idle. */
     PIE11bits.TMR4IE = 1;
 }
 
-void audio_service(opt_data_t *opt) {   
+void audio_service(opt_data_t *opt) {
     /* Start next buffer if last finished. */
     if (PIR11bits.TMR4IF) {
         /* Clear Timer 4 interrupt. */
         PIR11bits.TMR4IF = 0;
-        
+
         opt_audio_t *a = &opt->audio;
-                
+
         /* Flip to the just played buffer. */
-        a->buffer_next = (a->buffer_next == 0 ? 1 : 0);  
-        
+        a->buffer_next = (a->buffer_next == 0 ? 1 : 0);
+
         if (opt->audio.callback != NULL) {
             opt->audio.callback(a);
         }

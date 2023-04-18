@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "spi.h"
 #include "pins.h"
+#include "../dma.h"
 
 #define _XTAL_FREQ 64000000
 
@@ -38,7 +39,7 @@ void spi_service(void) {
         spi_command->in_progress = 0;
 
         SPI2CON0bits.EN = 0;
-        DMASELECT = 1;
+        DMASELECT = DMA_SPI;
         DMAnCON0bits.EN = 0;
 
         if (spi_command->operation == SPI_OPERATION_WRITE_THEN_READ) {
@@ -103,7 +104,7 @@ void spi_service(void) {
 
         SPI2TWIDTHbits.TWIDTH = (spi_command->device->bits == 8 ? 0 : spi_command->device->bits);
 
-        DMASELECT = 1;
+        DMASELECT = DMA_SPI;
         DMAnCON1bits.SMR = 0b00;
 
         switch (spi_command->operation) {
