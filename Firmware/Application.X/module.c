@@ -10,6 +10,7 @@
 #include "game.h"
 #include "serial.h"
 #include "status.h"
+#include "opts.h"
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
 #include "../common/fw.h"
@@ -76,6 +77,10 @@ void module_initialise(void) {
     modules[0].firmware.bootloader = fw_version(BOOTLOADER);
     modules[0].firmware.application = fw_version(APPLICATION);
     modules[0].firmware.flasher = fw_version(FLASHER);
+
+    for (uint8_t i = 0; i < OPT_COUNT; i++) {
+        modules[0].opts[i] = opts_get(i);
+    }
 
     /* Set next module announce time, offsetting with modulus of CAN ID to
      * attempt to avoid collisions. */
@@ -173,6 +178,11 @@ void module_announce(void) {
     packet_outgoing.module.announcement.serial = serial_get();
     packet_outgoing.module.announcement.bootloader_version = fw_version(BOOTLOADER);
     packet_outgoing.module.announcement.flasher_version = fw_version(FLASHER);
+
+    for (uint8_t i = 0; i < OPT_COUNT; i++) {
+        packet_outgoing.module.announcement.opts[i] = opts_get(i);
+    }
+
     packet_send(PREFIX_MODULE, OPCODE_MODULE_ANNOUNCEMENT, SIZE_MODULE_ANNOUNCEMENT, &packet_outgoing);
 
     announce_reset = false;
@@ -288,6 +298,10 @@ void module_receive_announce(uint8_t id, packet_t *p) {
     modules[idx].flags.DEBUG = p->module.announcement.flags.debug;
     modules[idx].game.puzzle = (modules[idx].mode >= MODE_PUZZLE_BASE);
     modules[idx].game.needy = (modules[idx].mode >= MODE_NEEDY_KEYS);
+
+    for (uint8_t i = 0; i < OPT_COUNT; i++) {
+        modules[idx].opts[i] = p->module.announcement.opts[i];
+    }
 
     if (p->module.announcement.flags.reset) {
         module_errors_clear(id);

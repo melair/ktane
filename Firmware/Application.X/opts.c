@@ -1,5 +1,7 @@
 #include <xc.h>
 #include "opts.h"
+#include "../common/can.h"
+#include "../common/packet.h"
 #include "../common/nvm.h"
 #include "../common/eeprom_addrs.h"
 #include "opts/audio/mux.h"
@@ -22,8 +24,14 @@ void opts_initialise_port(uint8_t port);
 #define OPT_SPI         0b00000010
 #define OPT_AUDIO       0b00000011
 
+const uint8_t opts_name[OPT_COUNT][OPT_MAX_NAME] = {
+    "Power",
+    "SPI",
+    "Audio"
+};
+
 const uint8_t OPT_PORTS[4] = {
-    0b00000000,
+    0b00000111, // NONE is valid on all ports.
     0b00000111, // PSU is valid in all ports with bodge wire.
     0b00000100, // SPI is valid in KPORTC, SPI2 on C.
     0b00000001, // AUDIO is valid in KPORTA only, DAC.
@@ -39,8 +47,22 @@ void opts_initialise(void) {
         opts_initialise_port(port);
     }
 
-    if (opts_find_audio() != NULL && opts_find_sdcard() != NULL) {
+    opt_data_t *audio = opts_find_audio();
+    opt_data_t *sdcard = opts_find_sdcard();
+    opt_data_t *power = opts_find_power();
+    opt_data_t *rtc = opts_find_rtc();
+    opt_data_t *nf24 = opts_find_nf24();
+
+    if (audio != NULL && sdcard != NULL) {
         mux_initialise();
+    }
+
+    if (power != NULL) {
+
+    }
+
+    if (rtc != NULL) {
+
     }
 }
 
@@ -136,4 +158,23 @@ opt_data_t *opts_find_power(void) {
     }
 
     return NULL;
+}
+
+void opts_receive_opt_set(uint8_t id, packet_t *p) {
+    if (p->module.set_opt.can_id != can_get_id()) {
+        return;
+    }
+
+    uint8_t port_mask = 1 << p->module.set_opt.port;
+
+    if ((OPT_PORTS[p->module.set_opt.opt] & port_mask) != port_mask) {
+        return;
+    }
+
+    nvm_eeprom_write(EEPROM_LOC_OPT_KPORTA + p->module.set_opt.port, (p->module.set_opt.opt << 4));
+    RESET();
+}
+
+uint8_t opts_get(uint8_t port) {
+    return opts_data[port].type;
 }

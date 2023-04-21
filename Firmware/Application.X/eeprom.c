@@ -55,7 +55,6 @@ void eeprom_initialise(void) {
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTA, 0x00);
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTB, 0x00);
             nvm_eeprom_write(EEPROM_LOC_OPT_KPORTC, 0x00);
-            nvm_eeprom_write(EEPROM_LOC_OPT_KPORTD, 0x00);
         }
 
         if (read_version < 5) {

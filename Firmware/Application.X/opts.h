@@ -3,6 +3,7 @@
 
 void opts_initialise(void);
 void opts_service(void);
+uint8_t opts_get(uint8_t port);
 
 #include "opts/spi/spi_data.h"
 #include "opts/audio/audio_data.h"
@@ -25,6 +26,15 @@ opt_data_t *opts_find_sdcard(void);
 opt_data_t *opts_find_nf24(void);
 opt_data_t *opts_find_audio(void);
 opt_data_t *opts_find_power(void);
+
+#include "../common/packet.h"
+
+void opts_receive_opt_set(uint8_t id, packet_t *p);
+
+#define OPT_COUNT       3
+#define OPT_MAX_NAME    5
+
+extern const uint8_t opts_name[OPT_COUNT][OPT_MAX_NAME];
 
 #endif	/* OPTS_H */
 

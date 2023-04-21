@@ -16,6 +16,10 @@
 #define OPCODE_MODULE_MODE_SET          0x12
 #define OPCODE_MODULE_SPECIAL_FUNCTION  0x13
 #define OPCODE_MODULE_GLOBAL_CONFIG     0x14
+#define OPCODE_MODULE_OPT_SET           0x15
+
+#define OPCODE_MODULE_RTC_TIME          0x20
+
 #define OPCODE_MODULE_ERROR             0xf0
 
 #define OPCODE_GAME_STATE           0x00
@@ -37,6 +41,10 @@
 #define SIZE_MODULE_MODE_SET          sizeof(((packet_t *)0)->module.set_mode) + 1
 #define SIZE_MODULE_SPECIAL_FUNCTION  sizeof(((packet_t *)0)->module.special_function) + 1
 #define SIZE_MODULE_GLOBAL_CONFIG     sizeof(((packet_t *)0)->module.global_config) + 1
+#define SIZE_MODULE_OPT_SET           sizeof(((packet_t *)0)->module.set_opt) + 1
+
+#define SIZE_MODULE_RTC_TIME          sizeof(((packet_t *)0)->module.rtc_time) + 1
+
 #define SIZE_MODULE_ERROR             sizeof(((packet_t *)0)->module.error_announcement) + 1
 
 #define SIZE_GAME_STATE               sizeof(((packet_t *)0)->game.state) + 1
@@ -53,65 +61,90 @@
 
 typedef struct {
     uint8_t opcode;
-    
-    union {        
+
+    union {
+
         union {
+
             struct {
                 uint32_t serial;
             } address_announce;
-            
+
             struct {
                 uint32_t serial;
             } address_nak;
         } network;
-        
+
         union {
+
             struct {
                 uint8_t mode;
                 uint16_t application_version;
+
                 struct {
-                    unsigned reset  :1;
-                    unsigned debug  :1;
-                    unsigned unused :6;
+                    unsigned reset : 1;
+                    unsigned debug : 1;
+                    unsigned unused : 6;
                 } flags;
                 uint32_t serial;
                 uint16_t bootloader_version;
                 uint16_t flasher_version;
+                uint8_t opts[3];
             } announcement;
-            
+
             struct {
                 uint16_t error_code;
+
                 struct {
-                    unsigned active :1;
-                    unsigned unused :7;
+                    unsigned active : 1;
+                    unsigned unused : 7;
                 } flags;
             } error_announcement;
-            
+
             struct {
             } reset;
-            
+
             struct {
                 uint8_t can_id;
             } identify;
-            
+
             struct {
                 uint8_t can_id;
                 uint8_t mode;
             } set_mode;
-            
+
             struct {
                 uint8_t can_id;
                 uint8_t special_function;
-            } special_function;             
-            
+            } special_function;
+
             struct {
-                unsigned argb_brightness :5;
-                unsigned buzzer_volume :3;
-                unsigned store :1;                
+                unsigned argb_brightness : 5;
+                unsigned buzzer_volume : 3;
+                unsigned store : 1;
             } global_config;
+
+            struct {
+                uint8_t can_id;
+                unsigned port : 2;
+                unsigned opt : 4;
+            } set_opt;
+
+            struct {
+                uint8_t date;
+                uint8_t month;
+                uint8_t year;
+
+                uint8_t day;
+
+                uint8_t hour;
+                uint8_t minute;
+                uint8_t second;
+            } rtc_time;
         } module;
-        
+
         union {
+
             struct {
                 uint8_t state;
                 uint32_t seed;
@@ -120,55 +153,58 @@ typedef struct {
                 uint8_t minutes;
                 uint8_t seconds;
                 uint8_t centiseconds;
-                uint8_t time_ratio;                        
+                uint8_t time_ratio;
             } state;
-            
+
             struct {
                 uint8_t can_id;
+
                 struct {
-                    unsigned enabled :1;
-                    unsigned unused :7;
+                    unsigned enabled : 1;
+                    unsigned unused : 7;
                 } flags;
                 uint8_t difficulty;
             } module_config;
-            
+
             struct {
+
                 struct {
-                    unsigned ready :1;
-                    unsigned solved :1;
-                    unsigned unused :6;
+                    unsigned ready : 1;
+                    unsigned solved : 1;
+                    unsigned unused : 6;
                 } flags;
             } module_state;
-            
+
             struct {
                 uint8_t strikes;
             } module_strike;
         } game;
-       
+
         union {
+
             struct {
                 uint16_t version;
                 uint8_t segment;
             } request;
-            
+
             struct {
                 uint16_t version;
                 uint16_t pages;
                 uint32_t crc;
                 uint8_t segment;
             } header;
-            
+
             struct {
                 uint16_t page;
                 uint8_t source_id;
                 uint8_t segment;
             } page_request;
-            
+
             struct {
                 uint16_t page;
                 uint8_t segment;
                 uint8_t data[16];
-            } page_response;            
+            } page_response;
         } firmware;
     };
 } packet_t;

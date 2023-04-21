@@ -9,34 +9,38 @@
 
 /* Structure for an error received from a module. */
 typedef struct {
-    uint16_t        code;
+    uint16_t code;
+
     struct {
-        unsigned count  :7;
-        unsigned active :1;
+        unsigned count : 7;
+        unsigned active : 1;
     };
 } module_error_t;
 
 /* Structure for a module. */
 typedef struct {
-    struct {
-        unsigned    INUSE :1;
-        unsigned    LOST  :1;
-        unsigned    DEBUG :1;
-    }               flags;
-    
-    uint8_t         id;
-    uint8_t         mode;
-    uint32_t        last_seen;
-    uint32_t        serial;
 
     struct {
-        uint16_t    bootloader;
-        uint16_t    application;
-        uint16_t    flasher;
-    } firmware;    
-    
-    module_error_t  errors[ERROR_COUNT];
-    module_game_t   game;
+        unsigned INUSE : 1;
+        unsigned LOST : 1;
+        unsigned DEBUG : 1;
+    } flags;
+
+    uint8_t id;
+    uint8_t mode;
+    uint32_t last_seen;
+    uint32_t serial;
+
+    struct {
+        uint16_t bootloader;
+        uint16_t application;
+        uint16_t flasher;
+    } firmware;
+
+    uint8_t opts[3];
+
+    module_error_t errors[ERROR_COUNT];
+    module_game_t game;
 } module_t;
 
 void module_initialise(void);

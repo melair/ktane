@@ -6,6 +6,7 @@
 
 #ifdef SUPPORT_PROTOCOL_MODULE
 #include "../Application.X/module.h"
+#include "../Application.X/opts.h"
 #endif
 
 #ifdef SUPPORT_PROTOCOL_GAME
@@ -109,6 +110,10 @@ void packet_route_module(uint8_t src, packet_t *packet) {
 
         case OPCODE_MODULE_GLOBAL_CONFIG:
             module_receive_global_config(src, packet);
+            break;
+
+        case OPCODE_MODULE_OPT_SET:
+            opts_receive_opt_set(src, packet);
             break;
 
         case OPCODE_MODULE_ERROR:

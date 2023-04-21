@@ -329,7 +329,7 @@ interface_t interface[] = {
         .right =
         {
             .action = &ui_action_jump,
-            .index = 18
+            .index = 17
         },
         .press =
         {
@@ -340,14 +340,33 @@ interface_t interface[] = {
         .render_data = "Mode",
         .render_check = &tick_2hz
     },
-    // 17 (UNUSED)
-    {},
-    // 18
+    // 17
     {
         .left =
         {
             .action = &ui_action_jump,
             .index = 16
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 18
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 44
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Opt Mods",
+        .render_check = &tick_2hz
+    },
+    // 18
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 17
         },
         .right =
         {
@@ -795,7 +814,47 @@ interface_t interface[] = {
         .render = &ui_game_custom_start_display,
         .render_check = &tick_2hz
     },
-
+    // 44
+    {
+        .left =
+        {
+            .action = &ui_render_configure_module_opt_port_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_module_opt_port_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_module_opt_port_press,
+            .index = 45,
+            .alt_index = 17
+        },
+        .render = &ui_render_configure_module_opt_port,
+        .render_check = &tick_2hz
+    },
+    // 45
+    {
+        .left =
+        {
+            .action = &ui_render_configure_module_opt_set_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_module_opt_set_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_module_opt_set_press,
+            .alt_index = 44
+        },
+        .render = &ui_render_configure_module_opt_port,
+        .render_check = &tick_2hz
+    },
 };
 
 uint8_t current = UI_IDX_ROOT;

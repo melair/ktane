@@ -4,6 +4,7 @@
 #include "../../peripherals/lcd.h"
 #include "../../module.h"
 #include "../../mode.h"
+#include "../../opts.h"
 #include "ui.h"
 #include "ui_configure_module.h"
 
@@ -69,7 +70,7 @@ void ui_render_configure_module_select(interface_t *current) {
 }
 
 int8_t ui_configure_module_hardware = 0;
-#define HARDWARE_STATS (2 - 1)
+#define HARDWARE_STATS (3 - 1)
 
 uint8_t ui_render_configure_module_hardware_change(uint8_t current, action_t *a) {
     if (a->value_direction) {
@@ -123,6 +124,15 @@ void ui_render_configure_module_hardware(interface_t *current) {
                 lcd_hex(1, 13, (module->firmware.flasher) & 0xff);
                 break;
             case 1:
+                title = "Opts";
+                lcd_update(1, 1, 1, "A:");
+                lcd_number(1, 3, 2, opts_get(0));
+                lcd_update(1, 6, 1, "B:");
+                lcd_number(1, 8, 2, opts_get(1));
+                lcd_update(1, 11, 1, "C:");
+                lcd_number(1, 13, 2, opts_get(2));
+                break;
+            case 2:
                 title = "Serial Number";
                 lcd_hex(1, 4, (module->serial >> 24) & 0xff);
                 lcd_hex(1, 6, (module->serial >> 16) & 0xff);
@@ -382,6 +392,117 @@ void ui_render_configure_module_special_function(interface_t *current) {
         title = "Special Fn";
 
         lcd_hex(1, 7, ui_configure_module_special_function);
+    }
+
+    ui_render_menu_item_text(title, has_press, has_left, has_right);
+}
+
+int8_t ui_configure_module_opt_port_id = 0;
+#define OPT_SELECT_MAX 3
+
+uint8_t ui_render_configure_module_opt_port_change(uint8_t current, action_t *a) {
+    if (a->value_direction) {
+        if (ui_configure_module_opt_port_id < OPT_SELECT_MAX) {
+            ui_configure_module_opt_port_id++;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    } else {
+        if (ui_configure_module_opt_port_id >= 0) {
+            ui_configure_module_opt_port_id--;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    }
+
+    return current;
+}
+
+uint8_t ui_render_configure_module_opt_port_press(uint8_t current, action_t *a) {
+    if (ui_configure_module_opt_port_id != -1) {
+        return a->index;
+    }
+
+    ui_configure_module_opt_port_id = 0;
+    return a->alt_index;
+}
+
+void ui_render_configure_module_opt_port(interface_t *current) {
+    bool has_left = (ui_configure_module_opt_port_id >= 0);
+    bool has_right = (ui_configure_module_opt_port_id < OPT_SELECT_MAX);
+    bool has_press = true;
+
+    lcd_clear();
+    uint8_t *title;
+
+    if (ui_configure_module_opt_port_id == -1) {
+        title = "Back";
+    } else {
+        title = "Select";
+
+        lcd_update(1, 5, 4, "Port");
+
+        uint8_t c[2];
+        c[0] = 'A' + ui_configure_module_opt_port_id;
+        c[1] = '\0';
+
+        lcd_update(1, 10, 1, &c);
+    }
+
+    ui_render_menu_item_text(title, has_press, has_left, has_right);
+}
+
+int8_t ui_configure_module_opt_set_id = 0;
+
+uint8_t ui_render_configure_module_opt_set_change(uint8_t current, action_t *a) {
+    if (a->value_direction) {
+        if (ui_configure_module_opt_set_id < OPT_COUNT) {
+            ui_configure_module_opt_set_id++;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    } else {
+        if (ui_configure_module_opt_set_id >= 0) {
+            ui_configure_module_opt_set_id--;
+            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
+    }
+
+    return current;
+}
+
+uint8_t ui_render_configure_module_opt_set_press(uint8_t current, action_t *a) {
+    if (ui_configure_module_opt_set_id != -1) {
+        module_t *module = module_get(ui_configure_module_selected);
+        packet_outgoing.module.set_opt.can_id = module->id;
+        packet_outgoing.module.set_opt.port = ui_configure_module_opt_port_id;
+        packet_outgoing.module.set_opt.opt = ui_configure_module_opt_set_id;
+        packet_send(PREFIX_MODULE, OPCODE_MODULE_OPT_SET, SIZE_MODULE_OPT_SET, &packet_outgoing);
+    }
+
+    ui_configure_module_opt_set_id = 0;
+    return a->alt_index;
+}
+
+void ui_render_configure_module_opt_set(interface_t *current) {
+    bool has_left = (ui_configure_module_opt_set_id >= 0);
+    bool has_right = (ui_configure_module_opt_set_id < OPT_COUNT);
+    bool has_press = true;
+
+    lcd_clear();
+    uint8_t *title;
+
+    if (ui_configure_module_opt_set_id == -1) {
+        title = "Back";
+    } else {
+        title = "Change to";
+
+        uint8_t *name = &opts_name[ui_configure_module_opt_set_id];
+
+        uint8_t size = 0;
+        for (uint8_t *s = name; *s != '\0' && size < 16; *s++) {
+            size++;
+        }
+
+        uint8_t start = (8 - (size / 2));
+        lcd_update(1, start, size, name);
     }
 
     ui_render_menu_item_text(title, has_press, has_left, has_right);
