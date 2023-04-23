@@ -38,7 +38,7 @@ typedef void (*state_fn_t)(bool);
 /* Function pointers to each stage. */
 state_fn_t mode_service_state_function[MODE_COUNTS];
 /* Pointers to tick variable to use to rate limit call. */
-bool *mode_service_tick[MODE_COUNTS];
+volatile bool *mode_service_tick[MODE_COUNTS];
 
 /* Pointer to special function receiver. */
 void (*mode_special_fn_function)(uint8_t);
@@ -289,7 +289,7 @@ void mode_service(void) {
  * @param state to call function for
  * @param func function to call
  */
-void mode_register_callback(uint8_t state, void (*func)(bool), bool *tick) {
+void mode_register_callback(uint8_t state, void (*func)(bool), volatile bool *tick) {
     if (state >= GAME_ENABLE) {
         state = SPECIAL_MODE(state);
     }

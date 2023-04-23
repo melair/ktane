@@ -275,49 +275,47 @@ void edgework_display(uint8_t i) {
 
     uint8_t ew = edgework_slots[i];
 
-    const uint8_t *battery = "Battery:";
-    const uint8_t *port = "Port:";
-    const uint8_t *indLab = "Ind:";
-    const uint8_t *indLit = "LIT";
-    const uint8_t *twofa = "2FA:";
-    const uint8_t *serial = "Serial:";
+    const uint8_t battery[] = "Battery:";
+    const uint8_t port[] = "Port:";
+    const uint8_t indLab[] = "Ind:";
+    const uint8_t indLit[] = "LIT";
+    const uint8_t twofa[] = "2FA:";
+    const uint8_t serial[] = "Serial:";
 
     uint8_t portNo;
     uint8_t ind;
-    uint8_t batteryCount;
 
     switch (ew & SLOT_PREFIX_MASK) {
         case SLOT_PREFIX_PORT:
-            lcd_update(1, 0, 5, port);
+            lcd_update(1, 0, 5, &port[0]);
 
             portNo = ew & 0b00001111;
-            lcd_update(1, 6, 4, &port_name[portNo]);
+            lcd_update(1, 6, 4, &port_name[portNo][0]);
 
             break;
         case SLOT_PREFIX_INDICATOR:
             ind = ew & 0b00001111;
-            lcd_update(1, 0, 4, indLab);
-            lcd_update(1, 5, 3, &indicator_name[ind]);
+            lcd_update(1, 0, 4, &indLab[0]);
+            lcd_update(1, 5, 3, &indicator_name[ind][0]);
 
             if ((ew & 0b00010000) == 0b00010000) {
-                lcd_update(1, 9, 3, indLit);
+                lcd_update(1, 9, 3, &indLit[0]);
             }
 
             break;
         case SLOT_PREFIX_BATTERY:
-            batteryCount = (ew & ~(SLOT_PREFIX_MASK)) + 1 + '0';
-            lcd_update(1, 0, 8, battery);
-            lcd_update(1, 9, 1, &batteryCount);
+            lcd_update(1, 0, 8, &battery[0]);
+            lcd_number(1, 9, 1, (ew & ~(SLOT_PREFIX_MASK)) + 1);
 
             break;
         case SLOT_PREFIX_TWOFA:
-            lcd_update(1, 0, 4, twofa);
-            lcd_update(1, 5, TWOFA_LENGTH, &edgework_twofa);
+            lcd_update(1, 0, 4, &twofa[0]);
+            lcd_update(1, 5, TWOFA_LENGTH, &edgework_twofa[0]);
 
             break;
         case SLOT_PREFIX_SERIAL:
-            lcd_update(1, 0, 7, serial);
-            lcd_update(1, 8, SERIAL_LENGTH, &edgework_serial);
+            lcd_update(1, 0, 7, &serial[0]);
+            lcd_update(1, 8, SERIAL_LENGTH, &edgework_serial[0]);
 
             break;
         default:

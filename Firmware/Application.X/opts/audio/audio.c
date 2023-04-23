@@ -62,7 +62,7 @@ void audio_initialise(opt_data_t *opt) {
     DMAnCON0 = 0;
 
     /* Set destination address of data. */
-    DMAnDSA = &DAC1DATL;
+    DMAnDSA = (volatile unsigned short) &DAC1DATL;
 
     /* Set source address to general purpose register space. */
     DMAnCON1bits.SMR = 0b00;
@@ -77,7 +77,7 @@ void audio_initialise(opt_data_t *opt) {
 
     /* Initialise DMA with source buffers. */
     DMAnSSZ = AUDIO_FRAME_SIZE * 2;
-    DMAnSSA = &audio_buffers[0];
+    DMAnSSA = (volatile uint24_t) & audio_buffers[0];
 
     /* Set clearing of SIREQEN bit when source counter is reloaded, don't when
      * destination counter is reloaded. */

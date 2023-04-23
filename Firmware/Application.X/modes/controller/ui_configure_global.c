@@ -15,7 +15,7 @@ int8_t ui_configure_global_argb_brightness = 0;
 
 uint8_t ui_render_configure_global_argb_brightness_initial(uint8_t current, action_t *a) {
     ui_configure_global_argb_brightness_initial = argb_get_brightness();
-    ui_configure_global_argb_brightness = ui_configure_global_argb_brightness_initial;
+    ui_configure_global_argb_brightness = ((int8_t) ui_configure_global_argb_brightness_initial);
 
     return a->index;
 }
@@ -34,7 +34,7 @@ uint8_t ui_render_configure_global_argb_brightness_change(uint8_t current, actio
     }
 
     if (ui_configure_global_argb_brightness > 0) {
-        argb_set_brightness(ui_configure_global_argb_brightness);
+        argb_set_brightness((uint8_t) ui_configure_global_argb_brightness);
         module_send_global_config(false);
     }
 
@@ -47,7 +47,7 @@ uint8_t ui_render_configure_global_argb_brightness_press(uint8_t current, action
         module_send_global_config(false);
     } else {
         module_send_global_config(true);
-        nvm_eeprom_write(EEPROM_LOC_ARGB_BRIGHTNESS, ui_configure_global_argb_brightness);
+        nvm_eeprom_write(EEPROM_LOC_ARGB_BRIGHTNESS, (uint8_t) ui_configure_global_argb_brightness);
     }
 
     return a->alt_index;
@@ -66,7 +66,7 @@ void ui_render_configure_global_argb_brightness(interface_t *current) {
     } else {
         title = "ARGB LED Bri";
 
-        lcd_number(1, 7, 2, ui_configure_global_argb_brightness);
+        lcd_number(1, 7, 2, (uint8_t) ui_configure_global_argb_brightness);
     }
 
     ui_render_menu_item_text(title, has_press, has_left, has_right);
@@ -78,7 +78,7 @@ int8_t ui_configure_global_buzzer_vol = 0;
 
 uint8_t ui_render_configure_global_buzzer_vol_initial(uint8_t current, action_t *a) {
     ui_configure_global_buzzer_vol_initial = buzzer_get_volume();
-    ui_configure_global_buzzer_vol = ui_configure_global_buzzer_vol_initial;
+    ui_configure_global_buzzer_vol = ((int8_t) ui_configure_global_buzzer_vol_initial);
 
     return a->index;
 }
@@ -87,14 +87,14 @@ uint8_t ui_render_configure_global_buzzer_vol_change(uint8_t current, action_t *
     if (a->value_direction) {
         if (ui_configure_global_buzzer_vol < MAX_BUZZER_VOLUME) {
             ui_configure_global_buzzer_vol++;
-            buzzer_set_volume(ui_configure_global_buzzer_vol);
+            buzzer_set_volume((uint8_t) ui_configure_global_buzzer_vol);
             module_send_global_config(false);
             buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_global_buzzer_vol >= 0) {
             ui_configure_global_buzzer_vol--;
-            buzzer_set_volume(ui_configure_global_buzzer_vol);
+            buzzer_set_volume((uint8_t) ui_configure_global_buzzer_vol);
             module_send_global_config(false);
             buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
@@ -109,7 +109,7 @@ uint8_t ui_render_configure_global_buzzer_vol_press(uint8_t current, action_t *a
         module_send_global_config(false);
     } else {
         module_send_global_config(true);
-        nvm_eeprom_write(EEPROM_LOC_BUZZER_VOL, ui_configure_global_buzzer_vol);
+        nvm_eeprom_write(EEPROM_LOC_BUZZER_VOL, (uint8_t) ui_configure_global_buzzer_vol);
     }
 
     return a->alt_index;
@@ -128,7 +128,7 @@ void ui_render_configure_global_buzzer_vol(interface_t *current) {
     } else {
         title = "Buzzer Vol";
 
-        lcd_number(1, 7, 2, ui_configure_global_buzzer_vol);
+        lcd_number(1, 7, 2, (uint8_t) ui_configure_global_buzzer_vol);
     }
 
     ui_render_menu_item_text(title, has_press, has_left, has_right);

@@ -35,7 +35,7 @@ uint8_t *argb_buffer = NULL;
 /* Local function prototypes. */
 spi_command_t *argb_spi_callback(spi_command_t *);
 
-const spi_device_t argb_spi_device = {
+spi_device_t argb_spi_device = {
     .clk_pin = KPIN_SYS_B3,
     .miso_pin = KPIN_NONE,
     .mosi_pin = KPIN_SYS_B2,

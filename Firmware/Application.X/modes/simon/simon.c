@@ -75,7 +75,7 @@ pin_t simon_led_chs[4] = {KPIN_B0, KPIN_B1, KPIN_B2, KPIN_B3};
  * Initialise the simon says puzzle.
  */
 void simon_initialise(void) {
-    pwmled_initialise(KPIN_B4, KPIN_B5, KPIN_B6, &simon_led_chs);
+    pwmled_initialise(KPIN_B4, KPIN_B5, KPIN_B6, &simon_led_chs[0]);
 
     /* Register our callbacks. */
     mode_register_callback(GAME_ALWAYS, simon_service, NULL);

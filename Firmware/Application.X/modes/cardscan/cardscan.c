@@ -98,22 +98,22 @@ const uint8_t cardscan_names[CARDSCAN_CARD_COUNT][CARDSCAN_MAX_NAME] = {
 void cardscan_initialise(void) {
     /* Initialise the LCD. */
     lcd_initialize();
-    
+
     /* Load the big font into the LCD. */
     lcd_load_big();
-    
+
     /* Initialise SPI, register RFID. */
     kpin_mode(KPIN_C0, PIN_OUTPUT, false);
     kpin_mode(KPIN_C1, PIN_INPUT, false);
     kpin_mode(KPIN_C2, PIN_OUTPUT, false);
-    kpin_mode(KPIN_C3, PIN_OUTPUT, false);    
-        
+    kpin_mode(KPIN_C3, PIN_OUTPUT, false);
+
     /* Set CS to high. */
-    kpin_write(KPIN_C3, true);   
-    
+    kpin_write(KPIN_C3, true);
+
     /* Initialise IRQ. */
     kpin_mode(KPIN_C4, PIN_INPUT, false);
-    
+
     /* Register callbacks. */
     mode_register_callback(GAME_ALWAYS, cardscan_service, NULL);
     mode_register_callback(GAME_IDLE, cardscan_service_idle, &tick_20hz);
@@ -123,36 +123,36 @@ void cardscan_initialise(void) {
     mode_register_callback(GAME_DISABLE, cardscan_disable, NULL);
 
     mode_register_special_fn_callback(&cardscan_special_function);
-    
+
     /* Load custom symbols into RAM. */
     for (uint8_t i = 0; i < CARDSCAN_CHARACTERS; i++) {
-        lcd_custom_character(i, &cardscan_character[i]);
+        lcd_custom_character(i, &cardscan_character[i][0]);
     }
 }
 
 void cardscan_enable(bool first) {
-    lcd_set_brightness(lcd_get_nominal_brightness());   
+    lcd_set_brightness(lcd_get_nominal_brightness());
 }
 
 void cardscan_disable(bool first) {
     lcd_set_brightness(0);
-    
+
     lcd_clear();
     lcd_sync();
 }
 
 void cardscan_service(bool first) {
-     lcd_service();   
-     pn532_cmd_service();
-     pn532_service();
+    lcd_service();
+    pn532_cmd_service();
+    pn532_service();
 }
 
 void cardscan_service_idle(bool first) {
     if (first) {
         lcd_clear();
-        lcd_sync();   
+        lcd_sync();
     }
-    
+
     if (mode_data.cardscan.cards.programming && (tick_2hz || mode_data.cardscan.cards.programming_update)) {
         lcd_clear();
 
@@ -177,34 +177,34 @@ void cardscan_service_setup(bool first) {
     if (first) {
         lcd_clear();
         lcd_sync();
-        
+
         mode_data.cardscan.cards.programming = false;
-        
+
         mode_data.cardscan.cards.wanted_id = ((uint8_t) (game.module_seed & 0xff)) % CARDSCAN_CARD_COUNT;
         mode_data.cardscan.cards.lives = CARDSCAN_INITIAL_LIVES;
-        mode_data.cardscan.cards.last_id = 0xff;  
+        mode_data.cardscan.cards.last_id = 0xff;
     }
-    
+
     if (!this_module->ready && !mode_data.cardscan.cards.programming) {
-        game_module_ready(true);            
+        game_module_ready(true);
     }
 }
 
-void cardscan_service_running(bool first) {    
+void cardscan_service_running(bool first) {
     bool redraw = false;
-    
+
     if (first) {
-        mode_data.cardscan.cards.scanned_updated = false;        
-        redraw = true;
-    }
-    
-    if (mode_data.cardscan.cards.scanned_updated) {
-        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
-                        
         mode_data.cardscan.cards.scanned_updated = false;
         redraw = true;
-        
-        if (mode_data.cardscan.cards.scanned_id != mode_data.cardscan.cards.wanted_id) {            
+    }
+
+    if (mode_data.cardscan.cards.scanned_updated) {
+        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
+
+        mode_data.cardscan.cards.scanned_updated = false;
+        redraw = true;
+
+        if (mode_data.cardscan.cards.scanned_id != mode_data.cardscan.cards.wanted_id) {
             if (mode_data.cardscan.cards.lives == 0) {
                 game_module_strike(1);
             } else {
@@ -213,62 +213,62 @@ void cardscan_service_running(bool first) {
         } else {
             game_module_solved(true);
         }
-        
+
         mode_data.cardscan.cards.last_id = mode_data.cardscan.cards.scanned_id;
     }
-        
+
     if (redraw || tick_2hz) {
         if (tick_2hz) {
             mode_data.cardscan.cards.flash = !mode_data.cardscan.cards.flash;
         }
-        
+
         lcd_clear();
-        
+
         if (mode_data.cardscan.cards.last_id != 0xff) {
             uint8_t size = 0;
-            
+
             for (size = 0; size < 16; size++) {
                 if (cardscan_names[mode_data.cardscan.cards.last_id][size] == '\0') {
                     break;
                 }
             }
-            
-            uint8_t offset = 8 - (size / 2);            
-            lcd_update(0, offset, size, &cardscan_names[mode_data.cardscan.cards.last_id]);            
-            
+
+            uint8_t offset = 8 - (size / 2);
+            lcd_update(0, offset, size, &cardscan_names[mode_data.cardscan.cards.last_id][0]);
+
             bool fact_a = (mode_data.cardscan.cards.wanted_id / 6) == (mode_data.cardscan.cards.last_id / 6);
             bool fact_b = ((mode_data.cardscan.cards.wanted_id / 2) % 3) == ((mode_data.cardscan.cards.last_id / 2) % 3);
             bool fact_c = (mode_data.cardscan.cards.wanted_id % 2) == (mode_data.cardscan.cards.last_id % 2);
-            
-            lcd_update(1, 13, 1, (fact_a ? "\2": "\1"));
-            lcd_update(1, 14, 1, (fact_b ? "\2": "\1"));
-            lcd_update(1, 15, 1, (fact_c ? "\2": "\1"));
+
+            lcd_update(1, 13, 1, (fact_a ? "\2" : "\1"));
+            lcd_update(1, 14, 1, (fact_b ? "\2" : "\1"));
+            lcd_update(1, 15, 1, (fact_c ? "\2" : "\1"));
         } else {
             lcd_update(0, 2, 12, "Scan ID Card");
-        }        
-        
+        }
+
         for (uint8_t i = 0; i < CARDSCAN_INITIAL_LIVES; i++) {
-            bool heart = (i <  mode_data.cardscan.cards.lives);
-            
+            bool heart = (i < mode_data.cardscan.cards.lives);
+
             if (heart || mode_data.cardscan.cards.flash) {
                 lcd_update(1, i, 1, (heart ? "\0" : "\3"));
             }
         }
-        
+
         lcd_sync();
-    }    
+    }
 }
 
 void cardscan_special_function(uint8_t special_fn) {
-    switch(special_fn) {
+    switch (special_fn) {
         case 0:
             mode_data.cardscan.cards.programming = !mode_data.cardscan.cards.programming;
-            
+
             if (!mode_data.cardscan.cards.programming) {
                 /* Clear LCD. */
                 lcd_clear();
                 lcd_sync();
-            } else {               
+            } else {
                 /* Set initial card back to 0. */
                 mode_data.cardscan.cards.programming_id = 0;
             }

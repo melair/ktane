@@ -56,9 +56,9 @@ void i2c_service(void) {
     DMASELECT = DMA_I2C;
 
     if (i2c_command != NULL && (
-            ((i2c_command->operation == I2C_OPERATION_WRITE) && (I2C1PIRbits.PCIF) ||
-            (i2c_command->operation == I2C_OPERATION_WRITE_THEN_READ) && (I2C1PIRbits.PCIF /*|| I2C1CON0bits.MDR*/) ||
-            (i2c_command->operation == I2C_OPERATION_READ && (I2C1PIRbits.PCIF))))) {
+            ((i2c_command->operation == I2C_OPERATION_WRITE) && (I2C1PIRbits.PCIF)) ||
+            ((i2c_command->operation == I2C_OPERATION_WRITE_THEN_READ) && (I2C1PIRbits.PCIF /*|| I2C1CON0bits.MDR*/)) ||
+            ((i2c_command->operation == I2C_OPERATION_READ && (I2C1PIRbits.PCIF))))) {
 
         i2c_command->in_progress = 0;
 
@@ -116,8 +116,8 @@ void i2c_service(void) {
                 DMAnSSZL = I2C1CNTL;
                 DMAnDSZ = 1;
 
-                DMAnSSA = i2c_command->buffer;
-                DMAnDSA = &I2C1TXB;
+                DMAnSSA = (volatile uint24_t) i2c_command->buffer;
+                DMAnDSA = (volatile unsigned short) &I2C1TXB;
 
                 DMAnCON1bits.SSTP = 1;
                 DMAnCON1bits.DSTP = 0;
@@ -133,7 +133,7 @@ void i2c_service(void) {
 
                 I2C1CON1bits.ACKCNT = 1;
 
-                I2C1ADB1 = (i2c_command->addr << 1) | 0x01;
+                I2C1ADB1 = ((uint8_t) (i2c_command->addr << 1)) | 0x01;
 
                 I2C1CNTH = (i2c_command->read_size >> 8) & 0xff;
                 I2C1CNTL = i2c_command->read_size & 0xff;
@@ -142,8 +142,8 @@ void i2c_service(void) {
                 DMAnDSZH = I2C1CNTH;
                 DMAnDSZL = I2C1CNTL;
 
-                DMAnSSA = &I2C1RXB;
-                DMAnDSA = i2c_command->buffer;
+                DMAnSSA = (volatile uint24_t) & I2C1RXB;
+                DMAnDSA = (volatile unsigned short) i2c_command->buffer;
 
                 DMAnCON1bits.SSTP = 0;
                 DMAnCON1bits.DSTP = 1;

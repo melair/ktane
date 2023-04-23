@@ -122,8 +122,8 @@ void spi_service(void) {
                 DMAnSSZL = SPI2TCNTL;
                 DMAnDSZ = 1;
 
-                DMAnSSA = spi_command->buffer;
-                DMAnDSA = &SPI2TXB;
+                DMAnSSA = (volatile uint24_t) spi_command->buffer;
+                DMAnDSA = (volatile unsigned short) &SPI2TXB;
 
                 DMAnCON1bits.SSTP = 1;
                 DMAnCON1bits.DSTP = 0;
@@ -144,8 +144,8 @@ void spi_service(void) {
                 DMAnDSZH = SPI2TCNTH;
                 DMAnDSZL = SPI2TCNTL;
 
-                DMAnSSA = &SPI2RXB;
-                DMAnDSA = spi_command->buffer;
+                DMAnSSA = (volatile uint24_t) & SPI2RXB;
+                DMAnDSA = (volatile unsigned short) spi_command->buffer;
 
                 DMAnCON1bits.SSTP = 0;
                 DMAnCON1bits.DSTP = 1;

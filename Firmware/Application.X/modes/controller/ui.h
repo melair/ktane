@@ -10,6 +10,7 @@ struct action {
     uint8_t(*action)(uint8_t, action_t *);
 
     union {
+
         struct {
             uint8_t index;
             uint8_t alt_index;
@@ -25,7 +26,7 @@ struct interface {
 
     void (*render)(interface_t *);
     void *render_data;
-    bool *render_check;
+    volatile bool *render_check;
 };
 
 typedef struct {

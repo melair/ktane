@@ -852,7 +852,7 @@ interface_t interface[] = {
             .action = &ui_render_configure_module_opt_set_press,
             .alt_index = 44
         },
-        .render = &ui_render_configure_module_opt_port,
+        .render = &ui_render_configure_module_opt_set,
         .render_check = &tick_2hz
     },
 };
@@ -938,9 +938,9 @@ uint8_t ui_action_restart_ktane(uint8_t current, action_t *a) {
     return current;
 }
 
-const uint8_t *left_arrow = {0b01111111, 0};
-const uint8_t *right_arrow = {0b01111110, 0};
-const uint8_t *press_arrow = {0b10100101, 0};
+const uint8_t left_arrow[] = {0b01111111};
+const uint8_t right_arrow[] = {0b01111110};
+const uint8_t press_arrow[] = {0b10100101};
 
 void ui_render_menu_item(interface_t *current) {
     lcd_clear();
@@ -949,21 +949,21 @@ void ui_render_menu_item(interface_t *current) {
 
 void ui_render_menu_item_text(uint8_t *text, bool press_icons, bool left_icon, bool right_icon) {
     uint8_t size = 0;
-    for (uint8_t *s = text; *s != '\0'; *s++) {
+    for (uint8_t *s = text; *s != '\0'; s++) {
         size++;
     }
 
     if (press_icons) {
-        lcd_update(0, 1, 1, &press_arrow);
-        lcd_update(0, 14, 1, &press_arrow);
+        lcd_update(0, 1, 1, &press_arrow[0]);
+        lcd_update(0, 14, 1, &press_arrow[0]);
     }
 
     if (left_icon) {
-        lcd_update(0, 0, 1, &left_arrow);
+        lcd_update(0, 0, 1, &left_arrow[0]);
     }
 
     if (right_icon) {
-        lcd_update(0, 15, 1, &right_arrow);
+        lcd_update(0, 15, 1, &right_arrow[0]);
     }
 
     uint8_t mid = 8 - (size / 2);

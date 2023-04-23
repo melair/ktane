@@ -10,13 +10,13 @@
 uint8_t mux_buffer[AUDIO_FRAME_SIZE + 12];
 
 /*
- * We're limiting the mux to be able to handle 4 concurrent playbacks, this 
+ * We're limiting the mux to be able to handle 4 concurrent playbacks, this
  * assumes that getting the data into the PIC is via DMA. Mixing the audio
  * is the most expensive operation the bomb performs.
- * 
+ *
  * We can actually manage 5, sometimes 6 - but it would leave no compute
  * resource for operating the rest of the module.
- * 
+ *
  * The initial channel could be DMA'd, however it would essentially lock the
  * MCU data bus while it did it - because we aren't interrupt based, we can't
  * reduce the priority of the DMA and let it copy while idle.
@@ -47,9 +47,9 @@ bool mux_start_next_transfer(void);
 void mux_initialise(void) {
     audio = opts_find_audio();
     sdcard = opts_find_sdcard();
-    
+
     audio_register_callback(&audio->audio, mux_audio_request);
-    
+
     mux_sd_trans.spi_cmd.callback = mux_sdcard_callback;
     mux_sd_trans.spi_cmd.callback_ptr = NULL;
 }
@@ -68,51 +68,51 @@ void mux_audio_request(opt_audio_t *a) {
     if (!sdcard_is_ready(sdcard) || mux_muxing) {
         return;
     }
-    
-    mux_muxing = true;    
+
+    mux_muxing = true;
     mux_mix_next_block = false;
     mux_buffer_base = (a->buffer_next ? AUDIO_FRAME_SIZE : 0);
     mux_ch = 0;
-              
+
     if (!mux_start_next_transfer()) {
         for (uint16_t i = 0; i < AUDIO_FRAME_SIZE; i++) {
-            a->buffer[mux_buffer_base+i] = 0x7f;
+            a->buffer[mux_buffer_base + i] = 0x7f;
         }
-        
+
         mux_muxing = false;
     } else {
         spi_enqueue(&mux_sd_trans.spi_cmd);
     }
 }
 
-bool mux_start_next_transfer(void) {   
+bool mux_start_next_transfer(void) {
     bool found = false;
-    
-    for(uint8_t i = mux_ch; i < MUX_CHANNELS; i++) {
+
+    for (uint8_t i = mux_ch; i < MUX_CHANNELS; i++) {
         if (mux_channels[i].remaining != 0) {
             mux_ch = i;
             found = true;
             break;
         }
     }
-    
+
     if (found) {
-        sdcard_transaction_read_block(&mux_sd_trans, sdcard, &mux_buffer, mux_channels[mux_ch].block);   
+        sdcard_transaction_read_block(&mux_sd_trans, sdcard, &mux_buffer[0], mux_channels[mux_ch].block);
         sdcard_transaction_callback(&mux_sd_trans);
 
         mux_channels[mux_ch].block++;
-        mux_channels[mux_ch].remaining--;    
-        
+        mux_channels[mux_ch].remaining--;
+
         return true;
     } else {
         return false;
-    }    
+    }
 }
 
 void mux_service(void) {
     if (mux_need_block) {
         mux_need_block = false;
-                
+
         if (mux_start_next_transfer()) {
             spi_enqueue(&mux_sd_trans.spi_cmd);
         } else {
@@ -122,38 +122,38 @@ void mux_service(void) {
 }
 
 spi_command_t *mux_sdcard_callback(spi_command_t *cmd) {
-    switch(sdcard_transaction_callback(&mux_sd_trans)) {
+    switch (sdcard_transaction_callback(&mux_sd_trans)) {
         case SDCARD_CMD_ERROR:
             return NULL;
-        case SDCARD_CMD_COMPLETE:     
+        case SDCARD_CMD_COMPLETE:
             if (mux_mix_next_block) {
                 uint16_t w;
-                
+
                 for (uint16_t i = 0; i < AUDIO_FRAME_SIZE; i++) {
-                    uint8_t a = audio->audio.buffer[mux_buffer_base+i];
+                    uint8_t a = audio->audio.buffer[mux_buffer_base + i];
                     uint8_t b = mux_buffer[i];
-                    
+
                     /* http://www.vttoth.com/CMS/index.php/technical-notes/68 */
                     if (a < 128 && b < 128) {
                         w = (a * b) >> 7;
                     } else {
                         w = ((a + b + a + b)) - ((a * b) >> 7) - 256;
                     }
-                    
-                    audio->audio.buffer[mux_buffer_base+i] = (uint8_t) w;                   
+
+                    audio->audio.buffer[mux_buffer_base + i] = (uint8_t) w;
                 }
-            } else {            
+            } else {
                 for (uint16_t i = 0; i < AUDIO_FRAME_SIZE; i++) {
-                    audio->audio.buffer[mux_buffer_base+i] = mux_buffer[i];
+                    audio->audio.buffer[mux_buffer_base + i] = mux_buffer[i];
                 }
             }
-            
+
             mux_mix_next_block = true;
             mux_need_block = true;
             mux_ch++;
 
             return NULL;
     }
-    
+
     return cmd;
 }

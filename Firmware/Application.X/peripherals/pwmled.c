@@ -94,7 +94,7 @@ uint16_t pwmled_scale(uint8_t bri, uint8_t c) {
         return 0;
     }
 
-    uint16_t t = (c << 8) | 0xff;
+    uint16_t t = (uint16_t) ((c << 8) | 0xff);
     t = (t / 31) * bri;
 
     return t;

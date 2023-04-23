@@ -19,7 +19,7 @@
 #define kpin_is_portc(PIN)      ((PIN & KPIN_PORT_MASK) == KPIN_PORT_C)
 #define kpin_is_portd(PIN)      ((PIN & KPIN_PORT_MASK) == KPIN_PORT_D)
 
-#define KPIN_PIN_MASK(PIN)      (1 << (PIN & 0b00000111))
+#define KPIN_PIN_MASK(PIN)      ((uint8_t)(1 << (PIN & 0b00000111)))
 
 /**
  * Provide configuration support for pins on KTANE ports.
@@ -32,10 +32,10 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
     if (pin == KPIN_NONE) {
         return;
     }
-    
+
     uint8_t mask = KPIN_PIN_MASK(pin);
 
-    switch(pin & KPIN_PORT_MASK) {
+    switch (pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:
             if (mode == PIN_OUTPUT) {
                 KTRISA &= ~mask;
@@ -92,13 +92,13 @@ void kpin_mode(pin_t pin, uint8_t mode, bool pullup) {
 }
 
 void kpin_opendrain(pin_t pin, bool opendrain) {
-      if (pin == KPIN_NONE) {
+    if (pin == KPIN_NONE) {
         return;
     }
-    
+
     uint8_t mask = KPIN_PIN_MASK(pin);
 
-    switch(pin & KPIN_PORT_MASK) {
+    switch (pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:
             if (opendrain) {
                 KODCONA |= mask;
@@ -127,7 +127,7 @@ void kpin_opendrain(pin_t pin, bool opendrain) {
                 KODCOND &= ~mask;
             }
             break;
-    }  
+    }
 }
 
 /**
@@ -140,11 +140,11 @@ bool kpin_read(pin_t pin) {
     if (pin == KPIN_NONE) {
         return false;
     }
-    
+
     uint8_t mask = KPIN_PIN_MASK(pin);
     uint8_t val;
 
-    switch(pin & KPIN_PORT_MASK) {
+    switch (pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:
             val = KPORTA;
             break;
@@ -172,10 +172,10 @@ void kpin_write(pin_t pin, bool value) {
     if (pin == KPIN_NONE) {
         return;
     }
-    
+
     uint8_t mask = KPIN_PIN_MASK(pin);
 
-    switch(pin & KPIN_PORT_MASK) {
+    switch (pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:
             if (value) {
                 KLATA |= mask;
@@ -210,7 +210,7 @@ void kpin_write(pin_t pin, bool value) {
 volatile unsigned char *kpin_to_rxypps(pin_t pin) {
     uint8_t mask = pin & KPIN_ALL_PIN_MASK;
 
-    switch(pin & KPIN_PORT_MASK) {
+    switch (pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:
             return (&RA0PPS) + mask;
         case KPIN_PORT_B:
@@ -223,13 +223,15 @@ volatile unsigned char *kpin_to_rxypps(pin_t pin) {
             return (&RB0PPS) + mask;
         case KPIN_SYS_C:
             return (&RC0PPS) + mask;
-    } 
+    }
+
+    return &RA0PPS;
 }
 
 uint8_t kpin_to_ppspin(pin_t pin) {
     uint8_t mask = pin & KPIN_ALL_PIN_MASK;
 
-    switch(pin & KPIN_PORT_MASK) {
+    switch (pin & KPIN_PORT_MASK) {
         case KPIN_PORT_A:
             return (0b00000000 | mask);
         case KPIN_PORT_B:
@@ -242,5 +244,7 @@ uint8_t kpin_to_ppspin(pin_t pin) {
             return (0b00001000 | mask);
         case KPIN_SYS_C:
             return (0b00010000 | mask);
-    }   
+    }
+
+    return (0b00000000 | mask);
 }

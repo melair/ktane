@@ -153,7 +153,7 @@ i2c_command_t *power_i2c_callback(i2c_command_t *cmd) {
     return NULL;
 }
 
-void power_bit_off(opt_data_t *opt) {
+void power_off(opt_data_t *opt) {
     opt->power.power_off = true;
 }
 
@@ -175,7 +175,7 @@ uint16_t power_bit_number(uint8_t bit_count, uint16_t offset, uint16_t base_bit,
 uint8_t power_get_percentage(uint16_t bat_vol) {
     uint8_t i;
 
-    for (i = POWER_BAT_PERCENTAGE_POINTS - 1; i >= 0; i--) {
+    for (i = POWER_BAT_PERCENTAGE_POINTS - 1; i != 0; i--) {
         if (bat_vol >= power_charge_percentage[i]) {
             break;
         }

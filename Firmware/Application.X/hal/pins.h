@@ -65,7 +65,7 @@
 
 typedef uint8_t pin_t;
 
-#define KPORT_BUILD(port, pin) (port << 3 | (pin & 0b00000111))
+#define KPORT_BUILD(port, pin) ((pin_t) (port << 3 | (pin & 0b00000111)))
 
 #define KPIN_A0 ((pin_t) 0b00000000)
 #define KPIN_A1 ((pin_t) 0b00000001)

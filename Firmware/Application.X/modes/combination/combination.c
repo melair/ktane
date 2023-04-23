@@ -129,7 +129,7 @@ void combination_service_running(bool first) {
         segment_set_digit(1, characters[0]);
         segment_set_digit(2, characters[0]);
     } else {
-        uint8_t digit = mode_data.combination.value / 10;
+        uint8_t digit = ((uint8_t) mode_data.combination.value / 10);
         segment_set_digit(1, characters[1 + digit]);
         digit = mode_data.combination.value % 10;
         segment_set_digit(2, characters[1 + digit]);
@@ -162,7 +162,7 @@ void combination_check(void) {
         if ((shouldBeClockwise && mode_data.combination.clockwise_traveled) || (!shouldBeClockwise && mode_data.combination.anticlockwise_traveled)) {
             /* If we have the correct value, great. */
             if (mode_data.combination.expected[mode_data.combination.stage] == mode_data.combination.value) {
-                mode_data.combination.entered[mode_data.combination.stage] = mode_data.combination.value;
+                mode_data.combination.entered[mode_data.combination.stage] = (uint8_t) mode_data.combination.value;
                 correct = true;
             }
         }

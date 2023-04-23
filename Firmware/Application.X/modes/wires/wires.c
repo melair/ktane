@@ -484,7 +484,7 @@ void wires_service_adc(void) {
     }
 
     if (mode_data.wires.process.adc_check != 0xff) {
-        uint16_t adc_result = (ADRESH << 8) | ADRESL;
+        uint16_t adc_result = (uint16_t) ((ADRESH << 8) | ADRESL);
 
         mode_data.wires.wires[mode_data.wires.process.adc_check].adc_value = adc_result;
 

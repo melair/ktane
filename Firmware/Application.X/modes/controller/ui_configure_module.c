@@ -11,7 +11,7 @@
 int8_t ui_configure_module_selected = 0;
 
 uint8_t ui_action_configure_module_select_change(uint8_t current, action_t *a) {
-    uint8_t initial = ui_configure_module_selected;
+    int8_t initial = ui_configure_module_selected;
 
     if (a->value_direction) {
         ui_configure_module_selected++;
@@ -24,8 +24,8 @@ uint8_t ui_action_configure_module_select_change(uint8_t current, action_t *a) {
     }
 
     if (initial != ui_configure_module_selected && ui_configure_module_selected >= 0) {
-        for (uint8_t i = ui_configure_module_selected; i >= 0; i--) {
-            if (module_get(i) != NULL) {
+        for (int8_t i = ui_configure_module_selected; i >= 0; i--) {
+            if (module_get((uint8_t) i) != NULL) {
                 ui_configure_module_selected = i;
                 break;
             }
@@ -46,7 +46,7 @@ uint8_t ui_action_configure_module_select_press(uint8_t current, action_t *a) {
 
 void ui_render_configure_module_select(interface_t *current) {
     bool has_left = (ui_configure_module_selected >= 0);
-    bool has_right = (module_get(ui_configure_module_selected + 1) != NULL);
+    bool has_right = (module_get((uint8_t) (ui_configure_module_selected + 1)) != NULL);
     bool has_press = (current->press.action != NULL);
 
     lcd_clear();
@@ -54,16 +54,13 @@ void ui_render_configure_module_select(interface_t *current) {
 
     if (ui_configure_module_selected == -1) {
         module_send_identify(0xff);
-
-        uint8_t *template = "Back";
-        lcd_update(1, 6, 4, template);
+        lcd_update(1, 6, 4, "Back");
     } else {
-        module_t *module = module_get(ui_configure_module_selected);
+        module_t *module = module_get((uint8_t) ui_configure_module_selected);
 
         module_send_identify(module->id);
 
-        uint8_t *template = "ID: -- Mode: --";
-        lcd_update(1, 0, 15, template);
+        lcd_update(1, 0, 15, "ID: -- Mode: --");
         lcd_hex(1, 4, module->id);
         lcd_hex(1, 13, module->mode);
     }
@@ -109,7 +106,7 @@ void ui_render_configure_module_hardware(interface_t *current) {
     if (ui_configure_module_hardware == -1) {
         title = "Back";
     } else {
-        module_t *module = module_get(ui_configure_module_selected);
+        module_t *module = module_get((uint8_t) ui_configure_module_selected);
 
         switch (ui_configure_module_hardware) {
             case 0:
@@ -181,24 +178,21 @@ void ui_render_configure_module_errors(interface_t *current) {
     lcd_clear();
 
     if (ui_configure_module_errors == -1) {
-        uint8_t *title = "Back";
-        ui_render_menu_item_text(title, has_press, has_left, has_right);
+        ui_render_menu_item_text("Back", has_press, has_left, has_right);
     } else {
-        module_error_t *error = module_get_errors(ui_configure_module_selected, ui_configure_module_errors);
-        uint8_t *title = "Error -";
-        ui_render_menu_item_text(title, has_press, has_left, has_right);
+        module_error_t *error = module_get_errors((uint8_t) ui_configure_module_selected, (uint8_t) ui_configure_module_errors);
+        ui_render_menu_item_text("Error -", has_press, has_left, has_right);
 
-        lcd_number(0, 11, 1, ui_configure_module_errors);
+        lcd_number(0, 11, 1, ((uint8_t) ui_configure_module_errors));
 
-        uint8_t *template = "0x---- --- -";
-        lcd_update(1, 2, 11, template);
+        lcd_update(1, 2, 11, "0x---- --- -");
 
         lcd_hex(1, 4, ((error->code >> 8) & 0xff));
         lcd_hex(1, 6, (error->code & 0xff));
 
         lcd_number(1, 9, 3, error->count);
 
-        uint8_t *active = "N";
+        uint8_t *active = (uint8_t *) "N";
 
         if (error->active) {
             active = "Y";
@@ -246,43 +240,42 @@ void ui_render_configure_module_can_stats(interface_t *current) {
     lcd_clear();
 
     if (ui_configure_module_can_stats == -1) {
-        title = "Back";
+        title = (uint8_t *) "Back";
     } else {
         if (ui_configure_module_selected != 0) {
-            title = "Unavailable";
-            uint8_t *remotely = "Remotely";
-            lcd_update(1, 4, 8, remotely);
+            title = (uint8_t *) "Unavailable";
+            lcd_update(1, 4, 8, "Remotely");
         } else {
             can_statistics_t *stats = can_get_statistics();
 
-            uint8_t *txrx_template = "T:-----  R:-----";
+            uint8_t *txrx_template = (uint8_t *) "T:-----  R:-----";
 
             switch (ui_configure_module_can_stats) {
                 case 0:
-                    title = "Packets";
+                    title = (uint8_t *) "Packets";
                     lcd_update(1, 0, 15, txrx_template);
                     lcd_number(1, 2, 5, stats->tx_packets);
                     lcd_number(1, 11, 5, stats->rx_packets);
                     break;
                 case 1:
-                    title = "Errors";
+                    title = (uint8_t *) "Errors";
                     lcd_update(1, 0, 15, txrx_template);
                     lcd_number(1, 2, 5, stats->tx_errors);
                     lcd_number(1, 11, 5, stats->rx_errors);
                     break;
                 case 2:
-                    title = "Overflow";
+                    title = (uint8_t *) "Overflow";
                     lcd_update(1, 0, 15, txrx_template);
                     lcd_number(1, 2, 5, stats->tx_overflow);
                     lcd_number(1, 11, 5, stats->rx_overflow);
                     break;
                 case 3:
-                    title = "!Rdy / Error";
+                    title = (uint8_t *) "!Rdy / Error";
                     lcd_number(1, 2, 5, stats->tx_not_ready);
                     lcd_number(1, 9, 5, stats->can_error);
                     break;
                 case 4:
-                    title = "ID Cycles";
+                    title = (uint8_t *) "ID Cycles";
                     lcd_number(1, 5, 5, stats->id_cycles);
                     break;
             }
@@ -313,8 +306,8 @@ uint8_t ui_render_configure_module_mode_set_change(uint8_t current, action_t *a)
 
 uint8_t ui_render_configure_module_mode_set_press(uint8_t current, action_t *a) {
     if (ui_configure_module_mode_set != -1) {
-        module_t *module = module_get(ui_configure_module_selected);
-        module_send_mode_set(module->id, mode_id_by_index(ui_configure_module_mode_set));
+        module_t *module = module_get((uint8_t) ui_configure_module_selected);
+        module_send_mode_set(module->id, mode_id_by_index((uint8_t) ui_configure_module_mode_set));
     }
 
     ui_configure_module_mode_set = 0;
@@ -330,14 +323,14 @@ void ui_render_configure_module_mode_set(interface_t *current) {
     uint8_t *title;
 
     if (ui_configure_module_mode_set == -1) {
-        title = "Cancel";
+        title = (uint8_t *) "Cancel";
     } else {
-        title = "Change to";
+        title = (uint8_t *) "Change to";
 
-        uint8_t *name = mode_name_by_index(ui_configure_module_mode_set);
+        uint8_t *name = mode_name_by_index((uint8_t) ui_configure_module_mode_set);
 
         uint8_t size = 0;
-        for (uint8_t *s = name; *s != '\0' && size < 16; *s++) {
+        for (uint8_t *s = name; *s != '\0' && size < 16; s++) {
             size++;
         }
 
@@ -369,7 +362,7 @@ uint8_t ui_render_configure_module_special_function_change(uint8_t current, acti
 
 uint8_t ui_render_configure_module_special_function_press(uint8_t current, action_t *a) {
     if (ui_configure_module_special_function != -1) {
-        module_t *module = module_get(ui_configure_module_selected);
+        module_t *module = module_get((uint8_t) ui_configure_module_selected);
         module_send_special_function(module->id, (ui_configure_module_special_function & 0xff));
         return current;
     } else {
@@ -387,9 +380,9 @@ void ui_render_configure_module_special_function(interface_t *current) {
     uint8_t *title;
 
     if (ui_configure_module_special_function == -1) {
-        title = "Back";
+        title = (uint8_t *) "Back";
     } else {
-        title = "Special Fn";
+        title = (uint8_t *) "Special Fn";
 
         lcd_hex(1, 7, ui_configure_module_special_function);
     }
@@ -434,17 +427,17 @@ void ui_render_configure_module_opt_port(interface_t *current) {
     uint8_t *title;
 
     if (ui_configure_module_opt_port_id == -1) {
-        title = "Back";
+        title = (uint8_t *) "Back";
     } else {
-        title = "Select";
+        title = (uint8_t *) "Select";
 
         lcd_update(1, 5, 4, "Port");
 
         uint8_t c[2];
-        c[0] = 'A' + ui_configure_module_opt_port_id;
+        c[0] = 'A' + ((uint8_t) ui_configure_module_opt_port_id);
         c[1] = '\0';
 
-        lcd_update(1, 10, 1, &c);
+        lcd_update(1, 10, 1, &c[0]);
     }
 
     ui_render_menu_item_text(title, has_press, has_left, has_right);
@@ -470,10 +463,10 @@ uint8_t ui_render_configure_module_opt_set_change(uint8_t current, action_t *a) 
 
 uint8_t ui_render_configure_module_opt_set_press(uint8_t current, action_t *a) {
     if (ui_configure_module_opt_set_id != -1) {
-        module_t *module = module_get(ui_configure_module_selected);
+        module_t *module = module_get((uint8_t) ui_configure_module_selected);
         packet_outgoing.module.set_opt.can_id = module->id;
-        packet_outgoing.module.set_opt.port = ui_configure_module_opt_port_id;
-        packet_outgoing.module.set_opt.opt = ui_configure_module_opt_set_id;
+        packet_outgoing.module.set_opt.port = (uint8_t) ui_configure_module_opt_port_id;
+        packet_outgoing.module.set_opt.opt = (uint8_t) ui_configure_module_opt_set_id;
         packet_send(PREFIX_MODULE, OPCODE_MODULE_OPT_SET, SIZE_MODULE_OPT_SET, &packet_outgoing);
     }
 
@@ -494,10 +487,10 @@ void ui_render_configure_module_opt_set(interface_t *current) {
     } else {
         title = "Change to";
 
-        uint8_t *name = &opts_name[ui_configure_module_opt_set_id];
+        const uint8_t *name = &opts_name[ui_configure_module_opt_set_id][0];
 
         uint8_t size = 0;
-        for (uint8_t *s = name; *s != '\0' && size < 16; *s++) {
+        for (const uint8_t *s = name; *s != '\0' && size < 16; s++) {
             size++;
         }
 

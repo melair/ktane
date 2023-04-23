@@ -73,7 +73,7 @@ void opts_initialise_port(uint8_t port) {
         return;
     }
 
-    uint8_t port_mask = 1 << port;
+    uint8_t port_mask = ((uint8_t) (1 << port));
 
     if ((OPT_PORTS[opts_data[port].type] & port_mask) != port_mask) {
         opts_data[port].type = OPT_NONE;
@@ -165,13 +165,13 @@ void opts_receive_opt_set(uint8_t id, packet_t *p) {
         return;
     }
 
-    uint8_t port_mask = 1 << p->module.set_opt.port;
+    uint8_t port_mask = ((uint8_t) (1 << p->module.set_opt.port));
 
     if ((OPT_PORTS[p->module.set_opt.opt] & port_mask) != port_mask) {
         return;
     }
 
-    nvm_eeprom_write(EEPROM_LOC_OPT_KPORTA + p->module.set_opt.port, (p->module.set_opt.opt << 4));
+    nvm_eeprom_write(EEPROM_LOC_OPT_KPORTA + p->module.set_opt.port, ((uint8_t) (p->module.set_opt.opt << 4)));
     RESET();
 }
 

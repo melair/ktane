@@ -409,19 +409,19 @@ void lcd_start(void) {
  */
 void lcd_load_big(void) {
     for (uint8_t c = 0; c < BIG_FONT_CHARACTERS; c++) {
-        lcd_custom_character(c, &big_font_characters[c]);
+        lcd_custom_character(c, &big_font_characters[c][0]);
     }
 }
 
 /* Load a customer character into character RAM in the LCD display. This will
  * block execution, it is assumed it will be done during initialisation.
  */
-void lcd_custom_character(uint8_t c, uint8_t *data) {
+void lcd_custom_character(uint8_t c, const uint8_t *data) {
     LCD_RW = 0;
 
     /* Move pointer to Character Generator RAM for character. */
     LCD_RS = 0;
-    LCD_DATA = 0b01000000 | (c << 3);
+    LCD_DATA = 0b01000000 | ((uint8_t) (c << 3));
     LCD_E = 1;
     __delay_us(1);
     LCD_E = 0;
@@ -650,13 +650,13 @@ void lcd_clear(void) {
  * @param size size of content
  * @param data actual content
  */
-void lcd_update(uint8_t row, uint8_t col, uint8_t size, uint8_t *data) {
+void lcd_update(uint8_t row, uint8_t col, uint8_t size, const uint8_t *data) {
     for (uint8_t i = col, j = 0; i < COLUMN_COUNT && j < size; i++, j++) {
         buffer[LCD_BUFFER_USER][row][i] = data[j];
     }
 }
 
-const uint8_t *hex_map = "0123456789ABCDEF";
+const uint8_t hex_map[] = "0123456789ABCDEF";
 
 /**
  * Print a number to the LCD screen.

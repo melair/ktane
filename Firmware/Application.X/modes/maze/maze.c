@@ -150,7 +150,7 @@ pin_t maze_rows[] = {KPIN_NONE};
 void maze_initialise(void) {
     /* Initialise ARGB expanded memory. */
     argb_expand(MAZE_ARGB_COUNT, &mode_data.maze.argb_leds[0], &mode_data.maze.argb_output[0]);
-    
+
     /* Register game states. */
     mode_register_callback(GAME_ALWAYS, maze_service, NULL);
     mode_register_callback(GAME_IDLE, maze_service_idle, &tick_20hz);
@@ -248,20 +248,21 @@ void maze_service_running(bool first) {
                 permitted = permitted >> 4;
             }
 
-            uint8_t check = 1 << 3 - (press & KEY_NUM_BITS);
+            uint8_t shift = 3 - (press & KEY_NUM_BITS);
+            uint8_t check = (1 << shift) & 0xff;
 
             /* Verify if direction is valid to move. */
             if ((permitted & check) != 0) {
                 uint8_t new_pos = mode_data.maze.current;
-                switch(press & KEY_NUM_BITS) {
+                switch (press & KEY_NUM_BITS) {
                     case 0: // Up
-                        new_pos -=6;
+                        new_pos -= 6;
                         break;
                     case 1: // Right
                         new_pos++;
                         break;
                     case 2: // Down
-                        new_pos +=6;
+                        new_pos += 6;
                         break;
                     case 3: // Left
                         new_pos--;
@@ -304,6 +305,7 @@ void maze_service_running(bool first) {
     mode_data.maze.animation_frame++;
 
     if (mode_data.maze.animation_frame == 20) {
+
         mode_data.maze.animation_frame = 0;
     }
 }
@@ -330,6 +332,7 @@ void maze_animate_cursor(uint8_t loc, bool beacon) {
     uint8_t r = (255 / 10) * i;
     uint8_t g = (255 / 10) * i;
     if (beacon) {
+
         g = 255;
     }
     uint8_t b = (255 / 10) * i;
