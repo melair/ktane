@@ -99,7 +99,7 @@ uint8_t mode_id_by_index(uint8_t idx) {
  * @param idx name to resolve
  * @return mode name
  */
-uint8_t *mode_name_by_index(uint8_t idx) {
+char *mode_name_by_index(uint8_t idx) {
     return mode_names[idx].name;
 }
 

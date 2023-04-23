@@ -59,7 +59,7 @@ void ui_render_configure_global_argb_brightness(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_configure_global_argb_brightness == 0) {
         title = "Back";
@@ -121,7 +121,7 @@ void ui_render_configure_global_buzzer_vol(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_configure_global_buzzer_vol == -1) {
         title = "Back";

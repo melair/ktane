@@ -68,7 +68,7 @@ const uint8_t cardscan_character[CARDSCAN_CHARACTERS][LCD_CHARACTER_ROWS] = {
 
 #define CARDSCAN_MAX_NAME       20
 
-const uint8_t cardscan_names[CARDSCAN_CARD_COUNT][CARDSCAN_MAX_NAME] = {
+const char cardscan_names[CARDSCAN_CARD_COUNT][CARDSCAN_MAX_NAME] = {
     "Acheron",
     "Kontrollbeamter",
     "Nyx",

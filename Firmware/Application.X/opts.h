@@ -13,7 +13,7 @@ typedef struct {
     uint8_t port;
     uint8_t type;
     uint8_t data;
-    
+
     union {
         opt_spi_t spi;
         opt_audio_t audio;
@@ -34,7 +34,7 @@ void opts_receive_opt_set(uint8_t id, packet_t *p);
 #define OPT_COUNT       3
 #define OPT_MAX_NAME    5
 
-extern const uint8_t opts_name[OPT_COUNT][OPT_MAX_NAME];
+extern const char opts_name[OPT_COUNT][OPT_MAX_NAME];
 
 #endif	/* OPTS_H */
 

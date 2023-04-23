@@ -41,7 +41,7 @@ void lcd_start(void);
 #define COLUMN_COUNT 20
 
 /* Triple buffer, frame used by user, frame for desired state, frame for target state. */
-uint8_t buffer[BUFFER_COUNT][LINE_COUNT][COLUMN_COUNT];
+char buffer[BUFFER_COUNT][LINE_COUNT][COLUMN_COUNT];
 /* True if the shadow buffer is dirty. */
 bool shadow_dirty = false;
 
@@ -650,13 +650,13 @@ void lcd_clear(void) {
  * @param size size of content
  * @param data actual content
  */
-void lcd_update(uint8_t row, uint8_t col, uint8_t size, const uint8_t *data) {
+void lcd_update(uint8_t row, uint8_t col, uint8_t size, const char *data) {
     for (uint8_t i = col, j = 0; i < COLUMN_COUNT && j < size; i++, j++) {
         buffer[LCD_BUFFER_USER][row][i] = data[j];
     }
 }
 
-const uint8_t hex_map[] = "0123456789ABCDEF";
+const char hex_map[] = "0123456789ABCDEF";
 
 /**
  * Print a number to the LCD screen.
@@ -694,7 +694,7 @@ void lcd_hex(uint8_t row, uint8_t col, uint8_t number) {
  * @param ch character to display
  */
 void lcd_update_big(uint8_t pos, uint8_t ch) {
-    uint8_t t[8];
+    char t[8];
 
     t[0] = (big_font[ch][0] >> 4) & 0x0f;
     t[1] = big_font[ch][0] & 0x0f;

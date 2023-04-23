@@ -6,7 +6,7 @@ void lcd_set_brightness(uint8_t bri);
 void lcd_set_contrast(uint8_t cont);
 void lcd_service(void);
 void lcd_sync(void);
-void lcd_update(uint8_t line, uint8_t col, uint8_t size, const uint8_t *data);
+void lcd_update(uint8_t line, uint8_t col, uint8_t size, const char *data);
 void lcd_number(uint8_t row, uint8_t col, uint8_t digits, uint16_t number);
 void lcd_hex(uint8_t row, uint8_t col, uint8_t number);
 void lcd_clear(void);

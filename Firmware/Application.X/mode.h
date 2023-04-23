@@ -32,7 +32,7 @@ void mode_initialise(void);
 void mode_service(void);
 void mode_register_callback(uint8_t state, void (*func)(bool), volatile bool *tick);
 uint8_t mode_id_by_index(uint8_t idx);
-uint8_t *mode_name_by_index(uint8_t idx);
+char *mode_name_by_index(uint8_t idx);
 void mode_register_special_fn_callback(void (*func)(uint8_t));
 void mode_call_special_function(uint8_t special_function);
 
@@ -71,7 +71,7 @@ extern mode_data_t mode_data;
 
 typedef struct {
     uint8_t id;
-    uint8_t name[MAX_NAME];
+    char name[MAX_NAME];
 } mode_names_t;
 
 extern mode_names_t mode_names[];

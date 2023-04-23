@@ -938,18 +938,18 @@ uint8_t ui_action_restart_ktane(uint8_t current, action_t *a) {
     return current;
 }
 
-const uint8_t left_arrow[] = {0b01111111};
-const uint8_t right_arrow[] = {0b01111110};
-const uint8_t press_arrow[] = {0b10100101};
+const char left_arrow[] = {0b01111111};
+const char right_arrow[] = {0b01111110};
+const char press_arrow[] = {0b10100101};
 
 void ui_render_menu_item(interface_t *current) {
     lcd_clear();
-    ui_render_menu_item_text((uint8_t *) current->render_data, current->press.action != NULL, current->left.action != NULL, current->right.action != NULL);
+    ui_render_menu_item_text((char *) current->render_data, current->press.action != NULL, current->left.action != NULL, current->right.action != NULL);
 }
 
-void ui_render_menu_item_text(uint8_t *text, bool press_icons, bool left_icon, bool right_icon) {
+void ui_render_menu_item_text(char *text, bool press_icons, bool left_icon, bool right_icon) {
     uint8_t size = 0;
-    for (uint8_t *s = text; *s != '\0'; s++) {
+    for (char *s = text; *s != '\0'; s++) {
         size++;
     }
 

@@ -24,7 +24,7 @@ void opts_initialise_port(uint8_t port);
 #define OPT_SPI         0b00000010
 #define OPT_AUDIO       0b00000011
 
-const uint8_t opts_name[OPT_COUNT][OPT_MAX_NAME] = {
+const char opts_name[OPT_COUNT][OPT_MAX_NAME] = {
     "Power",
     "SPI",
     "Audio"

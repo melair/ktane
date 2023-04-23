@@ -23,16 +23,16 @@
 #define SLOT_PREFIX_SERIAL      0b11100000
 
 uint8_t edgework_slots[MAX_EDGEWORK];
-uint8_t edgework_serial[SERIAL_LENGTH];
+char edgework_serial[SERIAL_LENGTH];
 bool edgework_serial_has_vowel;
 uint8_t edgework_battery;
 bool edgework_has_twofa = false;
-uint8_t edgework_twofa[TWOFA_LENGTH] = {'0', '0', '0', '0', '0', '0'};
+char edgework_twofa[TWOFA_LENGTH] = {'0', '0', '0', '0', '0', '0'};
 uint32_t edgework_twofa_seed;
 
 void edgework_generate_2fa(void);
 
-const uint8_t indicator_name[INDICATOR_MAX + 1][3] = {
+const char indicator_name[INDICATOR_MAX + 1][3] = {
     "SND",
     "CLR",
     "CAR",
@@ -46,7 +46,7 @@ const uint8_t indicator_name[INDICATOR_MAX + 1][3] = {
     "FRK",
 };
 
-const uint8_t port_name[PORT_MAX + 1][4] = {
+const char port_name[PORT_MAX + 1][4] = {
     "DVI ",
     "PARA",
     "PS2 ",
@@ -275,12 +275,12 @@ void edgework_display(uint8_t i) {
 
     uint8_t ew = edgework_slots[i];
 
-    const uint8_t battery[] = "Battery:";
-    const uint8_t port[] = "Port:";
-    const uint8_t indLab[] = "Ind:";
-    const uint8_t indLit[] = "LIT";
-    const uint8_t twofa[] = "2FA:";
-    const uint8_t serial[] = "Serial:";
+    const char battery[] = "Battery:";
+    const char port[] = "Port:";
+    const char indLab[] = "Ind:";
+    const char indLit[] = "LIT";
+    const char twofa[] = "2FA:";
+    const char serial[] = "Serial:";
 
     uint8_t portNo;
     uint8_t ind;

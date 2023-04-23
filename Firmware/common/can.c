@@ -42,14 +42,14 @@ void can_initialise(void) {
     ANSELBbits.ANSELB0 = 0;
     ANSELBbits.ANSELB1 = 0;
 
-    CANRXPPS = 0b00001000;
+    CANRXPPS = 0x08;
     RB1PPS = 0x46;
 
     /* Turn on CAN module. */
     C1CONHbits.ON = 1;
 
     /* Request CAN module to be in configuration mode. */
-    if (!can_change_mode(0b100)) {
+    if (!can_change_mode(0x04)) {
         return;
     }
 
@@ -83,7 +83,7 @@ void can_initialise(void) {
     C1CONHbits.BRSDIS = 1;
 
     /* Enable wake up filter, and set to T11. */
-    C1CONHbits.WFT = 0b11;
+    C1CONHbits.WFT = 3;
     C1CONHbits.WAKFIL = 1;
 
     /* Enable transmission queue. */
@@ -133,9 +133,9 @@ void can_initialise(void) {
     C1TXQCONUbits.TXPRI = 1;
 
     /* CAN message payload size to 20 bytes. */
-    C1TXQCONTbits.PLSIZE = 0b011;
+    C1TXQCONTbits.PLSIZE = 3;
     /* TX FIFO depth to 16. */
-    C1TXQCONTbits.FSIZE = 0b10000;
+    C1TXQCONTbits.FSIZE = 0x10;
 
     /*** RX FIFO Configuration ***/
 
@@ -160,24 +160,24 @@ void can_initialise(void) {
     C1FIFOCON1Hbits.UINC = 0;
 
     /* Unlimited retransmission, no effect with RX FIFO. */
-    C1FIFOCON1Ubits.TXAT = 0b11;
+    C1FIFOCON1Ubits.TXAT = 3;
     /* Transmission priority, no effect with RX FIFO. */
     C1FIFOCON1Ubits.TXPRI = 1;
 
     /* CAN message payload size to 20 bytes. */
-    C1FIFOCON1Tbits.PLSIZE = 0b011;
+    C1FIFOCON1Tbits.PLSIZE = 3;
     /* RX FIFO depth to 16. */
-    C1FIFOCON1Tbits.FSIZE = 0b10000;
+    C1FIFOCON1Tbits.FSIZE = 0x10;
 
     /* Request CAN module to be in normal CAN-FD mode. */
-    if (!can_change_mode(0b000)) {
+    if (!can_change_mode(0x00)) {
         return;
     }
 
     /*** Configure filter to allow receipt of all messages. ***/
 
     /* Place all matched messages in FIFO1. */
-    C1FLTCON0Lbits.F0BP = 0b00001;
+    C1FLTCON0Lbits.F0BP = 0x01;
 
     /* Match only standard length identifiers. */
     C1FLTOBJ0Tbits.EXIDE = 0;
@@ -197,7 +197,7 @@ void can_initialise(void) {
  */
 bool can_change_mode(uint8_t mode) {
     /* Mask mode bits only. */
-    uint8_t requested_mode = mode & 0b111;
+    uint8_t requested_mode = mode & 0x07;
 
     /* Request CAN module to be in configuration mode. */
     C1CONTbits.REQOP = requested_mode;
@@ -244,15 +244,15 @@ void can_send(uint8_t prefix, uint8_t size, uint8_t *data) {
     /* Cast tx buffer. */
     uint8_t *txbuffer = (uint8_t *) C1TXQUA;
 
-    uint8_t dlc = 11;
-    //    for (dlc = 0; size > dlc_to_bytes[dlc]; dlc++);
+    uint8_t dlc;
+    for (dlc = 0; size > dlc_to_bytes[dlc]; dlc++);
 
     /* Set CAN header. */
     txbuffer[0] = can_identifier;
-    txbuffer[1] = prefix & 0b00000111;
+    txbuffer[1] = prefix & 0x07;
     txbuffer[2] = 0x00;
     txbuffer[3] = 0x00;
-    txbuffer[4] = 0b10000000 | dlc; // FDF = 1
+    txbuffer[4] = 0x80 | dlc; // FDF = 1
     txbuffer[5] = 0x00;
     txbuffer[6] = 0x00;
     txbuffer[7] = 0x00;
@@ -292,7 +292,7 @@ void can_service(void) {
 
         /* Decode data. */
         uint8_t id = rxbuffer[0];
-        uint8_t prefix = rxbuffer[1] & 0b00000111;
+        uint8_t prefix = rxbuffer[1] & 0x07;
 
         can_stats.rx_packets++;
 

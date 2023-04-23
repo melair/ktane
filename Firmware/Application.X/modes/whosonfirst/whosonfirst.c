@@ -18,7 +18,7 @@
 #define WORD_WIDTH 8
 
 /* Top row words, used to identify position look up, aggregated as one string. */
-const uint8_t topwords[] =
+const char topwords[] =
         "YES     "
         "FIRST   "
         "DISPLAY "
@@ -56,7 +56,7 @@ const uint8_t topword_key[] = {
 
 /* Dictionary for button words, aggregated string. Actually operates as two
  * groups of words, split in the middle. Thanks TheDarkSid3r. */
-const uint8_t lowerwords[] =
+const char lowerwords[] =
         "READY   "
         "FIRST   "
         "NO      "
@@ -131,7 +131,7 @@ void whosonfirst_service_idle(bool first);
 void whosonfirst_service_setup(bool first);
 void whosonfirst_service_running(bool first);
 void whosonfirst_stage_generate_and_display(void);
-uint8_t whosonfirst_word_len(const uint8_t *s);
+uint8_t whosonfirst_word_len(const char *s);
 void whosonfirst_update_stage_leds(void);
 void whosonfirst_enable(bool first);
 void whosonfirst_disable(bool first);
@@ -396,7 +396,7 @@ void whosonfirst_update_stage_leds(void) {
  * @param s string to get length of
  * @return length of string
  */
-uint8_t whosonfirst_word_len(const uint8_t *s) {
+uint8_t whosonfirst_word_len(const char *s) {
     for (int8_t i = (WORD_WIDTH - 1); i >= 0; i--) {
         if (s[i] != ' ') {
             return (uint8_t) (i + 1);

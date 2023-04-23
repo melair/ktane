@@ -50,7 +50,7 @@ void ui_render_configure_module_select(interface_t *current) {
     bool has_press = (current->press.action != NULL);
 
     lcd_clear();
-    ui_render_menu_item_text((uint8_t *) current->render_data, has_press, has_left, has_right);
+    ui_render_menu_item_text((char *) current->render_data, has_press, has_left, has_right);
 
     if (ui_configure_module_selected == -1) {
         module_send_identify(0xff);
@@ -99,7 +99,7 @@ void ui_render_configure_module_hardware(interface_t *current) {
     bool has_right = (ui_configure_module_hardware < HARDWARE_STATS);
     bool has_press = (ui_configure_module_hardware == -1);
 
-    uint8_t *title;
+    char *title;
 
     lcd_clear();
 
@@ -192,7 +192,7 @@ void ui_render_configure_module_errors(interface_t *current) {
 
         lcd_number(1, 9, 3, error->count);
 
-        uint8_t *active = (uint8_t *) "N";
+        char *active = "N";
 
         if (error->active) {
             active = "Y";
@@ -235,47 +235,45 @@ void ui_render_configure_module_can_stats(interface_t *current) {
     bool has_right = (ui_configure_module_can_stats < CANS_STATS);
     bool has_press = (ui_configure_module_can_stats == -1);
 
-    uint8_t *title;
+    char *title;
 
     lcd_clear();
 
     if (ui_configure_module_can_stats == -1) {
-        title = (uint8_t *) "Back";
+        title = "Back";
     } else {
         if (ui_configure_module_selected != 0) {
-            title = (uint8_t *) "Unavailable";
+            title = "Unavailable";
             lcd_update(1, 4, 8, "Remotely");
         } else {
             can_statistics_t *stats = can_get_statistics();
 
-            uint8_t *txrx_template = (uint8_t *) "T:-----  R:-----";
-
             switch (ui_configure_module_can_stats) {
                 case 0:
-                    title = (uint8_t *) "Packets";
-                    lcd_update(1, 0, 15, txrx_template);
+                    title = "Packets";
+                    lcd_update(1, 0, 15, "T:-----  R:-----");
                     lcd_number(1, 2, 5, stats->tx_packets);
                     lcd_number(1, 11, 5, stats->rx_packets);
                     break;
                 case 1:
-                    title = (uint8_t *) "Errors";
-                    lcd_update(1, 0, 15, txrx_template);
+                    title = "Errors";
+                    lcd_update(1, 0, 15, "T:-----  R:-----");
                     lcd_number(1, 2, 5, stats->tx_errors);
                     lcd_number(1, 11, 5, stats->rx_errors);
                     break;
                 case 2:
-                    title = (uint8_t *) "Overflow";
-                    lcd_update(1, 0, 15, txrx_template);
+                    title = "Overflow";
+                    lcd_update(1, 0, 15, "T:-----  R:-----");
                     lcd_number(1, 2, 5, stats->tx_overflow);
                     lcd_number(1, 11, 5, stats->rx_overflow);
                     break;
                 case 3:
-                    title = (uint8_t *) "!Rdy / Error";
+                    title = "!Rdy / Error";
                     lcd_number(1, 2, 5, stats->tx_not_ready);
                     lcd_number(1, 9, 5, stats->can_error);
                     break;
                 case 4:
-                    title = (uint8_t *) "ID Cycles";
+                    title = "ID Cycles";
                     lcd_number(1, 5, 5, stats->id_cycles);
                     break;
             }
@@ -320,17 +318,17 @@ void ui_render_configure_module_mode_set(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_configure_module_mode_set == -1) {
-        title = (uint8_t *) "Cancel";
+        title = "Cancel";
     } else {
-        title = (uint8_t *) "Change to";
+        title = "Change to";
 
-        uint8_t *name = mode_name_by_index((uint8_t) ui_configure_module_mode_set);
+        char *name = mode_name_by_index((uint8_t) ui_configure_module_mode_set);
 
         uint8_t size = 0;
-        for (uint8_t *s = name; *s != '\0' && size < 16; s++) {
+        for (char *s = name; *s != '\0' && size < 16; s++) {
             size++;
         }
 
@@ -377,14 +375,14 @@ void ui_render_configure_module_special_function(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_configure_module_special_function == -1) {
-        title = (uint8_t *) "Back";
+        title = "Back";
     } else {
-        title = (uint8_t *) "Special Fn";
+        title = "Special Fn";
 
-        lcd_hex(1, 7, ui_configure_module_special_function);
+        lcd_hex(1, 7, (uint8_t) ui_configure_module_special_function);
     }
 
     ui_render_menu_item_text(title, has_press, has_left, has_right);
@@ -424,16 +422,16 @@ void ui_render_configure_module_opt_port(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_configure_module_opt_port_id == -1) {
-        title = (uint8_t *) "Back";
+        title = "Back";
     } else {
-        title = (uint8_t *) "Select";
+        title = "Select";
 
         lcd_update(1, 5, 4, "Port");
 
-        uint8_t c[2];
+        char c[2];
         c[0] = 'A' + ((uint8_t) ui_configure_module_opt_port_id);
         c[1] = '\0';
 
@@ -480,17 +478,17 @@ void ui_render_configure_module_opt_set(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_configure_module_opt_set_id == -1) {
         title = "Back";
     } else {
         title = "Change to";
 
-        const uint8_t *name = &opts_name[ui_configure_module_opt_set_id][0];
+        const char *name = &opts_name[ui_configure_module_opt_set_id][0];
 
         uint8_t size = 0;
-        for (const uint8_t *s = name; *s != '\0' && size < 16; s++) {
+        for (const char *s = name; *s != '\0' && size < 16; s++) {
             size++;
         }
 

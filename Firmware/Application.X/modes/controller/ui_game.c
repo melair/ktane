@@ -71,9 +71,8 @@ void ui_game_edgework_display(interface_t *current) {
 
     lcd_clear();
 
-    uint8_t title[] = "Edgework X/X";
     edgework_display((uint8_t) ui_game_edgework);
-    ui_render_menu_item_text(&title[0], false, has_left, has_right);
+    ui_render_menu_item_text("Edgework X/X", false, has_left, has_right);
 
     lcd_number(0, 11, 1, (uint8_t) (ui_game_edgework + 1));
     lcd_number(0, 13, 1, edgework_count() + 1);
@@ -136,7 +135,7 @@ void ui_game_custom_module_count_display(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_game_custom_module_count == 0) {
         title = "Back";
@@ -185,7 +184,7 @@ void ui_game_custom_time_display(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_game_custom_time == 0) {
         title = "Back";
@@ -239,7 +238,7 @@ void ui_game_custom_strikes_display(interface_t *current) {
     bool has_press = true;
 
     lcd_clear();
-    uint8_t *title;
+    char *title;
 
     if (ui_game_custom_strikes == -1) {
         title = "Back";

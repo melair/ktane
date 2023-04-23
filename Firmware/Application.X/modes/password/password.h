@@ -9,7 +9,7 @@ void password_initialise(void);
 
 typedef struct {
     uint8_t word;
-    uint8_t letters[LENGTH][LETTER_OPTIONS];
+    char letters[LENGTH][LETTER_OPTIONS];
     uint8_t selected[LENGTH];
 } mode_password_t;
 
