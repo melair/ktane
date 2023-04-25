@@ -11,6 +11,7 @@
 
 #ifdef SUPPORT_PROTOCOL_GAME
 #include "../Application.X/game.h"
+#include "../Application.X/sound.h"
 #endif
 
 #ifdef SUPPORT_PROTOCOL_NETWORK
@@ -144,6 +145,14 @@ void packet_route_game(uint8_t src, packet_t *packet) {
 
         case OPCODE_GAME_MODULE_STRIKE:
             game_receive_strike_update(src, packet);
+            break;
+
+        case OPCODE_GAME_SOUND_PLAY:
+            sound_receive_play(src, packet);
+            break;
+
+        case OPCODE_GAME_SOUND_STOP:
+            sound_receive_stop(src, packet);
             break;
 
         default:

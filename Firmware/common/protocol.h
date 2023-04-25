@@ -27,6 +27,9 @@
 #define OPCODE_GAME_MODULE_STATE    0x11
 #define OPCODE_GAME_MODULE_STRIKE   0x12
 
+#define OPCODE_GAME_SOUND_PLAY      0x20
+#define OPCODE_GAME_SOUND_STOP      0x21
+
 #define OPCODE_FIRMWARE_REQUEST         0x00
 #define OPCODE_FIRMWARE_HEADER          0x01
 #define OPCODE_FIRMWARE_PAGE_REQUEST    0x02
@@ -51,6 +54,9 @@
 #define SIZE_GAME_MODULE_CONFIG       sizeof(((packet_t *)0)->game.module_config) + 1
 #define SIZE_GAME_MODULE_STATE        sizeof(((packet_t *)0)->game.module_state) + 1
 #define SIZE_GAME_MODULE_STRIKE       sizeof(((packet_t *)0)->game.module_strike) + 1
+
+#define SIZE_GAME_SOUND_PLAY          sizeof(((packet_t *)0)->game.sound_play) + 1
+#define SIZE_GAME_SOUND_STOP          sizeof(((packet_t *)0)->game.sound_stop) + 1
 
 #define SIZE_FIRMWARE_REQUEST         sizeof(((packet_t *)0)->firmware.request) + 1
 #define SIZE_FIRMWARE_HEADER          sizeof(((packet_t *)0)->firmware.header) + 1
@@ -178,6 +184,14 @@ typedef struct {
             struct {
                 uint8_t strikes;
             } module_strike;
+
+            struct {
+                uint16_t sound;
+            } sound_play;
+
+            struct {
+                uint16_t sound;
+            } sound_stop;
         } game;
 
         union {

@@ -4,13 +4,13 @@
 #include "../../rng.h"
 #include "../../peripherals/lcd.h"
 #include "../../argb.h"
-#include "../../buzzer.h"
 #include "../../module.h"
 #include "../../mode.h"
 #include "../../game.h"
 #include "../../tick.h"
 #include "../../peripherals/segment.h"
 #include "../../../common/can.h"
+#include "../../sound.h"
 
 uint8_t last_strikes_current = 0;
 uint32_t ready_at = 0;
@@ -190,7 +190,7 @@ void controller_service_start(bool first) {
 
     if ((tick_value - start_time) > 1000) {
         start_time = tick_value;
-        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+        sound_play(SOUND_CONTROLLER_BEEP_HIGH);
 
         segment_set_colon(false);
         segment_set_digit(0, characters[DIGIT_0 + start_countdown]);
@@ -236,15 +236,15 @@ void controller_service_running(bool first) {
         uint8_t tenseconds = game.time_remaining.seconds / 10;
 
         if (game.time_remaining.centiseconds == 88) {
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+            sound_play(SOUND_CONTROLLER_BEEP_LOW);
         }
 
         if (game.time_ratio == TIME_RATIO_1 && game.time_remaining.centiseconds == 22) {
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_C7_SHARP, 140);
+            sound_play(SOUND_CONTROLLER_BEEP_HIGH);
         }
 
         if (game.time_ratio == TIME_RATIO_1_25 && game.time_remaining.centiseconds == 25) {
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_C7_SHARP, 140);
+            sound_play(SOUND_CONTROLLER_BEEP_HIGH);
         }
 
         /* Send game updates at half way through the second, this should mean
@@ -290,7 +290,7 @@ void controller_service_running(bool first) {
         game.time_ratio = game.strikes_current;
         game_update_send();
         controller_update_strikes();
-        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 750);
+        sound_play(SOUND_CONTROLLER_STRIKE);
     }
 
     uint8_t enabled_puzzles = module_get_count_enabled_puzzle();

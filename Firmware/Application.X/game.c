@@ -9,6 +9,7 @@
 #include "../common/can.h"
 #include "../common/packet.h"
 #include "edgework.h"
+#include "sound.h"
 
 /* Game state. */
 game_t game;
@@ -262,7 +263,6 @@ void game_module_strike(uint8_t strikes) {
     packet_outgoing.game.module_strike.strikes = strikes;
     packet_send(PREFIX_GAME, OPCODE_GAME_MODULE_STRIKE, SIZE_GAME_MODULE_STRIKE, &packet_outgoing);
     game_receive_strike_update(0, &packet_outgoing);
-    buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 750);
 }
 
 /**
@@ -351,18 +351,6 @@ void game_service_running(void) {
         if (this_module->enabled) {
             if (this_module->solved) {
                 status_set(STATUS_SOLVED);
-
-                if (this_module->solved_tick < 15) {
-                    switch (this_module->solved_tick) {
-                        case 0:
-                            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_D5_SHARP, 700);
-                            break;
-                        case 14:
-                            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_F5_SHARP, 700);
-                            break;
-                    }
-                    this_module->solved_tick++;
-                }
             } else {
                 status_set(STATUS_UNSOLVED);
             }
@@ -399,40 +387,15 @@ void game_service_running(void) {
     }
 }
 
-/* Define notes to play on success. */
-const uint16_t success_notes[] = {BUZZER_FREQ_G5, BUZZER_FREQ_F5_SHARP, BUZZER_FREQ_D5_SHARP, BUZZER_FREQ_A4, BUZZER_FREQ_G4_SHARP, BUZZER_FREQ_E5, BUZZER_FREQ_G5_SHARP, BUZZER_FREQ_C6, 0x0000};
-
-/* Duration notes should play for. */
-#define NOTE_DURATION 250
-/* Interval notes should play at. */
-#define NOTE_INTERVAL 300
-
-/* Late time a note was played. */
-uint32_t note_last_play = 0;
-/* Last note played. */
-uint8_t note = 0;
-
 /**
  *  Service a game being over.
  */
 void game_service_over(void) {
     if (game.state_first) {
-        note_last_play = 0;
-        note = 0;
-
         if (game.result == RESULT_FAILURE) {
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 1000);
-        }
-    }
-
-    if (tick_20hz) {
-        if (game.result == RESULT_SUCCESS) {
-            if (tick_value - note_last_play > NOTE_INTERVAL && success_notes[note] != 0x000) {
-                note_last_play = tick_value;
-
-                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, success_notes[note], NOTE_DURATION);
-                note++;
-            }
+            sound_play(SOUND_CONTROLLER_GAMEOVER_FAILURE);
+        } else if (game.result == RESULT_SUCCESS) {
+            sound_play(SOUND_CONTROLLER_GAMEOVER_SUCCESS);
         }
     }
 }

@@ -899,6 +899,7 @@ void ui_service(void) {
     if (presses > 0) {
         if (interface[current].press.action != NULL) {
             current = interface[current].press.action(current, &interface[current].press);
+            buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (rotations < 0) {
@@ -914,10 +915,10 @@ void ui_service(void) {
                 }
             }
         }
-    }
 
-    if (original != current) {
-        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        if (rotations != 0) {
+            buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        }
     }
 
     if (original != current || *interface[current].render_check) {

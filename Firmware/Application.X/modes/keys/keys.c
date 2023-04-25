@@ -10,6 +10,7 @@
 #include "../../buzzer.h"
 #include "../../rng.h"
 #include "../../tick.h"
+#include "../../sound.h"
 #include "../needy.h"
 
 #define KEYS_RNG_MASK 0xe3236543
@@ -133,7 +134,7 @@ void keys_service_running(bool first) {
     /* Handle moves. */
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         /* Feedback to user button was accepted. */
-        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+        sound_play(SOUND_ALL_NEEDY_WARNING);
 
         /* Map bits from keymatrix into a number. */
         uint8_t key = (press & KEY_COL_BITS);

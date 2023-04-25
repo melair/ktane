@@ -24,12 +24,10 @@ uint8_t ui_render_configure_global_argb_brightness_change(uint8_t current, actio
     if (a->value_direction) {
         if (ui_configure_global_argb_brightness < MAX_ARGB_BRIGHTNESS) {
             ui_configure_global_argb_brightness++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_global_argb_brightness > 0) {
             ui_configure_global_argb_brightness--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -89,14 +87,12 @@ uint8_t ui_render_configure_global_buzzer_vol_change(uint8_t current, action_t *
             ui_configure_global_buzzer_vol++;
             buzzer_set_volume((uint8_t) ui_configure_global_buzzer_vol);
             module_send_global_config(false);
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_global_buzzer_vol >= 0) {
             ui_configure_global_buzzer_vol--;
             buzzer_set_volume((uint8_t) ui_configure_global_buzzer_vol);
             module_send_global_config(false);
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 

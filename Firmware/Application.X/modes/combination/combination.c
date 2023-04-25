@@ -91,6 +91,8 @@ void combination_service_running(bool first) {
         } else {
             mode_data.combination.anticlockwise_traveled = true;
         }
+
+        buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
     }
 
     mode_data.combination.value += delta;
@@ -105,7 +107,7 @@ void combination_service_running(bool first) {
 
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+            buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
             combination_check();
         }
     }

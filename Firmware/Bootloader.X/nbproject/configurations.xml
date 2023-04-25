@@ -217,28 +217,6 @@
                   value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value="5.0"/>
       </Tool>
-      <XC8-CO>
-        <property key="coverage-enable" value=""/>
-        <property key="stack-guidance" value="false"/>
-      </XC8-CO>
-      <XC8-config-global>
-        <property key="advanced-elf" value="true"/>
-        <property key="constdata-progmem" value="true"/>
-        <property key="gcc-opt-driver-new" value="true"/>
-        <property key="gcc-opt-std" value="-std=c99"/>
-        <property key="gcc-output-file-format" value="dwarf-3"/>
-        <property key="mapped-progmem" value="false"/>
-        <property key="omit-pack-options" value="false"/>
-        <property key="omit-pack-options-new" value="1"/>
-        <property key="output-file-format" value="-mcof,+elf"/>
-        <property key="smart-io-format" value=""/>
-        <property key="stack-size-high" value="auto"/>
-        <property key="stack-size-low" value="auto"/>
-        <property key="stack-size-main" value="auto"/>
-        <property key="stack-type" value="compiled"/>
-        <property key="user-pack-device-support" value=""/>
-        <property key="wpo-lto" value="false"/>
-      </XC8-config-global>
       <pk4hybrid>
         <property key="AutoSelectMemRanges" value="auto"/>
         <property key="Freeze Peripherals" value="true"/>
@@ -492,10 +470,6 @@
                   value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value="5.0"/>
       </Tool>
-      <XC8-CO>
-        <property key="coverage-enable" value=""/>
-        <property key="stack-guidance" value="false"/>
-      </XC8-CO>
       <XC8-config-global>
         <property key="advanced-elf" value="true"/>
         <property key="constdata-progmem" value="true"/>

@@ -15,11 +15,9 @@ uint8_t ui_action_configure_module_select_change(uint8_t current, action_t *a) {
 
     if (a->value_direction) {
         ui_configure_module_selected++;
-        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
     } else {
         if (ui_configure_module_selected >= 0) {
             ui_configure_module_selected--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -73,12 +71,10 @@ uint8_t ui_render_configure_module_hardware_change(uint8_t current, action_t *a)
     if (a->value_direction) {
         if (ui_configure_module_hardware < HARDWARE_STATS) {
             ui_configure_module_hardware++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_module_hardware >= 0) {
             ui_configure_module_hardware--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -149,12 +145,10 @@ uint8_t ui_render_configure_module_errors_change(uint8_t current, action_t *a) {
     if (a->value_direction) {
         if (ui_configure_module_errors < ERRORS_STATS) {
             ui_configure_module_errors++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_module_errors >= 0) {
             ui_configure_module_errors--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -209,12 +203,10 @@ uint8_t ui_render_configure_module_can_stats_change(uint8_t current, action_t *a
     if (a->value_direction) {
         if (ui_configure_module_can_stats < CANS_STATS) {
             ui_configure_module_can_stats++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_module_can_stats >= 0) {
             ui_configure_module_can_stats--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -290,12 +282,10 @@ uint8_t ui_render_configure_module_mode_set_change(uint8_t current, action_t *a)
     if (a->value_direction) {
         if (ui_configure_module_mode_set < MODES_STATS) {
             ui_configure_module_mode_set++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_module_mode_set >= 0) {
             ui_configure_module_mode_set--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -346,12 +336,10 @@ uint8_t ui_render_configure_module_special_function_change(uint8_t current, acti
     if (a->value_direction) {
         if (ui_configure_module_special_function < MAX_SPECIAL_FUNCTION) {
             ui_configure_module_special_function++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_module_special_function >= 0) {
             ui_configure_module_special_function--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -395,12 +383,10 @@ uint8_t ui_render_configure_module_opt_port_change(uint8_t current, action_t *a)
     if (a->value_direction) {
         if (ui_configure_module_opt_port_id < OPT_SELECT_MAX) {
             ui_configure_module_opt_port_id++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_module_opt_port_id >= 0) {
             ui_configure_module_opt_port_id--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -447,12 +433,10 @@ uint8_t ui_render_configure_module_opt_set_change(uint8_t current, action_t *a) 
     if (a->value_direction) {
         if (ui_configure_module_opt_set_id < OPT_COUNT) {
             ui_configure_module_opt_set_id++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_configure_module_opt_set_id >= 0) {
             ui_configure_module_opt_set_id--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 

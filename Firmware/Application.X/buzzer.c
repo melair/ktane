@@ -40,13 +40,20 @@ void buzzer_initialise(void) {
     PWM2CPRE = 127;
 }
 
+uint8_t buzzer_get_volume(void) {
+    return buzzer_volume;
+}
+
+void buzzer_set_volume(uint8_t new_vol) {
+    buzzer_volume = new_vol & 0b00000111;
+}
+
 /**
- * Turn buzzer on.
+ * Turn buzzer on, timed.
  *
- * @param volume volume of buzzer, 0 to 255
- * @param frequency frequency of buzzer in Hz
+ * @param duration amount of time
  */
-void buzzer_on(uint8_t volume, uint16_t frequency) {
+void buzzer_on(uint8_t volume, uint16_t frequency, uint16_t duration) {
 #ifndef __DEBUG
     PWM2CONbits.EN = 0;
 
@@ -61,26 +68,8 @@ void buzzer_on(uint8_t volume, uint16_t frequency) {
 
     PWM2CONbits.EN = 1;
 
-    buzzer_off_tick = 0;
-#endif
-}
-
-uint8_t buzzer_get_volume(void) {
-    return buzzer_volume;
-}
-
-void buzzer_set_volume(uint8_t new_vol) {
-    buzzer_volume = new_vol & 0b00000111;
-}
-
-/**
- * Turn buzzer on, timed.
- *
- * @param duration amount of time
- */
-void buzzer_on_timed(uint8_t volume, uint16_t frequency, uint16_t duration) {
-    buzzer_on(volume, frequency);
     buzzer_off_tick = tick_value + duration;
+#endif
 }
 
 /**

@@ -2,8 +2,7 @@
 #define	BUZZER_H
 
 void buzzer_initialise(void);
-void buzzer_on(uint8_t volume, uint16_t frequency);
-void buzzer_on_timed(uint8_t volume, uint16_t frequency, uint16_t duration);
+void buzzer_on(uint8_t volume, uint16_t frequency, uint16_t duration);
 void buzzer_off(void);
 void buzzer_service(void);
 uint8_t buzzer_get_volume(void);

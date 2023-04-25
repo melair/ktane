@@ -7,6 +7,7 @@
 #include "../../tick.h"
 #include "../../rng.h"
 #include "../../buzzer.h"
+#include "../../sound.h"
 #include "../../hal/pins.h"
 #include "../../peripherals/pwmled.h"
 #include "../../peripherals/keymatrix.h"
@@ -22,7 +23,7 @@
 #define SIMON_DIM    15
 #define SIMON_BRIGHT 31
 
-const uint16_t simon_freqs[4] = {550, 775, 660, 985};
+const uint16_t simon_freqs[4] = {SOUND_SIMON_SAYS_550HZ, SOUND_SIMON_SAYS_775HZ, SOUND_SIMON_SAYS_660HZ, SOUND_SIMON_SAYS_985HZ};
 const uint8_t simon_colours[4][3] = {
     { 255, 0, 0,},
     { 0, 0, 255,},
@@ -166,7 +167,7 @@ void simon_service_running(bool first) {
             /* Check to see if it matches. */
             if (remapped == (press & KEY_NUM_BITS)) {
                 /* Play the tone of the target button. */
-                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, simon_freqs[remapped], 300);
+                sound_play(simon_freqs[remapped]);
 
                 mode_data.simon.next_correct_press++;
 
@@ -201,7 +202,7 @@ void simon_service_running(bool first) {
             uint8_t next = (mode_data.simon.order >> (2 * mode_data.simon.next_display)) & 0b11;
 
             pwmled_set(next, SIMON_OFF, simon_colours[next][0], simon_colours[next][1], simon_colours[next][2]);
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, simon_freqs[next], 400);
+            sound_play(simon_freqs[next]);
 
             mode_data.simon.next_display++;
 

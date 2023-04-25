@@ -10,6 +10,7 @@
 #include "../../hal/spi.h"
 #include "../../tick.h"
 #include "../../peripherals/lcd.h"
+#include "../../sound.h"
 
 #define CARDSCAN_RNG_MASK 0x96ea865c
 
@@ -166,7 +167,7 @@ void cardscan_service_idle(bool first) {
 
         if (mode_data.cardscan.cards.programming_update) {
             mode_data.cardscan.cards.programming_update = false;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
+            sound_play(SOUND_CARDSCAN_CORRECT_CARD);
         }
     }
 }
@@ -199,8 +200,6 @@ void cardscan_service_running(bool first) {
     }
 
     if (mode_data.cardscan.cards.scanned_updated) {
-        buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 100);
-
         mode_data.cardscan.cards.scanned_updated = false;
         redraw = true;
 
@@ -210,7 +209,10 @@ void cardscan_service_running(bool first) {
             } else {
                 mode_data.cardscan.cards.lives--;
             }
+
+            sound_play(SOUND_CARDSCAN_WRONG_CARD);
         } else {
+            sound_play(SOUND_CARDSCAN_CORRECT_CARD);
             game_module_solved(true);
         }
 

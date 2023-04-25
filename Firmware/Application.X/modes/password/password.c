@@ -1,5 +1,6 @@
 #include <xc.h>
 #include "password.h"
+#include "../../sound.h"
 #include "../../buzzer.h"
 #include "../../mode.h"
 #include "../../game.h"
@@ -129,7 +130,7 @@ void password_service_running(bool first) {
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
             /* Feedback to user button was accepted. */
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+            sound_play(SOUND_ALL_PRESS_IN_RELEASE);
 
             /* Map bits from keymatrix into a number. */
             uint8_t button = ((press & KEY_ROW_BITS) >> 3) + ((press & KEY_COL_BITS) * 4);

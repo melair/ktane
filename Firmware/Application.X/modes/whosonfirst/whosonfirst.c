@@ -11,6 +11,7 @@
 #include "../../tick.h"
 #include "../../peripherals/keymatrix.h"
 #include "../../hal/pins.h"
+#include "../../sound.h"
 
 #define WHOSONFIRST_RNG_MASK 0x183cc82a
 
@@ -273,7 +274,7 @@ void whosonfirst_service_running(bool first) {
                 /* Check to see if the button pressed is this choice, if so
                  * handle success correctly. */
                 if (choice[choicelookup][i] == mode_data.whosonfirst.words[mapped]) {
-                    buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 100);
+                    sound_play(SOUND_ALL_PRESS_IN_RELEASE);
                     mode_data.whosonfirst.stage++;
 
                     if (mode_data.whosonfirst.stage >= STAGE_COUNT) {

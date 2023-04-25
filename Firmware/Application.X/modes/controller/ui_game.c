@@ -33,12 +33,10 @@ uint8_t ui_game_edgework_change(uint8_t current, action_t *a) {
     if (a->value_direction) {
         if (ui_game_edgework < edgework_count()) {
             ui_game_edgework++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_game_edgework > 0) {
             ui_game_edgework--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -107,12 +105,10 @@ uint8_t ui_game_custom_module_count_change(uint8_t current, action_t *a) {
     if (a->value_direction) {
         if (ui_game_custom_module_count < MODULE_COUNT) {
             ui_game_custom_module_count++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_game_custom_module_count > 0) {
             ui_game_custom_module_count--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -156,12 +152,10 @@ uint8_t ui_game_custom_time_change(uint8_t current, action_t *a) {
     if (a->value_direction) {
         if (ui_game_custom_time < TIME_MAX) {
             ui_game_custom_time++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_game_custom_time > 0) {
             ui_game_custom_time--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 
@@ -210,12 +204,10 @@ uint8_t ui_game_custom_strikes_change(uint8_t current, action_t *a) {
     if (a->value_direction) {
         if (ui_game_custom_strikes < STRIKES_MAX) {
             ui_game_custom_strikes++;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     } else {
         if (ui_game_custom_strikes >= 0) {
             ui_game_custom_strikes--;
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
         }
     }
 

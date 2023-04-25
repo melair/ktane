@@ -7,6 +7,7 @@
 #include "game.h"
 #include "tick.h"
 #include "buzzer.h"
+#include "sound.h"
 
 #define EDGEWORK_RNG_MASK 0x1e4ab852
 
@@ -163,7 +164,7 @@ void edgework_service(void) {
             if (!edgework_twofa_regenerated_this_tick) {
                 edgework_twofa_regenerated_this_tick = true;
                 edgework_generate_2fa();
-                buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+                sound_play(SOUND_ALL_EDGEWORK_2FA);
             }
         } else {
             edgework_twofa_regenerated_this_tick = false;

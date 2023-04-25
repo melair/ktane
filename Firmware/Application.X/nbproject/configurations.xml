@@ -103,6 +103,7 @@
       <itemPath>../common/fw_updater.h</itemPath>
       <itemPath>modes/controller/ui_configure_global.h</itemPath>
       <itemPath>dma.h</itemPath>
+      <itemPath>sound.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -202,6 +203,7 @@
       <itemPath>../common/fw.c</itemPath>
       <itemPath>fw_server.c</itemPath>
       <itemPath>../common/fw_updater.c</itemPath>
+      <itemPath>sound.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -222,7 +224,7 @@
         <targetDevice>PIC18F57Q84</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>pk4hybrid</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>2.36</languageToolchainVersion>
         <platform>3</platform>
@@ -436,10 +438,6 @@
                   value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value="5.0"/>
       </Tool>
-      <XC8-CO>
-        <property key="coverage-enable" value=""/>
-        <property key="stack-guidance" value="false"/>
-      </XC8-CO>
       <XC8-config-global>
         <property key="advanced-elf" value="true"/>
         <property key="constdata-progmem" value="true"/>

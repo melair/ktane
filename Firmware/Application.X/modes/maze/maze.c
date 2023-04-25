@@ -8,6 +8,7 @@
 #include "../../game.h"
 #include "../../hal/pins.h"
 #include "../../peripherals/keymatrix.h"
+#include "../../sound.h"
 
 #define MAZE_RNG_MASK 0xb299a3d0
 
@@ -238,7 +239,7 @@ void maze_service_running(bool first) {
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
             /* Feedback to user button was accepted. */
-            buzzer_on_timed(BUZZER_DEFAULT_VOLUME, BUZZER_FREQ_A6_SHARP, 40);
+            sound_play(SOUND_ALL_PRESS_IN_RELEASE);
 
             /* Calculate the bits to check. */
             uint8_t i = mode_data.maze.current / 2;
