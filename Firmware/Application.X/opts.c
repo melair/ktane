@@ -8,6 +8,7 @@
 #include "opts/audio/audio.h"
 #include "opts/spi/spi.h"
 #include "opts/spi/spi_data.h"
+#include "opts/spi/fat.h"
 #include "opts/power/power.h"
 
 #define OPT_PORT_COUNT 4
@@ -18,11 +19,6 @@ void opts_initialise_port(uint8_t port);
 
 #define OPT_TYPE_MASK   0b11110000
 #define OPT_DATA_MASK   0b00001111
-
-#define OPT_NONE        0b00000000
-#define OPT_POWER       0b00000001
-#define OPT_SPI         0b00000010
-#define OPT_AUDIO       0b00000011
 
 const char opts_name[OPT_COUNT][OPT_MAX_NAME] = {
     "Power",
@@ -55,6 +51,10 @@ void opts_initialise(void) {
 
     if (audio != NULL && sdcard != NULL) {
         mux_initialise();
+    }
+
+    if (sdcard != NULL) {
+        fat_initialise(sdcard);
     }
 
     if (power != NULL) {

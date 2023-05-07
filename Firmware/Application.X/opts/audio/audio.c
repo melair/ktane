@@ -3,14 +3,14 @@
 #include "audio.h"
 #include "audio_data.h"
 #include "../../dma.h"
+#include "../../malloc.h"
 
 /*
  * The audio peripheral can only operate in PortA as the DAC can't be routed.
  *
  * Audio must be formatted as unsigned 8-bit at 16000 Samples/sec.
  */
-
-uint8_t audio_buffers[AUDIO_FRAME_SIZE * 2];
+uint8_t *audio_buffers;
 
 /**
  * Initialise the audio module, this uses the Fixed Voltage Reference peripheral
@@ -19,6 +19,8 @@ uint8_t audio_buffers[AUDIO_FRAME_SIZE * 2];
  */
 
 void audio_initialise(opt_data_t *opt) {
+    audio_buffers = kmalloc(AUDIO_FRAME_SIZE * 2);
+
     /* Initialise audio buffers. */
     for (uint16_t i = 0; i < AUDIO_FRAME_SIZE * 2; i++) {
         audio_buffers[i] = 0x7f;

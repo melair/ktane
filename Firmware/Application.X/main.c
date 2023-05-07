@@ -29,6 +29,7 @@
 #include "hal/spi.h"
 #include "opts.h"
 #include "fw_server.h"
+#include "sound.h"
 #include "../common/can.h"
 #include "../common/mcu.h"
 #include "../common/device.h"
@@ -84,6 +85,9 @@ void main(void) {
 
     /* Initialise Buzzer. */
     buzzer_initialise();
+
+    /* Initialise Sound. */
+    sound_initialise();
 
     /* Initialise optional modules. */
     opts_initialise();

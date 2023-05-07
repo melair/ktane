@@ -3,6 +3,8 @@
 
 #include "../common/packet.h"
 
+void sound_initialise(void);
+
 void sound_play(uint16_t sound);
 void sound_stop(uint16_t sound);
 

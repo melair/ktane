@@ -65,6 +65,7 @@
           <itemPath>opts/spi/spi_data.h</itemPath>
           <itemPath>opts/spi/rtc.h</itemPath>
           <itemPath>opts/spi/sdcard.h</itemPath>
+          <itemPath>opts/spi/fat.h</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
@@ -104,6 +105,7 @@
       <itemPath>modes/controller/ui_configure_global.h</itemPath>
       <itemPath>dma.h</itemPath>
       <itemPath>sound.h</itemPath>
+      <itemPath>malloc.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -172,6 +174,7 @@
           <itemPath>opts/spi/spi.c</itemPath>
           <itemPath>opts/spi/rtc.c</itemPath>
           <itemPath>opts/spi/sdcard.c</itemPath>
+          <itemPath>opts/spi/fat.c</itemPath>
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="f2" displayName="peripherals" projectFiles="true">
@@ -204,6 +207,7 @@
       <itemPath>fw_server.c</itemPath>
       <itemPath>../common/fw_updater.c</itemPath>
       <itemPath>sound.c</itemPath>
+      <itemPath>malloc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -224,7 +228,7 @@
         <targetDevice>PIC18F57Q84</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>noID</platformTool>
+        <platformTool>pk4hybrid</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>2.36</languageToolchainVersion>
         <platform>3</platform>
@@ -339,7 +343,7 @@
         <property key="code-model-external" value="wordwrite"/>
         <property key="code-model-rom" value="100-1effd"/>
         <property key="create-html-files" value="false"/>
-        <property key="data-model-ram" value=""/>
+        <property key="data-model-ram" value="0-1fff"/>
         <property key="data-model-size-of-double" value="32"/>
         <property key="data-model-size-of-double-gcc" value="no-short-double"/>
         <property key="data-model-size-of-float" value="32"/>
@@ -438,6 +442,10 @@
                   value="Press to select which tool pack to use"/>
         <property key="voltagevalue" value="5.0"/>
       </Tool>
+      <XC8-CO>
+        <property key="coverage-enable" value=""/>
+        <property key="stack-guidance" value="false"/>
+      </XC8-CO>
       <XC8-config-global>
         <property key="advanced-elf" value="true"/>
         <property key="constdata-progmem" value="true"/>

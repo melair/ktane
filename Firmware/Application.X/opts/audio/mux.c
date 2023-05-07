@@ -6,8 +6,7 @@
 #include "../spi/sdcard.h"
 #include "../../hal/spi.h"
 #include "../../hal/pins.h"
-
-uint8_t mux_buffer[AUDIO_FRAME_SIZE + 12];
+#include "../../malloc.h"
 
 /*
  * We're limiting the mux to be able to handle 4 concurrent playbacks, this
@@ -24,6 +23,7 @@ uint8_t mux_buffer[AUDIO_FRAME_SIZE + 12];
 #define MUX_CHANNELS 4
 
 typedef struct {
+    uint16_t id;
     uint32_t block;
     uint32_t remaining;
 } mux_channel_t;
@@ -34,6 +34,7 @@ bool mux_need_block = false;
 bool mux_muxing = false;
 uint16_t mux_buffer_base = 0;
 uint8_t mux_ch = 0;
+uint8_t *mux_buffer;
 
 sd_transaction_t mux_sd_trans;
 
@@ -48,18 +49,31 @@ void mux_initialise(void) {
     audio = opts_find_audio();
     sdcard = opts_find_sdcard();
 
+    mux_buffer = kmalloc(AUDIO_FRAME_SIZE + 12);
+
     audio_register_callback(&audio->audio, mux_audio_request);
 
     mux_sd_trans.spi_cmd.callback = mux_sdcard_callback;
     mux_sd_trans.spi_cmd.callback_ptr = NULL;
 }
 
-void mux_play(uint32_t block, uint32_t count) {
+void mux_play(uint16_t id, uint32_t block, uint32_t count) {
     for (uint8_t i = 0; i < MUX_CHANNELS; i++) {
         if (mux_channels[i].remaining == 0) {
+            mux_channels[i].id = id;
             mux_channels[i].block = block;
             mux_channels[i].remaining = count;
             return;
+        }
+    }
+}
+
+void mux_stop(uint16_t id) {
+    for (uint8_t i = 0; i < MUX_CHANNELS; i++) {
+        if (mux_channels[i].id == id) {
+            mux_channels[i].id = 0;
+            mux_channels[i].block = 0;
+            mux_channels[i].remaining = 0;
         }
     }
 }

@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include "sound.h"
 #include "buzzer.h"
+#include "opts/audio/mux.h"
+#include "opts/spi/fat.h"
+#include "module.h"
 #include "../common/packet.h"
 
 /* Does the module need to play its own sounds? */
@@ -17,6 +20,7 @@ typedef struct {
     uint16_t sound;
     uint16_t frequency;
     uint16_t duration;
+    fat_lookup_t fat;
 } local_sound_t;
 
 #define SOUND_COUNT 17
@@ -104,17 +108,27 @@ local_sound_t local_sounds[SOUND_COUNT] = {
     },
 };
 
+void sound_initialise(void) {
+    for (uint8_t i = 0; i < SOUND_COUNT; i++) {
+        local_sounds[i].fat.mode = (local_sounds[i].sound >> 8) & 0xff;
+        local_sounds[i].fat.index = local_sounds[i].sound & 0xff;
+        fat_add(&local_sounds[i].fat);
+    }
+}
+
 void sound_play(uint16_t sound) {
-    if (sound_local) {
-        sound_play_local(sound);
-    } else {
+    if (module_with_audio_present()) {
         sound_play_remote(sound);
+    } else {
+        sound_play_local(sound);
     }
 }
 
 void sound_stop(uint16_t sound) {
-    if (!sound_local) {
+    if (module_with_audio_present()) {
         sound_stop_remote(sound);
+    } else {
+        buzzer_off();
     }
 }
 
@@ -138,9 +152,18 @@ void sound_stop_remote(uint16_t sound) {
 }
 
 void sound_receive_play(uint8_t id, packet_t *p) {
-
+    if (module_with_audio_present()) {
+        for (uint8_t i = 0; i < SOUND_COUNT; i++) {
+            if (local_sounds[i].sound == p->game.sound_play.sound) {
+                mux_play(p->game.sound_play.sound, local_sounds[i].fat.offset, local_sounds[i].fat.size);
+                return;
+            }
+        }
+    }
 }
 
 void sound_receive_stop(uint8_t id, packet_t *p) {
-
+    if (module_with_audio_present()) {
+        mux_stop(p->game.sound_play.sound);
+    }
 }

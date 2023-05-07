@@ -56,6 +56,7 @@ uint8_t module_get_count_enabled_module(void);
 uint8_t module_get_count_enabled_puzzle(void);
 uint8_t module_get_count_enabled_solved_puzzle(void);
 uint8_t module_get_count_enabled_needy(void);
+bool module_with_audio_present(void);
 
 void module_send_reset(void);
 void module_send_identify(uint8_t id);

@@ -1,6 +1,11 @@
 #ifndef OPTS_H
 #define	OPTS_H
 
+#define OPT_NONE        0b00000000
+#define OPT_POWER       0b00000001
+#define OPT_SPI         0b00000010
+#define OPT_AUDIO       0b00000011
+
 void opts_initialise(void);
 void opts_service(void);
 uint8_t opts_get(uint8_t port);

@@ -40,6 +40,8 @@ uint8_t error_state = ERROR_NONE;
 /* Previously reported error state. */
 uint8_t error_state_prev = ERROR_NONE;
 
+bool bomb_has_audio = false;
+
 /* Local function prototypes. */
 uint8_t module_find(uint8_t id);
 uint8_t module_find_or_create(uint8_t id);
@@ -80,6 +82,10 @@ void module_initialise(void) {
 
     for (uint8_t i = 0; i < OPT_COUNT; i++) {
         modules[0].opts[i] = opts_get(i);
+
+        if (modules[0].opts[i] == OPT_AUDIO) {
+            bomb_has_audio = true;
+        }
     }
 
     /* Set next module announce time, offsetting with modulus of CAN ID to
@@ -180,7 +186,7 @@ void module_announce(void) {
     packet_outgoing.module.announcement.flasher_version = fw_version(FLASHER);
 
     for (uint8_t i = 0; i < OPT_COUNT; i++) {
-        packet_outgoing.module.announcement.opts[i] = opts_get(i);
+        packet_outgoing.module.announcement.opts[i] = modules[0].opts[i];
     }
 
     packet_send(PREFIX_MODULE, OPCODE_MODULE_ANNOUNCEMENT, SIZE_MODULE_ANNOUNCEMENT, &packet_outgoing);
@@ -301,6 +307,10 @@ void module_receive_announce(uint8_t id, packet_t *p) {
 
     for (uint8_t i = 0; i < OPT_COUNT; i++) {
         modules[idx].opts[i] = p->module.announcement.opts[i];
+
+        if (modules[idx].opts[i] == OPT_AUDIO) {
+            bomb_has_audio = true;
+        }
     }
 
     if (p->module.announcement.flags.reset) {
@@ -602,4 +612,8 @@ uint8_t module_get_count_enabled_solved_puzzle(void) {
     }
 
     return module_count;
+}
+
+bool module_with_audio_present(void) {
+    return bomb_has_audio;
 }
