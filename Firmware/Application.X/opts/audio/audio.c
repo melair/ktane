@@ -29,17 +29,62 @@ void audio_initialise(opt_data_t *opt) {
     opt->audio.size = AUDIO_FRAME_SIZE;
     opt->audio.buffer = &audio_buffers[0];
 
-    /* Configure the Voltage Reference to 1.024v. */
-    FVRCONbits.CDAFVR = 0b01;
-    FVRCONbits.EN = 1;
+    /* Set all signals to output. */
+    TRISAbits.TRISA0 = 0;
+    TRISAbits.TRISA1 = 0;
+    TRISAbits.TRISA2 = 0;
+    TRISAbits.TRISA3 = 0;
 
-    /* Initialise the DAC. */
-    DAC1CONbits.OE = 0b10;
-    DAC1CONbits.PSS = 0b10;
-    DAC1CONbits.EN = 1;
+    /* PWM4 */
+    PWM4CLK = 0b00010;
+    PWM4CPRE = 0;
+    PWM4PR = 0xff;
+    PWM4S1P2 = 0x7f;
+    PWM4LDS = 0b01101; // DMA3 Destination Count done
+    PWM4CONbits.EN = 1;
+    PWM4CONbits.LD = 1;
 
-    /* Initial value to 0v. */
-    DAC1DATL = 0;
+    /* CWG3 */
+    CWG3CON0bits.EN = 0;
+    CWG3CON0bits.MODE = 0b100;
+
+    CWG3CON1bits.POLA = 0;
+    CWG3CON1bits.POLB = 0;
+    CWG3CON1bits.POLC = 1;
+    CWG3CON1bits.POLD = 1;
+
+    CWG3ISMbits.IS = 0b01011;
+
+    CWG3DBR = 6;
+    CWG3DBF = 6;
+
+    CWG3CLKbits.CS = 0;
+
+    CLCSELECT = 0;
+
+    CLCnSEL0 = 0x4C; // CWG3A
+    CLCnSEL1 = 0x00;
+    CLCnSEL2 = 0x00;
+    CLCnSEL3 = 0x00;
+
+    CLCnGLS0 = 0x00;
+    CLCnGLS0bits.G1D1T = 1;
+    CLCnGLS1 = 0x00;
+    CLCnGLS2 = 0x00;
+    CLCnGLS3 = 0x00;
+
+    CLCnPOL = 0x00;
+    CLCnPOLbits.G2POL = 1;
+
+    CLCnCONbits.MODE = 0b000;
+    CLCnCONbits.EN = 1;
+
+    RA3PPS = 0x01; // A, Needs to be via CLC1.
+    RA1PPS = 0x12; // B
+    RA0PPS = 0x13; // C
+    RA2PPS = 0x14; // D
+
+    CWG3CON0bits.EN = 1;
 
     /* Set up timer for driving the DMA. */
     /* Set timer to use MFINTOSC (32kHz). */
@@ -64,7 +109,8 @@ void audio_initialise(opt_data_t *opt) {
     DMAnCON0 = 0;
 
     /* Set destination address of data. */
-    DMAnDSA = (volatile unsigned short) &DAC1DATL;
+    //    DMAnDSA = (volatile unsigned short) &DAC1DATL;
+    DMAnDSA = (volatile unsigned short) &PWM4S1P2L;
 
     /* Set source address to general purpose register space. */
     DMAnCON1bits.SMR = 0b00;

@@ -19,7 +19,6 @@
 #include "../common/eeprom_addrs.h"
 
 /* Local function prototypes. */
-bool mode_check_if_bootstrap(void);
 uint8_t mode_find_name_index(uint8_t mode);
 
 /* Mode data. */
@@ -104,54 +103,6 @@ char *mode_name_by_index(uint8_t idx) {
 }
 
 /**
- * Checks to see if the module is in bootstrap mode, this is done by shorting
- * pins A0 and A1 together.
- *
- * @return true if module is in bootstrap
- */
-bool mode_check_if_bootstrap(void) {
-    /* Set Port A1 (RA1) to be an input. */
-    TRISAbits.TRISA1 = 1;
-
-    tick_wait(10);
-
-    /* Check to see if the port is high, if so abort. */
-    if (PORTAbits.RA1 == 1) {
-        TRISAbits.TRISA1 = 0;
-        return false;
-    }
-
-    /* Set Port A1 (RA0) to high. */
-    LATAbits.LATA0 = 1;
-
-    tick_wait(10);
-
-    /* Check to see if the port now low, if so abort. */
-    if (PORTAbits.RA1 == 0) {
-        TRISAbits.TRISA1 = 0;
-        LATAbits.LATA0 = 0;
-        return false;
-    }
-
-    /* Set Port A1 (RA0) to low. */
-    LATAbits.LATA0 = 0;
-
-    tick_wait(10);
-
-    /* Check to see if the port is high again, if so abort. */
-    if (PORTAbits.RA1 == 1) {
-        TRISAbits.TRISA1 = 0;
-        return false;
-    }
-
-    /* Set port back to output. */
-    TRISAbits.TRISA1 = 0;
-
-    /* Check passed. */
-    return true;
-}
-
-/**
  * Get the current mode.
  *
  * @return the current mode
@@ -174,10 +125,6 @@ void mode_unspecified_special_fn(uint8_t state) {
  */
 void mode_initialise(void) {
     configured_mode = nvm_eeprom_read(EEPROM_LOC_MODE_CONFIGURATION);
-
-    if (mode_check_if_bootstrap()) {
-        configured_mode = MODE_BOOTSTRAP;
-    }
 
     for (uint8_t i = 0; i < MODE_COUNTS; i++) {
         mode_service_state_function[i] = mode_unspecified_state;

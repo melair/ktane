@@ -50,7 +50,6 @@ void mux_initialise(void) {
     sdcard = opts_find_sdcard();
 
     mux_buffer = kmalloc(AUDIO_FRAME_SIZE + 12);
-
     audio_register_callback(&audio->audio, mux_audio_request);
 
     mux_sd_trans.spi_cmd.callback = mux_sdcard_callback;
