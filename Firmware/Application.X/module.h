@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "game.h"
+#include "opts.h"
 
 /* Number of errors in each module to track. */
 #define ERROR_COUNT  8
@@ -37,7 +38,7 @@ typedef struct {
         uint16_t flasher;
     } firmware;
 
-    uint8_t opts[3];
+    uint8_t opts[OPT_PORT_COUNT];
 
     module_error_t errors[ERROR_COUNT];
     module_game_t game;

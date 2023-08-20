@@ -226,56 +226,63 @@ void controller_update_strikes(void) {
  *
  * @param first true if first call of the state
  */
+uint8_t last_processed_centisecond;
+
 void controller_service_running(bool first) {
     if (first) {
+        last_processed_centisecond = 0xff;
         game_module_solved(true);
     }
 
     if (!game.time_remaining.done) {
-        uint8_t seconds = game.time_remaining.seconds % 10;
-        uint8_t tenseconds = game.time_remaining.seconds / 10;
+        if (last_processed_centisecond != game.time_remaining.centiseconds) {
+            last_processed_centisecond = game.time_remaining.centiseconds;
 
-        if (game.time_remaining.centiseconds == 88) {
-            sound_play(SOUND_CONTROLLER_BEEP_LOW);
-        }
+            uint8_t seconds = game.time_remaining.seconds % 10;
+            uint8_t tenseconds = game.time_remaining.seconds / 10;
 
-        if (game.time_ratio == TIME_RATIO_1 && game.time_remaining.centiseconds == 22) {
-            sound_play(SOUND_CONTROLLER_BEEP_HIGH);
-        }
+            if (game.time_remaining.centiseconds == 88) {
+                sound_play(SOUND_CONTROLLER_BEEP_LOW);
+            }
 
-        if (game.time_ratio == TIME_RATIO_1_25 && game.time_remaining.centiseconds == 25) {
-            sound_play(SOUND_CONTROLLER_BEEP_HIGH);
-        }
+            if (game.time_ratio == TIME_RATIO_1 && game.time_remaining.centiseconds == 22) {
+                sound_play(SOUND_CONTROLLER_BEEP_HIGH);
+            }
 
-        /* Send game updates at half way through the second, this should mean
-         * any timing corrections (due to drift) are hidden in the count
-         * down. */
-        if (game.time_remaining.centiseconds == 50) {
-            game_update_send();
-        }
+            if (game.time_ratio == TIME_RATIO_1_25 && game.time_remaining.centiseconds == 25) {
+                sound_play(SOUND_CONTROLLER_BEEP_HIGH);
+            }
 
-        if (game.time_remaining.minutes > 0) {
-            uint8_t minutes = game.time_remaining.minutes % 10;
-            uint8_t tenminutes = game.time_remaining.minutes / 10;
+            /* Send game updates at half way through the second, this should mean
+             * any timing corrections (due to drift) are hidden in the count
+             * down. */
+            if (game.time_remaining.centiseconds == 50) {
+                game_update_send();
+            }
 
-            segment_set_colon(true);
+            if (game.time_remaining.minutes > 0) {
+                uint8_t minutes = game.time_remaining.minutes % 10;
+                uint8_t tenminutes = game.time_remaining.minutes / 10;
 
-            segment_set_digit(0, characters[DIGIT_0 + tenminutes]);
-            segment_set_digit(1, characters[DIGIT_0 + minutes]);
+                segment_set_colon(true);
 
-            segment_set_digit(2, characters[DIGIT_0 + tenseconds]);
-            segment_set_digit(3, characters[DIGIT_0 + seconds]);
-        } else {
-            uint8_t centiseconds = game.time_remaining.centiseconds % 10;
-            uint8_t tencentiseconds = game.time_remaining.centiseconds / 10;
+                segment_set_digit(0, characters[DIGIT_0 + tenminutes]);
+                segment_set_digit(1, characters[DIGIT_0 + minutes]);
 
-            segment_set_colon(false);
+                segment_set_digit(2, characters[DIGIT_0 + tenseconds]);
+                segment_set_digit(3, characters[DIGIT_0 + seconds]);
+            } else {
+                uint8_t centiseconds = game.time_remaining.centiseconds % 10;
+                uint8_t tencentiseconds = game.time_remaining.centiseconds / 10;
 
-            segment_set_digit(0, characters[DIGIT_0 + tenseconds]);
-            segment_set_digit(1, characters[DIGIT_0 + seconds] | characters[DIGIT_PERIOD]);
+                segment_set_colon(false);
 
-            segment_set_digit(2, characters[DIGIT_0 + tencentiseconds]);
-            segment_set_digit(3, characters[DIGIT_0 + centiseconds]);
+                segment_set_digit(0, characters[DIGIT_0 + tenseconds]);
+                segment_set_digit(1, characters[DIGIT_0 + seconds] | characters[DIGIT_PERIOD]);
+
+                segment_set_digit(2, characters[DIGIT_0 + tencentiseconds]);
+                segment_set_digit(3, characters[DIGIT_0 + centiseconds]);
+            }
         }
     } else {
         game_set_state(GAME_OVER, RESULT_FAILURE);

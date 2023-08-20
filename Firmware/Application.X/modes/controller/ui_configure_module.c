@@ -119,11 +119,11 @@ void ui_render_configure_module_hardware(interface_t *current) {
             case 1:
                 title = "Opts";
                 lcd_update(1, 1, 1, "A:");
-                lcd_number(1, 3, 2, opts_get(0));
+                lcd_number(1, 3, 2, module->opts[0]);
                 lcd_update(1, 6, 1, "B:");
-                lcd_number(1, 8, 2, opts_get(1));
+                lcd_number(1, 8, 2, module->opts[1]);
                 lcd_update(1, 11, 1, "C:");
-                lcd_number(1, 13, 2, opts_get(2));
+                lcd_number(1, 13, 2, module->opts[2]);
                 break;
             case 2:
                 title = "Serial Number";
@@ -458,7 +458,7 @@ uint8_t ui_render_configure_module_opt_set_press(uint8_t current, action_t *a) {
 
 void ui_render_configure_module_opt_set(interface_t *current) {
     bool has_left = (ui_configure_module_opt_set_id >= 0);
-    bool has_right = (ui_configure_module_opt_set_id < OPT_COUNT);
+    bool has_right = (ui_configure_module_opt_set_id < (OPT_COUNT - 1));
     bool has_press = true;
 
     lcd_clear();

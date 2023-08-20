@@ -38,7 +38,7 @@
 
 /* Current firmware version, big endian. */
 asm("PSECT applicationversion");
-asm("dw 0x0059");
+asm("dw 0x005d");
 
 /**
  * Main function, initialise and main loop.

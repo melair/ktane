@@ -23,7 +23,7 @@ typedef struct {
     fat_lookup_t fat;
 } local_sound_t;
 
-#define SOUND_COUNT 17
+#define SOUND_COUNT 18
 
 local_sound_t local_sounds[SOUND_COUNT] = {
     {
@@ -105,6 +105,11 @@ local_sound_t local_sounds[SOUND_COUNT] = {
         .sound = SOUND_ALL_EDGEWORK_2FA,
         .frequency = BUZZER_FREQ_A6_SHARP,
         .duration = 40
+    },
+    {
+        .sound = SOUND_ALL_ROTARY_CLICK,
+        .frequency = BUZZER_FREQ_A6_SHARP,
+        .duration = 10
     },
 };
 

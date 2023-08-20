@@ -80,7 +80,7 @@ void module_initialise(void) {
     modules[0].firmware.application = fw_version(APPLICATION);
     modules[0].firmware.flasher = fw_version(FLASHER);
 
-    for (uint8_t i = 0; i < OPT_COUNT; i++) {
+    for (uint8_t i = 0; i < OPT_PORT_COUNT; i++) {
         modules[0].opts[i] = opts_get(i);
 
         if (modules[0].opts[i] == OPT_AUDIO) {
@@ -185,7 +185,7 @@ void module_announce(void) {
     packet_outgoing.module.announcement.bootloader_version = fw_version(BOOTLOADER);
     packet_outgoing.module.announcement.flasher_version = fw_version(FLASHER);
 
-    for (uint8_t i = 0; i < OPT_COUNT; i++) {
+    for (uint8_t i = 0; i < OPT_PORT_COUNT; i++) {
         packet_outgoing.module.announcement.opts[i] = modules[0].opts[i];
     }
 
@@ -305,7 +305,7 @@ void module_receive_announce(uint8_t id, packet_t *p) {
     modules[idx].game.puzzle = (modules[idx].mode >= MODE_PUZZLE_BASE);
     modules[idx].game.needy = (modules[idx].mode >= MODE_NEEDY_KEYS);
 
-    for (uint8_t i = 0; i < OPT_COUNT; i++) {
+    for (uint8_t i = 0; i < OPT_PORT_COUNT; i++) {
         modules[idx].opts[i] = p->module.announcement.opts[i];
 
         if (modules[idx].opts[i] == OPT_AUDIO) {

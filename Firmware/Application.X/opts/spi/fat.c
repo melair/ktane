@@ -9,8 +9,8 @@ typedef struct {
     uint8_t index;
 
     struct {
-        unsigned type : 4;
         unsigned unused1 : 4;
+        unsigned type : 4;
     };
     uint8_t unused2;
 

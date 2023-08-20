@@ -36,7 +36,8 @@ opt_data_t *opts_find_power(void);
 
 void opts_receive_opt_set(uint8_t id, packet_t *p);
 
-#define OPT_COUNT       3
+#define OPT_COUNT       4
+#define OPT_PORT_COUNT  3
 #define OPT_MAX_NAME    6
 
 extern const char opts_name[OPT_COUNT][OPT_MAX_NAME];

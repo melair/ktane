@@ -9,6 +9,7 @@
 #include "../../peripherals/lcd.h"
 #include "../../tick.h"
 #include "../../module.h"
+#include "../../sound.h"
 
 /* Keymatrix. */
 pin_t ui_cols[] = {KPIN_B2, KPIN_NONE};
@@ -899,7 +900,7 @@ void ui_service(void) {
     if (presses > 0) {
         if (interface[current].press.action != NULL) {
             current = interface[current].press.action(current, &interface[current].press);
-            buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+            sound_play(SOUND_ALL_PRESS_IN);
         }
     } else {
         if (rotations < 0) {
@@ -917,7 +918,7 @@ void ui_service(void) {
         }
 
         if (rotations != 0) {
-            buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+            sound_play(SOUND_ALL_ROTARY_CLICK);
         }
     }
 

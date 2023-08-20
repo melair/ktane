@@ -13,6 +13,7 @@
 #include "../../buzzer.h"
 #include "../../rng.h"
 #include "../../tick.h"
+#include "../../sound.h"
 
 /* Keymatrix. */
 pin_t combination_cols[] = {KPIN_B2, KPIN_NONE};
@@ -92,7 +93,7 @@ void combination_service_running(bool first) {
             mode_data.combination.anticlockwise_traveled = true;
         }
 
-        buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+        sound_play(SOUND_ALL_ROTARY_CLICK);
     }
 
     mode_data.combination.value += delta;
@@ -107,7 +108,7 @@ void combination_service_running(bool first) {
 
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         if (press & KEY_DOWN_BIT) {
-            buzzer_on(BUZZER_DEFAULT_VOLUME, BUZZER_DEFAULT_FREQUENCY, 10);
+            sound_play(SOUND_ALL_PRESS_IN);
             combination_check();
         }
     }

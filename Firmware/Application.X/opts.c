@@ -11,8 +11,6 @@
 #include "opts/spi/fat.h"
 #include "opts/power/power.h"
 
-#define OPT_PORT_COUNT 4
-
 opt_data_t opts_data[OPT_PORT_COUNT];
 
 void opts_initialise_port(uint8_t port);
@@ -21,12 +19,13 @@ void opts_initialise_port(uint8_t port);
 #define OPT_DATA_MASK   0b00001111
 
 const char opts_name[OPT_COUNT][OPT_MAX_NAME] = {
+    "None",
     "Power",
     "SPI",
     "Audio"
 };
 
-const uint8_t OPT_PORTS[4] = {
+const uint8_t OPT_PORTS[OPT_COUNT] = {
     0b00000111, // NONE is valid on all ports.
     0b00000111, // PSU is valid in all ports with bodge wire.
     0b00000100, // SPI is valid in KPORTC, SPI2 on C.
@@ -167,7 +166,7 @@ void opts_receive_opt_set(uint8_t id, packet_t *p) {
 
     uint8_t port_mask = ((uint8_t) (1 << p->module.set_opt.port));
 
-    if ((OPT_PORTS[p->module.set_opt.opt] & port_mask) != port_mask) {
+    if ((OPT_PORTS[p->module.set_opt.opt] & port_mask) == 0) {
         return;
     }
 

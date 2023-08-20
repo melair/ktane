@@ -190,7 +190,6 @@ void simon_service_running(bool first) {
                 game_module_strike(1);
                 mode_data.simon.next_correct_press = 0;
                 mode_data.simon.next_animate = tick_value + 4750;
-                mode_data.simon.next_highest_press = 0;
             }
         }
     }

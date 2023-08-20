@@ -31,6 +31,7 @@ void sound_receive_stop(uint8_t id, packet_t *p);
 #define SOUND_ALL_NEEDY_ACTIVATED               0xff03
 #define SOUND_ALL_NEEDY_WARNING                 0xff04
 #define SOUND_ALL_EDGEWORK_2FA                  0xff05
+#define SOUND_ALL_ROTARY_CLICK                  0xff06
 
 #endif	/* SOUND_H */
 
