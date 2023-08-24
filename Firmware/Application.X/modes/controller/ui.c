@@ -19,7 +19,9 @@ pin_t ui_rows[] = {KPIN_NONE};
 uint8_t ui_resolve_action(uint8_t current, action_t *action);
 uint8_t ui_action_jump(uint8_t current, action_t *a);
 void ui_render_menu_item(interface_t *current);
+void ui_render_menu_item_status(interface_t *current);
 uint8_t ui_action_restart_ktane(uint8_t current, action_t *a);
+uint8_t ui_action_power_off(uint8_t current, action_t *a);
 
 interface_t interface[] = {
     // 0
@@ -34,7 +36,7 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 27
         },
-        .render = &ui_render_menu_item,
+        .render = &ui_render_menu_item_status,
         .render_data = "Start Game",
         .render_check = &tick_2hz
     },
@@ -55,7 +57,7 @@ interface_t interface[] = {
             .action = &ui_action_jump,
             .index = 4
         },
-        .render = &ui_render_menu_item,
+        .render = &ui_render_menu_item_status,
         .render_data = "Configure",
         .render_check = &tick_2hz
     },
@@ -70,7 +72,12 @@ interface_t interface[] = {
         {
             .action = &ui_action_restart_ktane,
         },
-        .render = &ui_render_menu_item,
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 22
+        },
+        .render = &ui_render_menu_item_status,
         .render_data = "Reset KTANE",
         .render_check = &tick_2hz
     },
@@ -217,7 +224,7 @@ interface_t interface[] = {
         .right =
         {
             .action = &ui_action_jump,
-            .index = 11
+            .index = 48
         },
         .press =
         {
@@ -233,7 +240,7 @@ interface_t interface[] = {
         .left =
         {
             .action = &ui_action_jump,
-            .index = 10
+            .index = 48
         },
         .press =
         {
@@ -404,7 +411,7 @@ interface_t interface[] = {
         .right =
         {
             .action = &ui_action_jump,
-            .index = 22
+            .index = 24
         },
         .render = &ui_render_menu_item,
         .render_data = "LCD Contrast",
@@ -431,15 +438,14 @@ interface_t interface[] = {
         .left =
         {
             .action = &ui_action_jump,
-            .index = 20
+            .index = 2
         },
-        .right =
+        .press =
         {
-            .action = &ui_action_jump,
-            .index = 24
+            .action = &ui_action_power_off,
         },
-        .render = &ui_render_menu_item,
-        .render_data = "DAC/DSP Vol",
+        .render = &ui_render_menu_item_status,
+        .render_data = "Power Off",
         .render_check = &tick_2hz
     },
     // 23
@@ -698,6 +704,11 @@ interface_t interface[] = {
             .action = &ui_render_configure_global_buzzer_vol_initial,
             .index = 39
         },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 46
+        },
         .render = &ui_render_menu_item,
         .render_data = "Buzzer Vol",
         .render_check = &tick_2hz
@@ -856,11 +867,170 @@ interface_t interface[] = {
         .render = &ui_render_configure_module_opt_set,
         .render_check = &tick_2hz
     },
+    // 46
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 36,
+        },
+        .press =
+        {
+            .action = &ui_render_configure_global_dac_vol_initial,
+            .index = 47
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "DAC Vol",
+        .render_check = &tick_2hz
+    },
+    // 47
+    {
+        .left =
+        {
+            .action = &ui_render_configure_global_dac_vol_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_global_dac_vol_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_global_dac_vol_press,
+            .alt_index = 46
+        },
+        .render = &ui_render_configure_global_dac_vol,
+        .render_check = &tick_2hz
+    },
+    // 48
+    {
+        .left =
+        {
+            .action = &ui_action_jump,
+            .index = 10
+        },
+        .right =
+        {
+            .action = &ui_action_jump,
+            .index = 11
+        },
+        .press =
+        {
+            .action = &ui_action_jump,
+            .index = 49
+        },
+        .render = &ui_render_menu_item,
+        .render_data = "Power",
+        .render_check = &tick_2hz
+    },
+    // 49
+    {
+        .left =
+        {
+            .action = &ui_render_configure_module_power_change,
+            .value_direction = false
+        },
+        .right =
+        {
+            .action = &ui_render_configure_module_power_change,
+            .value_direction = true
+        },
+        .press =
+        {
+            .action = &ui_render_configure_module_power_press,
+            .alt_index = 48
+        },
+        .render = &ui_render_configure_module_power,
+        .render_check = &tick_2hz
+    },
 };
 
 uint8_t current = UI_IDX_ROOT;
 
+#define UI_CHARACTERS 7
+
+const uint8_t ui_characters[UI_CHARACTERS][LCD_CHARACTER_ROWS] = {
+    { // Battery 0%
+        0b01110,
+        0b11111,
+        0b10001,
+        0b10001,
+        0b10001,
+        0b10001,
+        0b10001,
+        0b11111,
+    },
+    { // Battery 20%
+        0b01110,
+        0b11111,
+        0b10001,
+        0b10001,
+        0b10001,
+        0b10001,
+        0b11111,
+        0b11111,
+    },
+    { // Battery 40%
+        0b01110,
+        0b11111,
+        0b10001,
+        0b10001,
+        0b10001,
+        0b11111,
+        0b11111,
+        0b11111,
+    },
+    { // Battery 60%
+        0b01110,
+        0b11111,
+        0b10001,
+        0b10001,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+    },
+    { // Battery 80%
+        0b01110,
+        0b11111,
+        0b10001,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+    },
+    { // Battery 100%
+        0b01110,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+        0b11111,
+    },
+    { // Plugged In
+        0b01010,
+        0b01010,
+        0b11111,
+        0b11111,
+        0b01110,
+        0b00100,
+        0b00100,
+        0b00100,
+    },
+};
+
 void ui_initialise(void) {
+    /* Load battery symbols. */
+    lcd_custom_character(0, &ui_characters[0][0]);
+
+    for (uint8_t c = 0; c < UI_CHARACTERS; c++) {
+        lcd_custom_character(c, &ui_characters[c][0]);
+    }
+
     /* Initialise the rotary encoder. */
     rotary_initialise(KPIN_B1, KPIN_B0);
     /* Initialise keymatrix. */
@@ -940,6 +1110,13 @@ uint8_t ui_action_restart_ktane(uint8_t current, action_t *a) {
     return current;
 }
 
+uint8_t ui_action_power_off(uint8_t current, action_t *a) {
+    // Send power off to network.
+    module_send_power_off();
+
+    return current;
+}
+
 const char left_arrow[] = {0b01111111};
 const char right_arrow[] = {0b01111110};
 const char press_arrow[] = {0b10100101};
@@ -947,6 +1124,46 @@ const char press_arrow[] = {0b10100101};
 void ui_render_menu_item(interface_t *current) {
     lcd_clear();
     ui_render_menu_item_text((char *) current->render_data, current->press.action != NULL, current->left.action != NULL, current->right.action != NULL);
+}
+
+bool ui_render_alt = false;
+
+void ui_render_menu_item_status(interface_t *current) {
+    ui_render_menu_item(current);
+
+    module_t *module = NULL;
+    uint8_t chr = 15;
+
+    for (uint8_t i = 0; module = module_get(i); module != NULL && chr != 0) {
+        if (module->power.flags.battery_present == 1) {
+            uint8_t symbol = module->power.battery_percent / 20;
+
+            if (module->power.flags.charge_status == 1 || module->power.flags.charge_status == 2) {
+                if (ui_render_alt) {
+                    if (symbol < 5) {
+                        symbol++;
+                    }
+                }
+            }
+
+            if (module->power.battery_voltage < 2000) {
+                symbol = 'X';
+            }
+
+            lcd_update(1, chr, 1, &symbol);
+            chr--;
+
+            if (module->power.input_voltage > 2500) {
+                symbol = 6;
+                lcd_update(1, chr, 1, &symbol);
+                chr--;
+            }
+        }
+
+        i++;
+    }
+
+    ui_render_alt = !ui_render_alt;
 }
 
 void ui_render_menu_item_text(char *text, bool press_icons, bool left_icon, bool right_icon) {

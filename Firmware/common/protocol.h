@@ -20,6 +20,9 @@
 
 #define OPCODE_MODULE_RTC_TIME          0x20
 
+#define OPCODE_MODULE_POWER_STATE       0x30
+#define OPCODE_MODULE_POWER_OFF         0x31
+
 #define OPCODE_MODULE_ERROR             0xf0
 
 #define OPCODE_GAME_STATE           0x00
@@ -47,6 +50,9 @@
 #define SIZE_MODULE_OPT_SET           sizeof(((packet_t *)0)->module.set_opt) + 1
 
 #define SIZE_MODULE_RTC_TIME          sizeof(((packet_t *)0)->module.rtc_time) + 1
+
+#define SIZE_MODULE_POWER_STATE       sizeof(((packet_t *)0)->module.power_state) + 1
+#define SIZE_MODULE_POWER_OFF         sizeof(((packet_t *)0)->module.power_off) + 1
 
 #define SIZE_MODULE_ERROR             sizeof(((packet_t *)0)->module.error_announcement) + 1
 
@@ -125,9 +131,10 @@ typedef struct {
             } special_function;
 
             struct {
+                unsigned store : 1;
                 unsigned argb_brightness : 5;
                 unsigned buzzer_volume : 3;
-                unsigned store : 1;
+                unsigned dac_volume : 5;
             } global_config;
 
             struct {
@@ -147,6 +154,23 @@ typedef struct {
                 uint8_t minute;
                 uint8_t second;
             } rtc_time;
+
+            struct {
+                uint8_t battery_percent;
+
+                uint16_t battery_voltage;
+                uint16_t input_voltage;
+
+                uint16_t charge_current;
+                uint16_t input_current;
+
+                struct {
+                    unsigned charge_status : 2;
+                } flags;
+            } power_state;
+
+            struct {
+            } power_off;
         } module;
 
         union {

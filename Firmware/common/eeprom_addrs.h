@@ -22,6 +22,7 @@
 
 #define EEPROM_LOC_ARGB_BRIGHTNESS                  0x022 /* ARGB Global Brightness. */
 #define EEPROM_LOC_BUZZER_VOL                       0x023 /* Buzzer Volume. */
+#define EEPROM_LOC_DAC_VOL                          0x024 /* DAC Volume. */
 
 /* Bootloader (0x3e0-0x3ef) */
 #define EEPROM_LOC_BOOTLOADER_TARGET                0x3e0 /* Bootloader Target (0xFF = Application, 0x00 = Flasher). */

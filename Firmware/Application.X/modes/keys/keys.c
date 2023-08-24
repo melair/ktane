@@ -82,6 +82,7 @@ void keys_create_next(void) {
     mode_data.keys.seconds = key_at % 60;
     mode_data.keys.minutes = (uint8_t) ((key_at - mode_data.keys.seconds) / 60);
     mode_data.keys.key = rng_generate8(&game.module_seed, KEYS_RNG_MASK) % 3;
+    mode_data.keys.flags.lit = 0;
 
     uint8_t minutes = mode_data.keys.minutes % 10;
     uint8_t tenminutes = mode_data.keys.minutes / 10;
@@ -127,14 +128,16 @@ void keys_service_running(bool first) {
         keys_create_next();
     }
 
-    if (time - key_at <= KEYS_LIGHT_WARNING) {
+    if (time - key_at <= KEYS_LIGHT_WARNING && mode_data.keys.flags.lit == 0) {
         argb_set_module(led_index[mode_data.keys.key], 0, 255, 0);
+        sound_play(SOUND_ALL_NEEDY_WARNING);
+        mode_data.keys.flags.lit = 1;
     }
 
     /* Handle moves. */
     for (uint8_t press = keymatrix_fetch(); press != KEY_NO_PRESS; press = keymatrix_fetch()) {
         /* Feedback to user button was accepted. */
-        sound_play(SOUND_ALL_NEEDY_WARNING);
+        sound_play(SOUND_ALL_NEEDY_ACTIVATED);
 
         /* Map bits from keymatrix into a number. */
         uint8_t key = (press & KEY_COL_BITS);

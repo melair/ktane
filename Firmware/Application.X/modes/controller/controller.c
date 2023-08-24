@@ -69,7 +69,8 @@ void controller_service(bool first) {
     ui_service();
 }
 
-/** Handle the idle phase of the game, mostly used to blank out the segment
+/**
+ * Handle the idle phase of the game, mostly used to blank out the segment
  * display after a game has finished.
  *
  * @param first true if this is the first call of the state.

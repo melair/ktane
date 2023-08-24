@@ -11,5 +11,10 @@ uint8_t ui_render_configure_global_buzzer_vol_change(uint8_t current, action_t *
 uint8_t ui_render_configure_global_buzzer_vol_press(uint8_t current, action_t *a);
 void ui_render_configure_global_buzzer_vol(interface_t *current);
 
+uint8_t ui_render_configure_global_dac_vol_initial(uint8_t current, action_t *a);
+uint8_t ui_render_configure_global_dac_vol_change(uint8_t current, action_t *a);
+uint8_t ui_render_configure_global_dac_vol_press(uint8_t current, action_t *a);
+void ui_render_configure_global_dac_vol(interface_t *current);
+
 #endif	/* UI_CONFIGURE_GLOBAL_H */
 

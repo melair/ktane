@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include "audio.h"
 #include "audio_data.h"
+#include "../../../common/nvm.h"
+#include "../../../common/eeprom_addrs.h"
 #include "../../dma.h"
 #include "../../malloc.h"
 
@@ -14,6 +16,13 @@
  * Audio must be formatted as unsigned 8-bit at 16000 Samples/sec.
  */
 uint8_t *audio_buffers = NULL;
+
+uint8_t audio_volume = 0;
+
+void audio_initialise_always(void) {
+    /* Load last volume from EEPROM. */
+    audio_volume = nvm_eeprom_read(EEPROM_LOC_DAC_VOL);
+}
 
 /**
  * Initialise the audio module, this uses the Fixed Voltage Reference peripheral
@@ -35,7 +44,7 @@ void audio_initialise(opt_data_t *opt) {
     PWM1CLK = 0b00010;
     PWM1CPRE = 0;
     PWM1PR = MAX_SAMP * 16;
-    audio_set_volume(4);
+    audio_set_volume(audio_volume);
 
     /* PWM4 - Audio */
     PWM4CLK = 0b00010;
@@ -112,10 +121,10 @@ void audio_initialise(opt_data_t *opt) {
     CLCnCONbits.MODE = 0b000;
     CLCnCONbits.EN = 1;
 
-    RA3PPS = 0x01; // A, Needs to be via CLC1.
-    RA1PPS = 0x12; // B
-    RA0PPS = 0x13; // C
-    RA2PPS = 0x14; // D
+    RA0PPS = 0x12; // B
+    RA1PPS = 0x13; // C
+    RA3PPS = 0x14; // D
+    RA2PPS = 0x01; // A, Needs to be via CLC1.
 
     CWG3CON0bits.EN = 1;
 
@@ -210,8 +219,14 @@ void audio_register_callback(opt_audio_t *a, void (*callback)(opt_audio_t *a)) {
 }
 
 void audio_set_volume(uint8_t vol) {
+    audio_volume = vol;
+
     if (audio_buffers != NULL) {
-        PWM1S1P1 = MAX_SAMP * 1;
+        PWM1S1P1 = MAX_SAMP * audio_volume;
         PWM1CONbits.LD = 1;
     }
+}
+
+uint8_t audio_get_volume(void) {
+    return audio_volume;
 }

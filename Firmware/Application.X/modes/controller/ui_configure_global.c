@@ -6,6 +6,7 @@
 #include "../../buzzer.h"
 #include "../../argb.h"
 #include "../../module.h"
+#include "../../opts/audio/audio.h"
 #include "../../../common/nvm.h"
 #include "../../../common/eeprom_addrs.h"
 
@@ -125,6 +126,66 @@ void ui_render_configure_global_buzzer_vol(interface_t *current) {
         title = "Buzzer Vol";
 
         lcd_number(1, 7, 2, (uint8_t) ui_configure_global_buzzer_vol);
+    }
+
+    ui_render_menu_item_text(title, has_press, has_left, has_right);
+}
+
+uint8_t ui_configure_global_dac_vol_initial;
+int8_t ui_configure_global_dac_vol = 0;
+#define MAX_DAC_VOLUME 16
+
+uint8_t ui_render_configure_global_dac_vol_initial(uint8_t current, action_t *a) {
+    ui_configure_global_dac_vol_initial = audio_get_volume();
+    ui_configure_global_dac_vol = ((int8_t) ui_configure_global_dac_vol_initial);
+
+    return a->index;
+}
+
+uint8_t ui_render_configure_global_dac_vol_change(uint8_t current, action_t *a) {
+    if (a->value_direction) {
+        if (ui_configure_global_dac_vol < MAX_DAC_VOLUME) {
+            ui_configure_global_dac_vol++;
+            audio_set_volume((uint8_t) ui_configure_global_dac_vol);
+            module_send_global_config(false);
+        }
+    } else {
+        if (ui_configure_global_dac_vol >= 0) {
+            ui_configure_global_dac_vol--;
+            audio_set_volume((uint8_t) ui_configure_global_dac_vol);
+            module_send_global_config(false);
+        }
+    }
+
+    return current;
+}
+
+uint8_t ui_render_configure_global_dac_vol_press(uint8_t current, action_t *a) {
+    if (ui_configure_global_dac_vol == -1) {
+        audio_set_volume(ui_configure_global_dac_vol_initial);
+        module_send_global_config(false);
+    } else {
+        module_send_global_config(true);
+        nvm_eeprom_write(EEPROM_LOC_DAC_VOL, (uint8_t) ui_configure_global_dac_vol);
+    }
+
+    return a->alt_index;
+}
+
+void ui_render_configure_global_dac_vol(interface_t *current) {
+    bool has_left = (ui_configure_global_dac_vol >= 0);
+    bool has_right = (ui_configure_global_dac_vol < MAX_ARGB_BRIGHTNESS);
+    bool has_press = true;
+
+    lcd_clear();
+    char *title;
+
+    if (ui_configure_global_dac_vol == -1) {
+        title = "Back";
+    } else {
+        title = "DAC Vol";
+
+        lcd_number(1, 7, 2, (uint8_t) ui_configure_global_dac_vol);
     }
 
     ui_render_menu_item_text(title, has_press, has_left, has_right);

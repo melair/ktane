@@ -15,9 +15,13 @@ typedef struct {
     uint8_t minutes;
     uint8_t seconds;
     uint8_t key;
-    
+
     argb_led_t argb_leds[ARGB_MODULE_COUNT(KEYS_ARGB_COUNT)];
-    uint8_t    argb_output[ARGB_BUFFER_SIZE(KEYS_ARGB_COUNT)];
+    uint8_t argb_output[ARGB_BUFFER_SIZE(KEYS_ARGB_COUNT)];
+
+    struct {
+        unsigned lit : 1;
+    } flags;
 } mode_keys_t;
 
 #endif	/* KEYS_H */

@@ -33,6 +33,8 @@ const uint8_t OPT_PORTS[OPT_COUNT] = {
 };
 
 void opts_initialise(void) {
+    audio_initialise_always();
+
     for (uint8_t port = 0; port < OPT_PORT_COUNT; port++) {
         uint8_t setting = nvm_eeprom_read(EEPROM_LOC_OPT_KPORTA + port);
 
@@ -157,6 +159,11 @@ opt_data_t *opts_find_power(void) {
     }
 
     return NULL;
+}
+
+void opts_power_off(void) {
+    opt_data_t *opt = opts_find_power();
+    power_off(opt);
 }
 
 void opts_receive_opt_set(uint8_t id, packet_t *p) {

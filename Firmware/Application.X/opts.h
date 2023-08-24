@@ -42,5 +42,7 @@ void opts_receive_opt_set(uint8_t id, packet_t *p);
 
 extern const char opts_name[OPT_COUNT][OPT_MAX_NAME];
 
+void opts_power_off(void);
+
 #endif	/* OPTS_H */
 

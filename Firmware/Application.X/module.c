@@ -1,6 +1,7 @@
 #include <xc.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "opts/audio/audio.h"
 #include "module.h"
 #include "tick.h"
 #include "mode.h"
@@ -62,6 +63,8 @@ void module_initialise(void) {
             modules[i].errors[j].count = 0;
             modules[i].errors[j].active = 0;
         }
+
+        modules[i].power.flags.battery_present = 0;
 
         modules[i].game.enabled = false;
         modules[i].game.ready = false;
@@ -485,6 +488,15 @@ void module_receive_reset(uint8_t id, packet_t *p) {
     RESET();
 }
 
+void module_send_power_off(void) {
+    packet_send(PREFIX_MODULE, OPCODE_MODULE_POWER_OFF, SIZE_MODULE_POWER_OFF, &packet_outgoing);
+    module_receive_power_off(0, &packet_outgoing);
+}
+
+void module_receive_power_off(uint8_t id, packet_t *p) {
+    opts_power_off();
+}
+
 void module_send_identify(uint8_t id) {
     packet_outgoing.module.identify.can_id = id;
     packet_send(PREFIX_MODULE, OPCODE_MODULE_IDENTIFY, SIZE_MODULE_IDENTIFY, &packet_outgoing);
@@ -529,6 +541,7 @@ void module_send_global_config(bool store) {
     packet_outgoing.module.global_config.store = (store ? 1 : 0);
     packet_outgoing.module.global_config.buzzer_volume = buzzer_get_volume();
     packet_outgoing.module.global_config.argb_brightness = argb_get_brightness();
+    packet_outgoing.module.global_config.dac_volume = audio_get_volume();
     packet_send(PREFIX_MODULE, OPCODE_MODULE_GLOBAL_CONFIG, SIZE_MODULE_GLOBAL_CONFIG, &packet_outgoing);
 }
 
@@ -548,6 +561,30 @@ void module_receive_global_config(uint8_t id, packet_t *p) {
             nvm_eeprom_write(EEPROM_LOC_BUZZER_VOL, p->module.global_config.buzzer_volume);
         }
     }
+
+    if (audio_get_volume() != p->module.global_config.dac_volume) {
+        audio_set_volume(p->module.global_config.dac_volume);
+
+        if (p->module.global_config.store) {
+            nvm_eeprom_write(EEPROM_LOC_DAC_VOL, p->module.global_config.dac_volume);
+        }
+    }
+}
+
+void module_receive_power_state(uint8_t id, packet_t *p) {
+    uint8_t idx = module_find_or_create(id);
+
+    if (idx == 0xff) {
+        return;
+    }
+
+    modules[idx].power.flags.battery_present = 1;
+    modules[idx].power.flags.charge_status = p->module.power_state.flags.charge_status;
+    modules[idx].power.battery_percent = p->module.power_state.battery_percent;
+    modules[idx].power.battery_voltage = p->module.power_state.battery_voltage;
+    modules[idx].power.input_voltage = p->module.power_state.input_voltage;
+    modules[idx].power.charge_current = p->module.power_state.charge_current;
+    modules[idx].power.input_current = p->module.power_state.input_current;
 }
 
 uint8_t module_get_count_enabled_module(void) {

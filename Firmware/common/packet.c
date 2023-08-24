@@ -121,6 +121,14 @@ void packet_route_module(uint8_t src, packet_t *packet) {
             module_receive_error(src, packet);
             break;
 
+        case OPCODE_MODULE_POWER_OFF:
+            module_receive_power_off(src, packet);
+            break;
+
+        case OPCODE_MODULE_POWER_STATE:
+            module_receive_power_state(src, packet);
+            break;
+
         default:
             break;
     }

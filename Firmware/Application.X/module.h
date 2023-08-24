@@ -8,6 +8,22 @@
 /* Number of errors in each module to track. */
 #define ERROR_COUNT  8
 
+/* Structure for a modules power status. */
+typedef struct {
+    uint8_t battery_percent;
+
+    uint16_t battery_voltage;
+    uint16_t input_voltage;
+
+    uint16_t charge_current;
+    uint16_t input_current;
+
+    struct {
+        unsigned battery_present : 1;
+        unsigned charge_status : 2;
+    } flags;
+} module_power_t;
+
 /* Structure for an error received from a module. */
 typedef struct {
     uint16_t code;
@@ -40,6 +56,7 @@ typedef struct {
 
     uint8_t opts[OPT_PORT_COUNT];
 
+    module_power_t power;
     module_error_t errors[ERROR_COUNT];
     module_game_t game;
 } module_t;
@@ -64,6 +81,7 @@ void module_send_identify(uint8_t id);
 void module_send_mode_set(uint8_t id, uint8_t mode);
 void module_send_special_function(uint8_t id, uint8_t special_fn);
 void module_send_global_config(bool store);
+void module_send_power_off(void);
 
 #include "../common/packet.h"
 
@@ -74,6 +92,8 @@ void module_receive_identify(uint8_t id, packet_t *p);
 void module_receive_mode_set(uint8_t id, packet_t *p);
 void module_receive_special_function(uint8_t id, packet_t *p);
 void module_receive_global_config(uint8_t id, packet_t *p);
+void module_receive_power_off(uint8_t id, packet_t *p);
+void module_receive_power_state(uint8_t id, packet_t *p);
 
 /* Total number of modules that can be part of the network. */
 #define MODULE_COUNT 24

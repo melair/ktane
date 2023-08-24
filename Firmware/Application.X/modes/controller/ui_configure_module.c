@@ -482,3 +482,73 @@ void ui_render_configure_module_opt_set(interface_t *current) {
 
     ui_render_menu_item_text(title, has_press, has_left, has_right);
 }
+
+int8_t ui_configure_module_power = 0;
+#define POWER_STATS (3 - 1)
+
+uint8_t ui_render_configure_module_power_change(uint8_t current, action_t *a) {
+    if (a->value_direction) {
+        if (ui_configure_module_power < POWER_STATS) {
+            ui_configure_module_power++;
+        }
+    } else {
+        if (ui_configure_module_power >= 0) {
+            ui_configure_module_power--;
+        }
+    }
+
+    return current;
+}
+
+uint8_t ui_render_configure_module_power_press(uint8_t current, action_t *a) {
+    if (ui_configure_module_power == -1) {
+        ui_configure_module_power = 0;
+        return a->alt_index;
+    } else {
+        return current;
+    }
+}
+
+void ui_render_configure_module_power(interface_t *current) {
+    bool has_left = (ui_configure_module_power >= 0);
+    bool has_right = (ui_configure_module_power < POWER_STATS);
+    bool has_press = (ui_configure_module_power == -1);
+
+    char *title;
+
+    lcd_clear();
+
+    module_t *module = module_get((uint8_t) ui_configure_module_selected);
+
+    if (ui_configure_module_power == -1) {
+        title = "Back";
+    } else {
+        if (module->power.flags.battery_present == 0) {
+            title = "No Power";
+            lcd_update(1, 5, 6, "Module");
+        } else {
+            switch (ui_configure_module_power) {
+                case 0:
+                    title = "Battery";
+                    lcd_update(1, 1, 13, "----mV / ---%");
+                    lcd_number(1, 1, 4, module->power.battery_voltage);
+                    lcd_number(1, 10, 3, module->power.battery_percent);
+                    break;
+                case 1:
+                    title = "Input";
+                    lcd_update(1, 0, 15, "----mV / ----mA");
+                    lcd_number(1, 0, 4, module->power.input_voltage);
+                    lcd_number(1, 9, 4, module->power.input_current);
+                    break;
+                case 2:
+                    title = "Charging";
+                    lcd_update(1, 0, 16, "----mA / State -");
+                    lcd_number(1, 0, 4, module->power.charge_current);
+                    lcd_number(1, 15, 1, module->power.flags.charge_status);
+                    break;
+            }
+        }
+    }
+
+    ui_render_menu_item_text(title, has_press, has_left, has_right);
+}
