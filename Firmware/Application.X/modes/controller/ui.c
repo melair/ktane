@@ -1139,10 +1139,11 @@ void ui_render_menu_item_status(interface_t *current) {
             uint8_t symbol = module->power.battery_percent / 20;
 
             if (module->power.flags.charge_status == 1 || module->power.flags.charge_status == 2) {
+                if (symbol == 5) {
+                    symbol--;
+                }
                 if (ui_render_alt) {
-                    if (symbol < 5) {
-                        symbol++;
-                    }
+                    symbol++;
                 }
             }
 

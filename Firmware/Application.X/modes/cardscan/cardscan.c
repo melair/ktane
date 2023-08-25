@@ -146,22 +146,25 @@ void cardscan_service(bool first) {
     lcd_service();
     pn532_cmd_service();
     pn532_service();
-}
-
-void cardscan_service_idle(bool first) {
-    if (first) {
-        lcd_clear();
-        lcd_sync();
-    }
 
     if (mode_data.cardscan.cards.programming && (tick_2hz || mode_data.cardscan.cards.programming_update)) {
         lcd_clear();
 
-        lcd_update(0, 2, 12, "Program Card");
-        lcd_update(1, 4, 8, "XX of XX");
+        lcd_update(0, 0, 16, "Program XX of XX");
 
-        lcd_number(1, 4, 2, mode_data.cardscan.cards.programming_id + 1);
-        lcd_number(1, 10, 2, CARDSCAN_CARD_COUNT);
+        lcd_number(0, 8, 2, mode_data.cardscan.cards.programming_id + 1);
+        lcd_number(0, 14, 2, CARDSCAN_CARD_COUNT);
+
+        uint8_t size = 0;
+
+        for (size = 0; size < 16; size++) {
+            if (cardscan_names[mode_data.cardscan.cards.programming_id][size] == '\0') {
+                break;
+            }
+        }
+
+        uint8_t offset = 8 - (size / 2);
+        lcd_update(1, offset, size, &cardscan_names[mode_data.cardscan.cards.programming_id][0]);
 
         lcd_sync();
 
@@ -169,6 +172,13 @@ void cardscan_service_idle(bool first) {
             mode_data.cardscan.cards.programming_update = false;
             sound_play(SOUND_CARDSCAN_CORRECT_CARD);
         }
+    }
+}
+
+void cardscan_service_idle(bool first) {
+    if (first) {
+        lcd_clear();
+        lcd_sync();
     }
 }
 
@@ -267,10 +277,14 @@ void cardscan_special_function(uint8_t special_fn) {
             mode_data.cardscan.cards.programming = !mode_data.cardscan.cards.programming;
 
             if (!mode_data.cardscan.cards.programming) {
+                lcd_set_brightness(0);
+
                 /* Clear LCD. */
                 lcd_clear();
                 lcd_sync();
             } else {
+                lcd_set_brightness(lcd_get_nominal_brightness());
+
                 /* Set initial card back to 0. */
                 mode_data.cardscan.cards.programming_id = 0;
             }

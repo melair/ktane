@@ -68,7 +68,7 @@ void power_service(opt_data_t *opt) {
 
         if (opt->power.power_off) {
             opt->power.power_off = false;
-            opt->power.poll_state = 0xff;
+            opt->power.poll_state = 6;
 
             // Force BATFET_DIS.
             opt->power.buffer[0] = 0x0a;
