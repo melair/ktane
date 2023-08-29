@@ -1,4 +1,3 @@
 (fp_lib_table
-  (lib (name "Custom")(type "KiCad")(uri "${KIPRJMOD}/Custom.pretty")(options "")(descr "")(disabled))
-  (lib (name "SPIRadioCFRTC")(type "KiCad")(uri "${KIPRJMOD}/SPIRadioCFRTC.pretty")(options "")(descr ""))
+  (lib (name "KTANE")(type "KiCad")(uri "D:/Projects/ktane/GitHubReleased/PCB/Libraries/KTANE.pretty")(options "")(descr ""))
 )

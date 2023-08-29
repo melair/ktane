@@ -1,4 +1,3 @@
 (sym_lib_table
-  (lib (name "CustomDisplay")(type "Legacy")(uri "${KIPRJMOD}/CustomDisplay.lib")(options "")(descr "")(disabled))
-  (lib (name "ClockStrikeRotary-rescue")(type "Legacy")(uri "${KIPRJMOD}/ClockStrikeRotary-rescue.lib")(options "")(descr ""))
+  (lib (name "KTANE")(type "KiCad")(uri "D:/Projects/ktane/GitHubReleased/PCB/Libraries/KTANE.kicad_sym")(options "")(descr ""))
 )

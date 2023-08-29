@@ -1,4 +1,3 @@
 (sym_lib_table
-  (lib (name "Custom")(type "Legacy")(uri "${KIPRJMOD}/Custom.lib")(options "")(descr "")(disabled))
-  (lib (name "PullUpDown-rescue")(type "Legacy")(uri "${KIPRJMOD}/PullUpDown-rescue.lib")(options "")(descr ""))
+  (lib (name "KTANE")(type "KiCad")(uri "D:/Projects/ktane/GitHubReleased/PCB/Libraries/KTANE.kicad_sym")(options "")(descr ""))
 )

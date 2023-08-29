@@ -1,5 +1,3 @@
 (sym_lib_table
-  (lib (name "Custom")(type "Legacy")(uri "${KIPRJMOD}/Custom.lib")(options "")(descr "")(disabled))
-  (lib (name "SPIRadioCFRTC")(type "KiCad")(uri "${KIPRJMOD}/SPIRadioCFRTC.kicad_sym")(options "")(descr "")(disabled))
-  (lib (name "PowerManagement")(type "KiCad")(uri "${KIPRJMOD}/PowerManagement.kicad_sym")(options "")(descr ""))
+  (lib (name "KTANE")(type "KiCad")(uri "D:/Projects/ktane/GitHubReleased/PCB/Libraries/KTANE.kicad_sym")(options "")(descr ""))
 )
