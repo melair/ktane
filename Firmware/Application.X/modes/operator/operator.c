@@ -10,43 +10,74 @@
 #include "../../peripherals/keymatrix.h"
 #include "../../rng.h"
 #include "../../tick.h"
+#include "../../sound.h"
 
 /* Rotary dial as keymatrix. */
-pin_t operator_cols[] = {KPIN_A0, KPIN_A1, KPIN_NONE};
+pin_t operator_cols[] = {KPIN_A0, KPIN_A1, KPIN_A2, KPIN_NONE};
 pin_t operator_rows[] = {KPIN_NONE};
 
 void operator_service(bool first);
 void operator_service_idle(bool first);
 void operator_service_running(bool first);
 void operator_service_setup(bool first);
-void operator_display_leds(void);
 void operator_disable(bool first);
-
-#define OPERATOR_COL    10
-#define OPERATOR_ROW    10
-#define OPERATOR_TOTAL  (OPERATOR_COL * OPERATOR_ROW)
 
 #define OPERATOR_RNG_MASK 0xd7e083da
 
-const uint8_t operator_lookup[] = {
-    1, 7, 7, 9, 1, 8, 5, 10, 6, 10,
-    4, 1, 2, 9, 8, 4, 1, 5, 7, 6,
-    5, 6, 8, 8, 7, 7, 7, 8, 10, 5,
-    1, 8, 7, 1, 9, 6, 7, 1, 5, 6,
-    3, 10, 4, 3, 3, 7, 8, 4, 9, 3,
-    7, 1, 9, 9, 10, 5, 8, 8, 3, 5,
-    1, 10, 5, 6, 6, 8, 1, 2, 3, 6,
-    3, 6, 2, 8, 7, 4, 7, 3, 6, 10,
-    3, 3, 7, 3, 1, 9, 3, 3, 1, 2,
-    8, 6, 6, 7, 10, 3, 2, 3, 5, 8
-};
+#define OPERATOR_CODE_COUNT 54
 
-#define OPERATOR_DIAL_LENGTH 5
+const uint8_t operator_area[OPERATOR_CODE_COUNT][5] = {
+    { 0, 1, 7, 4, 7},
+    { 0, 1, 8, 6, 9},
+    { 0, 1, 9, 2, 2},
+    { 0, 1, 4, 8, 5},
+    { 0, 1, 2, 4, 4},
+    { 0, 1, 2, 4, 3},
+    { 0, 1, 2, 8, 5},
+    { 0, 1, 2, 0, 6},
+    { 0, 1, 6, 0, 6},
+    { 0, 1, 4, 5, 5},
+    { 0, 1, 3, 0, 2},
+    { 0, 1, 3, 0, 5},
+    { 0, 1, 9, 0, 5},
+    { 0, 1, 6, 8, 4},
+    { 0, 2, 0, 0xff, 0xff},
+    { 0, 1, 7, 2, 8},
+    { 0, 1, 4, 9, 2},
+    { 0, 1, 4, 5, 2},
+    { 0, 1, 4, 8, 0},
+    { 0, 2, 0, 0xff, 0xff},
+    { 0, 2, 0, 0xff, 0xff},
+    { 0, 1, 2, 5, 5},
+    { 0, 1, 2, 0, 4},
+    { 0, 1, 4, 7, 3},
+    { 0, 1, 5, 2, 4},
+    { 0, 1, 6, 6, 1},
+    { 0, 1, 6, 0, 6},
+    { 0, 1, 1, 6, 0xff},
+    { 0, 1, 6, 1, 0xff},
+    { 0, 1, 6, 0, 6},
+    { 0, 1, 6, 0, 6},
+    { 0, 1, 6, 0, 6},
+    { 0, 1, 6, 0, 3},
+    { 0, 1, 6, 1, 0xff},
+    { 0, 1, 2, 5, 4},
+    { 0, 1, 8, 8, 9},
+    { 0, 1, 6, 3, 4},
+    { 0, 1, 2, 7, 0},
+    { 0, 1, 3, 0, 4},
+    { 0, 1, 4, 7, 7},
+    { 0, 1, 9, 3, 7},
+    { 0, 1, 3, 2, 7},
+    { 0, 1, 2, 1, 0xff},
+    { 0, 1, 9, 6, 2},
+    { 0, 1, 9, 0, 5}
+};
 
 void operator_initialise(void) {
     /* Initialise ARGB expanded memory. */
     argb_expand(OPERATOR_ARGB_COUNT, &mode_data.operator.argb_leds[0], &mode_data.operator.argb_output[0]);
-    
+
     /* Register state service handlers with mode. */
     mode_register_callback(GAME_ALWAYS, operator_service, NULL);
     mode_register_callback(GAME_IDLE, operator_service_idle, &tick_20hz);
@@ -82,48 +113,32 @@ void operator_service_idle(bool first) {
 
 void operator_service_setup(bool first) {
     if (first) {
-        bool left = edgework_twofa_present();
-        bool reverse = !edgework_serial_vowel();
+        mode_data.operator.sound_playback = 0xff;
 
-        mode_data.operator.offset_x = rng_generate8(&game.module_seed, OPERATOR_RNG_MASK) % (10 - OPERATOR_LENGTH);
-        mode_data.operator.offset_y = rng_generate8(&game.module_seed, OPERATOR_RNG_MASK) % (10 - OPERATOR_LENGTH);
+        uint8_t area_code = rng_generate8(&game.module_seed, OPERATOR_RNG_MASK) % OPERATOR_CODE_COUNT;
+        mode_data.operator.sound_numbers[0] = area_code;
+        mode_data.operator.sound_pos = 1;
 
-        uint8_t xd = (left ? OPERATOR_LENGTH : 1);
-        uint8_t yd = (left ? 1 : OPERATOR_LENGTH);
+        uint8_t area_code_length = 0;
 
-        uint8_t i = 0;
-
-        for (uint8_t x = 0; x < xd; x++) {
-            for (uint8_t y = 0; y < yd; y++) {
-                mode_data.operator.wanted_numbers[i] = operator_lookup[(mode_data.operator.offset_x + x) + ((mode_data.operator.offset_y + y) * 10)];
-                i++;
+        for (uint8_t i = 0; i < 5; i++) {
+            if (operator_area[area_code][i] != 0xff) {
+                mode_data.operator.wanted_numbers[i] = operator_area[area_code][i];
+                area_code_length++;
             }
         }
 
-        if (reverse) {
-            for (uint8_t i = 0; i < (OPERATOR_LENGTH / 2); i++) {
-                uint8_t swap = mode_data.operator.wanted_numbers[i];
-                mode_data.operator.wanted_numbers[i] = mode_data.operator.wanted_numbers[OPERATOR_LENGTH - 1 - i];
-                mode_data.operator.wanted_numbers[OPERATOR_LENGTH - 1 - i] = swap;
-            }
+        for (uint8_t i = 0; i < 5; i++) {
+            uint8_t num = rng_generate8(&game.module_seed, OPERATOR_RNG_MASK) % 10;
+            mode_data.operator.wanted_numbers[area_code_length] = num;
+            mode_data.operator.sound_numbers[i + 1] = num;
+            area_code_length++;
+            mode_data.operator.sound_pos++;
         }
 
-        mode_data.operator.offset_x++;
-        mode_data.operator.offset_y++;
-
-        operator_display_leds();
+        mode_data.operator.wanted_pos = area_code_length;
 
         game_module_ready(true);
-    }
-}
-
-void operator_display_leds(void) {
-    for (uint8_t i = 0; i < 3; i++) {
-        bool x_on = mode_data.operator.offset_x & (1 << (2 - i));
-        bool y_on = mode_data.operator.offset_y & (1 << (2 - i));
-
-        argb_set_module(i, 0, 0, (x_on ? 0xff : 0));
-        argb_set_module(3 + i, 0, 0, (y_on ? 0xff : 0));
     }
 }
 
@@ -165,32 +180,56 @@ void operator_service_running(bool first) {
                 mode_data.operator.dialed_numbers[mode_data.operator.dialed_pos] = mode_data.operator.rotary_pulses;
                 mode_data.operator.dialed_pos++;
 
-                if (mode_data.operator.dialed_pos == OPERATOR_LENGTH) {
-                    uint8_t correct = 0;
+                /* Check to see if we're at the size. */
+                if (mode_data.operator.dialed_pos == mode_data.operator.wanted_pos) {
+                    bool correct = true;
 
-                    for (uint8_t i = 0; i < OPERATOR_LENGTH; i++) {
-                        if (mode_data.operator.dialed_numbers[i] == mode_data.operator.wanted_numbers[i]) {
-                            correct++;
+                    for (uint8_t i = 0; i < mode_data.operator.dialed_pos; i++) {
+                        if (mode_data.operator.wanted_numbers[i] != mode_data.operator.dialed_numbers[i]) {
+                            correct = false;
                         }
                     }
 
-                    if (correct == OPERATOR_LENGTH) {
-                        game_module_solved(true);
+                    mode_data.operator.dialed_pos = 0;
 
-                        for (uint8_t i = 0; i < 6; i++) {
-                            argb_set_module(i, 0, 0, 0);
-                        }
+                    if (correct) {
+                        game_module_solved(true);
                     } else {
                         game_module_strike(1);
-                        mode_data.operator.dialed_pos = 0;
-                        operator_display_leds();
-                    }
-                } else {
-                    for (uint8_t i = 0; i < 6; i++) {
-                        uint8_t c = (i < mode_data.operator.dialed_pos ? 0xff : 0x00);
-                        argb_set_module(i, 0, c, c);
                     }
                 }
+            }
+        } else if (key == 2) {
+            if (mode_data.operator.sound_playback == 0xff) {
+                mode_data.operator.sound_playback = 0;
+                mode_data.operator.sound_tick = 0;
+            }
+        }
+    }
+
+    if (tick_2hz) {
+        if (mode_data.operator.sound_playback != 0xff) {
+            mode_data.operator.sound_tick++;
+
+            if (mode_data.operator.sound_tick == 0) {
+                uint8_t off = (mode_data.operator.sound_playback == 0 ? 10 : 0);
+                sound_play(SOUND_OPERATOR_BASE + mode_data.operator.sound_numbers[mode_data.operator.sound_playback] + off);
+            }
+
+            if (mode_data.operator.sound_playback == 0) {
+                if (mode_data.operator.sound_tick == 3) {
+                    mode_data.operator.sound_tick = 0;
+                    mode_data.operator.sound_playback++;
+                }
+            } else {
+                if (mode_data.operator.sound_tick == 1) {
+                    mode_data.operator.sound_tick = 0;
+                    mode_data.operator.sound_playback++;
+                }
+            }
+
+            if (mode_data.operator.sound_playback == mode_data.operator.sound_pos) {
+                mode_data.operator.sound_playback = 0xff;
             }
         }
     }

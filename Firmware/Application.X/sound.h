@@ -22,6 +22,8 @@ void sound_receive_stop(uint8_t id, packet_t *p);
 #define SOUND_SIMON_SAYS_775HZ                  0x0c02
 #define SOUND_SIMON_SAYS_985HZ                  0x0c03
 
+#define SOUND_OPERATOR_BASE                     0x1100
+
 #define SOUND_CARDSCAN_WRONG_CARD               0x1200
 #define SOUND_CARDSCAN_CORRECT_CARD             0x1201
 
