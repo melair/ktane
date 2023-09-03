@@ -27,6 +27,9 @@
 #include "../common/fw_updater.h"
 #endif
 
+#ifdef SUPPORT_PROTOCOL_DEBUG
+#endif
+
 packet_t packet_outgoing;
 
 /* Local function prototypes. */
@@ -34,6 +37,7 @@ void packet_route_module(uint8_t src, packet_t *packet);
 void packet_route_game(uint8_t src, packet_t *packet);
 void packet_route_network(uint8_t src, packet_t *packet);
 void packet_route_firmware(uint8_t src, packet_t *packet);
+void packet_route_debug(uint8_t src, packet_t *packet);
 
 void packet_send(uint8_t prefix, uint8_t opcode, uint8_t size, packet_t *packet) {
     packet->opcode = opcode;
@@ -46,8 +50,9 @@ void packet_route(uint8_t src, uint8_t prefix, packet_t *packet) {
      * and we can not continue. We have to allow conflicts in the NETWORK
      * prefix otherwise we can't use autoassignment. */
     if (prefix != PREFIX_NETWORK && src == can_get_id()) {
-        // TODO: Raise can conflict error.
-        // module_error_raise(MODULE_ERROR_CAN_ID_CONFLICT, true);
+#ifdef SUPPORT_PROTOCOL_MODULE
+        module_error_raise(MODULE_ERROR_CAN_ID_CONFLICT, true);
+#endif
         return;
     }
 
@@ -72,9 +77,15 @@ void packet_route(uint8_t src, uint8_t prefix, packet_t *packet) {
             packet_route_firmware(src, packet);
             break;
 #endif
+#ifdef SUPPORT_PROTOCOL_DEBUG
+        case PREFIX_DEBUG:
+            packet_route_debug(src, packet);
+            break;
+#endif
         default:
-            // TODO: Raise error for no packet handler.
-            // module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (PREFIX_FIRMWARE << 8) | payload[0], true);
+#ifdef SUPPORT_PROTOCOL_MODULE
+            module_error_raise(MODULE_ERROR_PROTOCOL_UNKNOWN | (PREFIX_FIRMWARE << 8) | prefix, true);
+#endif
             break;
     }
 }
@@ -203,6 +214,16 @@ void packet_route_firmware(uint8_t src, packet_t *packet) {
             fw_updater_receive_page(src, packet);
             break;
 
+        default:
+            break;
+    }
+}
+#endif
+
+#ifdef SUPPORT_PROTOCOL_DEBUG
+
+void packet_route_debug(uint8_t src, packet_t *packet) {
+    switch (packet->opcode) {
         default:
             break;
     }

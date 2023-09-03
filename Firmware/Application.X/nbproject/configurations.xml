@@ -300,7 +300,7 @@
         <property key="default-bitfield-type" value="true"/>
         <property key="default-char-type" value="true"/>
         <property key="define-macros"
-                  value="SUPPORT_CAN_AUTO_ADDRESS;SUPPORT_PROTOCOL_MODULE;SUPPORT_PROTOCOL_GAME;SUPPORT_PROTOCOL_NETWORK;SUPPORT_PROTOCOL_FIRMWARE;SUPPORT_FIRMWARE_SERVER"/>
+                  value="SUPPORT_CAN_AUTO_ADDRESS;SUPPORT_PROTOCOL_MODULE;SUPPORT_PROTOCOL_GAME;SUPPORT_PROTOCOL_NETWORK;SUPPORT_PROTOCOL_FIRMWARE;SUPPORT_FIRMWARE_SERVER;SUPPORT_PROTOCOL_DEBUG"/>
         <property key="disable-optimizations" value="false"/>
         <property key="extra-include-directories" value=""/>
         <property key="favor-optimization-for" value="-speed,+space"/>
