@@ -29,12 +29,6 @@
 
 packet_t packet_outgoing;
 
-typedef struct {
-    uint8_t prefix;
-    uint8_t opcode;
-    void (*fn)(void);
-} packet_route_t;
-
 /* Local function prototypes. */
 void packet_route_module(uint8_t src, packet_t *packet);
 void packet_route_game(uint8_t src, packet_t *packet);
