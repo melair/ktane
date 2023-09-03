@@ -228,13 +228,13 @@
         <targetDevice>PIC18F57Q84</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>pk4hybrid</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>2.36</languageToolchainVersion>
-        <platform>4</platform>
+        <languageToolchainVersion>2.41</languageToolchainVersion>
+        <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC18F-Q_DFP" vendor="Microchip" version="1.16.368"/>
+        <pack name="PIC18F-Q_DFP" vendor="Microchip" version="1.18.389"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -249,7 +249,7 @@
           <makeArtifact PL="../Bootloader.X"
                         CT="1"
                         CN="OMIT_DEVICE_CONFIGURATION"
-                        AC="false"
+                        AC="true"
                         BL="true"
                         WD="../Bootloader.X"
                         BC="${MAKE}  -f Makefile CONF=OMIT_DEVICE_CONFIGURATION"
@@ -343,7 +343,7 @@
         <property key="code-model-external" value="wordwrite"/>
         <property key="code-model-rom" value="100-1effd"/>
         <property key="create-html-files" value="false"/>
-        <property key="data-model-ram" value="0-1fff"/>
+        <property key="data-model-ram" value=""/>
         <property key="data-model-size-of-double" value="32"/>
         <property key="data-model-size-of-double-gcc" value="no-short-double"/>
         <property key="data-model-size-of-float" value="32"/>
@@ -498,8 +498,6 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
-        <property key="programmerToGoFilePath"
-                  value="U:/workspace/melair/ktane/GitHubReleased/ControlFirmware.X/debug/default/ControlFirmware_ptg"/>
         <property key="programmerToGoImageName" value="ControlFirmware_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
