@@ -49,7 +49,13 @@
           "min_clearance": 0.508
         }
       },
-      "diff_pair_dimensions": [],
+      "diff_pair_dimensions": [
+        {
+          "gap": 0.0,
+          "via_gap": 0.0,
+          "width": 0.0
+        }
+      ],
       "drc_exclusions": [],
       "meta": {
         "filename": "board_design_settings.json",
@@ -58,26 +64,20 @@
       "rule_severities": {
         "annular_width": "error",
         "clearance": "error",
-        "connection_width": "warning",
         "copper_edge_clearance": "error",
-        "copper_sliver": "warning",
         "courtyards_overlap": "error",
         "diff_pair_gap_out_of_range": "error",
         "diff_pair_uncoupled_length_too_long": "error",
         "drill_out_of_range": "error",
         "duplicate_footprints": "warning",
         "extra_footprint": "warning",
-        "footprint": "error",
         "footprint_type_mismatch": "error",
         "hole_clearance": "error",
         "hole_near_hole": "error",
         "invalid_outline": "error",
-        "isolated_copper": "warning",
         "item_on_disabled_layer": "error",
         "items_not_allowed": "error",
         "length_out_of_range": "error",
-        "lib_footprint_issues": "warning",
-        "lib_footprint_mismatch": "warning",
         "malformed_courtyard": "error",
         "microvia_drill_out_of_range": "error",
         "missing_courtyard": "ignore",
@@ -87,14 +87,9 @@
         "padstack": "error",
         "pth_inside_courtyard": "ignore",
         "shorting_items": "error",
-        "silk_edge_clearance": "warning",
         "silk_over_copper": "warning",
         "silk_overlap": "warning",
         "skew_out_of_range": "error",
-        "solder_mask_bridge": "error",
-        "starved_thermal": "error",
-        "text_height": "warning",
-        "text_thickness": "warning",
         "through_hole_pad_without_hole": "error",
         "too_many_vias": "error",
         "track_dangling": "warning",
@@ -103,6 +98,7 @@
         "unconnected_items": "error",
         "unresolved_variable": "error",
         "via_dangling": "warning",
+        "zone_has_empty_net": "error",
         "zones_intersect": "error"
       },
       "rule_severitieslegacy_courtyards_overlap": true,
@@ -112,71 +108,32 @@
         "allow_microvias": false,
         "max_error": 0.005,
         "min_clearance": 0.0,
-        "min_connection": 0.0,
         "min_copper_edge_clearance": 0.024999999999999998,
         "min_hole_clearance": 0.25,
         "min_hole_to_hole": 0.25,
         "min_microvia_diameter": 0.19999999999999998,
         "min_microvia_drill": 0.09999999999999999,
-        "min_resolved_spokes": 2,
         "min_silk_clearance": 0.0,
-        "min_text_height": 0.7999999999999999,
-        "min_text_thickness": 0.08,
         "min_through_hole_diameter": 0.3,
         "min_track_width": 0.19999999999999998,
         "min_via_annular_width": 0.049999999999999996,
         "min_via_diameter": 0.39999999999999997,
-        "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
       },
-      "teardrop_options": [
-        {
-          "td_allow_use_two_tracks": true,
-          "td_curve_segcount": 5,
-          "td_on_pad_in_zone": false,
-          "td_onpadsmd": true,
-          "td_onroundshapesonly": false,
-          "td_ontrackend": false,
-          "td_onviapad": true
-        }
-      ],
-      "teardrop_parameters": [
-        {
-          "td_curve_segcount": 0,
-          "td_height_ratio": 1.0,
-          "td_length_ratio": 0.5,
-          "td_maxheight": 2.0,
-          "td_maxlen": 1.0,
-          "td_target_name": "td_round_shape",
-          "td_width_to_size_filter_ratio": 0.9
-        },
-        {
-          "td_curve_segcount": 0,
-          "td_height_ratio": 1.0,
-          "td_length_ratio": 0.5,
-          "td_maxheight": 2.0,
-          "td_maxlen": 1.0,
-          "td_target_name": "td_rect_shape",
-          "td_width_to_size_filter_ratio": 0.9
-        },
-        {
-          "td_curve_segcount": 0,
-          "td_height_ratio": 1.0,
-          "td_length_ratio": 0.5,
-          "td_maxheight": 2.0,
-          "td_maxlen": 1.0,
-          "td_target_name": "td_track_end",
-          "td_width_to_size_filter_ratio": 0.9
-        }
-      ],
       "track_widths": [
         0.0,
+        0.4,
         0.5,
         1.0,
         1.27,
         2.0
       ],
-      "via_dimensions": [],
+      "via_dimensions": [
+        {
+          "diameter": 0.0,
+          "drill": 0.0
+        }
+      ],
       "zones_allow_external_fillets": false,
       "zones_use_no_outline": true
     },
@@ -403,7 +360,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "PullUpDown.kicad_pro",
+    "filename": "LCD.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -507,72 +464,8 @@
   },
   "sheets": [
     [
-      "6324b199-527b-450b-a014-ed2c192aa481",
+      "7b96e669-d9e0-4ad2-8ccf-7827094f9931",
       ""
-    ],
-    [
-      "00000000-0000-0000-0000-000060a09cdf",
-      "PullUpPullDown"
-    ],
-    [
-      "00000000-0000-0000-0000-000060a5e738",
-      "sheet60A5E734"
-    ],
-    [
-      "00000000-0000-0000-0000-000060a5f967",
-      "sheet60A5F963"
-    ],
-    [
-      "00000000-0000-0000-0000-000060a60d5d",
-      "sheet60A60D59"
-    ],
-    [
-      "00000000-0000-0000-0000-000060a62d0f",
-      "sheet60A62D08"
-    ],
-    [
-      "00000000-0000-0000-0000-000060a62d17",
-      "sheet60A62D09"
-    ],
-    [
-      "00000000-0000-0000-0000-000060a62d1f",
-      "sheet60A62D0A"
-    ],
-    [
-      "00000000-0000-0000-0000-000060a62d27",
-      "sheet60A62D0B"
-    ],
-    [
-      "9dcbc0e3-013a-434a-a744-307cb65007a6",
-      "LowerRowSetting"
-    ],
-    [
-      "65aa9c74-217c-46cd-b144-d016a5735138",
-      "LowerRowSetting1"
-    ],
-    [
-      "7e1e506c-e77d-4a41-ab87-769d347247b4",
-      "LowerRowSetting2"
-    ],
-    [
-      "02962f3b-711b-4d3a-ac04-5daea0907313",
-      "LowerRowSetting3"
-    ],
-    [
-      "2fead298-8a80-4c07-bcd7-d95606f19603",
-      "LowerRowSetting5"
-    ],
-    [
-      "a0f77dd0-c47d-4088-94b6-617f086a6fdb",
-      "LowerRowSetting7"
-    ],
-    [
-      "6101eca6-519b-424f-be0f-053821d82f5b",
-      "LowerRowSetting4"
-    ],
-    [
-      "1bf3df75-4dcc-4976-bed9-bc7ac472aab4",
-      "LowerRowSetting6"
     ]
   ],
   "text_variables": {}

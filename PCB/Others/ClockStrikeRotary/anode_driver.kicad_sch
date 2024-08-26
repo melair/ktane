@@ -1,0 +1,675 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid 3cea8447-26b2-4835-8e4b-7316308acb05)
+
+  (paper "A4")
+
+  (lib_symbols
+    (symbol "Device:Q_PMOS_GSD" (pin_names (offset 0) hide) (in_bom yes) (on_board yes)
+      (property "Reference" "Q" (at 5.08 1.27 0)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Value" "Q_PMOS_GSD" (at 5.08 -1.27 0)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Footprint" "" (at 5.08 2.54 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "~" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "transistor PMOS P-MOS P-MOSFET" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "P-MOSFET transistor, gate/source/drain" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "Q_PMOS_GSD_0_1"
+        (polyline
+          (pts
+            (xy 0.254 0)
+            (xy -2.54 0)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0.254 1.905)
+            (xy 0.254 -1.905)
+          )
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0.762 -1.27)
+            (xy 0.762 -2.286)
+          )
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0.762 0.508)
+            (xy 0.762 -0.508)
+          )
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0.762 2.286)
+            (xy 0.762 1.27)
+          )
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 2.54 2.54)
+            (xy 2.54 1.778)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 2.54 -2.54)
+            (xy 2.54 0)
+            (xy 0.762 0)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0.762 1.778)
+            (xy 3.302 1.778)
+            (xy 3.302 -1.778)
+            (xy 0.762 -1.778)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 2.286 0)
+            (xy 1.27 0.381)
+            (xy 1.27 -0.381)
+            (xy 2.286 0)
+          )
+          (stroke (width 0) (type default))
+          (fill (type outline))
+        )
+        (polyline
+          (pts
+            (xy 2.794 -0.508)
+            (xy 2.921 -0.381)
+            (xy 3.683 -0.381)
+            (xy 3.81 -0.254)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 3.302 -0.381)
+            (xy 2.921 0.254)
+            (xy 3.683 0.254)
+            (xy 3.302 -0.381)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (circle (center 1.651 0) (radius 2.794)
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (circle (center 2.54 -1.778) (radius 0.254)
+          (stroke (width 0) (type default))
+          (fill (type outline))
+        )
+        (circle (center 2.54 1.778) (radius 0.254)
+          (stroke (width 0) (type default))
+          (fill (type outline))
+        )
+      )
+      (symbol "Q_PMOS_GSD_1_1"
+        (pin input line (at -5.08 0 0) (length 2.54)
+          (name "G" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 2.54 -5.08 90) (length 2.54)
+          (name "S" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 2.54 5.08 270) (length 2.54)
+          (name "D" (effects (font (size 1.27 1.27))))
+          (number "3" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
+    (symbol "Device:R_Small" (pin_numbers hide) (pin_names (offset 0.254) hide) (in_bom yes) (on_board yes)
+      (property "Reference" "R" (at 0.762 0.508 0)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Value" "R_Small" (at 0.762 -1.016 0)
+        (effects (font (size 1.27 1.27)) (justify left))
+      )
+      (property "Footprint" "" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "~" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "R resistor" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "Resistor, small symbol" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_fp_filters" "R_*" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "R_Small_0_1"
+        (rectangle (start -0.762 1.778) (end 0.762 -1.778)
+          (stroke (width 0.2032) (type default))
+          (fill (type none))
+        )
+      )
+      (symbol "R_Small_1_1"
+        (pin passive line (at 0 2.54 270) (length 0.762)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 0 -2.54 90) (length 0.762)
+          (name "~" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
+    (symbol "power:+5P" (power) (pin_names (offset 0)) (in_bom yes) (on_board yes)
+      (property "Reference" "#PWR" (at 0 -3.81 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Value" "+5P" (at 0 3.556 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Footprint" "" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "global power" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "Power symbol creates a global label with name \"+5P\"" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "+5P_0_1"
+        (polyline
+          (pts
+            (xy -0.762 1.27)
+            (xy 0 2.54)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0 0)
+            (xy 0 2.54)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 0 2.54)
+            (xy 0.762 1.27)
+          )
+          (stroke (width 0) (type default))
+          (fill (type none))
+        )
+      )
+      (symbol "+5P_1_1"
+        (pin power_in line (at 0 0 90) (length 0) hide
+          (name "+5P" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
+  )
+
+  (junction (at 24.13 31.75) (diameter 0) (color 0 0 0 0)
+    (uuid 6626478a-01d8-49ee-add9-4b70276e50f4)
+  )
+
+  (wire (pts (xy 41.91 44.45) (xy 41.91 46.99))
+    (stroke (width 0) (type default))
+    (uuid 41e7b2b4-2afd-41af-9964-7d8f0be08ad0)
+  )
+  (wire (pts (xy 24.13 31.75) (xy 26.67 31.75))
+    (stroke (width 0) (type default))
+    (uuid 4e3387a8-0ae0-438e-b7fa-97cb9ac0d2a0)
+  )
+  (wire (pts (xy 31.75 31.75) (xy 34.29 31.75))
+    (stroke (width 0) (type default))
+    (uuid 688eb9c6-9034-4617-9bea-0b8adb9c20f4)
+  )
+  (wire (pts (xy 41.91 36.83) (xy 41.91 39.37))
+    (stroke (width 0) (type default))
+    (uuid 7e858c4e-83a5-432e-aa8a-9b617c32ee8d)
+  )
+  (wire (pts (xy 41.91 24.13) (xy 41.91 26.67))
+    (stroke (width 0) (type default))
+    (uuid 8a05265e-2a3c-49c0-8ed8-5d2fb0c02652)
+  )
+  (wire (pts (xy 21.59 31.75) (xy 24.13 31.75))
+    (stroke (width 0) (type default))
+    (uuid a4f77471-2395-46e6-8a9f-fe7e63c05aea)
+  )
+  (wire (pts (xy 24.13 21.59) (xy 24.13 24.13))
+    (stroke (width 0) (type default))
+    (uuid d8043e4c-c3f8-4ef1-85c0-5678360e34bc)
+  )
+  (wire (pts (xy 41.91 46.99) (xy 44.45 46.99))
+    (stroke (width 0) (type default))
+    (uuid d86c83cb-f9b4-415c-b7e8-4ce2b28a16b4)
+  )
+  (wire (pts (xy 24.13 31.75) (xy 24.13 29.21))
+    (stroke (width 0) (type default))
+    (uuid de86f235-5528-4ce1-a526-3a549ac510af)
+  )
+
+  (hierarchical_label "Input" (shape input) (at 21.59 31.75 180) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify right))
+    (uuid d222b8eb-f70a-43c0-97cd-9c2ebaafe0e5)
+  )
+  (hierarchical_label "Output" (shape output) (at 44.45 46.99 0) (fields_autoplaced)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid eb3d6998-4295-4de2-bd3b-329c9b9e5c03)
+  )
+
+  (symbol (lib_id "Device:R_Small") (at 41.91 41.91 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 14950bf2-050e-439f-afb1-956aa85ca9dc)
+    (property "Reference" "R2" (at 36.9316 41.91 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "300" (at 39.243 41.91 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 41.91 41.91 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 41.91 41.91 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 7678726f-9f1c-49f5-b242-ebf6ca6eebc4))
+    (pin "2" (uuid 278f7c51-1a58-4aed-a384-ac28037ff5a9))
+    (instances
+      (project "ClockStrikeRotary"
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c"
+          (reference "R2") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/7900ed5d-1692-4a83-8f7a-637a6ad88e5d"
+          (reference "R3") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/430b1f02-3876-462a-a535-c516059a25d2"
+          (reference "R5") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/8a715ebc-7c6c-47a6-a668-ee3f6eaf76bc"
+          (reference "R7") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/9a80c031-0923-4fcb-b8fe-f81b875ae38e"
+          (reference "R9") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/64a3ef55-cfa7-4bd8-ac6a-3f48ea8a24bb"
+          (reference "R11") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/59a828ca-07f1-4d7b-b96e-29ecd0f7769d"
+          (reference "R13") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/b0b4dca7-539d-4aa3-bb75-7d2eb08d0dbc"
+          (reference "R15") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/60f3ca05-e02d-4054-911a-751fe534cd32"
+          (reference "R17") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:+5P") (at 41.91 24.13 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 2284be4b-c91e-4c38-b291-97ad49707a21)
+    (property "Reference" "#PWR035" (at 41.91 27.94 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+5P" (at 42.291 19.7358 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 41.91 24.13 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 41.91 24.13 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 9b86e662-9193-4680-9861-a545218a40b3))
+    (instances
+      (project "ClockStrikeRotary"
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c"
+          (reference "#PWR035") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/7900ed5d-1692-4a83-8f7a-637a6ad88e5d"
+          (reference "#PWR035") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/430b1f02-3876-462a-a535-c516059a25d2"
+          (reference "#PWR036") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/8a715ebc-7c6c-47a6-a668-ee3f6eaf76bc"
+          (reference "#PWR037") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/9a80c031-0923-4fcb-b8fe-f81b875ae38e"
+          (reference "#PWR039") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/64a3ef55-cfa7-4bd8-ac6a-3f48ea8a24bb"
+          (reference "#PWR040") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/59a828ca-07f1-4d7b-b96e-29ecd0f7769d"
+          (reference "#PWR041") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/b0b4dca7-539d-4aa3-bb75-7d2eb08d0dbc"
+          (reference "#PWR042") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/60f3ca05-e02d-4054-911a-751fe534cd32"
+          (reference "#PWR043") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Device:Q_PMOS_GSD") (at 39.37 31.75 0) (mirror x) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 458d88dd-6013-4522-99fb-0c26c20017a0)
+    (property "Reference" "Q7" (at 44.577 32.9184 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "Q_PMOS_GSD" (at 44.577 30.607 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "Package_TO_SOT_SMD:SOT-23" (at 44.45 34.29 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 39.37 31.75 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 6c892a55-875d-4611-a0b2-f56e6b0908f2))
+    (pin "2" (uuid 27abf863-994e-4a47-8eb6-e3144be677f5))
+    (pin "3" (uuid 6523b8d4-380b-47d6-aeed-050b792a0bda))
+    (instances
+      (project "PullUpDown"
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a09cdf"
+          (reference "Q7") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a5e738"
+          (reference "Q7") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a5f967"
+          (reference "Q7") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a60d5d"
+          (reference "Q7") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d0f"
+          (reference "Q7") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d17"
+          (reference "Q7") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d1f"
+          (reference "Q7") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d27"
+          (reference "Q7") (unit 1)
+        )
+      )
+      (project "ClockStrikeRotary"
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c"
+          (reference "Q1") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/7900ed5d-1692-4a83-8f7a-637a6ad88e5d"
+          (reference "Q1") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/430b1f02-3876-462a-a535-c516059a25d2"
+          (reference "Q2") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/8a715ebc-7c6c-47a6-a668-ee3f6eaf76bc"
+          (reference "Q3") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/9a80c031-0923-4fcb-b8fe-f81b875ae38e"
+          (reference "Q4") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/64a3ef55-cfa7-4bd8-ac6a-3f48ea8a24bb"
+          (reference "Q5") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/59a828ca-07f1-4d7b-b96e-29ecd0f7769d"
+          (reference "Q6") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/b0b4dca7-539d-4aa3-bb75-7d2eb08d0dbc"
+          (reference "Q7") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/60f3ca05-e02d-4054-911a-751fe534cd32"
+          (reference "Q8") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Device:R_Small") (at 29.21 31.75 90) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 634c2e7f-7f7c-43be-842f-e07a1b22b8c1)
+    (property "Reference" "R17" (at 29.21 26.7716 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "100" (at 29.21 29.083 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 29.21 31.75 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 29.21 31.75 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid a43c7627-1725-4278-b1a8-14c0e2620c69))
+    (pin "2" (uuid a69ae881-09f1-4455-944f-92a228873936))
+    (instances
+      (project "PullUpDown"
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a09cdf"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a5e738"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a5f967"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a60d5d"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d0f"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d17"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d1f"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d27"
+          (reference "R17") (unit 1)
+        )
+      )
+      (project "ClockStrikeRotary"
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c"
+          (reference "R3") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/7900ed5d-1692-4a83-8f7a-637a6ad88e5d"
+          (reference "R2") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/430b1f02-3876-462a-a535-c516059a25d2"
+          (reference "R4") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/8a715ebc-7c6c-47a6-a668-ee3f6eaf76bc"
+          (reference "R6") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/9a80c031-0923-4fcb-b8fe-f81b875ae38e"
+          (reference "R8") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/64a3ef55-cfa7-4bd8-ac6a-3f48ea8a24bb"
+          (reference "R10") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/59a828ca-07f1-4d7b-b96e-29ecd0f7769d"
+          (reference "R12") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/b0b4dca7-539d-4aa3-bb75-7d2eb08d0dbc"
+          (reference "R14") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/60f3ca05-e02d-4054-911a-751fe534cd32"
+          (reference "R16") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:+5P") (at 24.13 21.59 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 8c261e26-5694-45df-a9f7-8dfe08acc86d)
+    (property "Reference" "#PWR035" (at 24.13 25.4 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "+5P" (at 24.511 17.1958 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 24.13 21.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 24.13 21.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 03c841c6-1008-4bd3-870f-afd05562c2b4))
+    (instances
+      (project "ClockStrikeRotary"
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c"
+          (reference "#PWR035") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/7900ed5d-1692-4a83-8f7a-637a6ad88e5d"
+          (reference "#PWR046") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/430b1f02-3876-462a-a535-c516059a25d2"
+          (reference "#PWR047") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/8a715ebc-7c6c-47a6-a668-ee3f6eaf76bc"
+          (reference "#PWR048") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/9a80c031-0923-4fcb-b8fe-f81b875ae38e"
+          (reference "#PWR049") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/64a3ef55-cfa7-4bd8-ac6a-3f48ea8a24bb"
+          (reference "#PWR050") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/59a828ca-07f1-4d7b-b96e-29ecd0f7769d"
+          (reference "#PWR051") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/b0b4dca7-539d-4aa3-bb75-7d2eb08d0dbc"
+          (reference "#PWR052") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/60f3ca05-e02d-4054-911a-751fe534cd32"
+          (reference "#PWR053") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Device:R_Small") (at 24.13 26.67 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid ebdd437a-0805-4015-a255-184f123fe7fb)
+    (property "Reference" "R17" (at 19.05 26.67 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Value" "10k" (at 21.59 26.67 90)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 24.13 26.67 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 24.13 26.67 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid c392cd11-8c5a-409f-b693-7f0f60dc4a4d))
+    (pin "2" (uuid aeeeaafa-3bbe-43ab-89f6-6a9bafa3bfea))
+    (instances
+      (project "PullUpDown"
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a09cdf"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a5e738"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a5f967"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a60d5d"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d0f"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d17"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d1f"
+          (reference "R17") (unit 1)
+        )
+        (path "/6324b199-527b-450b-a014-ed2c192aa481/00000000-0000-0000-0000-000060a62d27"
+          (reference "R17") (unit 1)
+        )
+      )
+      (project "ClockStrikeRotary"
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c"
+          (reference "R3") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/7900ed5d-1692-4a83-8f7a-637a6ad88e5d"
+          (reference "R20") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/430b1f02-3876-462a-a535-c516059a25d2"
+          (reference "R21") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/8a715ebc-7c6c-47a6-a668-ee3f6eaf76bc"
+          (reference "R22") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/9a80c031-0923-4fcb-b8fe-f81b875ae38e"
+          (reference "R23") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/64a3ef55-cfa7-4bd8-ac6a-3f48ea8a24bb"
+          (reference "R24") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/59a828ca-07f1-4d7b-b96e-29ecd0f7769d"
+          (reference "R25") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/b0b4dca7-539d-4aa3-bb75-7d2eb08d0dbc"
+          (reference "R26") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/60f3ca05-e02d-4054-911a-751fe534cd32"
+          (reference "R27") (unit 1)
+        )
+        (path "/e5265be5-d2b8-4031-be44-975715f0471c/967413f8-715e-4683-bfcb-fb6724b58747"
+          (reference "R19") (unit 1)
+        )
+      )
+    )
+  )
+)

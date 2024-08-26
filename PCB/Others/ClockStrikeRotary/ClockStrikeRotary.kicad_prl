@@ -66,8 +66,8 @@
       35,
       36
     ],
-    "visible_layers": "000ffff_80000001",
-    "zone_display_mode": 0
+    "visible_layers": "000ff75_80000001",
+    "zone_display_mode": 1
   },
   "meta": {
     "filename": "ClockStrikeRotary.kicad_prl",
