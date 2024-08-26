@@ -1131,10 +1131,10 @@ bool ui_render_alt = false;
 void ui_render_menu_item_status(interface_t *current) {
     ui_render_menu_item(current);
 
-    module_t *module = NULL;
+    module_t *module = module_get(0);
     uint8_t chr = 15;
 
-    for (uint8_t i = 0; module = module_get(i); module != NULL && chr != 0) {
+    for (uint8_t i = 0; module != NULL && chr != 0;) {
         if (module->power.flags.battery_present == 1) {
             uint8_t symbol = module->power.battery_percent / 20;
 
@@ -1162,6 +1162,7 @@ void ui_render_menu_item_status(interface_t *current) {
         }
 
         i++;
+        module = module_get(i);
     }
 
     ui_render_alt = !ui_render_alt;
