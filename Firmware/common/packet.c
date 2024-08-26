@@ -224,6 +224,9 @@ void packet_route_firmware(uint8_t src, packet_t *packet) {
 
 void packet_route_debug(uint8_t src, packet_t *packet) {
     switch (packet->opcode) {
+        case OPCODE_DEBUG_ANNOUNCE:
+            break;
+
         default:
             break;
     }

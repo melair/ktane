@@ -38,6 +38,8 @@
 #define OPCODE_FIRMWARE_PAGE_REQUEST    0x02
 #define OPCODE_FIRMWARE_PAGE_RESPONSE   0x03
 
+#define OPCODE_DEBUG_ANNOUNCE       0x00
+
 #define SIZE_NETWORK_ADDRESS_ANNOUNCE sizeof(((packet_t *)0)->network.address_announce) + 1
 #define SIZE_NETWORK_ADDRESS_NAK      sizeof(((packet_t *)0)->network.address_nak) + 1
 
@@ -68,6 +70,8 @@
 #define SIZE_FIRMWARE_HEADER          sizeof(((packet_t *)0)->firmware.header) + 1
 #define SIZE_FIRMWARE_PAGE_REQUEST    sizeof(((packet_t *)0)->firmware.page_request) + 1
 #define SIZE_FIRMWARE_PAGE_RESPONSE   sizeof(((packet_t *)0)->firmware.page_response) + 1
+
+#define SIZE_DEBUG_ANNOUNCE   sizeof(((packet_t *)0)->debug.announce) + 1
 
 #include <stdint.h>
 
@@ -244,6 +248,60 @@ typedef struct {
                 uint8_t data[16];
             } page_response;
         } firmware;
+
+        union {
+
+            struct {
+                uint8_t mode_type;
+                uint8_t message_type;
+
+                union {
+
+                    union {
+                    } general;
+
+                    union {
+                    } controller;
+
+                    union {
+                    } maze;
+
+                    union {
+                    } simon;
+
+                    union {
+                    } password;
+
+                    union {
+                    } whosonfirst;
+
+                    union {
+
+                        struct {
+                            uint16_t cut;
+                        } solution;
+                    } wires;
+
+                    union {
+                    } combination;
+
+                    union {
+                    } operator;
+
+                    union {
+                    } cardscan;
+
+                    union {
+
+                        struct {
+                            uint8_t minutes;
+                            uint8_t seconds;
+                            uint8_t key;
+                        } plan;
+                    } keys;
+                } mode;
+            } announce;
+        } debug;
     };
 } packet_t;
 

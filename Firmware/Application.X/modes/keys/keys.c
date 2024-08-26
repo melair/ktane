@@ -11,6 +11,7 @@
 #include "../../rng.h"
 #include "../../tick.h"
 #include "../../sound.h"
+#include "../../debug.h"
 #include "../needy.h"
 
 #define KEYS_RNG_MASK 0xe3236543
@@ -83,6 +84,11 @@ void keys_create_next(void) {
     mode_data.keys.minutes = (uint8_t) ((key_at - mode_data.keys.seconds) / 60);
     mode_data.keys.key = rng_generate8(&game.module_seed, KEYS_RNG_MASK) % 3;
     mode_data.keys.flags.lit = 0;
+
+    DEBUG_PACKET.keys.plan.minutes = mode_data.keys.minutes;
+    DEBUG_PACKET.keys.plan.seconds = mode_data.keys.seconds;
+    DEBUG_PACKET.keys.plan.key = mode_data.keys.key;
+    DEBUG_SEND(MODE_NEEDY_KEYS, DEBUG_KEYS_PLAN);
 
     uint8_t minutes = mode_data.keys.minutes % 10;
     uint8_t tenminutes = mode_data.keys.minutes / 10;
