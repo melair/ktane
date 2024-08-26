@@ -9,7 +9,7 @@
 #include "../../mode.h"
 #include "../../hal/pins.h"
 #include "../../edgework.h"
-#include "../../debug.h"
+#include "../../../common/debug.h"
 
 #define WIRES_RNG_MASK 0xbde83a1f
 
@@ -211,15 +211,14 @@ void wires_service_setup(bool first) {
             DEBUG_PACKET.wires.solution.cut = 0;
 
             for (uint8_t i = 0; i < WIRES_COUNT; i++) {
-                DEBUG_PACKET.wires.solution.cut >> 1;
+                DEBUG_PACKET.wires.solution.cut >>= 1;
 
                 if (mode_data.wires.wires[i].cutneeded) {
                     DEBUG_PACKET.wires.solution.cut |= 0x8000;
                 }
             }
 
-            DEBUG_PACKET.wires.solution.cut >> 15 - WIRES_COUNT;
-
+            DEBUG_PACKET.wires.solution.cut >>= (15 - WIRES_COUNT);
 
             DEBUG_SEND(MODE_PUZZLE_WIRES, DEBUG_WIRES_SOLUTION);
 

@@ -106,6 +106,7 @@
       <itemPath>dma.h</itemPath>
       <itemPath>sound.h</itemPath>
       <itemPath>malloc.h</itemPath>
+      <itemPath>../common/debug.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

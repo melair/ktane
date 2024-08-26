@@ -14,6 +14,7 @@
       <itemPath>../common/packet.h</itemPath>
       <itemPath>../common/protocol.h</itemPath>
       <itemPath>../common/fw_updater.h</itemPath>
+      <itemPath>../common/debug.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"

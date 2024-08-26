@@ -11,7 +11,7 @@
 #include "../../rng.h"
 #include "../../tick.h"
 #include "../../sound.h"
-#include "../../debug.h"
+#include "../../../common/debug.h"
 #include "../needy.h"
 
 #define KEYS_RNG_MASK 0xe3236543
