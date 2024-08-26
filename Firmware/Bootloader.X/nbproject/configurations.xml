@@ -38,11 +38,11 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>noID</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>2.36</languageToolchainVersion>
+        <languageToolchainVersion>2.50</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC18F-Q_DFP" vendor="Microchip" version="1.18.389"/>
+        <pack name="PIC18F-Q_DFP" vendor="Microchip" version="1.25.433"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -311,11 +311,11 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>noID</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>2.41</languageToolchainVersion>
+        <languageToolchainVersion>2.50</languageToolchainVersion>
         <platform>3</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC18F-Q_DFP" vendor="Microchip" version="1.18.389"/>
+        <pack name="PIC18F-Q_DFP" vendor="Microchip" version="1.25.433"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
