@@ -68,7 +68,7 @@ void power_service(opt_data_t *opt) {
 
         if (opt->power.power_off) {
             opt->power.power_off = false;
-            opt->power.poll_state = 6;
+            opt->power.poll_state = 7;
 
             // Force BATFET_DIS.
             opt->power.buffer[0] = 0x0a;
@@ -91,7 +91,7 @@ void power_service(opt_data_t *opt) {
     i2c_service();
 
     /* After refresh, send data out to network. */
-    if (opt->power.poll_state == 8) {
+    if (opt->power.poll_state == 9) {
         packet_outgoing.module.power_state.battery_percent = opt->power.adc.bat_percentage;
         packet_outgoing.module.power_state.battery_voltage = opt->power.adc.bat_voltage;
         packet_outgoing.module.power_state.input_voltage = opt->power.adc.input_voltage;
@@ -155,13 +155,19 @@ i2c_command_t *power_i2c_callback(i2c_command_t *cmd) {
 
         case 6:
             opt->power.poll_state++;
+            opt->power.buffer[0] = 0x01;
+            opt->power.buffer[1] = 0b00000011;
+            return cmd;
+
+        case 7:
+            opt->power.poll_state++;
             opt->power.buffer[0] = 0x00;
             opt->power.i2c_cmd.operation = I2C_OPERATION_WRITE_THEN_READ;
             opt->power.i2c_cmd.write_size = 1;
             opt->power.i2c_cmd.read_size = MP2723A_REGISTER_COUNT;
             return cmd;
 
-        case 7:
+        case 8:
             opt->power.poll_state++;
             opt->power.status.input_status = (opt->power.buffer[0x0c] >> 5) & 0x07;
             opt->power.status.charge_status = (opt->power.buffer[0x0c] >> 3) & 0x03;
