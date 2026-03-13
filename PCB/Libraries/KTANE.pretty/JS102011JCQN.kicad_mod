@@ -1,0 +1,183 @@
+(footprint "JS102011JCQN"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -3 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "cec1b641-a91a-4842-a460-6480632d4e02")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "JS102011JCQN"
+		(at 0 3 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "a280db31-f56a-4892-a6a9-bffdf613a4c3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "95b40ddf-c461-4b62-b40d-1389424194f9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "99404030-0ffa-4041-ac48-348068eb3cbf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -4.25 -1.75)
+		(end -4.25 1.75)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "26a29be8-bc7a-419b-9c97-2e669c4d9aa5")
+	)
+	(fp_line
+		(start -4.25 -1.75)
+		(end -0.75 -1.75)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "36dc874d-b3da-42ff-8ad6-7110659c0a0b")
+	)
+	(fp_line
+		(start -3.25 1.75)
+		(end -4.25 1.75)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "a93dd1c9-6f36-43d1-b35f-037e9726c6b7")
+	)
+	(fp_line
+		(start 0.75 -1.75)
+		(end 4.25 -1.75)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "3765b775-c2c3-4b3e-b707-fc0508945196")
+	)
+	(fp_line
+		(start 1.75 1.75)
+		(end -1.75 1.75)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "321a147f-7bb3-428b-8adb-1e13ce16a446")
+	)
+	(fp_line
+		(start 4.25 1.75)
+		(end 3.25 1.75)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "eb37a4b2-c7a4-4206-a7ce-ee4c54c8c66e")
+	)
+	(fp_line
+		(start 4.25 1.75)
+		(end 4.25 -1.75)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "d03e67aa-5b48-4405-a964-47d035f257d6")
+	)
+	(fp_rect
+		(start -4.75 -2.25)
+		(end 4.75 2.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "b1027fce-0872-4b62-ad3c-d44bc9f0b04d")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "f0f657c2-896d-456c-8361-838a047e9649")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd roundrect
+		(at -2.5 1.2 90)
+		(size 1.6 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "5255c58b-be95-4b41-96d3-12ca25742802")
+	)
+	(pad "2" smd roundrect
+		(at 0 -1.2 90)
+		(size 1.6 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "af86ab0b-4f73-4270-97d8-f6c66e6f7a7f")
+	)
+	(pad "3" smd roundrect
+		(at 2.5 1.2 90)
+		(size 1.6 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(roundrect_rratio 0.15)
+		(uuid "6eecc5f7-d02c-420d-ad39-fd0e669d4335")
+	)
+	(embedded_fonts no)
+	(model "/Volumes/unix/workspace/ktane/GitHubReleased/PCB/Libraries/3D Models/JS102011JCQN--3DModel-STEP-56544.STEP"
+		(offset
+			(xyz 0 0 1.75)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -90)
+		)
+	)
+)

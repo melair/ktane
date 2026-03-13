@@ -1,4 +1,4 @@
-(footprint "PinHeader_2x08_P2.54mm_Vertical-Centered"
+(footprint "PinHeader_2x03_P2.54mm_Vertical-Centered"
 	(version 20241229)
 	(generator "pcbnew")
 	(generator_version "9.0")
@@ -55,8 +55,8 @@
 	)
 	(attr through_hole)
 	(fp_line
-		(start -4.5 -14.25)
-		(end 4.5 -14.25)
+		(start -4.5 -7.9)
+		(end 4.5 -7.9)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -75,8 +75,8 @@
 		(uuid "340dd7c2-9a5f-4577-a097-12d40136f11b")
 	)
 	(fp_line
-		(start -4.5 0)
-		(end -4.5 -14.25)
+		(start -4.5 6.35)
+		(end -4.5 -7.9)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -85,8 +85,8 @@
 		(uuid "f333ad43-bcf5-4b48-b71c-c001ea94034d")
 	)
 	(fp_line
-		(start -4.5 14.25)
-		(end -4.5 0)
+		(start -4.5 7.9)
+		(end -4.5 6.35)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -115,8 +115,8 @@
 		(uuid "b9b82d0d-6249-4634-a808-7634ed8d208f")
 	)
 	(fp_line
-		(start -2.6 -10.22)
-		(end -1.27 -10.22)
+		(start -2.6 -3.87)
+		(end -1.27 -3.87)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -125,8 +125,8 @@
 		(uuid "b854185a-f3fa-46b2-b18d-211d38638f1b")
 	)
 	(fp_line
-		(start -2.6 -8.89)
-		(end -2.6 -10.22)
+		(start -2.6 -2.54)
+		(end -2.6 -3.87)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -135,8 +135,8 @@
 		(uuid "6cc5a534-a7e2-4f72-a62a-682f2b4c5536")
 	)
 	(fp_line
-		(start -2.6 -7.62)
-		(end -2.6 10.22)
+		(start -2.6 -1.27)
+		(end -2.6 3.87)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -145,8 +145,8 @@
 		(uuid "ebb10967-db6f-4057-9971-abaa5a96aa36")
 	)
 	(fp_line
-		(start -2.6 -7.62)
-		(end 0 -7.62)
+		(start -2.6 -1.27)
+		(end 0 -1.27)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -155,8 +155,8 @@
 		(uuid "68e93986-50b2-4f39-87f9-880f42164dbc")
 	)
 	(fp_line
-		(start -2.6 10.22)
-		(end 2.6 10.22)
+		(start -2.6 3.87)
+		(end 2.6 3.87)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -165,8 +165,8 @@
 		(uuid "704926bd-715c-4592-8d34-27f38afc189c")
 	)
 	(fp_line
-		(start 0 -10.22)
-		(end 2.6 -10.22)
+		(start 0 -3.87)
+		(end 2.6 -3.87)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -175,8 +175,8 @@
 		(uuid "e6a9c9cf-c71d-46cb-81ed-f319e80a9b38")
 	)
 	(fp_line
-		(start 0 -7.62)
-		(end 0 -10.22)
+		(start 0 -1.27)
+		(end 0 -3.87)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -185,8 +185,8 @@
 		(uuid "8b033990-b664-4d6b-93e0-111cfb223839")
 	)
 	(fp_line
-		(start 2.6 -10.22)
-		(end 2.6 10.22)
+		(start 2.6 -3.87)
+		(end 2.6 3.87)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -195,8 +195,8 @@
 		(uuid "90baf6b3-349a-414c-96f1-1b60d713eee2")
 	)
 	(fp_line
-		(start 4.5 -14.25)
-		(end 4.5 14.25)
+		(start 4.5 -7.9)
+		(end 4.5 7.9)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -205,8 +205,8 @@
 		(uuid "e804c616-8c01-4cb2-8d90-36fe3c467e21")
 	)
 	(fp_line
-		(start 4.5 14.25)
-		(end -4.5 14.25)
+		(start 4.5 7.9)
+		(end -4.5 7.9)
 		(stroke
 			(width 0.12)
 			(type solid)
@@ -215,8 +215,8 @@
 		(uuid "c821b944-1924-4cb8-9d8c-4eb2b9ce8f4b")
 	)
 	(fp_line
-		(start -4.75 -14.5)
-		(end -4.75 14.5)
+		(start -4.75 -8.15)
+		(end -4.75 8.15)
 		(stroke
 			(width 0.05)
 			(type solid)
@@ -225,8 +225,8 @@
 		(uuid "19396a4d-5a8e-4475-b738-050cc7de4f68")
 	)
 	(fp_line
-		(start -4.75 14.5)
-		(end 4.75 14.5)
+		(start -4.75 8.15)
+		(end 4.75 8.15)
 		(stroke
 			(width 0.05)
 			(type solid)
@@ -235,8 +235,8 @@
 		(uuid "9f3da3ca-42e9-4759-aa63-c4233a469bfb")
 	)
 	(fp_line
-		(start 4.75 -14.5)
-		(end -4.75 -14.5)
+		(start 4.75 -8.15)
+		(end -4.75 -8.15)
 		(stroke
 			(width 0.05)
 			(type solid)
@@ -245,8 +245,8 @@
 		(uuid "5a71b381-57c3-4ad2-bc21-e7fd167bcd81")
 	)
 	(fp_line
-		(start 4.75 14.5)
-		(end 4.75 -14.5)
+		(start 4.75 8.15)
+		(end 4.75 -8.15)
 		(stroke
 			(width 0.05)
 			(type solid)
@@ -255,8 +255,8 @@
 		(uuid "de22ee00-d861-4820-acc6-33cf8699531d")
 	)
 	(fp_line
-		(start -2.54 -8.89)
-		(end -1.27 -10.16)
+		(start -2.54 -2.54)
+		(end -1.27 -3.81)
 		(stroke
 			(width 0.1)
 			(type solid)
@@ -265,8 +265,8 @@
 		(uuid "851743e5-01fc-4af5-9619-1bd595b24a1e")
 	)
 	(fp_line
-		(start -2.54 10.16)
-		(end -2.54 -8.89)
+		(start -2.54 3.81)
+		(end -2.54 -2.54)
 		(stroke
 			(width 0.1)
 			(type solid)
@@ -275,8 +275,8 @@
 		(uuid "37e3fc30-9e82-4ead-910c-41863772885c")
 	)
 	(fp_line
-		(start -1.27 -10.16)
-		(end 2.54 -10.16)
+		(start -1.27 -3.81)
+		(end 2.54 -3.81)
 		(stroke
 			(width 0.1)
 			(type solid)
@@ -285,8 +285,8 @@
 		(uuid "76af2095-5eb5-46ae-9c00-90090e60b172")
 	)
 	(fp_line
-		(start 2.54 -10.16)
-		(end 2.54 10.16)
+		(start 2.54 -3.81)
+		(end 2.54 3.81)
 		(stroke
 			(width 0.1)
 			(type solid)
@@ -295,8 +295,8 @@
 		(uuid "b6853536-7a08-49b1-8ba1-9a36012643c6")
 	)
 	(fp_line
-		(start 2.54 10.16)
-		(end -2.54 10.16)
+		(start 2.54 3.81)
+		(end -2.54 3.81)
 		(stroke
 			(width 0.1)
 			(type solid)
@@ -316,7 +316,7 @@
 		)
 	)
 	(pad "1" thru_hole rect
-		(at -1.27 -8.89)
+		(at -1.27 -2.54)
 		(size 1.7 1.7)
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
@@ -324,7 +324,7 @@
 		(uuid "5b9fbfb3-b4c8-402f-989c-2652243fb8e2")
 	)
 	(pad "2" thru_hole oval
-		(at 1.27 -8.89)
+		(at 1.27 -2.54)
 		(size 1.7 1.7)
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
@@ -332,7 +332,7 @@
 		(uuid "0edc3ebf-934d-42f1-841d-32bc0072f9d2")
 	)
 	(pad "3" thru_hole oval
-		(at -1.27 -6.35)
+		(at -1.27 0)
 		(size 1.7 1.7)
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
@@ -340,7 +340,7 @@
 		(uuid "93446e12-6033-46f4-8bc2-342dd7876f0b")
 	)
 	(pad "4" thru_hole oval
-		(at 1.27 -6.35)
+		(at 1.27 0)
 		(size 1.7 1.7)
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
@@ -348,7 +348,7 @@
 		(uuid "7ecaf562-2c4b-438c-86d6-7fab73fd48c0")
 	)
 	(pad "5" thru_hole oval
-		(at -1.27 -3.81)
+		(at -1.27 2.54)
 		(size 1.7 1.7)
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
@@ -356,97 +356,17 @@
 		(uuid "b8a3887e-35e9-4d3f-971b-c3e18b77589d")
 	)
 	(pad "6" thru_hole oval
-		(at 1.27 -3.81)
+		(at 1.27 2.54)
 		(size 1.7 1.7)
 		(drill 1)
 		(layers "*.Cu" "*.Mask")
 		(remove_unused_layers no)
 		(uuid "8f277016-4e08-4d21-afea-6d03cd04eb17")
 	)
-	(pad "7" thru_hole oval
-		(at -1.27 -1.27)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "2614b68d-6cac-49e9-b2c0-562e85a27da4")
-	)
-	(pad "8" thru_hole oval
-		(at 1.27 -1.27)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "9fe3f2f7-d75d-4660-8718-b3ec3b3e992e")
-	)
-	(pad "9" thru_hole oval
-		(at -1.27 1.27)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "cca444c2-e239-40bb-a389-6d8fd7c7446f")
-	)
-	(pad "10" thru_hole oval
-		(at 1.27 1.27)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "1700bf32-0aba-4d81-9dcf-abbb514794ae")
-	)
-	(pad "11" thru_hole oval
-		(at -1.27 3.81)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "f8312be0-3433-42fe-a92e-b138c2953e55")
-	)
-	(pad "12" thru_hole oval
-		(at 1.27 3.81)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "0250aeb6-71ae-4424-b452-b7d63554be5b")
-	)
-	(pad "13" thru_hole oval
-		(at -1.27 6.35)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "728ed083-be00-4651-81d3-6a180210e107")
-	)
-	(pad "14" thru_hole oval
-		(at 1.27 6.35)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "0fb05874-a670-4703-a79c-cdd72498b232")
-	)
-	(pad "15" thru_hole oval
-		(at -1.27 8.89)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "9b51d7ca-2cd4-4ca6-b0ac-3c02351fb27e")
-	)
-	(pad "16" thru_hole oval
-		(at 1.27 8.89)
-		(size 1.7 1.7)
-		(drill 1)
-		(layers "*.Cu" "*.Mask")
-		(remove_unused_layers no)
-		(uuid "35190931-e803-44bd-86b7-f51c5282067f")
-	)
 	(embedded_fonts no)
-	(model "/Volumes/unix/workspace/ktane/GitHubReleased/PCB/Libraries/3D Models/SBH11-_ _ _C-D08-ST-_ _.STEP"
+	(model "/Volumes/unix/workspace/ktane/GitHubReleased/PCB/Libraries/3D Models/SBH11-_ _ _C-D03-ST-_ _.STEP"
 		(offset
-			(xyz 1.55 8.55 -2.7)
+			(xyz -4.45 0 0.25)
 		)
 		(scale
 			(xyz 1 1 1)
