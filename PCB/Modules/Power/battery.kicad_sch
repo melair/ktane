@@ -1,0 +1,1118 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "d6dd7b3b-59c1-4ba2-90b8-996004c39cdd")
+	(paper "A4")
+	(lib_symbols
+		(symbol "KTANE:3CellLipoHolder"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "BT"
+				(at 4.064 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "3CellLipoHolder_0_1"
+				(rectangle
+					(start -2.286 0.508)
+					(end 2.286 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start -1.524 -0.254)
+					(end 1.524 -0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0.508) (xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -0.508) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 1.778) (xy 1.778 1.778)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 2.286) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "3CellLipoHolder_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "3CellLipoHolder_2_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "3CellLipoHolder_3_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(junction
+		(at 184.15 58.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "005a52bf-b5fb-40f0-97ae-42e362828d84")
+	)
+	(junction
+		(at 184.15 59.69)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "3f434f01-b8cf-4792-bdf4-d08dc499ded6")
+	)
+	(junction
+		(at 184.15 72.39)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6a6118a5-18a0-4744-96b1-44f43cb37a5f")
+	)
+	(junction
+		(at 184.15 45.72)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "70eea76e-882a-4d09-a0d7-bbd8962e3c0c")
+	)
+	(junction
+		(at 184.15 73.66)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "abe1c00a-150f-4e77-bef0-0594c86c42bf")
+	)
+	(junction
+		(at 184.15 86.36)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "fc7a4f26-d477-4023-ba27-a443643a6655")
+	)
+	(wire
+		(pts
+			(xy 176.53 59.69) (xy 184.15 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0ffbd575-c9eb-4968-926e-224967fb7afe")
+	)
+	(wire
+		(pts
+			(xy 176.53 72.39) (xy 184.15 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2460b5f8-4bfe-4045-a15d-55d4bd2e581a")
+	)
+	(wire
+		(pts
+			(xy 191.77 59.69) (xy 184.15 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "29e1bcdf-2a78-44fd-a267-4b843ef5a59c")
+	)
+	(wire
+		(pts
+			(xy 176.53 71.12) (xy 176.53 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3165c5f7-f6ff-415f-9b05-3bde1f306288")
+	)
+	(wire
+		(pts
+			(xy 191.77 63.5) (xy 191.77 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3a5bf5ce-0d79-4212-97be-baefccf89d9f")
+	)
+	(wire
+		(pts
+			(xy 176.53 59.69) (xy 176.53 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3b4b94ed-d8ca-48bd-9944-552f5a9fb22e")
+	)
+	(wire
+		(pts
+			(xy 176.53 85.09) (xy 176.53 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3e59abbb-f7ca-4465-b49d-727abdeb496f")
+	)
+	(wire
+		(pts
+			(xy 184.15 86.36) (xy 191.77 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3fedd0d0-4af4-4421-a7d6-8d49b0ca44b6")
+	)
+	(wire
+		(pts
+			(xy 176.53 49.53) (xy 176.53 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4036540c-bda8-4a42-9b51-eaaa19a59405")
+	)
+	(wire
+		(pts
+			(xy 191.77 57.15) (xy 191.77 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4c0c296d-a188-4feb-93c8-4552dcc0da79")
+	)
+	(wire
+		(pts
+			(xy 191.77 77.47) (xy 191.77 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5cb282c0-03ab-4db3-9ea4-19c54b5a8be9")
+	)
+	(wire
+		(pts
+			(xy 191.77 72.39) (xy 191.77 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5fe2f6c9-a169-4d5a-821c-2eea29f797e2")
+	)
+	(wire
+		(pts
+			(xy 176.53 73.66) (xy 176.53 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "67bb6979-499a-43aa-9d93-5d3fc7a480eb")
+	)
+	(wire
+		(pts
+			(xy 184.15 43.18) (xy 184.15 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6915434f-c393-4f77-a54a-dec5c923ce4e")
+	)
+	(wire
+		(pts
+			(xy 191.77 45.72) (xy 191.77 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6a919610-9589-42e4-86e3-0ee128d39b17")
+	)
+	(wire
+		(pts
+			(xy 191.77 58.42) (xy 184.15 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6f689482-1c6b-40b8-afec-650f00ae387c")
+	)
+	(wire
+		(pts
+			(xy 176.53 58.42) (xy 184.15 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "721e8c0a-f288-452a-8215-fc8f15f94ca6")
+	)
+	(wire
+		(pts
+			(xy 176.53 86.36) (xy 184.15 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7964c337-dc76-433d-9233-0b976e3705da")
+	)
+	(wire
+		(pts
+			(xy 184.15 86.36) (xy 184.15 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b73deef-ecfe-4e92-a88e-9a217a42101d")
+	)
+	(wire
+		(pts
+			(xy 184.15 45.72) (xy 191.77 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7c954686-1727-4355-8c3a-befb567557e5")
+	)
+	(wire
+		(pts
+			(xy 176.53 45.72) (xy 184.15 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "82041cca-8bcf-4309-b889-4b1b5acf0f8d")
+	)
+	(wire
+		(pts
+			(xy 184.15 58.42) (xy 184.15 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8237a037-c361-46cb-952a-55a40d87145e")
+	)
+	(wire
+		(pts
+			(xy 176.53 73.66) (xy 184.15 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ec9a52f-00c5-4461-9283-accc47547d28")
+	)
+	(wire
+		(pts
+			(xy 184.15 72.39) (xy 184.15 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a1cfaea2-23d5-4dd7-b9fa-201f3614221c")
+	)
+	(wire
+		(pts
+			(xy 191.77 86.36) (xy 191.77 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d5d330b7-9bac-40d3-8f75-e089ee18f49b")
+	)
+	(wire
+		(pts
+			(xy 191.77 73.66) (xy 184.15 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "db8473ad-cfc2-4ada-a63c-328a201b55fc")
+	)
+	(wire
+		(pts
+			(xy 184.15 72.39) (xy 191.77 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "db8d316f-e7d9-49cf-a4fc-78bce1c3bba9")
+	)
+	(wire
+		(pts
+			(xy 176.53 57.15) (xy 176.53 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f0aa8d8e-8572-46b5-8837-2c482eecaa77")
+	)
+	(hierarchical_label "~{PRESENT}"
+		(shape input)
+		(at 25.4 35.56 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "00eb6953-17da-400a-b3dc-e57d506124fc")
+	)
+	(hierarchical_label "VBATT"
+		(shape bidirectional)
+		(at 25.4 26.67 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2a04acf8-d5db-4756-a18f-118712f0ba72")
+	)
+	(hierarchical_label "GND"
+		(shape input)
+		(at 25.4 40.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3a118276-3ea2-45ed-a480-06bf1f92e67b")
+	)
+	(hierarchical_label "SDA"
+		(shape bidirectional)
+		(at 25.4 33.02 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "809cfaf0-af89-49df-9769-79275fac693c")
+	)
+	(hierarchical_label "~{ALERT}"
+		(shape output)
+		(at 25.4 38.1 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ab23a4f6-a1f1-4511-a69b-29d65d9b705f")
+	)
+	(hierarchical_label "SCL"
+		(shape input)
+		(at 25.4 30.48 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e148ad8c-0816-4efc-8650-7c3a92a326eb")
+	)
+	(symbol
+		(lib_id "KTANE:3CellLipoHolder")
+		(at 176.53 81.28 0)
+		(unit 3)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "636e83ac-6183-4917-9a4b-bd93cc70f538")
+		(property "Reference" "BT1"
+			(at 180.34 79.4384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "~"
+			(at 180.34 81.9784 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "KTANE:3Cell18650Holder"
+			(at 176.53 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 176.53 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 176.53 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b3657643-12c6-4947-ab85-dfabe8c8f7e8")
+		)
+		(pin "2"
+			(uuid "472feb9e-4b91-4af6-a1f2-f51a52740840")
+		)
+		(pin "3"
+			(uuid "f00a5b57-47da-4c54-8f7e-0d09208fb905")
+		)
+		(pin "4"
+			(uuid "0840456b-2ee2-4471-9c09-c0e85ae17be3")
+		)
+		(pin "5"
+			(uuid "e7ea0c1e-64dd-4de2-94a6-81c58558f764")
+		)
+		(pin "6"
+			(uuid "101e9734-80ec-48ec-9d03-13f00d32b56d")
+		)
+		(instances
+			(project ""
+				(path "/e366ca8c-66b9-4445-a7e1-1d8d24c862eb/3209ea2c-98cf-4764-9b1c-2578363ca4cf"
+					(reference "BT1")
+					(unit 3)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "KTANE:3CellLipoHolder")
+		(at 176.53 53.34 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "68b32042-a746-476b-986c-c779ef296d07")
+		(property "Reference" "BT1"
+			(at 180.34 51.4984 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "~"
+			(at 180.34 54.0384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "KTANE:3Cell18650Holder"
+			(at 176.53 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 176.53 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 176.53 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b3657643-12c6-4947-ab85-dfabe8c8f7e9")
+		)
+		(pin "2"
+			(uuid "472feb9e-4b91-4af6-a1f2-f51a52740841")
+		)
+		(pin "3"
+			(uuid "f00a5b57-47da-4c54-8f7e-0d09208fb906")
+		)
+		(pin "4"
+			(uuid "0840456b-2ee2-4471-9c09-c0e85ae17be4")
+		)
+		(pin "5"
+			(uuid "e7ea0c1e-64dd-4de2-94a6-81c58558f765")
+		)
+		(pin "6"
+			(uuid "101e9734-80ec-48ec-9d03-13f00d32b56e")
+		)
+		(instances
+			(project ""
+				(path "/e366ca8c-66b9-4445-a7e1-1d8d24c862eb/3209ea2c-98cf-4764-9b1c-2578363ca4cf"
+					(reference "BT1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "KTANE:3CellLipoHolder")
+		(at 191.77 81.28 0)
+		(unit 3)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a5dd4027-36aa-48e3-84e6-96b7f000e4b4")
+		(property "Reference" "BT2"
+			(at 195.58 79.4384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "~"
+			(at 195.58 81.9784 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "KTANE:3Cell18650Holder"
+			(at 191.77 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 191.77 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 191.77 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "6"
+			(uuid "ee5560f1-d338-4043-8b7e-f83cf18c4ae2")
+		)
+		(pin "5"
+			(uuid "b9a26b71-601f-4e65-9840-2e3c9eda0e5a")
+		)
+		(pin "4"
+			(uuid "6fd6d9bc-7262-4edb-bb2e-d87bfdbf22ac")
+		)
+		(pin "3"
+			(uuid "7cabd672-631b-45e8-8f7b-b624dde1daa7")
+		)
+		(pin "2"
+			(uuid "c49a820b-82af-4d2f-b13c-cb75f396214b")
+		)
+		(pin "1"
+			(uuid "814bb744-3938-43de-aba4-f96c1d42deb8")
+		)
+		(instances
+			(project ""
+				(path "/e366ca8c-66b9-4445-a7e1-1d8d24c862eb/3209ea2c-98cf-4764-9b1c-2578363ca4cf"
+					(reference "BT2")
+					(unit 3)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "KTANE:3CellLipoHolder")
+		(at 191.77 53.34 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ab2f7f21-7874-47a6-99ea-b39c3987e737")
+		(property "Reference" "BT2"
+			(at 195.58 51.4984 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "~"
+			(at 195.58 54.0384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "KTANE:3Cell18650Holder"
+			(at 191.77 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 191.77 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 191.77 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "6"
+			(uuid "ee5560f1-d338-4043-8b7e-f83cf18c4ae3")
+		)
+		(pin "5"
+			(uuid "b9a26b71-601f-4e65-9840-2e3c9eda0e5b")
+		)
+		(pin "4"
+			(uuid "6fd6d9bc-7262-4edb-bb2e-d87bfdbf22ad")
+		)
+		(pin "3"
+			(uuid "7cabd672-631b-45e8-8f7b-b624dde1daa8")
+		)
+		(pin "2"
+			(uuid "c49a820b-82af-4d2f-b13c-cb75f396214c")
+		)
+		(pin "1"
+			(uuid "814bb744-3938-43de-aba4-f96c1d42deb9")
+		)
+		(instances
+			(project ""
+				(path "/e366ca8c-66b9-4445-a7e1-1d8d24c862eb/3209ea2c-98cf-4764-9b1c-2578363ca4cf"
+					(reference "BT2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "KTANE:3CellLipoHolder")
+		(at 176.53 67.31 0)
+		(unit 2)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ca04f231-e203-46a6-89af-2a432720a025")
+		(property "Reference" "BT1"
+			(at 180.34 65.4684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "~"
+			(at 180.34 68.0084 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "KTANE:3Cell18650Holder"
+			(at 176.53 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 176.53 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 176.53 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b3657643-12c6-4947-ab85-dfabe8c8f7ea")
+		)
+		(pin "2"
+			(uuid "472feb9e-4b91-4af6-a1f2-f51a52740842")
+		)
+		(pin "3"
+			(uuid "f00a5b57-47da-4c54-8f7e-0d09208fb907")
+		)
+		(pin "4"
+			(uuid "0840456b-2ee2-4471-9c09-c0e85ae17be5")
+		)
+		(pin "5"
+			(uuid "e7ea0c1e-64dd-4de2-94a6-81c58558f766")
+		)
+		(pin "6"
+			(uuid "101e9734-80ec-48ec-9d03-13f00d32b56f")
+		)
+		(instances
+			(project ""
+				(path "/e366ca8c-66b9-4445-a7e1-1d8d24c862eb/3209ea2c-98cf-4764-9b1c-2578363ca4cf"
+					(reference "BT1")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "KTANE:3CellLipoHolder")
+		(at 191.77 67.31 0)
+		(unit 2)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e7179dae-fe0b-4f54-b4bd-c2a9a52ce694")
+		(property "Reference" "BT2"
+			(at 195.58 65.4684 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "~"
+			(at 195.58 68.0084 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "KTANE:3Cell18650Holder"
+			(at 191.77 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 191.77 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 191.77 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "6"
+			(uuid "ee5560f1-d338-4043-8b7e-f83cf18c4ae4")
+		)
+		(pin "5"
+			(uuid "b9a26b71-601f-4e65-9840-2e3c9eda0e5c")
+		)
+		(pin "4"
+			(uuid "6fd6d9bc-7262-4edb-bb2e-d87bfdbf22ae")
+		)
+		(pin "3"
+			(uuid "7cabd672-631b-45e8-8f7b-b624dde1daa9")
+		)
+		(pin "2"
+			(uuid "c49a820b-82af-4d2f-b13c-cb75f396214d")
+		)
+		(pin "1"
+			(uuid "814bb744-3938-43de-aba4-f96c1d42deba")
+		)
+		(instances
+			(project ""
+				(path "/e366ca8c-66b9-4445-a7e1-1d8d24c862eb/3209ea2c-98cf-4764-9b1c-2578363ca4cf"
+					(reference "BT2")
+					(unit 2)
+				)
+			)
+		)
+	)
+)
