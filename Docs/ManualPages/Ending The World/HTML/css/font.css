@@ -1,0 +1,417 @@
+/* Primary font used by manuals */
+@font-face {
+    font-family: 'Special Elite';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Special Elite'), local('SpecialElite-Regular'), url(../font/SpecialElite.ttf);
+}
+
+/* Main page */
+@font-face {
+    font-family: 'NotoSans';
+    font-style: normal;
+    font-weight: normal;
+    src: local('NotoSans'), url(../font/NotoSans-Regular.ttf);
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    font-style: normal;
+    font-weight: bold;
+    src: local('NotoSans Bold'), url(../font/NotoSans-Bold.ttf);
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    font-style: italic;
+    font-weight: normal;
+    src: local('NotoSans Italic'), url(../font/NotoSans-Italic.ttf);
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    font-style: italic;
+    font-weight: bold;
+    src: local('NotoSans Bold Italic'), url(../font/NotoSans-BoldItalic.ttf);
+}
+
+
+
+/* FAQs and puzzles */
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Trebuchet MS'), local('Trebuchet'), url(../font/trebuc.ttf);
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: normal;
+    font-weight: bold;
+    src: local('Trebuchet MS Bold'), local('Trebuchet Bold'), url(../font/trebucbd.ttf);
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: italic;
+    font-weight: normal;
+    src: local('Trebuchet MS Italic'), local('Trebuchet Italic'), url(../font/trebucit.ttf);
+}
+
+@font-face {
+    font-family: 'Trebuchet MS';
+    font-style: italic;
+    font-weight: bold;
+    src: local('Trebuchet MS Bold Italic'), local('Trebuchet Bold Italic'), url(../font/trebucbi.ttf);
+}
+
+@font-face {
+    font-family: 'Inconsolata';
+    src: local('Inconsolata'), url(../font/Inconsolata-VariableFont_wdth,wght.ttf);
+}
+
+/* Big fat font used by headers on puzzles and FAQs */
+@font-face {
+    font-family: 'DayPosterBlack';
+    src: local('DayPosterBlack'), url(../font/DayPosterBlack.ttf);
+}
+
+/* Used by the Periodic Table of Modules */
+@font-face {
+    font-family: 'Georgia';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Georgia'), url(../font/georgia.ttf);
+}
+
+@font-face {
+    font-family: 'Georgia';
+    font-style: normal;
+    font-weight: bold;
+    src: local('Georgia Bold'), url(../font/georgiab.ttf);
+}
+
+@font-face {
+    font-family: 'Georgia';
+    font-style: italic;
+    font-weight: normal;
+    src: local('Georgia Italic'), url(../font/georgiai.ttf);
+}
+
+@font-face {
+    font-family: 'Georgia';
+    font-style: italic;
+    font-weight: bold;
+    src: local('Georgia Bold Italic'), url(../font/georgiaz.ttf);
+}
+
+@font-face {
+    font-family: 'GFSDidot';
+    src: url('../font/GFSDidot.ttf');
+}
+
+/* Used by the Periodic Table of Modules, Lion’s Share, the London Underground optimized sheet and the Simon Sends optimized sheet */
+@font-face {
+    font-family: 'Agency FB';
+    src: url('../font/Agency FB.ttf');
+}
+
+@font-face {
+    font-family: 'Agency FB';
+    font-weight: bold;
+    src: url('../font/Agency FB Bold.ttf');
+}
+
+/* Round symbols; used by Symbolic Coordinates, The Cube, Lightspeed, Reverse Morse, and Letter Grid */
+@font-face {
+    font-family: 'KRA';
+    src: url(../font/KR_A_Round.ttf);
+}
+
+/* Shikaku */
+@font-face {
+    font-family: 'Shikaku';
+    src: url('../font/Shikaku.ttf');
+}
+
+/* Heiroglyphics */
+@font-face {
+    font-family: 'Heiroglyphics';
+    src: url('../font/hieroglyphics.ttf');
+}
+
+/* Spinning Buttons */
+@font-face {
+    font-family: 'cyrillic';
+    src: url('../font/cyrillic.ttf');
+}
+
+/* Shapes And Bombs */
+@font-face {
+    font-family: 'Handwritten';
+    src: url('../font/Handwritten.ttf');
+}
+
+/* SYNC-125 [3] */
+@font-face {
+    font-family: 'SCP';
+    src: url('../font/scp-v01.ttf');
+}
+
+/* The Necronomicon */
+@font-face {
+    font-family: 'rlyehian';
+    src: url('../font/Rlyehian.ttf');
+}
+
+/* Complexity */
+@font-face {
+    font-family: 'complexbase';
+    font-style: normal;
+    src: url(../font/complexbase.ttf);
+}
+
+/*** LOGFILE ANALYZER ***/
+
+/* Serial number */
+@font-face {
+    font-family: 'Anonymous Pro';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Anonymous Pro'), url(../font/AnonymousPro-Regular.ttf);
+}
+
+@font-face {
+    font-family: 'Anonymous Pro';
+    font-style: normal;
+    font-weight: bold;
+    src: local('Anonymous Pro Bold'), url(../font/AnonymousPro-Bold.ttf);
+}
+
+@font-face {
+    font-family: 'Anonymous Pro';
+    font-style: italic;
+    font-weight: normal;
+    src: local('Anonymous Pro Italic'), url(../font/AnonymousPro-Italic.ttf);
+}
+
+@font-face {
+    font-family: 'Anonymous Pro';
+    font-style: italic;
+    font-weight: bold;
+    src: local('Anonymous Pro Bold Italic'), url(../font/AnonymousPro-Bold.ttf);
+}
+
+@font-face {
+    font-family: 'LCDClock';
+    src: local('LCD'), url(../font/LCDClock.ttf);
+}
+
+@font-face {
+    font-family: 'pokemon-font';
+    src: url(../font/pokemon-font.woff2);
+}
+
+/* Indicators */
+@font-face {
+    font-family: 'Ostrich';
+    src: local('Ostrich Sans'), local('Ostrich'), url(../font/OstrichSans-Heavy_90.otf);
+}
+
+/* Dragon shouts in Skyrim */
+@font-face {
+    font-family: 'DragonAlphabet';
+    src: url(../font/dragon_alphabet.ttf);
+}
+
+/* Standard Galactic Alphabet in Odd One Out */
+@font-face {
+    font-family: 'SGA';
+    src: url(../font/SGA.ttf);
+}
+
+
+
+@font-face {
+    font-family: "Arrows";
+    src: url(../font/Arrows.ttf);
+}
+
+/* Stupid in The Great Void */
+@font-face {
+    font-family: 'stupid';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../font/stupid.ttf);
+}
+
+/* Wingdings */
+
+@font-face {
+    font-family:"Wingdings";
+    font-style: normal;
+    font-weight:normal;
+    src: url(../font/Wingding.otf);
+}
+
+/* Used by Sysadmin, SUSadmin */
+
+@font-face {
+    font-family: "Consolas";
+    font-style: normal;
+    font-weight:normal;
+    src: url(../font/Consolas.ttf);
+}
+
+/* Used by Anagraphy */
+
+@font-face {
+    font-family: "alien-anagraphs";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/alien-anagraphs.ttf);
+}
+
+/* Used by Emoticon Math */
+@font-face {
+    font-family: "Emoticons";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Emoticons.ttf);
+}
+
+/* Additional fonts in Letter Grid */
+
+@font-face {
+    font-family: "Afrika";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Animals.ttf);
+}
+
+@font-face {
+    font-family: "Boozle";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Boozle1.ttf);
+}
+
+@font-face {
+    font-family: "Braille";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Braille.ttf);
+}
+
+@font-face {
+    font-family: "Bioblanner";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Bioblanner.ttf);
+}
+
+@font-face {
+    font-family: "Decoborders";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/DecoBordersNF.otf);
+}
+
+@font-face {
+    font-family: "DancingMen";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Dancing.ttf);
+}
+
+@font-face {
+    font-family: "Lombax";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Lombax.ttf);
+}
+
+@font-face {
+    font-family: "Moon";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Moon.otf);
+}
+
+@font-face {
+    font-family: "Pigpen";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Pigpen.ttf);
+}
+
+@font-face {
+    font-family: "ElderFuthark";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/ElderFuthark.ttf);
+}
+
+@font-face {
+    font-family: "Semaphore";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Semaphore.ttf);
+}
+
+@font-face {
+    font-family: "SemaphoreTelegraph";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/SemaphoreTelegraph.otf);
+}
+
+@font-face {
+    font-family: "Zoni";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/Zoni.otf);
+}
+
+@font-face {
+    font-family: "English";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/English.ttf);
+}
+
+/* Used by Shogi Ideintification and JA manuals */
+@font-face {
+    font-family: "Noto Serif JP";
+    font-weight: 400;
+    font-style: normal;
+    src: local("Noto Serif JP Regular"), url(../font/NotoSerifJP-Regular.woff) format("woff");
+}
+
+@font-face {
+    font-family: "Noto Serif JP";
+    font-weight: bold;
+    font-style: normal;
+    src: local("Noto Serif JP Bold"), url(../font/NotoSerifJP-Bold.woff) format("woff");
+}
+
+/* Used by The Navy Button */
+@font-face {
+    font-family: "Avrile";
+    src: url(../font/avrile-serif.bold.ttf);
+}
+
+/* Used by Encrypted Equations/Values */
+@font-face {
+    font-family: "501";
+    font-style: normal;
+    font-weight: normal;
+    src: url(../font/501.otf);
+}
+
+/* Used by Dot and Three-Way Gates */
+@font-face {
+    font-family: "MS Gothic";
+    src: local("MS Gothic"), url(../font/MS-Gothic-01.ttf)
+}
