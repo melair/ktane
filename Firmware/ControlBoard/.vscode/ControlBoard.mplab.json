@@ -1,0 +1,58 @@
+{
+    "version": "1.8",
+    "configurations": [
+        {
+            "name": "ControlBoard",
+            "id": "",
+            "device": "PIC18F57Q84",
+            "imageType": "application",
+            "imagePath": "./out/ControlBoard/ControlBoard.elf",
+            "toolProperties": "ControlBoard-tool-base",
+            "tool": "PICkit 4",
+            "packs": [
+                {
+                    "name": "PIC18F-Q_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.30.487"
+                }
+            ],
+            "fileSet": "ControlBoard_files",
+            "toolchain": "ControlBoard_toolchain"
+        }
+    ],
+    "propertyGroups": [
+        {
+            "name": "ControlBoard_toolchain",
+            "type": "toolchain",
+            "provider": "microchip.toolchains:xc8@3.10",
+            "properties": {
+                "HI-TECH-LINK.code-model-rom": "100-1EFFF",
+                "HI-TECH-LINK.additional-options-code-offset": "100"
+            }
+        },
+        {
+            "name": "ControlBoard-tool-base",
+            "type": "tool",
+            "properties": {
+                "poweroptions.powerenable": true,
+                "voltagevalue": "3.3"
+            }
+        }
+    ],
+    "fileSets": [
+        {
+            "name": "ControlBoard_files",
+            "files": [
+                {
+                    "include": "**/*",
+                    "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                },
+                {
+                    "include": "../Bootloader/.vscode/Bootloader.mplab.json",
+                    "projectType": "loadable",
+                    "dependentConfigurationName": "ControlBoard"
+                }
+            ]
+        }
+    ]
+}

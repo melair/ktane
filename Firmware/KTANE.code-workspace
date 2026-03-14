@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "Bootloader",
+			"path": "Bootloader"
+		},
+		{
+			"name": "ControlBoard",
+			"path": "ControlBoard"
+		}
+	],
+	"settings": {
+		"mplab.clangd.arguments": [
+			"--compile-commands-dir=${workspaceFolder}/_build/Bootloader/ControlBoard"
+		],
+		"mplab.clangd.path": "/Applications/microchip/xc8/v3.10/bin/xc8-clangd",
+		"memory-inspector.debugTypes": [
+			"arm-debugger",
+			"embedded-debug",
+			"gdb",
+			"mplab-core-da"
+		]
+	}
+}
