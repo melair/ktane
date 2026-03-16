@@ -10,10 +10,9 @@ The application may be selected by setting an non volitile memory location to th
 
 Additionally, if the device has a boot button and LED then the different applications may be switched via holding the button on application of power to the MCU.
 
-## Code Size and Location
+## Code Size
 
-* ROM Location: 0x00 - 0x1ff
-* Code Offset: 0x0000
+This bootloader will fit in the first 0x00-0xff page of program space, unless the button selector is enabled, in which case it will require the first two pages.
 
 ## Boot Selector
 

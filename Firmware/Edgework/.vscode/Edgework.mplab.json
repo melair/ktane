@@ -23,7 +23,10 @@
             "name": "default-XC8",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
-            "properties": {}
+            "properties": {
+                "HI-TECH-LINK.additional-options-code-offset": "100",
+                "HI-TECH-LINK.code-model-rom": "100-7FFF"
+            }
         }
     ],
     "fileSets": [

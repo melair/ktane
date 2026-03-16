@@ -61,7 +61,11 @@
                     "BOOT_SELECTOR_BUTTON_PORTbits=PORTCbits.RC1",
                     "BOOT_SELECTOR_LED_TRISbit=TRISCbits.TRISC0",
                     "BOOT_SELECTOR_LED_LATbit=LATCbits.LATC0",
-                    "BOOT_SELECTOR_LED_ODCONbit=ODCONCbits.ODCC0"
+                    "BOOT_SELECTOR_LED_ODCONbit=ODCONCbits.ODCC0",
+                    "APPLICATION_ONE=0x000200",
+                    "APPLICATION_TWO=0xffffff",
+                    "APPLICATION_THREE=0xffffff",
+                    "APPLICATION_FOUR=0xffffff"
                 ],
                 "HI-TECH-LINK.code-model-rom": "0-1FF",
                 "HI-TECH-COMP.asmlist": true,
@@ -81,7 +85,11 @@
                     "BOOT_SELECTOR_BUTTON_PORTbits=PORTEbits.RE0",
                     "BOOT_SELECTOR_LED_TRISbit=TRISEbits.TRISE1",
                     "BOOT_SELECTOR_LED_LATbit=LATEbits.LATE1",
-                    "BOOT_SELECTOR_LED_ODCONbit=ODCONEbits.ODCE1"
+                    "BOOT_SELECTOR_LED_ODCONbit=ODCONEbits.ODCE1",
+                    "APPLICATION_ONE=0x000200",
+                    "APPLICATION_TWO=0xffffff",
+                    "APPLICATION_THREE=0xffffff",
+                    "APPLICATION_FOUR=0xffffff"
                 ],
                 "HI-TECH-LINK.code-model-rom": "0-1FF",
                 "HI-TECH-COMP.asmlist": true,
@@ -96,7 +104,13 @@
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
             "properties": {
-                "HI-TECH-LINK.code-model-rom": "0-1FF",
+                "HI-TECH-COMP.define-macros": [
+                    "APPLICATION_ONE=0x000100",
+                    "APPLICATION_TWO=0xffffff",
+                    "APPLICATION_THREE=0xffffff",
+                    "APPLICATION_FOUR=0xffffff"
+                ],
+                "HI-TECH-LINK.code-model-rom": "0-FF",
                 "HI-TECH-COMP.asmlist": true,
                 "HI-TECH-COMP.optimization-level": "-O2",
                 "HI-TECH-COMP.extra-include-directories": [
