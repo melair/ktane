@@ -4,6 +4,7 @@
         {
             "name": "ControlBoard",
             "id": "",
+            "device": "PIC18F57Q83",
             "imagePath": "./out/Bootloader/ControlBoard.elf",
             "toolProperties": "ControlBoard-tool-base",
             "tool": "PICkit 4",
@@ -15,24 +16,7 @@
                 }
             ],
             "fileSet": "ControlBoard_files",
-            "toolchain": "ControlBoard_toolchain",
-            "extend": "Root"
-        },
-        {
-            "name": "Root",
-            "id": "conf3",
-            "device": "PIC18F57Q84",
-            "imageType": "application",
-            "imagePath": "./out/Bootloader/Root.elf",
-            "packs": [
-                {
-                    "name": "PIC18F-Q_DFP",
-                    "vendor": "Microchip",
-                    "version": "1.30.487"
-                }
-            ],
-            "fileSet": "Root_files",
-            "toolchain": "Root_toolchain"
+            "toolchain": "ControlBoard_toolchain"
         },
         {
             "name": "Backplane",
@@ -47,8 +31,7 @@
                 }
             ],
             "fileSet": "Backplane_files",
-            "toolchain": "Backplane_toolchain",
-            "extend": "Root"
+            "toolchain": "Backplane_toolchain"
         },
         {
             "name": "Edgework",
@@ -72,28 +55,53 @@
             "name": "Backplane_toolchain",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
-            "properties": {}
+            "properties": {
+                "HI-TECH-COMP.define-macros": [
+                    "BOOT_SELECTOR",
+                    "BOOT_SELECTOR_BUTTON_PORTbits=PORTCbits.RC1",
+                    "BOOT_SELECTOR_LED_TRISbit=TRISCbits.TRISC0",
+                    "BOOT_SELECTOR_LED_LATbit=LATCbits.LATC0",
+                    "BOOT_SELECTOR_LED_ODCONbit=ODCONCbits.ODCC0"
+                ],
+                "HI-TECH-LINK.code-model-rom": "0-1FF",
+                "HI-TECH-COMP.asmlist": true,
+                "HI-TECH-COMP.optimization-level": "-O2",
+                "HI-TECH-COMP.extra-include-directories": [
+                    "../Common"
+                ]
+            }
         },
         {
             "name": "ControlBoard_toolchain",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
             "properties": {
-                "HI-TECH-LINK.code-model-rom": "0-FF"
+                "HI-TECH-COMP.define-macros": [
+                    "BOOT_SELECTOR",
+                    "BOOT_SELECTOR_BUTTON_PORTbits=PORTEbits.RE0",
+                    "BOOT_SELECTOR_LED_TRISbit=TRISEbits.TRISE1",
+                    "BOOT_SELECTOR_LED_LATbit=LATEbits.LATE1",
+                    "BOOT_SELECTOR_LED_ODCONbit=ODCONEbits.ODCE1"
+                ],
+                "HI-TECH-LINK.code-model-rom": "0-1FF",
+                "HI-TECH-COMP.asmlist": true,
+                "HI-TECH-COMP.optimization-level": "-O2",
+                "HI-TECH-COMP.extra-include-directories": [
+                    "../Common"
+                ]
             }
         },
         {
             "name": "Edgework_toolchain",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
-            "properties": {}
-        },
-        {
-            "name": "Root_toolchain",
-            "type": "toolchain",
-            "provider": "microchip.toolchains:xc8@3.10",
             "properties": {
-                "HI-TECH-LINK.code-model-rom": "0-FF"
+                "HI-TECH-LINK.code-model-rom": "0-1FF",
+                "HI-TECH-COMP.asmlist": true,
+                "HI-TECH-COMP.optimization-level": "-O2",
+                "HI-TECH-COMP.extra-include-directories": [
+                    "../Common"
+                ]
             }
         },
         {
@@ -109,15 +117,12 @@
                 {
                     "include": "**/*",
                     "exclude": "**/(_build|out|cmake|.vscode)/**/*"
-                }
-            ]
-        },
-        {
-            "name": "Root_files",
-            "files": [
+                },
                 {
-                    "include": "**/*",
-                    "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                    "include": "../Common/.vscode/Common.mplab.json",
+                    "projectType": "library",
+                    "dependentConfigurationName": "default",
+                    "exclude": "false"
                 }
             ]
         },
@@ -127,6 +132,13 @@
                 {
                     "include": "**/*",
                     "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                },
+                {
+                    "include": "../Common/.vscode/Common.mplab.json",
+                    "type": "project",
+                    "projectType": "library",
+                    "dependentConfigurationName": "default",
+                    "exclude": "false"
                 }
             ]
         },
@@ -136,6 +148,13 @@
                 {
                     "include": "**/*",
                     "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                },
+                {
+                    "include": "../Common/.vscode/Common.mplab.json",
+                    "type": "project",
+                    "projectType": "library",
+                    "dependentConfigurationName": "default",
+                    "exclude": "false"
                 }
             ]
         }

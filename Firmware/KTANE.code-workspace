@@ -7,11 +7,15 @@
 		{
 			"name": "ControlBoard",
 			"path": "ControlBoard"
+		},
+		{
+			"name": "Common",
+			"path": "Common"
 		}
 	],
 	"settings": {
 		"mplab.clangd.arguments": [
-			"--compile-commands-dir=${workspaceFolder}/_build/Bootloader/ControlBoard"
+			"--compile-commands-dir=${userHome}/KTANEVersionTwo/Firmware/ControlBoard/_build/ControlBoard/ControlBoard"
 		],
 		"mplab.clangd.path": "/Applications/microchip/xc8/v3.10/bin/xc8-clangd",
 		"memory-inspector.debugTypes": [

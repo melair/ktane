@@ -17,7 +17,8 @@
                 }
             ],
             "fileSet": "ControlBoard_files",
-            "toolchain": "ControlBoard_toolchain"
+            "toolchain": "ControlBoard_toolchain",
+            "userVariables": "ControlBoard-uservariables"
         }
     ],
     "propertyGroups": [
@@ -26,8 +27,9 @@
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
             "properties": {
-                "HI-TECH-LINK.code-model-rom": "100-1EFFF",
-                "HI-TECH-LINK.additional-options-code-offset": "100"
+                "HI-TECH-LINK.code-model-rom": "200-1EFFF",
+                "HI-TECH-LINK.additional-options-code-offset": "200",
+                "HI-TECH-COMP.asmlist": false
             }
         },
         {

@@ -1,0 +1,40 @@
+{
+  "version": "1.8",
+  "configurations": [
+    {
+      "name": "default",
+      "id": "",
+      "device": "PIC18F57Q84",
+      "imageType": "library",
+      "imagePath": "./out/Common/default.a",
+      "packs": [
+        {
+          "name": "PIC18F-Q_DFP",
+          "vendor": "Microchip",
+          "version": "1.30.487"
+        }
+      ],
+      "fileSet": "default",
+      "toolchain": "default-XC8"
+    }
+  ],
+  "propertyGroups": [
+    {
+      "name": "default-XC8",
+      "type": "toolchain",
+      "provider": "microchip.toolchains:xc8@3.10",
+      "properties": {}
+    }
+  ],
+  "fileSets": [
+    {
+      "name": "default",
+      "files": [
+        {
+          "include": "**/*",
+          "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+        }
+      ]
+    }
+  ]
+}
