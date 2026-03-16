@@ -1,0 +1,45 @@
+{
+    "version": "1.8",
+    "configurations": [
+        {
+            "name": "Edgework",
+            "id": "conf1",
+            "device": "PIC18F15Q40",
+            "imagePath": "./out/Edgework/default.elf",
+            "tool": "PICkit 4",
+            "packs": [
+                {
+                    "name": "PIC18F-Q_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.30.487"
+                }
+            ],
+            "fileSet": "default",
+            "toolchain": "default-XC8"
+        }
+    ],
+    "propertyGroups": [
+        {
+            "name": "default-XC8",
+            "type": "toolchain",
+            "provider": "microchip.toolchains:xc8@3.10",
+            "properties": {}
+        }
+    ],
+    "fileSets": [
+        {
+            "name": "default",
+            "files": [
+                {
+                    "include": "**/*",
+                    "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                },
+                {
+                    "projectType": "loadable",
+                    "dependentConfigurationName": "Edgework",
+                    "include": "../Bootloader/.vscode/Bootloader.mplab.json"
+                }
+            ]
+        }
+    ]
+}

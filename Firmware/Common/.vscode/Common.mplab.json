@@ -1,40 +1,102 @@
 {
-  "version": "1.8",
-  "configurations": [
-    {
-      "name": "default",
-      "id": "",
-      "device": "PIC18F57Q84",
-      "imageType": "library",
-      "imagePath": "./out/Common/default.a",
-      "packs": [
+    "version": "1.8",
+    "configurations": [
         {
-          "name": "PIC18F-Q_DFP",
-          "vendor": "Microchip",
-          "version": "1.30.487"
-        }
-      ],
-      "fileSet": "default",
-      "toolchain": "default-XC8"
-    }
-  ],
-  "propertyGroups": [
-    {
-      "name": "default-XC8",
-      "type": "toolchain",
-      "provider": "microchip.toolchains:xc8@3.10",
-      "properties": {}
-    }
-  ],
-  "fileSets": [
-    {
-      "name": "default",
-      "files": [
+            "name": "ControlBoard",
+            "id": "",
+            "device": "PIC18F57Q84",
+            "imageType": "library",
+            "imagePath": "./out/Common/ControlBoard.a",
+            "packs": [
+                {
+                    "name": "PIC18F-Q_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.30.487"
+                }
+            ],
+            "fileSet": "ControlBoard_files",
+            "toolchain": "ControlBoard_toolchain"
+        },
         {
-          "include": "**/*",
-          "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+            "name": "Backplane",
+            "id": "",
+            "device": "PIC18F25Q43",
+            "imageType": "library",
+            "imagePath": "./out/Common/Backplane.a",
+            "packs": [
+                {
+                    "name": "PIC18F-Q_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.30.487"
+                }
+            ],
+            "fileSet": "Backplane_files",
+            "toolchain": "Backplane_toolchain"
+        },
+        {
+            "name": "Edgework",
+            "id": "",
+            "device": "PIC18F15Q40",
+            "imageType": "library",
+            "imagePath": "./out/Common/Edgework.a",
+            "packs": [
+                {
+                    "name": "PIC18F-Q_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.30.487"
+                }
+            ],
+            "fileSet": "Edgework_files",
+            "toolchain": "Edgework_toolchain"
         }
-      ]
-    }
-  ]
+    ],
+    "propertyGroups": [
+        {
+            "name": "Backplane_toolchain",
+            "type": "toolchain",
+            "provider": "microchip.toolchains:xc8@3.10",
+            "properties": {}
+        },
+        {
+            "name": "ControlBoard_toolchain",
+            "type": "toolchain",
+            "provider": "microchip.toolchains:xc8@3.10",
+            "properties": {}
+        },
+        {
+            "name": "Edgework_toolchain",
+            "type": "toolchain",
+            "provider": "microchip.toolchains:xc8@3.10",
+            "properties": {}
+        }
+    ],
+    "fileSets": [
+        {
+            "name": "Backplane_files",
+            "files": [
+                {
+                    "include": "**/*",
+                    "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                }
+            ]
+        },
+        {
+            "name": "Edgework_files",
+            "files": [
+                {
+                    "include": "**/*",
+                    "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                }
+            ]
+        },
+        {
+            "name": "ControlBoard_files",
+            "files": [
+                {
+                    "include": "**/*",
+                    "exclude": "**/(_build|out|cmake|.vscode)/**/*"
+                }
+            ]
+        }
+    ]
 }

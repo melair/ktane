@@ -103,11 +103,6 @@
                     "../Common"
                 ]
             }
-        },
-        {
-            "name": "ControlBoard-tool-base",
-            "type": "tool",
-            "properties": {}
         }
     ],
     "fileSets": [
@@ -121,7 +116,7 @@
                 {
                     "include": "../Common/.vscode/Common.mplab.json",
                     "projectType": "library",
-                    "dependentConfigurationName": "default",
+                    "dependentConfigurationName": "ControlBoard",
                     "exclude": "false"
                 }
             ]
@@ -137,7 +132,7 @@
                     "include": "../Common/.vscode/Common.mplab.json",
                     "type": "project",
                     "projectType": "library",
-                    "dependentConfigurationName": "default",
+                    "dependentConfigurationName": "Backplane",
                     "exclude": "false"
                 }
             ]
@@ -153,7 +148,7 @@
                     "include": "../Common/.vscode/Common.mplab.json",
                     "type": "project",
                     "projectType": "library",
-                    "dependentConfigurationName": "default",
+                    "dependentConfigurationName": "Edgework",
                     "exclude": "false"
                 }
             ]

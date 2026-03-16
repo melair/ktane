@@ -2870,16 +2870,6 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 140.97) (xy 36.83 130.81)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6065e5ed-f88e-4fdd-beb5-9b87d31179c6")
-	)
-	(wire
-		(pts
 			(xy 147.32 132.08) (xy 147.32 134.62)
 		)
 		(stroke
@@ -3250,7 +3240,7 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 146.05) (xy 36.83 148.59)
+			(xy 36.83 130.81) (xy 36.83 148.59)
 		)
 		(stroke
 			(width 0)
@@ -6867,102 +6857,6 @@
 			(project "ControlBoard"
 				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/5424ff00-1761-4193-8e82-28a4c0bc55c6"
 					(reference "R21")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R_Small")
-		(at 36.83 143.51 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9cd33fc0-0611-4406-8e7c-99f6f8d93737")
-		(property "Reference" "R14"
-			(at 38.3286 142.3416 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10k"
-			(at 38.3286 144.653 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 36.83 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 36.83 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor, small symbol"
-			(at 36.83 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "DIGIKEY" "P10.0KHCT-ND"
-			(at 36.83 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" ""
-			(at 36.83 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" ""
-			(at 36.83 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8b6a8a3a-f7f5-47da-a2f7-f62314e2022c")
-		)
-		(pin "2"
-			(uuid "c6116ffb-0590-4298-ac38-97a4cdf10b66")
-		)
-		(instances
-			(project "ControlBoard"
-				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/5424ff00-1761-4193-8e82-28a4c0bc55c6"
-					(reference "R14")
 					(unit 1)
 				)
 			)

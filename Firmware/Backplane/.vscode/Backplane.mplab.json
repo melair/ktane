@@ -2,12 +2,10 @@
     "version": "1.8",
     "configurations": [
         {
-            "name": "ControlBoard",
-            "id": "",
-            "device": "PIC18F57Q84",
-            "imageType": "application",
-            "imagePath": "./out/ControlBoard/ControlBoard.elf",
-            "toolProperties": "ControlBoard-tool-base",
+            "name": "Backplane",
+            "id": "conf1",
+            "device": "PIC18F25Q43",
+            "imagePath": "./out/Backplane/default.elf",
             "tool": "PICkit 4",
             "packs": [
                 {
@@ -16,18 +14,17 @@
                     "version": "1.30.487"
                 }
             ],
-            "fileSet": "ControlBoard_files",
-            "toolchain": "ControlBoard_toolchain",
-            "userVariables": "ControlBoard-uservariables"
+            "fileSet": "default",
+            "toolchain": "default-XC8"
         }
     ],
     "propertyGroups": [
         {
-            "name": "ControlBoard_toolchain",
+            "name": "default-XC8",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
             "properties": {
-                "HI-TECH-LINK.code-model-rom": "200-1FFFF",
+                "HI-TECH-LINK.code-model-rom": "200-7FFF",
                 "HI-TECH-LINK.additional-options-code-offset": "200",
                 "HI-TECH-COMP.asmlist": false
             }
@@ -43,7 +40,7 @@
     ],
     "fileSets": [
         {
-            "name": "ControlBoard_files",
+            "name": "default",
             "files": [
                 {
                     "include": "**/*",
@@ -52,12 +49,12 @@
                 {
                     "include": "../Bootloader/.vscode/Bootloader.mplab.json",
                     "projectType": "loadable",
-                    "dependentConfigurationName": "ControlBoard"
+                    "dependentConfigurationName": "Backplane"
                 },
                 {
                     "include": "../Common/.vscode/Common.mplab.json",
                     "projectType": "library",
-                    "dependentConfigurationName": "ControlBoard"
+                    "dependentConfigurationName": "Backplane"
                 }
             ]
         }

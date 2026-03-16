@@ -11,6 +11,14 @@
 		{
 			"name": "Common",
 			"path": "Common"
+		},
+		{
+			"name": "Backplane",
+			"path": "Backplane"
+		},
+		{
+			"name": "Edgework",
+			"path": "Edgework"
 		}
 	],
 	"settings": {
