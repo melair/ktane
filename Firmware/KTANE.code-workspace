@@ -22,15 +22,16 @@
 		}
 	],
 	"settings": {
-		"mplab.clangd.arguments": [
-			"--compile-commands-dir=${userHome}/KTANEVersionTwo/Firmware/ControlBoard/_build/ControlBoard/ControlBoard"
-		],
 		"mplab.clangd.path": "/Applications/microchip/xc8/v3.10/bin/xc8-clangd",
 		"memory-inspector.debugTypes": [
 			"arm-debugger",
 			"embedded-debug",
 			"gdb",
 			"mplab-core-da"
+		],
+		"mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/Bootloader/ControlBoard",
+		"mplab.clangd.arguments": [
+			"--compile-commands-dir=${workspaceFolder}/_build/Bootloader/ControlBoard"
 		]
 	}
 }

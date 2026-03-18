@@ -29,7 +29,10 @@
             "properties": {
                 "HI-TECH-LINK.code-model-rom": "200-1FFFF",
                 "HI-TECH-LINK.additional-options-code-offset": "200",
-                "HI-TECH-COMP.asmlist": false
+                "HI-TECH-COMP.asmlist": true,
+                "HI-TECH-COMP.extra-include-directories": [
+                    "../Common"
+                ]
             }
         },
         {

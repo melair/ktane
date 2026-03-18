@@ -3,9 +3,10 @@
     "configurations": [
         {
             "name": "Edgework",
-            "id": "conf1",
+            "id": "",
             "device": "PIC18F15Q40",
             "imagePath": "./out/Edgework/default.elf",
+            "toolProperties": "Edgework-tool-base",
             "tool": "PICkit 4",
             "packs": [
                 {
@@ -25,7 +26,19 @@
             "provider": "microchip.toolchains:xc8@3.10",
             "properties": {
                 "HI-TECH-LINK.additional-options-code-offset": "100",
-                "HI-TECH-LINK.code-model-rom": "100-7FFF"
+                "HI-TECH-LINK.code-model-rom": "100-7FFF",
+                "HI-TECH-COMP.asmlist": true,
+                "HI-TECH-COMP.extra-include-directories": [
+                    "../Common"
+                ]
+            }
+        },
+        {
+            "name": "Edgework-tool-base",
+            "type": "tool",
+            "properties": {
+                "poweroptions.powerenable": true,
+                "voltagevalue": "3.3"
             }
         }
     ],
@@ -41,6 +54,11 @@
                     "projectType": "loadable",
                     "dependentConfigurationName": "Edgework",
                     "include": "../Bootloader/.vscode/Bootloader.mplab.json"
+                },
+                {
+                    "include": "../Common/.vscode/Common.mplab.json",
+                    "dependentConfigurationName": "Edgework",
+                    "projectType": "library"
                 }
             ]
         }
