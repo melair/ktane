@@ -1,6 +1,6 @@
 #include <xc.h>
-#include <hal/mcu/init.h>
-#include <hal/mcu/interrupt.h>
+#include <hal/mcu.h>
+#include <hal/interrupt.h>
 
 /* Main entry point for control board. */
 int main() {

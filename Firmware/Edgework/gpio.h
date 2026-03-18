@@ -1,7 +1,7 @@
 #ifndef GPIO_H
 #define	GPIO_H
 
-#include <hal/pin/pin.h>
+#include <hal/pin.h>
 
 #define GPIO_0          (PORT_B | PIN_6)
 #define GPIO_1          (PORT_B | PIN_5)

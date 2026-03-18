@@ -1,5 +1,5 @@
-#ifndef INIT_H
-#define	INIT_H
+#ifndef MCU_H
+#define	MCU_H
 
 void arbiter_init(void);
 void sleep_init(void);

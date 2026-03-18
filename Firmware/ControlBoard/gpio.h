@@ -1,9 +1,9 @@
 #ifndef GPIO_H
 #define	GPIO_H
 
-#include <hal/pin/pin.h>
+#include <hal/pin.h>
 
-/* Submodule A, uses PIC port A, inversed and A0/A1 are flipped. */
+/* Submodule A, uses PIC port A, inverted and A0/A1 are flipped. */
 #define GPIO_A0         (PORT_A | PIN_6)
 #define GPIO_A1         (PORT_A | PIN_7) 
 #define GPIO_A2         (PORT_A | PIN_5)
@@ -13,7 +13,7 @@
 #define GPIO_A6         (PORT_A | PIN_1)
 #define GPIO_A7         (PORT_A | PIN_0)
 
-/* Submodule B, uses PIC port F. */
+/* Submodule B, uses PIC port F, inverted. */
 #define GPIO_B0         (PORT_F | PIN_7)
 #define GPIO_B1         (PORT_F | PIN_6)
 #define GPIO_B2         (PORT_F | PIN_5)
@@ -23,7 +23,7 @@
 #define GPIO_B6         (PORT_F | PIN_1)
 #define GPIO_B7         (PORT_F | PIN_0)
 
-/* Submodule C, uses PIC port C. */
+/* Submodule C, uses PIC port C, inverted. */
 #define GPIO_C0         (PORT_C | PIN_7)
 #define GPIO_C1         (PORT_C | PIN_6)
 #define GPIO_C2         (PORT_C | PIN_5)
@@ -33,6 +33,7 @@
 #define GPIO_C6         (PORT_C | PIN_1)
 #define GPIO_C7         (PORT_C | PIN_0)
 
+/* Control Board integrated peripherals and pins. */
 #define GPIO_BOOT       (PORT_E | PIN_0)
 #define GPIO_STATUS     (PORT_E | PIN_1)
 #define GPIO_CAN_ACT    (PORT_E | PIN_2)

@@ -1,5 +1,5 @@
 #include <xc.h>
-#include <hal/pin/pin.h>
+#include <hal/pin.h>
 #include "gpio.h"
 
 int main(){
