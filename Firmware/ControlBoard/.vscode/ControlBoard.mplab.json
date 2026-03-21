@@ -1,26 +1,5 @@
 {
-    "version": "1.8",
-    "configurations": [
-        {
-            "name": "ControlBoard",
-            "id": "",
-            "device": "PIC18F57Q84",
-            "imageType": "application",
-            "imagePath": "./out/ControlBoard/ControlBoard.elf",
-            "toolProperties": "ControlBoard-tool-base",
-            "tool": "PICkit 4",
-            "packs": [
-                {
-                    "name": "PIC18F-Q_DFP",
-                    "vendor": "Microchip",
-                    "version": "1.30.487"
-                }
-            ],
-            "fileSet": "ControlBoard_files",
-            "toolchain": "ControlBoard_toolchain",
-            "userVariables": "ControlBoard-uservariables"
-        }
-    ],
+    "version": "1.9",
     "propertyGroups": [
         {
             "name": "ControlBoard_toolchain",
@@ -63,6 +42,28 @@
                     "dependentConfigurationName": "ControlBoard"
                 }
             ]
+        }
+    ],
+    "configurations": [
+        {
+            "name": "ControlBoard",
+            "id": "",
+            "device": "PIC18F57Q84",
+            "imageType": "application",
+            "imagePath": "./out/ControlBoard/ControlBoard.elf",
+            "toolProperties": "ControlBoard-tool-base",
+            "tool": "PICkit 4",
+            "packs": [
+                {
+                    "name": "PIC18F-Q_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.30.487"
+                }
+            ],
+            "fileSet": "ControlBoard_files",
+            "toolchain": "ControlBoard_toolchain",
+            "userVariables": "ControlBoard-uservariables",
+            "includeLegacyMacros": true
         }
     ]
 }

@@ -29,9 +29,6 @@
 			"gdb",
 			"mplab-core-da"
 		],
-		"mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/Bootloader/ControlBoard",
-		"mplab.clangd.arguments": [
-			"--compile-commands-dir=${workspaceFolder}/_build/Bootloader/ControlBoard"
-		]
+		"mplab.clangd.compileCommandsDir": "${workspaceFolder}/_build/Bootloader/ControlBoard"
 	}
 }

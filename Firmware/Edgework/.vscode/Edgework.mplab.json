@@ -1,24 +1,5 @@
 {
-    "version": "1.8",
-    "configurations": [
-        {
-            "name": "Edgework",
-            "id": "",
-            "device": "PIC18F15Q40",
-            "imagePath": "./out/Edgework/default.elf",
-            "toolProperties": "Edgework-tool-base",
-            "tool": "PICkit 4",
-            "packs": [
-                {
-                    "name": "PIC18F-Q_DFP",
-                    "vendor": "Microchip",
-                    "version": "1.30.487"
-                }
-            ],
-            "fileSet": "default",
-            "toolchain": "default-XC8"
-        }
-    ],
+    "version": "1.9",
     "propertyGroups": [
         {
             "name": "default-XC8",
@@ -62,6 +43,26 @@
                     "projectType": "library"
                 }
             ]
+        }
+    ],
+    "configurations": [
+        {
+            "name": "Edgework",
+            "id": "",
+            "device": "PIC18F15Q40",
+            "imagePath": "./out/Edgework/default.elf",
+            "toolProperties": "Edgework-tool-base",
+            "tool": "PICkit 4",
+            "packs": [
+                {
+                    "name": "PIC18F-Q_DFP",
+                    "vendor": "Microchip",
+                    "version": "1.30.487"
+                }
+            ],
+            "fileSet": "default",
+            "toolchain": "default-XC8",
+            "includeLegacyMacros": true
         }
     ]
 }
