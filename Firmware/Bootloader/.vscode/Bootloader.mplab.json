@@ -4,7 +4,7 @@
         {
             "name": "ControlBoard",
             "id": "",
-            "device": "PIC18F57Q83",
+            "device": "PIC18F57Q84",
             "imagePath": "./out/Bootloader/ControlBoard.elf",
             "toolProperties": "ControlBoard-tool-base",
             "tool": "PICkit 4",

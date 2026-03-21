@@ -3,14 +3,6 @@
 #include <stdbool.h>
 #include "pin.h"
 
-#define PORT_BITS          0b00111000
-#define PIN_BITS           0b00000111
-
-#define PORT_NUM(PIN)      ((uint8_t)((PIN & PORT_BITS)) >> 3)
-#define PIN_NUM(PIN)      ((uint8_t)((PIN & PIN_BITS)))
-
-#define PIN_MASK(PIN)      ((uint8_t)(1 << (PIN & PIN_BITS)))
-
 /* This code assumes that port registers are a standard interval in SFR space, this is
  * particular to the MCU. */
 #define ANSEL_INTERVAL  (uint16_t)((uintptr_t)&ANSELB - (uintptr_t)&ANSELA)

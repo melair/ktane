@@ -1,4 +1,4 @@
-#include <hal/nvm/nvm.h>
+#include <hal/nvm.h>
 #include <stdint.h>
 #include <xc.h>
 

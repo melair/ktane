@@ -55,19 +55,25 @@
             "name": "Backplane_toolchain",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
-            "properties": {}
+            "properties": {
+                "HI-TECH-COMP.asmlist": true
+            }
         },
         {
             "name": "ControlBoard_toolchain",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
-            "properties": {}
+            "properties": {
+                "HI-TECH-COMP.asmlist": true
+            }
         },
         {
             "name": "Edgework_toolchain",
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
-            "properties": {}
+            "properties": {
+                "HI-TECH-COMP.asmlist": true
+            }
         }
     ],
     "fileSets": [

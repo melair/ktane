@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define FSM_SERVICE_LOOP_LIMIT 4
+#define FSM_SERVICE_LOOP_LIMIT 8
 
 /* Initialise the FSM so that fsm_service() will start the FSM correctly. */
 void fsm_init(fsm_t *fsm) {
@@ -64,7 +64,7 @@ void fsm_service(fsm_t *fsm) {
    This can be called at any time, however due to the above a call in an exit()
    callback of a state will never succeed.
    */
-bool fsm_transition(fsm_t *fsm, fs_t *new_state) {
+bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
   /* We can not transition if it has been requested. */
   if (fsm->transition != NULL) {
     return false;

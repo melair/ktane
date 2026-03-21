@@ -13,6 +13,14 @@ typedef uint8_t pin_t;
 #define CFG_OPENDRAIN   0b00000010
 #define CFG_ANALOG      0b00000100
 
+#define PORT_BITS          0b00111000
+#define PIN_BITS           0b00000111
+
+#define PORT_NUM(PIN)      ((uint8_t)((PIN & PORT_BITS)) >> 3)
+#define PIN_NUM(PIN)      ((uint8_t)((PIN & PIN_BITS)))
+
+#define PIN_MASK(PIN)      ((uint8_t)(1 << (PIN & PIN_BITS)))
+
 void pin_config(pin_t pin, uint8_t direction, uint8_t config);
 void pin_write(pin_t pin, bool value);
 bool pin_read(pin_t pin);
@@ -33,5 +41,7 @@ volatile uint8_t *pin_to_pps(pin_t pin);
 #define PIN_5  0b00000101
 #define PIN_6  0b00000110
 #define PIN_7  0b00000111
+
+#define PORTPIN_NONE 0b11111111
 
 #endif

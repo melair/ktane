@@ -13,18 +13,20 @@ struct fs_t{
     void (*service)(fsm_t *);
     void (*exit)(fsm_t *);
 
-    const fs_t *next_states[];
+    const fs_t **next_states;
 };
 
 struct fsm_t {
+    const fs_t *initial;
+
     const fs_t *current;
     const fs_t *transition;
 
-    const fs_t *initial;
+    void *ctx;
 };
 
 void fsm_init(fsm_t *fsm);
 void fsm_service(fsm_t *fsm);
-bool fsm_transition(fsm_t *fsm, fs_t *fs);
+bool fsm_transition(fsm_t *fsm, const fs_t *fs);
 
 #endif
