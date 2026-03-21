@@ -6,39 +6,12 @@
 #include "pin.h"
 #include "../utils/fsm.h"
 
-#define SPI1 0b00001000
-#define SPI2 0b00010000
-
-#define SPI_BITS 0b00011000
-#define SPI_NUM(NUM)      ((uint8_t)((NUM & SPI_BITS) >> 3))
-
 typedef struct spi_transaction_t spi_transaction_t;
 typedef struct spi_t spi_t;
-
-typedef struct {
-    uint8_t num;
-    volatile uint8_t *clk;
-    volatile uint8_t *con0;
-    volatile uint8_t *con1;
-    volatile uint8_t *con2;
-    volatile uint8_t *twidth;
-    volatile uint8_t *inte;
-    volatile uint8_t *baud;
-    volatile uint8_t *intf;
-    volatile uint8_t *status;
-    volatile uint8_t *tcntl;
-    volatile uint8_t *tcnth;
-    volatile uint8_t *txb;
-    volatile uint8_t *rxb;
-
-    uint8_t spitx_vector;
-    uint8_t spirx_vector;
-} spi_peripheral_t;
 
 struct spi_t {
     fsm_t fsm;
 
-    const spi_peripheral_t *spi_peripheral;
     uint8_t dma_peripheral;
 
     spi_transaction_t *queue_head;
@@ -52,6 +25,12 @@ struct spi_t {
 #define SPI_OPERATION_WRITE_THEN_READ 1
 #define SPI_OPERATION_READ            2
 
+#define SPI_BAUD_125K 255
+#define SPI_BAUD_250K 129
+#define SPI_BAUD_500K 65
+#define SPI_BAUD_1000K 33
+#define SPI_BAUD_2000K 17
+
 struct spi_transaction_t {
     unsigned operation :3;
 
@@ -60,7 +39,7 @@ struct spi_transaction_t {
     uint16_t read_size;
 
     unsigned bits :3;
-    uint24_t baud;
+    uint8_t baud;
     bool lsb_first;
     bool cke;
 
@@ -74,9 +53,9 @@ struct spi_transaction_t {
     spi_transaction_t *queue_next;
 };
 
-void spi_init(spi_t *spi, pin_t copi, pin_t clk, pin_t cipo, uint8_t config);
-void spi_service(spi_t *spi);
-void spi_interrupt(spi_t *spi);
-void spi_queue(spi_t *spi, spi_transaction_t *transaction);
+void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config);
+void spi_service(void);
+void spi_interrupt(void);
+void spi_queue(spi_transaction_t *transaction);
 
 #endif

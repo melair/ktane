@@ -7,8 +7,6 @@
 #include "gpio.h"
 #include "hal/pin.h"
 
-spi_t spi;
-
 /* Main entry point for edgework widget. */
 int main() {
   /* Initialise the MCU memory arbiter. */
@@ -26,14 +24,14 @@ int main() {
   pin_config(GPIO_6, OUTPUT, 0); // /CS
   pin_write(GPIO_6, true);
 
-  spi_init(&spi, GPIO_4, GPIO_5, PORTPIN_NONE, SPI1 | DMA1);
+  spi_init(GPIO_4, GPIO_5, PORTPIN_NONE, DMA1);
 
   while(1) {
     // Clear Watchdog.
     CLRWDT();
 
     /* Temp: Service SPI. */
-    spi_service(&spi);
+    spi_service();
 
     // Sleep.
     SLEEP();
@@ -50,5 +48,5 @@ void __interrupt(irq(default), base(0x208)) int_default(void) {
 
 /* Temp: SPI Interrupt routing. */
 void __interrupt(irq(0x1A), base(0x208)) int_spi1(void) {
-  spi_interrupt(&spi);
+  spi_interrupt();
 }

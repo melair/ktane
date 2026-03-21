@@ -3,6 +3,10 @@
 
 #include <stdbool.h>
 
+#ifndef FSM_MAX_NEXT_STATES
+#define FSM_MAX_NEXT_STATES 4
+#endif
+
 typedef struct fsm_t fsm_t;
 typedef struct fs_t fs_t;
 
@@ -13,7 +17,7 @@ struct fs_t{
     void (*service)(fsm_t *);
     void (*exit)(fsm_t *);
 
-    const fs_t **next_states;
+    const fs_t *next_states[FSM_MAX_NEXT_STATES];
 };
 
 struct fsm_t {

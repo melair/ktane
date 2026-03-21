@@ -1,0 +1,74 @@
+#ifndef SPI_INTERNAL_H
+#define SPI_INTERNAL_H
+
+#define SPI1 1
+#define SPI2 2
+
+#ifndef SPI_PERIPHERAL
+#define SPI_PERIPHERAL SPI1
+#warning No SPI peripheral defined, assuming SPI1.
+#endif
+
+#if SPI_PERIPHERAL == SPI2
+#define SPICLK SPI2CLK
+#define SPICON0 SPI2CON0
+#define SPICON1 SPI2CON1
+#define SPICON2 SPI2CON2
+#define SPITWIDTH SPI2TWIDTH
+#define SPIINTE SPI2INTE
+#define SPIINTF SPI2INTF
+#define SPIBAUD SPI2BAUD
+#define SPISTATUS SPI2STATUS
+#define SPITCNTL SPI2TCNTL
+#define SPITCNTH SPI2TCNTH
+#define SPITXB SPI2TXB
+#define SPIRXB SPI2RXB
+#define SPISDIPPS SPI2SDIPPS
+#define SPIIE SPI2IE
+#define SPIIF SPI2IF
+
+#define SPITXVECTOR 0x29
+#define SPIRXVECTOR 0x28
+
+#if defined(_PIC18F15Q40_H_)
+#define SPIPPSCOPI 0x1F
+#define SPIPPSCLK 0x1E
+#elif defined(_PIC18F57Q84_H_)
+#define SPIPPSCOPI 0x35
+#define SPIPPSCLK 0x34
+#else
+#error Unsupported PIC, requires PPS values.
+#endif
+#else
+#define SPICLK SPI1CLK
+#define SPICON0 SPI1CON0
+#define SPICON1 SPI1CON1
+#define SPICON2 SPI1CON2
+#define SPITWIDTH SPI1TWIDTH
+#define SPIINTE SPI1INTE
+#define SPIINTF SPI1INTF
+#define SPIBAUD SPI1BAUD
+#define SPISTATUS SPI1STATUS
+#define SPITCNTL SPI1TCNTL
+#define SPITCNTH SPI1TCNTH
+#define SPITXB SPI1TXB
+#define SPIRXB SPI1RXB
+#define SPISDIPPS SPI1SDIPPS
+#define SPIIE SPI1IE
+#define SPIIF SPI1IF
+
+#define SPITXVECTOR 0x19
+#define SPIRXVECTOR 0x18
+
+#if defined(_PIC18F15Q40_H_)
+#define SPIPPSCOPI 0x1C
+#define SPIPPSCLK 0x1B
+#elif defined(_PIC18F57Q84_H_)
+#define SPIPPSCOPI 0x32
+#define SPIPPSCLK 0x31
+#else
+#error Unsupported PIC, requires PPS values.
+#endif
+#endif
+
+#endif

@@ -41,7 +41,7 @@
                     "APPLICATION_THREE=0xffffff",
                     "APPLICATION_FOUR=0xffffff"
                 ],
-                "HI-TECH-LINK.code-model-rom": "0-2FF",
+                "HI-TECH-LINK.code-model-rom": "0-1FF",
                 "HI-TECH-COMP.asmlist": true,
                 "HI-TECH-COMP.optimization-level": "-O2",
                 "HI-TECH-COMP.extra-include-directories": [

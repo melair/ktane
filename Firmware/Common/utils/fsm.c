@@ -2,7 +2,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifndef FSM_SERVICE_LOOP_LIMIT
 #define FSM_SERVICE_LOOP_LIMIT 8
+#endif
 
 /* Initialise the FSM so that fsm_service() will start the FSM correctly. */
 void fsm_init(fsm_t *fsm) {
@@ -70,6 +72,7 @@ bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
     return false;
   }
 
+#ifndef FSM_SKIP_LEGAL_CHECK
   bool legal = false;
 
   /* Ensure next state is a legal transition. */
@@ -87,4 +90,8 @@ bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
   } else {
     return false;
   }
+#else
+    fsm->transition = new_state;
+    return true;
+#endif
 }
