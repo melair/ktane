@@ -14,18 +14,18 @@ void fsm_init(fsm_t *fsm) {
 }
 
 /* Service the fsm.
- 
-   Upon start fsm_service() will begin a transition, if there is one, by calling
-   the current states exit(), then swap, call the new states enter(). Then finally
-   calling service().
 
-   This process will repeat if a transition is requested by either the enter() or
-   service() call backs.
-   
-   Because an FSM that simply jumps between multiple states will hang the microcontroller
-   there is a limit on the number of FSM transitions that fsm_service() will perform
-   in one service loop (FSM_SERVICE_LOOP_LIMIT). This is an antipattern and FSMs should
-   not make use of this functionality.
+   Upon start fsm_service() will begin a transition, if there is one, by calling
+   the current states exit(), then swap, call the new states enter(). Then
+   finally calling service().
+
+   This process will repeat if a transition is requested by either the enter()
+   or service() call backs.
+
+   Because an FSM that simply jumps between multiple states will hang the
+   microcontroller there is a limit on the number of FSM transitions that
+   fsm_service() will perform in one service loop (FSM_SERVICE_LOOP_LIMIT). This
+   is an antipattern and FSMs should not make use of this functionality.
    */
 void fsm_service(fsm_t *fsm) {
   uint8_t count = 0;
@@ -58,11 +58,11 @@ void fsm_service(fsm_t *fsm) {
   } while (fsm->transition != NULL && count < FSM_SERVICE_LOOP_LIMIT);
 }
 
-/* Transition the FSM from one state to another. 
-   
+/* Transition the FSM from one state to another.
+
    If a transition is already queue then this function will return false, and
-   will not transition as requested. 
-   
+   will not transition as requested.
+
    This can be called at any time, however due to the above a call in an exit()
    callback of a state will never succeed.
    */
@@ -91,7 +91,7 @@ bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
     return false;
   }
 #else
-    fsm->transition = new_state;
-    return true;
+  fsm->transition = new_state;
+  return true;
 #endif
 }

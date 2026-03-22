@@ -4,6 +4,8 @@
 #include "mcu.h"
 #include "pin.h"
 #include "spi_internal.h"
+#include "time.h"
+#include "utils/time.h"
 #include <stdint.h>
 #include <xc.h>
 
@@ -108,15 +110,19 @@ const fs_t state_cs_assert = {
     .next_states = {&state_cs_wait, &state_ready, NULL},
     .enter = spi_state_cs_assert_enter};
 
+void spi_state_cs_wait_enter(fsm_t *fsm) {
+  spi.wait_until = uptime + spi.current->cs_wait_ms;
+}
+
 void spi_state_cs_wait_service(fsm_t *fsm) {
-
-  // TODO: INCOMPLETE - NEEDS CLOCK!
-
-  fsm_transition(fsm, &state_ready);
+  if (uptime >= spi.wait_until) {
+    fsm_transition(fsm, &state_ready);
+  }
 }
 
 const fs_t state_cs_wait = {.name = "CS WAIT",
                             .next_states = {&state_ready, NULL},
+                            .enter = spi_state_cs_wait_enter,
                             .service = spi_state_cs_wait_service};
 
 void spi_state_ready_enter(fsm_t *fsm) {

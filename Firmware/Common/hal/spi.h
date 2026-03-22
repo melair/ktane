@@ -19,6 +19,7 @@ struct spi_t {
 
     spi_transaction_t *current;
     pin_t current_cs_pin;
+    uint32_t wait_until;
 
     unsigned RW_DONE :1;
 };

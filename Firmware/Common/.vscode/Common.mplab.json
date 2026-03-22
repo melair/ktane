@@ -102,6 +102,7 @@
             "device": "PIC18F15Q40",
             "imageType": "library",
             "imagePath": "./out/Common/Edgework.a",
+            "tool": "PICkit 4",
             "packs": [
                 {
                     "name": "PIC18F-Q_DFP",

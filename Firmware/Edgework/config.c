@@ -28,7 +28,12 @@
 
 //CONFIG5
 #pragma config WDTCPS = WDTCPS_8     // WDT Period Select->Divider ratio 1:8192
-#pragma config WDTE = NSLEEP     // WDT Operating Mode->WDT enabled while sleep=0, suspended when sleep=1; SWDTEN ignored
+
+#ifdef __DEBUG
+#pragma config WDTE = OFF        // WDT operating mode (WDT disabled; SWDTEN is ignored)
+#else
+#pragma config WDTE = NSLEEP        // WDT operating mode (WDT enabled regardless of sleep; SWDTEN is ignored)
+#endif
 
 //CONFIG6
 #pragma config WDTCWS = WDTCWS_6     // WDT Window Select->window always open (100%); no software control; keyed access required
