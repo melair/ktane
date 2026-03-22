@@ -19,6 +19,8 @@ struct spi_t {
 
     spi_transaction_t *current;
     pin_t current_cs_pin;
+
+    unsigned RW_DONE :1;
 };
 
 #define SPI_OPERATION_WRITE           0

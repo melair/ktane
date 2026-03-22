@@ -1,10 +1,11 @@
-#include <xc.h>
-#include <stdint.h>
 #include "spi.h"
-#include "spi_internal.h"
 #include "../utils/fsm.h"
 #include "dma.h"
+#include "mcu.h"
 #include "pin.h"
+#include "spi_internal.h"
+#include <stdint.h>
+#include <xc.h>
 
 /*
 ---
@@ -55,6 +56,10 @@ const fs_t state_idle = {.name = "IDLE",
 void spi_state_dequeue_enter(fsm_t *fsm) {
   spi.current = spi.queue_head;
   spi.queue_head = spi.queue_head->queue_next;
+
+  if (spi.queue_tail == spi.current) {
+    spi.queue_tail = NULL;
+  }
 
   fsm_transition(fsm, &state_configure);
 }
@@ -151,15 +156,14 @@ void spi_state_write_enter(fsm_t *fsm) {
   DMAnDSZ = 1;
 
   DMAnSSA = (volatile uint24_t)spi.current->buffer;
-  DMAnDSA = (volatile unsigned short)SPITXB;
+  DMAnDSA = (volatile unsigned short)&SPITXB;
 
   DMAnCON1bits.SSTP = 1;
   DMAnCON1bits.DSTP = 0;
 
   DMAnSIRQ = SPITXVECTOR;
 
-  // TODO: Needed?
-  dma_intf_dcnt(spi.dma_peripheral);
+  spi.RW_DONE = 0;
 
   SPICON0 |= _SPI1CON0_EN_MASK;
 
@@ -168,10 +172,8 @@ void spi_state_write_enter(fsm_t *fsm) {
 }
 
 void spi_state_write_service(fsm_t *fsm) {
-  if ((SPICON2 & _SPI1CON2_BUSY_MASK) == 0 &&
-      (SPIINTF & _SPI1INTF_TCZIF_MASK) ==
-          _SPI1INTF_TCZIF_MASK) {
-    SPIINTF &= ~_SPI1INTF_TCZIF_MASK;
+  if (spi.RW_DONE) {
+    spi.RW_DONE = 0;
 
     if (spi.current->operation == SPI_OPERATION_WRITE_THEN_READ) {
       fsm_transition(fsm, &state_read);
@@ -206,15 +208,15 @@ void spi_state_read_enter(fsm_t *fsm) {
   DMAnDSZH = SPITCNTH;
   DMAnDSZL = SPITCNTL;
 
-  DMAnSSA = (volatile uint24_t)spi.current->buffer;
-  DMAnDSA = (volatile unsigned short)SPIRXB;
+  DMAnSSA = (volatile unsigned short)&SPIRXB;
+  DMAnDSA = (volatile uint24_t)spi.current->buffer;
 
   DMAnCON1bits.SSTP = 0;
   DMAnCON1bits.DSTP = 1;
 
   DMAnSIRQ = SPIRXVECTOR;
 
-  dma_intf_dcnt(spi.dma_peripheral);
+  spi.RW_DONE = 0;
 
   SPICON0 |= _SPI1CON0_EN_MASK;
 
@@ -223,7 +225,9 @@ void spi_state_read_enter(fsm_t *fsm) {
 }
 
 void spi_state_read_service(fsm_t *fsm) {
-  if (dma_intf_dcnt(spi.dma_peripheral)) {
+  if (spi.RW_DONE) {
+    spi.RW_DONE = 0;
+
     fsm_transition(fsm, &state_callback);
   }
 }
@@ -293,8 +297,8 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config) {
   SPIINTE |= _SPI1INTE_TCZIE_MASK;
 
   *pin_to_pps(copi) = SPIPPSCOPI;
-  *pin_to_pps(copi) = SPIPPSCLK;
-  
+  *pin_to_pps(clk) = SPIPPSCLK;
+
   SPIIE = 1;
   SPISDIPPS = cipo;
 
@@ -313,7 +317,29 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config) {
 
 void spi_service(void) { fsm_service(&spi.fsm); }
 
-void spi_interrupt(void) {}
+void spi_interrupt(void) {
+  uint8_t o = DMASELECT;
+  DMASELECT = spi.dma_peripheral;
+  uint8_t dmacon0 = DMAnCON0;
+  DMASELECT = o;
+
+  if ((dmacon0 & _DMAnCON0_DGO_MASK) != _DMAnCON0_DGO_MASK && (SPICON2 & _SPI1CON2_BUSY_MASK) != _SPI1CON2_BUSY_MASK && (SPIINTF & _SPI1INTF_TCZIF_MASK) == _SPI1INTF_TCZIF_MASK) {
+    SPIINTF &= ~_SPI1INTF_TCZIF_MASK;
+
+    if (spi.current->operation == SPI_OPERATION_WRITE ||
+        spi.current->operation == SPI_OPERATION_WRITE_THEN_READ) {
+      spi.RW_DONE = 1;
+    }
+  }
+
+  if (DMA1DCNTIF) {
+    DMA1DCNTIF = 0;
+
+    if (spi.current->operation == SPI_OPERATION_READ) {
+      spi.RW_DONE = 1;
+    }
+  }
+}
 
 void spi_queue(spi_transaction_t *transaction) {
   transaction->queue_next = NULL;
