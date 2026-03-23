@@ -39,9 +39,11 @@ int main() {
   t.cke = true;
   t.lsb_first = true;
   t.cs_pin = GPIO_6;
-  t.operation = SPI_OPERATION_READ;
-  t.write_size = 0x00;
-  t.read_size = 0x02;
+  t.cs_wait_ms = 0;
+  t.operation = SPI_OPERATION_WRITE;
+  t.write_size = 0x02;
+  t.write_repeats = 3;
+  t.read_size = 0x00;
   t.buffer = &buffer[0];
 
   spi_queue(&t);

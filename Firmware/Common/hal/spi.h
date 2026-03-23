@@ -18,9 +18,9 @@ struct spi_t {
     spi_transaction_t *queue_tail;
 
     spi_transaction_t *current;
+
     pin_t current_cs_pin;
     uint32_t wait_until;
-
     unsigned RW_DONE :1;
 };
 
@@ -39,6 +39,7 @@ struct spi_transaction_t {
 
     uint8_t *buffer;
     uint16_t write_size;
+    uint16_t write_repeats;
     uint16_t read_size;
 
     unsigned bits :3;

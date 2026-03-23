@@ -1,11 +1,11 @@
 #include "spi.h"
 #include "../utils/fsm.h"
+#include "../utils/time.h"
 #include "dma.h"
 #include "mcu.h"
 #include "pin.h"
 #include "spi_internal.h"
 #include "time.h"
-#include "utils/time.h"
 #include <stdint.h>
 #include <xc.h>
 
@@ -324,27 +324,44 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config) {
 void spi_service(void) { fsm_service(&spi.fsm); }
 
 void spi_interrupt(void) {
-  uint8_t o = DMASELECT;
-  DMASELECT = spi.dma_peripheral;
-  uint8_t dmacon0 = DMAnCON0;
-  DMASELECT = o;
+  DMA_SELECT_BEGIN(spi.dma_peripheral);
 
-  if ((dmacon0 & _DMAnCON0_DGO_MASK) != _DMAnCON0_DGO_MASK && (SPICON2 & _SPI1CON2_BUSY_MASK) != _SPI1CON2_BUSY_MASK && (SPIINTF & _SPI1INTF_TCZIF_MASK) == _SPI1INTF_TCZIF_MASK) {
+  if ((DMAnCON0 & _DMAnCON0_DGO_MASK) != _DMAnCON0_DGO_MASK &&
+      (SPICON2 & _SPI1CON2_BUSY_MASK) != _SPI1CON2_BUSY_MASK &&
+      (SPIINTF & _SPI1INTF_TCZIF_MASK) == _SPI1INTF_TCZIF_MASK) {
     SPIINTF &= ~_SPI1INTF_TCZIF_MASK;
 
     if (spi.current->operation == SPI_OPERATION_WRITE ||
         spi.current->operation == SPI_OPERATION_WRITE_THEN_READ) {
-      spi.RW_DONE = 1;
+
+      if (spi.current->write_repeats > 0) {
+        spi.current->write_repeats--;
+
+        SPICON0 &= ~_SPI1CON0_EN_MASK;
+
+        SPITCNTH = (spi.current->write_size >> 8) & 0x07;
+        SPITCNTL = (spi.current->write_size) & 0xff;
+
+        SPISTATUS |= _SPI1STATUS_CLRBF_MASK;
+
+        DMAnCON0bits.EN = 0;
+
+        SPICON0 |= _SPI1CON0_EN_MASK;
+        DMAnCON0bits.SIRQEN = 1;
+        DMAnCON0bits.EN = 1;
+      } else {
+        spi.RW_DONE = 1;
+      }
     }
   }
 
-  if (DMA1DCNTIF) {
-    DMA1DCNTIF = 0;
-
+  if (dma_intf_dcnt(spi.dma_peripheral)) {
     if (spi.current->operation == SPI_OPERATION_READ) {
       spi.RW_DONE = 1;
     }
   }
+
+  DMA_SELECT_END();
 }
 
 void spi_queue(spi_transaction_t *transaction) {

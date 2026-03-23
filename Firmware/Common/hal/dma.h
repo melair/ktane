@@ -32,4 +32,11 @@
 void dma_inte_dcnt(uint8_t dma, bool en);
 bool dma_intf_dcnt(uint8_t dma);
 
+#define DMA_SELECT_BEGIN(channel) \
+    uint8_t _dmaselect_saved = DMASELECT; \
+    DMASELECT = (channel)
+
+#define DMA_SELECT_END() \
+    DMASELECT = _dmaselect_saved
+
 #endif
