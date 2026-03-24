@@ -18,9 +18,8 @@ stateDiagram-v2
     Idle --> Dequeue
     Dequeue --> Configure
     Configure --> CSAssert
-    CSAssert --> CSWait
     CSAssert --> Ready
-    CSWait --> Ready
+    CSAssert -->|Wait| Ready
     Ready --> Read
     Ready --> Write
     Write --> Read
@@ -36,7 +35,6 @@ extern const fs_t state_idle;
 extern const fs_t state_dequeue;
 extern const fs_t state_configure;
 extern const fs_t state_cs_assert;
-extern const fs_t state_cs_wait;
 extern const fs_t state_ready;
 extern const fs_t state_write;
 extern const fs_t state_read;
@@ -85,7 +83,11 @@ void spi_state_configure_enter(fsm_t *fsm) {
     SPICON1 &= ~_SPI1CON1_CKE_MASK;
   }
 
-  SPITWIDTH = (spi.current->bits == 8 ? 0 : spi.current->bits);
+    if (spi.current->bits == 8) {
+      SPITWIDTH = 8;
+    } else {
+      SPITWIDTH = spi.current->bits;
+    }
 
   fsm_transition(fsm, &state_cs_assert);
 }
@@ -99,7 +101,7 @@ void spi_state_cs_assert_enter(fsm_t *fsm) {
   pin_write(spi.current_cs_pin, false);
 
   if (spi.current->cs_wait_ms != 0) {
-    fsm_transition(fsm, &state_cs_wait);
+    fsm_transition_in(fsm, &state_ready, spi.current->cs_wait_ms);
   } else {
     fsm_transition(fsm, &state_ready);
   }
@@ -107,23 +109,8 @@ void spi_state_cs_assert_enter(fsm_t *fsm) {
 
 const fs_t state_cs_assert = {
     .name = "CS ASSERT",
-    .next_states = {&state_cs_wait, &state_ready, NULL},
+    .next_states = {&state_ready, NULL},
     .enter = spi_state_cs_assert_enter};
-
-void spi_state_cs_wait_enter(fsm_t *fsm) {
-  spi.wait_until = uptime + spi.current->cs_wait_ms;
-}
-
-void spi_state_cs_wait_service(fsm_t *fsm) {
-  if (uptime >= spi.wait_until) {
-    fsm_transition(fsm, &state_ready);
-  }
-}
-
-const fs_t state_cs_wait = {.name = "CS WAIT",
-                            .next_states = {&state_ready, NULL},
-                            .enter = spi_state_cs_wait_enter,
-                            .service = spi_state_cs_wait_service};
 
 void spi_state_ready_enter(fsm_t *fsm) {
   switch (spi.current->operation) {

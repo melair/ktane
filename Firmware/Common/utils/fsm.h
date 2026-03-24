@@ -2,6 +2,7 @@
 #define FSM_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #ifndef FSM_MAX_NEXT_STATES
 #define FSM_MAX_NEXT_STATES 4
@@ -25,6 +26,7 @@ struct fsm_t {
 
     const fs_t *current;
     const fs_t *transition;
+    uint32_t transition_at;
 
     void *ctx;
 };
@@ -32,5 +34,6 @@ struct fsm_t {
 void fsm_init(fsm_t *fsm);
 void fsm_service(fsm_t *fsm);
 bool fsm_transition(fsm_t *fsm, const fs_t *fs);
+bool fsm_transition_in(fsm_t *fsm, const fs_t *new_state, uint32_t delayInMs);
 
 #endif

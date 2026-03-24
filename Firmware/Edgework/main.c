@@ -8,6 +8,7 @@
 #include "gpio.h"
 #include <hal/pin.h>
 #include <utils/time.h>
+#include <peripherals/epaper/epaper.h>
 
 /* Main entry point for edgework widget. */
 int main() {
@@ -26,27 +27,43 @@ int main() {
   /* Temp: Initialise SPI. */
   pin_config(GPIO_4, OUTPUT, 0); // COPI
   pin_config(GPIO_5, OUTPUT, 0); // CLK
-  pin_config(GPIO_6, OUTPUT, 0); // /CS
-  pin_write(GPIO_6, true);
-
   spi_init(GPIO_4, GPIO_5, PORTPIN_NONE, DMA1);
 
-  spi_transaction_t t;
-  uint8_t buffer[8];
+  /* Temp: Initialise ePaper. */
+  pin_config(GPIO_6, OUTPUT, 0); // /CS
+  pin_write(GPIO_6, true);
+  pin_config(GPIO_0, OUTPUT, 0); // PWR
+  pin_config(GPIO_7, OUTPUT, 0); // D/~C
+  pin_config(GPIO_8, OUTPUT, 0); // RESET
+  pin_config(GPIO_9, INPUT, 0); // BUSY
+  pin_write(GPIO_8, true);
 
-  t.baud = SPI_BAUD_125K;
-  t.bits = (uint8_t) 8;
-  t.cke = true;
-  t.lsb_first = true;
-  t.cs_pin = GPIO_6;
-  t.cs_wait_ms = 0;
-  t.operation = SPI_OPERATION_WRITE;
-  t.write_size = 0x02;
-  t.write_repeats = 3;
-  t.read_size = 0x00;
-  t.buffer = &buffer[0];
+  epaper_t epaper;
+  epaper.cs = GPIO_6;
+  epaper.pwr = GPIO_0;
+  epaper.dc = GPIO_7;
+  epaper.reset = GPIO_8;
+  epaper.busy = GPIO_9;
+  epaper.type = EPAPER_TYPE_SSD1680;
+  epaper.width = 296;
+  epaper.height = 128;
+  epaper.init_phase = 0;
+  epaper.spi_transaction.cs_pin = epaper.cs;
+  epaper.spi_transaction.cs_bounce = true;
+  epaper.spi_transaction.baud = SPI_BAUD_125K;
+  epaper.spi_transaction.bits = 8;
+  epaper.spi_transaction.cke = 1;
+  epaper.spi_transaction.lsb_first = 0;
+  epaper.spi_transaction.operation = SPI_OPERATION_WRITE;
+  epaper.spi_transaction.write_repeats = 0;
+  epaper.spi_transaction.write_size = 0;
+  epaper.spi_transaction.read_size = 0;
+  epaper.spi_transaction.callback_data = &epaper;
+  epaper_init(&epaper);
 
-  spi_queue(&t);
+  epaper_command_t a;
+  epaper_queue(&epaper, &a);
+  epaper_refresh(&epaper);
 
   while(1) {
     // Clear Watchdog.
@@ -57,6 +74,9 @@ int main() {
 
     /* Temp: Service SPI. */
     spi_service();
+
+    /* Temp: Service ePaper */
+    epaper_service(&epaper);
 
     // Sleep, if there's no time update.
     if (time_service_end()) {

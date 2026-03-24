@@ -1,4 +1,5 @@
 #include "fsm.h"
+#include "time.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,6 +12,7 @@ void fsm_init(fsm_t *fsm) {
   /* Ensure current is NULL, and set first transition to initial state. */
   fsm->current = NULL;
   fsm->transition = fsm->initial;
+  fsm->transition_at = 0;
 }
 
 /* Service the fsm.
@@ -35,7 +37,7 @@ void fsm_service(fsm_t *fsm) {
     count++;
 
     /* Check to see if we need to transition. */
-    if (fsm->transition != NULL) {
+    if (fsm->transition != NULL && fsm->transition_at <= uptime) {
       /* If we have a current state (may not at init) and we have an exit
        * callback, do it. */
       if (fsm->current != NULL && fsm->current->exit != NULL) {
@@ -94,4 +96,14 @@ bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
   fsm->transition = new_state;
   return true;
 #endif
+}
+
+bool fsm_transition_in(fsm_t *fsm, const fs_t *new_state, uint32_t delayInMs) {
+  if (fsm_transition(fsm, new_state)) {
+    fsm->transition_at = uptime + delayInMs;
+
+    return true;
+  } else {
+    return false;
+  }
 }
