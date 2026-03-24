@@ -4,5 +4,6 @@
 #include "../../utils/fsm.h"
 
 extern const fs_t ssd1680_idle;
+extern const fs_t ssd1680_queue_return;
 
 #endif

@@ -63,6 +63,7 @@ int main() {
   epaper_init(&epaper);
 
   epaper_command_t a;
+  a.operation = OPERATION_FILL_WHITE;
   epaper_queue(&epaper, &a);
   epaper_refresh(&epaper, false);
 

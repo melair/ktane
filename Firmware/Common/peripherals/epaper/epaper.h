@@ -12,7 +12,12 @@
 typedef struct epaper_command_t epaper_command_t;
 typedef struct epaper_t epaper_t;
 
+#define OPERATION_FILL_WHITE    0
+#define OPERATION_FILL_BLACK    1
+#define OPERATION_FILL_RED      2
+
 struct epaper_command_t {
+    uint8_t operation;
     epaper_command_t *next;
 };
 

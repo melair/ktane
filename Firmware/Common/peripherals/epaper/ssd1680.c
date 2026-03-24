@@ -3,6 +3,7 @@
 #include "../../hal/spi.h"
 #include "../../utils/fsm.h"
 #include "epaper.h"
+#include "ssd1680_operations.h"
 #include <stdbool.h>
 #include <xc.h>
 
@@ -247,17 +248,42 @@ const fs_t ssd1680_configure_wait = {.name = "CONFIGURE_COMPLETE",
                                      .next_states = {&ssd1680_queue, NULL},
                                      .service = ssd1680_configure_wait_service};
 
-void ssd1680_queue_service(fsm_t *fsm) {
+void ssd1680_queue_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
 
   if (epaper->commited == NULL) {
     fsm_transition(&epaper->fsm, &ssd1680_refresh_display);
+    return
+  }
+
+  switch (epaper->commited->operation) {
+  case OPERATION_FILL_WHITE:
+  case OPERATION_FILL_BLACK:
+  case OPERATION_FILL_RED:
+    fsm_transition(&epaper->fsm, &ssd1680_operation_fill);
+    break;
+
+  default:
+    fsm_transition(&epaper->fsm, &ssd1680_queue_return);
+    break;
   }
 }
 
-const fs_t ssd1680_queue = {.name = "QUEUE",
-                            .next_states = {&ssd1680_refresh_display, NULL},
-                            .service = ssd1680_queue_service};
+const fs_t ssd1680_queue = {
+    .name = "QUEUE",
+    .next_states = {&ssd1680_refresh_display, &ssd1680_operation_fill, NULL},
+    .enter = ssd1680_queue_enter};
+
+void ssd1680_queue_return_enter(fsm_t *fsm) {
+  epaper_t *epaper = (epaper_t *)fsm->ctx;
+
+  epaper->commited = epaper->commited->next;
+  fsm_transition(&epaper->fsm, &ssd1680_queue);
+}
+
+const fs_t ssd1680_queue_return = {.name = "QUEUE_RETURN",
+                                   .next_states = {&ssd1680_queue, NULL},
+                                   .enter = ssd1680_queue_return_enter};
 
 spi_transaction_t *ssd1680_refresh_display_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
