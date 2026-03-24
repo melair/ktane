@@ -32,11 +32,12 @@ void epaper_queue(epaper_t *epaper, epaper_command_t *cmd) {
     epaper->queue_tail = cmd;
 }
 
-void epaper_refresh(epaper_t *epaper) {
-    if (epaper->commited != NULL) {
+void epaper_refresh(epaper_t *epaper, bool partial) {
+    if (epaper->commited != NULL || epaper->queue_head == NULL) {
         return;
     }
     
+    epaper->partial = partial;
     epaper->commited = epaper->queue_head;
     epaper->queue_head = NULL;
     epaper->queue_tail = NULL;

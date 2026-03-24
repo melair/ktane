@@ -10,6 +10,8 @@
 #include <utils/time.h>
 #include <peripherals/epaper/epaper.h>
 
+epaper_t epaper;
+
 /* Main entry point for edgework widget. */
 int main() {
   /* Initialise the MCU memory arbiter. */
@@ -38,7 +40,6 @@ int main() {
   pin_config(GPIO_9, INPUT, 0); // BUSY
   pin_write(GPIO_8, true);
 
-  epaper_t epaper;
   epaper.cs = GPIO_6;
   epaper.pwr = GPIO_0;
   epaper.dc = GPIO_7;
@@ -47,9 +48,9 @@ int main() {
   epaper.type = EPAPER_TYPE_SSD1680;
   epaper.width = 296;
   epaper.height = 128;
-  epaper.init_phase = 0;
   epaper.spi_transaction.cs_pin = epaper.cs;
   epaper.spi_transaction.cs_bounce = true;
+  epaper.spi_transaction.cs_wait_ms = 0;
   epaper.spi_transaction.baud = SPI_BAUD_125K;
   epaper.spi_transaction.bits = 8;
   epaper.spi_transaction.cke = 1;
@@ -63,7 +64,7 @@ int main() {
 
   epaper_command_t a;
   epaper_queue(&epaper, &a);
-  epaper_refresh(&epaper);
+  epaper_refresh(&epaper, false);
 
   while(1) {
     // Clear Watchdog.

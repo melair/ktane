@@ -238,16 +238,14 @@ void spi_state_callback_enter(fsm_t *fsm) {
   if (spi.current->callback != NULL) {
     spi.current = spi.current->callback(spi.current);
 
-    if (spi.current != NULL) {
-      if (spi.current_cs_pin == spi.current->cs_pin &&
-          !spi.current->cs_bounce) {
-        fsm_transition(fsm, &state_configure);
-      } else {
-        fsm_transition(fsm, &state_cs_deassert);
-      }
-
-      return;
+    if (spi.current_cs_pin == spi.current->cs_pin &&
+        !spi.current->cs_bounce) {
+      fsm_transition(fsm, &state_configure);
+    } else {
+      fsm_transition(fsm, &state_cs_deassert);
     }
+
+    return;
   }
 
   fsm_transition(fsm, &state_cs_deassert);

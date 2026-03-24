@@ -1,6 +1,8 @@
 #ifndef EPAPER_H
 #define EPAPER_H
 
+#include <stdbool.h>
+
 #include "../../hal/pin.h"
 #include "../../utils/fsm.h"
 #include "../../hal/spi.h"
@@ -29,16 +31,18 @@ struct epaper_t {
 
     epaper_command_t *queue_head;
     epaper_command_t *queue_tail;
+
     epaper_command_t *commited;
+    bool partial;
 
     spi_transaction_t spi_transaction;
     uint8_t cmd_buffer[4];
-    uint8_t init_phase;
+    uint8_t phase;
 };
 
 void epaper_init(epaper_t *epaper);
 void epaper_service(epaper_t *epaper);
 void epaper_queue(epaper_t *epaper, epaper_command_t *cmd);
-void epaper_refresh(epaper_t *epaper);
+void epaper_refresh(epaper_t *epape, bool partial);
 
 #endif
