@@ -1,7 +1,8 @@
 #include <xc.h>
 #include "../../utils/fsm.h"
 #include "../../hal/spi.h"
-#include "peripherals/epaper/ssd1680.h"
+#include "epaper.h"
+#include "ssd1680.h"
 #include "ssd1680_operations.h"
 
 void ssd1680_operation_fill_enter(fsm_t *fsm) {

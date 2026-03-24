@@ -3,6 +3,7 @@
 #include "../../hal/spi.h"
 #include "../../utils/fsm.h"
 #include "epaper.h"
+#include "spi_queue.h"
 #include "ssd1680_operations.h"
 #include <stdbool.h>
 #include <xc.h>
@@ -135,7 +136,7 @@ typedef struct {
 } init_option_t;
 
 #define INIT_DATA_SIZE 21
-const init_option_t init_data[INIT_DATA_SIZE] = {
+const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 0, .size = 1, .buffer = {0x3c} // Boarder Waveform
     },
@@ -158,7 +159,7 @@ const init_option_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 1,
         .size = 2,
-        .buffer = {0x00, 0x0f} // 0 = start of 0x00, 1 = EPD_WIDTH/8-1 end
+        .buffer = {0x00, 0xff} // 0 = start of 0x00, 1 = EPD_WIDTH/8-1 end
     },
     {
         .data = 0, .size = 1, .buffer = {0x45} // RAM Y address start/end.
@@ -166,7 +167,7 @@ const init_option_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 1,
         .size = 4,
-        .buffer = {0x27, 0x01, 0x00, 0x00} // 0-1 = EPD_HEIGHT-1 LSB first
+        .buffer = {0xff, 0xff, 0x00, 0x00} // 0-1 = EPD_HEIGHT-1 LSB first
     },
     {
         .data = 0, .size = 1, .buffer = {0x21} // Display update control
@@ -190,7 +191,7 @@ const init_option_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 1,
         .size = 2,
-        .buffer = {0x27, 0x01} // 0-1 = EPD_HEIGHT-1 LSB first
+        .buffer = {0xff, 0xff} // 0-1 = EPD_HEIGHT-1 LSB first
     },
     {.data = 0, .size = 1, .buffer = {0x22}},
     {.data = 1, .size = 1, .buffer = {0xb1}},
@@ -201,31 +202,31 @@ spi_transaction_t *
 ssd1680_configure_enter_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  uint8_t i = epaper->phase;
+  if (spi_queue_process(&init_data, INIT_DATA_SIZE, epaper->dc,
+                        &epaper->spi_transaction, &epaper->phase)) {
+    switch (epaper->phase - 1) {
+    case 7:
+      epaper->spi_transaction.buffer[1] = (epaper->width / 8) - 1;
+      break;
+    case 9:
+    case 17:
+      uint16_t height = epaper->height - 1;
+      epaper->spi_transaction.buffer[0] = (uint8_t)(height & 0xff);
+      epaper->spi_transaction.buffer[1] = (uint8_t)((height >> 8) & 0xff);
+      break;
+    }
 
-  if (i >= INIT_DATA_SIZE) {
+    return spi;
+  } else {
     fsm_transition(&epaper->fsm, &ssd1680_configure_wait);
     return NULL;
   }
-
-  pin_write(epaper->dc, init_data[i].data == 1);
-
-  for (uint8_t j = 0; j < init_data[i].size; j++) {
-    epaper->cmd_buffer[j] = init_data[i].buffer[j];
-  }
-
-  spi->write_size = init_data[i].size;
-  spi->buffer = &epaper->cmd_buffer[0];
-  spi->callback = &ssd1680_configure_enter_spi_callback;
-
-  epaper->phase++;
-
-  return spi;
 }
 
 void ssd1680_configure_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
   epaper->phase = 0;
+  epaper->spi_transaction.callback = &ssd1680_configure_enter_spi_callback;
 
   spi_transaction_t *t =
       ssd1680_configure_enter_spi_callback(&epaper->spi_transaction);
@@ -253,7 +254,7 @@ void ssd1680_queue_enter(fsm_t *fsm) {
 
   if (epaper->commited == NULL) {
     fsm_transition(&epaper->fsm, &ssd1680_refresh_display);
-    return
+    return;
   }
 
   switch (epaper->commited->operation) {
@@ -285,43 +286,36 @@ const fs_t ssd1680_queue_return = {.name = "QUEUE_RETURN",
                                    .next_states = {&ssd1680_queue, NULL},
                                    .enter = ssd1680_queue_return_enter};
 
+#define REFRESH_DATA_SIZE 3
+const spi_queue_t refresh_data[REFRESH_DATA_SIZE] = {
+    {
+        .data = 0, .size = 1, .buffer = {0x22} // Confgiure
+    },
+    {.data = 1, .size = 1, .buffer = {0xf7}},
+    {
+        .data = 0, .size = 1, .buffer = {0x20} // Refresh
+    }};
+
 spi_transaction_t *ssd1680_refresh_display_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (epaper->phase > 1) {
-    pin_write(epaper->dc, false);
+  if (spi_queue_process(&refresh_data, REFRESH_DATA_SIZE, epaper->dc,
+                        &epaper->spi_transaction, &epaper->phase)) {
+    return spi;
+  } else {
     fsm_transition(&epaper->fsm, &ssd1680_refresh_display_wait);
     return NULL;
   }
-
-  if (epaper->phase == 0) {
-    pin_write(epaper->dc, true);
-
-    if (epaper->partial) {
-      epaper->cmd_buffer[0] = 0x1c;
-    } else {
-      epaper->cmd_buffer[0] = 0xf7;
-    }
-  } else {
-    pin_write(epaper->dc, false);
-    epaper->cmd_buffer[0] = 0x20;
-  }
-
-  epaper->phase++;
-  return spi;
 }
 
 void ssd1680_refresh_display_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
-
-  pin_write(epaper->dc, false);
-  epaper->cmd_buffer[0] = 0x22;
-  epaper->spi_transaction.write_size = 1;
-  epaper->spi_transaction.buffer = &epaper->cmd_buffer[0];
-  epaper->spi_transaction.callback = &ssd1680_refresh_display_callback;
   epaper->phase = 0;
+  epaper->spi_transaction.callback = &ssd1680_refresh_display_callback;
 
-  spi_queue(&epaper->spi_transaction);
+  spi_transaction_t *t =
+      ssd1680_refresh_display_callback(&epaper->spi_transaction);
+  spi_queue(t);
 }
 
 const fs_t ssd1680_refresh_display = {
@@ -342,33 +336,34 @@ const fs_t ssd1680_refresh_display_wait = {
     .next_states = {&ssd1680_sleep, NULL},
     .service = ssd1680_refresh_display_wait_service};
 
+#define SLEEP_DATA_SIZE 2
+const spi_queue_t sleep_data[SLEEP_DATA_SIZE] = {
+    {
+        .data = 0, .size = 1, .buffer = {0x10} // Sleep
+    },
+    {.data = 1, .size = 1, .buffer = {0x01}}, // Data
+};
+
 spi_transaction_t *ssd1680_sleep_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (epaper->phase > 0) {
-    pin_write(epaper->dc, false);
+  if (spi_queue_process(&sleep_data, SLEEP_DATA_SIZE, epaper->dc,
+                        &epaper->spi_transaction, &epaper->phase)) {
+    return spi;
+  } else {
     fsm_transition(&epaper->fsm, &ssd1680_power_off);
     return NULL;
   }
-
-  epaper->phase++;
-  pin_write(epaper->dc, true);
-  epaper->cmd_buffer[0] = 0x01;
-
-  return spi;
 }
 
 void ssd1680_sleep_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
-
-  pin_write(epaper->dc, false);
-  epaper->cmd_buffer[0] = 0x10;
-  epaper->spi_transaction.write_size = 1;
-  epaper->spi_transaction.buffer = &epaper->cmd_buffer[0];
-  epaper->spi_transaction.callback = &ssd1680_sleep_spi_callback;
   epaper->phase = 0;
+  epaper->spi_transaction.callback = &ssd1680_sleep_spi_callback;
 
-  spi_queue(&epaper->spi_transaction);
+  spi_transaction_t *t =
+      ssd1680_sleep_spi_callback(&epaper->spi_transaction);
+  spi_queue(t);
 }
 
 const fs_t ssd1680_sleep = {.name = "SLEEP",
