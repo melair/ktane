@@ -15,24 +15,23 @@ const spi_queue_t fill_data[FILL_DATA_SIZE] = {
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_SET_RAM_X_COUNTER} // Set RAM X address to 0
+        .buffer = {SSD1680_CMD_SET_RAM_X_COUNTER} 
     },
     {.data = 1, .size = 1, .buffer = {0xaa}},
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_SET_RAM_Y_COUNTER} // Set RAM Y address to the
-                                                  // end of height
+        .buffer = {SSD1680_CMD_SET_RAM_Y_COUNTER}
     },
     {
         .data = 1,
         .size = 2,
-        .buffer = {0xaa, 0xaa} // 0-1 = EPD_HEIGHT-1 LSB first
+        .buffer = {0xaa, 0xaa}
     },
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_WRITE_RAM_BW} // Set black/white data.
+        .buffer = {SSD1680_CMD_WRITE_RAM_BW}
     }};
 
 spi_transaction_t *
