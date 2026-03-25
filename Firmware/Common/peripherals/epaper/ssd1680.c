@@ -134,43 +134,43 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_DRIVER_OUTPUT_CONTROL} // Driver output control
+        .buffer = {SSD1680_CMD_DRIVER_OUTPUT_CONTROL}
     },
     {
         .data = 1,
         .size = 3,
-        .buffer = {0xaa, 0xaa, 0x00} // Replace 0..1 with height - 1 (lsb first)
+        .buffer = {0xaa, 0xaa, 0x00} // EPD Height
     },
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_DATA_ENTRY_MODE} // Data entry mode
+        .buffer = {SSD1680_CMD_DATA_ENTRY_MODE}
     },
     {.data = 1, .size = 1, .buffer = {0xaa}},
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_SET_RAM_X} // RAM X address start/end.
+        .buffer = {SSD1680_CMD_SET_RAM_X}
     },
     {
         .data = 1,
         .size = 2,
-        .buffer = {0xaa, 0xbb} // 0 = start of 0x00, 1 = EPD_WIDTH/8-1 end
+        .buffer = {0xaa, 0xbb} // 0 = Start, 1 = End
     },
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_SET_RAM_Y} // RAM Y address start/end.
+        .buffer = {SSD1680_CMD_SET_RAM_Y}
     },
     {
         .data = 1,
         .size = 4,
-        .buffer = {0xaa, 0xaa, 0xbb, 0xbb} // 0-1 = EPD_HEIGHT-1 LSB first
+        .buffer = {0xaa, 0xaa, 0xbb, 0xbb} // 0-1 = Start, 2-3 = End
     },
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_BORDER_WAVEFORM_CONTROL} // Boarder Waveform
+        .buffer = {SSD1680_CMD_BORDER_WAVEFORM_CONTROL}
     },
     {.data = 1, .size = 1, .buffer = {0x05}}, // Follow LUT | LUT1
 
@@ -178,7 +178,7 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
         .data = 0,
         .size = 1,
         .buffer =
-            {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_1} // Display update control
+            {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_1}
     },
     {.data = 1,
      .size = 2,
@@ -187,8 +187,7 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 0,
         .size = 1,
-        .buffer = {SSD1680_CMD_TEMPERATURE_SENSOR_CONTROL} // Set up temperature
-                                                           // sensor
+        .buffer = {SSD1680_CMD_TEMPERATURE_SENSOR_CONTROL}
     },
     {
         .data = 1, .size = 1, .buffer = {0x80} // Internal temperature sensor
