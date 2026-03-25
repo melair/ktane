@@ -51,8 +51,8 @@ ssd1680_operation_fill_enter_spi_callback(spi_transaction_t *spi) {
     y2 = epaper->height - epaper->commited->data.fill.x1 - 1;
     break;
   case ROTATION_180:
-    x1 = epaper->width - epaper->commited->data.fill.x2;
-    x2 = epaper->width - epaper->commited->data.fill.x1;
+    x1 = epaper->width - epaper->commited->data.fill.x2 - 1;
+    x2 = epaper->width - epaper->commited->data.fill.x1 - 1;
     y1 = epaper->height - epaper->commited->data.fill.y2 - 1;
     y2 = epaper->height - epaper->commited->data.fill.y1 - 1;
     break;
