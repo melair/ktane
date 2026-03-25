@@ -19,7 +19,7 @@
             "name": "Edgework-tool-base",
             "type": "tool",
             "properties": {
-                "poweroptions.powerenable": false,
+                "poweroptions.powerenable": true,
                 "voltagevalue": "3.3"
             }
         }

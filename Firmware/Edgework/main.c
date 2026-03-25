@@ -48,13 +48,37 @@ int main() {
   epaper.type = EPAPER_TYPE_SSD1680;
   epaper.width = 128;
   epaper.height = 296;
-  epaper.rotation = ROTATION_90;
+  epaper.rotation = ROTATION_180;
 
   epaper_init(&epaper);
 
   epaper_command_t a;
-  a.operation = OPERATION_FILL_RED;
+  a.operation = OPERATION_FILL;
+  a.colour = OPERATION_COLOUR_RED;
+  a.data.fill.x1 = 0;
+  a.data.fill.x2 = epaper.width - 1;
+  a.data.fill.y1 = 0;
+  a.data.fill.y2 = 39;
+
+  epaper_command_t b;
+  b.operation = OPERATION_FILL;
+  b.colour = OPERATION_COLOUR_WHITE;
+  b.data.fill.x1 = 0;
+  b.data.fill.x2 = epaper.width - 1;
+  b.data.fill.y1 = 40;
+  b.data.fill.y2 = epaper.height - 1;
+
+  epaper_command_t c;
+  c.operation = OPERATION_FILL;
+  c.colour = OPERATION_COLOUR_BLACK;
+  c.data.fill.x1 = 0;
+  c.data.fill.y1 = 0;
+  c.data.fill.x2 = 31;
+  c.data.fill.y2 = 31;
+  
   epaper_queue(&epaper, &a);
+  epaper_queue(&epaper, &b);
+  epaper_queue(&epaper, &c);
   epaper_refresh(&epaper, false);
 
   while(1) {

@@ -129,7 +129,7 @@ const fs_t ssd1680_sw_reset_phase_two = {
 
 const uint8_t ROTATION_TABLE[4] = { 0x03, 0x06, 0x00, 0x05 };
 
-#define INIT_DATA_SIZE 16
+#define INIT_DATA_SIZE 17
 const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 0,
@@ -281,9 +281,7 @@ void ssd1680_queue_enter(fsm_t *fsm) {
   }
 
   switch (epaper->commited->operation) {
-  case OPERATION_FILL_WHITE:
-  case OPERATION_FILL_BLACK:
-  case OPERATION_FILL_RED:
+  case OPERATION_FILL:
     fsm_transition(&epaper->fsm, &ssd1680_operation_fill);
     break;
 

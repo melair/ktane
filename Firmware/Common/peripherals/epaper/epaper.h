@@ -12,12 +12,35 @@
 typedef struct epaper_command_t epaper_command_t;
 typedef struct epaper_t epaper_t;
 
-#define OPERATION_FILL_WHITE    0
-#define OPERATION_FILL_BLACK    1
-#define OPERATION_FILL_RED      2
+#define OPERATION_FILL    0
+
+#define OPERATION_COLOUR_WHITE 0
+#define OPERATION_COLOUR_BLACK 1
+#define OPERATION_COLOUR_RED  2
 
 struct epaper_command_t {
     uint8_t operation;
+    uint8_t colour;
+
+    struct {
+        uint8_t x1;
+        uint8_t x2;
+        uint16_t y1;
+        uint16_t y2;
+
+        uint8_t width;
+        uint16_t height;
+    } mapped;
+
+    union {
+        struct {
+            uint16_t x1;
+            uint16_t y1;
+            uint16_t x2;
+            uint16_t y2;
+        } fill;
+    } data;
+
     epaper_command_t *next;
 };
 
