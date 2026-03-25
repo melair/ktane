@@ -46,12 +46,12 @@ int main() {
   epaper.reset = GPIO_8;
   epaper.busy = GPIO_9;
   epaper.type = EPAPER_TYPE_SSD1680;
-  epaper.width = 296;
-  epaper.height = 128;
+  epaper.width = 128;
+  epaper.height = 296;
   epaper.spi_transaction.cs_pin = epaper.cs;
   epaper.spi_transaction.cs_bounce = true;
   epaper.spi_transaction.cs_wait_ms = 0;
-  epaper.spi_transaction.baud = SPI_BAUD_125K;
+  epaper.spi_transaction.baud = SPI_BAUD_1000K;
   epaper.spi_transaction.bits = 8;
   epaper.spi_transaction.cke = 1;
   epaper.spi_transaction.lsb_first = 0;
@@ -63,7 +63,7 @@ int main() {
   epaper_init(&epaper);
 
   epaper_command_t a;
-  a.operation = OPERATION_FILL_WHITE;
+  a.operation = OPERATION_FILL_RED;
   epaper_queue(&epaper, &a);
   epaper_refresh(&epaper, false);
 

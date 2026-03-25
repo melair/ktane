@@ -29,9 +29,6 @@ void ssd1680_idle_service(fsm_t *fsm) {
   if (epaper->commited != NULL) {
     fsm_transition(fsm, &ssd1680_power_on);
   }
-
-  // TODO: TEMP TESTING
-  epaper->commited = NULL;
 }
 
 const fs_t ssd1680_idle = {.name = "IDLE",
@@ -103,7 +100,7 @@ void ssd1680_sw_reset_phase_one_enter(fsm_t *fsm) {
 
   pin_write(epaper->dc, false);
 
-  epaper->cmd_buffer[0] = 0x92;
+  epaper->cmd_buffer[0] = SSD1680_CMD_SW_RESET;
   epaper->spi_transaction.write_size = 1;
   epaper->spi_transaction.buffer = &epaper->cmd_buffer[0];
   epaper->spi_transaction.callback = &ssd1680_sw_reset_phase_one_spi_callback;
@@ -138,23 +135,27 @@ typedef struct {
 #define INIT_DATA_SIZE 21
 const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
-        .data = 0, .size = 1, .buffer = {0x3c} // Boarder Waveform
-    },
-    {.data = 1, .size = 1, .buffer = {0x05}},
-    {
-        .data = 0, .size = 1, .buffer = {0x01} // Driver output control
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_DRIVER_OUTPUT_CONTROL} // Driver output control
     },
     {
         .data = 1,
         .size = 3,
-        .buffer = {0x27, 0x01, 0x00} // Replace 0..1 with height - 1 (lsb first)
+        .buffer = {0xff, 0xff, 0x00} // Replace 0..1 with height - 1 (lsb first)
     },
     {
-        .data = 0, .size = 1, .buffer = {0x11} // Data entry mode
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_DATA_ENTRY_MODE} // Data entry mode
     },
-    {.data = 1, .size = 1, .buffer = {0x01}},
+    {.data = 1,
+     .size = 1,
+     .buffer = {0x03}}, // Y dec, X inc - address update in Y.
     {
-        .data = 0, .size = 1, .buffer = {0x44} // RAM X address start/end.
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_SET_RAM_X} // RAM X address start/end.
     },
     {
         .data = 1,
@@ -162,7 +163,9 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
         .buffer = {0x00, 0xff} // 0 = start of 0x00, 1 = EPD_WIDTH/8-1 end
     },
     {
-        .data = 0, .size = 1, .buffer = {0x45} // RAM Y address start/end.
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_SET_RAM_Y} // RAM Y address start/end.
     },
     {
         .data = 1,
@@ -170,32 +173,53 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
         .buffer = {0xff, 0xff, 0x00, 0x00} // 0-1 = EPD_HEIGHT-1 LSB first
     },
     {
-        .data = 0, .size = 1, .buffer = {0x21} // Display update control
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_BORDER_WAVEFORM_CONTROL} // Boarder Waveform
     },
-    {.data = 1, .size = 2, .buffer = {0x00, 0x80}},
+    {.data = 1, .size = 1, .buffer = {0x05}}, // Follow LUT | LUT1
+
     {
-        .data = 0, .size = 1, .buffer = {0x18} // Set up temperature sensor
+        .data = 0,
+        .size = 1,
+        .buffer =
+            {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_1} // Display update control
+    },
+    {.data = 1,
+     .size = 2,
+     .buffer = {0x00,
+                0x80}}, // Red+B/W RAM Normal, Source Output Mode = S8-S167
+    {
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_TEMPERATURE_SENSOR_CONTROL} // Set up temperature
+                                                           // sensor
     },
     {
-        .data = 1, .size = 1, .buffer = {0x80} // Internal thermometer
+        .data = 1, .size = 1, .buffer = {0x80} // Internal temperature sensor
     },
     {
-        .data = 0, .size = 1, .buffer = {0x4e} // Set RAM X address to 0
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_SET_RAM_X_COUNTER} // Set RAM X address to 0
     },
     {.data = 1, .size = 1, .buffer = {0x00}},
     {
         .data = 0,
         .size = 1,
-        .buffer = {0x4f} // Set RAM Y address to the end of height
+        .buffer = {SSD1680_CMD_SET_RAM_Y_COUNTER} // Set RAM Y address to the
+                                                  // end of height
     },
     {
         .data = 1,
         .size = 2,
         .buffer = {0xff, 0xff} // 0-1 = EPD_HEIGHT-1 LSB first
     },
-    {.data = 0, .size = 1, .buffer = {0x22}},
-    {.data = 1, .size = 1, .buffer = {0xb1}},
-    {.data = 0, .size = 1, .buffer = {0x20}},
+    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_2}},
+    {.data = 1,
+     .size = 1,
+     .buffer = {0xb1}}, // Load temp, load LUT, disable clock.
+    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_MASTER_ACTIVIATION}},
 };
 
 spi_transaction_t *
@@ -205,14 +229,15 @@ ssd1680_configure_enter_spi_callback(spi_transaction_t *spi) {
   if (spi_queue_process(&init_data, INIT_DATA_SIZE, epaper->dc,
                         &epaper->spi_transaction, &epaper->phase)) {
     switch (epaper->phase - 1) {
-    case 7:
+    case 5:
       epaper->spi_transaction.buffer[1] = (epaper->width / 8) - 1;
       break;
-    case 9:
+    case 1:
+    case 7:
     case 17:
       uint16_t height = epaper->height - 1;
       epaper->spi_transaction.buffer[0] = (uint8_t)(height & 0xff);
-      epaper->spi_transaction.buffer[1] = (uint8_t)((height >> 8) & 0xff);
+      epaper->spi_transaction.buffer[1] = (uint8_t)((height >> 8) & 0x01);
       break;
     }
 
@@ -289,11 +314,18 @@ const fs_t ssd1680_queue_return = {.name = "QUEUE_RETURN",
 #define REFRESH_DATA_SIZE 3
 const spi_queue_t refresh_data[REFRESH_DATA_SIZE] = {
     {
-        .data = 0, .size = 1, .buffer = {0x22} // Confgiure
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_2} // Confgiure
     },
-    {.data = 1, .size = 1, .buffer = {0xf7}},
+    {.data = 1,
+     .size = 1,
+     .buffer = {0xf7}}, // Enable analog, load temp, display with mode 1,
+                        // disable analog, disable clock.
     {
-        .data = 0, .size = 1, .buffer = {0x20} // Refresh
+        .data = 0,
+        .size = 1,
+        .buffer = {SSD1680_CMD_MASTER_ACTIVIATION} // Refresh
     }};
 
 spi_transaction_t *ssd1680_refresh_display_callback(spi_transaction_t *spi) {
@@ -338,10 +370,8 @@ const fs_t ssd1680_refresh_display_wait = {
 
 #define SLEEP_DATA_SIZE 2
 const spi_queue_t sleep_data[SLEEP_DATA_SIZE] = {
-    {
-        .data = 0, .size = 1, .buffer = {0x10} // Sleep
-    },
-    {.data = 1, .size = 1, .buffer = {0x01}}, // Data
+    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DEEP_SLEEP}},
+    {.data = 1, .size = 1, .buffer = {0x01}}, // Mode 1
 };
 
 spi_transaction_t *ssd1680_sleep_spi_callback(spi_transaction_t *spi) {
@@ -361,8 +391,7 @@ void ssd1680_sleep_enter(fsm_t *fsm) {
   epaper->phase = 0;
   epaper->spi_transaction.callback = &ssd1680_sleep_spi_callback;
 
-  spi_transaction_t *t =
-      ssd1680_sleep_spi_callback(&epaper->spi_transaction);
+  spi_transaction_t *t = ssd1680_sleep_spi_callback(&epaper->spi_transaction);
   spi_queue(t);
 }
 
