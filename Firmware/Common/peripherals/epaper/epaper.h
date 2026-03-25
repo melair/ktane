@@ -20,26 +20,28 @@ typedef struct epaper_t epaper_t;
 
 struct epaper_command_t {
     uint8_t operation;
+    union {
+
+    } operation_data;
+
     uint8_t colour;
 
     struct {
-        uint8_t x1;
-        uint8_t x2;
+        uint16_t x1;
+        uint16_t x2;
+        uint16_t y1;
+        uint16_t y2;
+    } canvas;
+
+    struct {
+        uint16_t x1;
+        uint16_t x2;
         uint16_t y1;
         uint16_t y2;
 
         uint8_t width;
         uint16_t height;
-    } mapped;
-
-    union {
-        struct {
-            uint16_t x1;
-            uint16_t y1;
-            uint16_t x2;
-            uint16_t y2;
-        } fill;
-    } data;
+    } _mapped;
 
     epaper_command_t *next;
 };
