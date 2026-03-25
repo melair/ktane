@@ -21,6 +21,11 @@ struct epaper_command_t {
     epaper_command_t *next;
 };
 
+#define ROTATION_0      0
+#define ROTATION_90     1
+#define ROTATION_180    2
+#define ROTATION_270    3
+
 struct epaper_t {
     pin_t cs;
     pin_t pwr;
@@ -31,6 +36,7 @@ struct epaper_t {
     uint8_t type;
     uint16_t width;
     uint16_t height;
+    uint8_t rotation;
 
     fsm_t fsm;
 

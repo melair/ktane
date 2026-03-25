@@ -6,6 +6,7 @@
 #include "spi_queue.h"
 #include "ssd1680_operations.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <xc.h>
 
 extern const fs_t ssd1680_power_on;
@@ -126,13 +127,9 @@ const fs_t ssd1680_sw_reset_phase_two = {
     .next_states = {&ssd1680_configure, NULL},
     .service = ssd1680_sw_reset_phase_two_service};
 
-typedef struct {
-  unsigned data : 1;
-  unsigned size : 3;
-  uint8_t buffer[4];
-} init_option_t;
+const uint8_t ROTATION_TABLE[4] = { 0x03, 0x06, 0x00, 0x05 };
 
-#define INIT_DATA_SIZE 21
+#define INIT_DATA_SIZE 16
 const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 0,
@@ -142,16 +139,14 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 1,
         .size = 3,
-        .buffer = {0xff, 0xff, 0x00} // Replace 0..1 with height - 1 (lsb first)
+        .buffer = {0xaa, 0xaa, 0x00} // Replace 0..1 with height - 1 (lsb first)
     },
     {
         .data = 0,
         .size = 1,
         .buffer = {SSD1680_CMD_DATA_ENTRY_MODE} // Data entry mode
     },
-    {.data = 1,
-     .size = 1,
-     .buffer = {0x03}}, // Y dec, X inc - address update in Y.
+    {.data = 1, .size = 1, .buffer = {0xaa}},
     {
         .data = 0,
         .size = 1,
@@ -160,7 +155,7 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 1,
         .size = 2,
-        .buffer = {0x00, 0xff} // 0 = start of 0x00, 1 = EPD_WIDTH/8-1 end
+        .buffer = {0xaa, 0xbb} // 0 = start of 0x00, 1 = EPD_WIDTH/8-1 end
     },
     {
         .data = 0,
@@ -170,7 +165,7 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 1,
         .size = 4,
-        .buffer = {0xff, 0xff, 0x00, 0x00} // 0-1 = EPD_HEIGHT-1 LSB first
+        .buffer = {0xaa, 0xaa, 0xbb, 0xbb} // 0-1 = EPD_HEIGHT-1 LSB first
     },
     {
         .data = 0,
@@ -198,23 +193,6 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
     {
         .data = 1, .size = 1, .buffer = {0x80} // Internal temperature sensor
     },
-    {
-        .data = 0,
-        .size = 1,
-        .buffer = {SSD1680_CMD_SET_RAM_X_COUNTER} // Set RAM X address to 0
-    },
-    {.data = 1, .size = 1, .buffer = {0x00}},
-    {
-        .data = 0,
-        .size = 1,
-        .buffer = {SSD1680_CMD_SET_RAM_Y_COUNTER} // Set RAM Y address to the
-                                                  // end of height
-    },
-    {
-        .data = 1,
-        .size = 2,
-        .buffer = {0xff, 0xff} // 0-1 = EPD_HEIGHT-1 LSB first
-    },
     {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_2}},
     {.data = 1,
      .size = 1,
@@ -225,19 +203,40 @@ const spi_queue_t init_data[INIT_DATA_SIZE] = {
 spi_transaction_t *
 ssd1680_configure_enter_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
+  uint16_t height = epaper->height - 1;
+  uint8_t width = (epaper->width/8) - 1;
 
   if (spi_queue_process(&init_data, INIT_DATA_SIZE, epaper->dc,
                         &epaper->spi_transaction, &epaper->phase)) {
     switch (epaper->phase - 1) {
-    case 5:
-      epaper->spi_transaction.buffer[1] = (epaper->width / 8) - 1;
-      break;
     case 1:
-    case 7:
-    case 17:
-      uint16_t height = epaper->height - 1;
       epaper->spi_transaction.buffer[0] = (uint8_t)(height & 0xff);
       epaper->spi_transaction.buffer[1] = (uint8_t)((height >> 8) & 0x01);
+      break;
+    case 3:
+      epaper->spi_transaction.buffer[0] = ROTATION_TABLE[epaper->rotation];
+      break;
+    case 5:
+      if (epaper->rotation == ROTATION_0 || epaper->rotation == ROTATION_270) {
+        epaper->spi_transaction.buffer[0] = 0x00;
+        epaper->spi_transaction.buffer[1] = width;
+      } else {
+        epaper->spi_transaction.buffer[0] = width;
+        epaper->spi_transaction.buffer[1] = 0x00;      
+      }
+      break;
+    case 7:
+      if (epaper->rotation == ROTATION_0 || epaper->rotation == ROTATION_90) {
+        epaper->spi_transaction.buffer[0] = 0x00;
+        epaper->spi_transaction.buffer[1] = 0x00;
+        epaper->spi_transaction.buffer[2] = (uint8_t)(height & 0xff);
+        epaper->spi_transaction.buffer[3] = (uint8_t)((height >> 8) & 0x01);
+      } else {
+        epaper->spi_transaction.buffer[0] = (uint8_t)(height & 0xff);
+        epaper->spi_transaction.buffer[1] = (uint8_t)((height >> 8) & 0x01);   
+        epaper->spi_transaction.buffer[2] = 0x00;
+        epaper->spi_transaction.buffer[3] = 0x00;
+      }
       break;
     }
 
