@@ -248,16 +248,22 @@ spi_transaction_t *ssd1680_setup_canvas_spi_callback(spi_transaction_t *spi) {
                         &epaper->spi_transaction, &epaper->phase)) {
     switch (epaper->phase - 1) {
     case 1: // RAM X
-      if (epaper->rotation == ROTATION_0 || epaper->rotation == ROTATION_270) {
+      if (epaper->rotation == ROTATION_0) {
         epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
         epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x2;
-      } else {
+      } else if (epaper->rotation == ROTATION_90) {
+        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x2;
+        epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x1;   
+      } else if (epaper->rotation == ROTATION_180) {
         epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x2;
         epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x1;
-      }
+      } else if (epaper->rotation == ROTATION_270) {
+        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
+        epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x2;
+      } 
       break;
     case 3: // RAM Y
-      if (epaper->rotation == ROTATION_0 || epaper->rotation == ROTATION_90) {
+      if (epaper->rotation == ROTATION_0) {
         epaper->spi_transaction.buffer[0] =
             (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
         epaper->spi_transaction.buffer[1] =
@@ -268,7 +274,28 @@ spi_transaction_t *ssd1680_setup_canvas_spi_callback(spi_transaction_t *spi) {
             (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
         epaper->spi_transaction.buffer[3] =
             (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
-      } else {
+      } else if (epaper->rotation == ROTATION_90) {
+        epaper->spi_transaction.buffer[0] =
+            (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
+        epaper->spi_transaction.buffer[1] =
+            (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
+        epaper->spi_transaction.buffer[2] =
+            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
+        epaper->spi_transaction.buffer[2] =
+            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
+        epaper->spi_transaction.buffer[3] =
+            (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
+      } else if (epaper->rotation == ROTATION_180) {
+        epaper->spi_transaction.buffer[0] =
+            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
+        epaper->spi_transaction.buffer[1] =
+            (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
+        epaper->spi_transaction.buffer[2] =
+            (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
+        epaper->spi_transaction.buffer[3] =
+            (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
+      }
+      else if (epaper->rotation == ROTATION_270) {
         epaper->spi_transaction.buffer[0] =
             (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
         epaper->spi_transaction.buffer[1] =
