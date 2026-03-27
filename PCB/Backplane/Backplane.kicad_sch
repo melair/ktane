@@ -3235,7 +3235,7 @@
 	)
 	(rectangle
 		(start 135.89 82.55)
-		(end 265.43 137.16)
+		(end 276.86 137.16)
 		(stroke
 			(width 0)
 			(type default)
@@ -3751,6 +3751,16 @@
 	)
 	(wire
 		(pts
+			(xy 248.92 92.71) (xy 248.92 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2dc57744-e6db-4970-85c8-12a5795224f2")
+	)
+	(wire
+		(pts
 			(xy 295.91 67.31) (xy 295.91 40.64)
 		)
 		(stroke
@@ -4101,7 +4111,7 @@
 	)
 	(wire
 		(pts
-			(xy 250.19 110.49) (xy 250.19 113.03)
+			(xy 262.89 110.49) (xy 262.89 113.03)
 		)
 		(stroke
 			(width 0)
@@ -4431,7 +4441,7 @@
 	)
 	(wire
 		(pts
-			(xy 250.19 102.87) (xy 250.19 105.41)
+			(xy 262.89 102.87) (xy 262.89 105.41)
 		)
 		(stroke
 			(width 0)
@@ -4458,6 +4468,16 @@
 			(type default)
 		)
 		(uuid "a5adac6a-4428-4e7b-89f1-a59ca367f529")
+	)
+	(wire
+		(pts
+			(xy 248.92 110.49) (xy 248.92 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a6c36769-aab9-452c-904c-18c4d056afa0")
 	)
 	(wire
 		(pts
@@ -4498,6 +4518,16 @@
 			(type default)
 		)
 		(uuid "ad2c9c0f-07c5-4a05-bd0f-d830add81c4d")
+	)
+	(wire
+		(pts
+			(xy 248.92 102.87) (xy 248.92 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ad2f8dc1-240c-4f72-a0cc-f2291a616ef2")
 	)
 	(wire
 		(pts
@@ -4571,7 +4601,7 @@
 	)
 	(wire
 		(pts
-			(xy 250.19 92.71) (xy 250.19 95.25)
+			(xy 262.89 92.71) (xy 262.89 95.25)
 		)
 		(stroke
 			(width 0)
@@ -6157,6 +6187,84 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R_Small")
+		(at 248.92 107.95 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "066a2f79-b90a-471c-b86d-fce0edab9ea7")
+		(property "Reference" "R31"
+			(at 250.4186 106.7816 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 250.4186 109.093 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 248.92 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 248.92 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small symbol"
+			(at 248.92 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DIGIKEY" "P10.0KHCT-ND"
+			(at 248.92 107.95 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5d4c5da9-d1f4-488c-8bd2-a7b27f46927f")
+		)
+		(pin "2"
+			(uuid "0a4c0136-7ce7-43cd-b99d-0ffd869047d0")
+		)
+		(instances
+			(project "Backplane"
+				(path "/44c1abe6-d0e9-4dcf-bdc6-e99c93b8e491"
+					(reference "R31")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 22.86 184.15 0)
 		(mirror y)
@@ -6381,7 +6489,7 @@
 	)
 	(symbol
 		(lib_id "power:VDD")
-		(at 250.19 92.71 0)
+		(at 262.89 92.71 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6390,7 +6498,7 @@
 		(fields_autoplaced yes)
 		(uuid "088116db-e2f1-44ec-9826-cac360b77fdd")
 		(property "Reference" "#PWR018"
-			(at 250.19 96.52 0)
+			(at 262.89 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6399,7 +6507,7 @@
 			)
 		)
 		(property "Value" "VDD"
-			(at 250.19 87.63 0)
+			(at 262.89 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6407,7 +6515,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 250.19 92.71 0)
+			(at 262.89 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6416,7 +6524,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 250.19 92.71 0)
+			(at 262.89 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6425,7 +6533,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VDD\""
-			(at 250.19 92.71 0)
+			(at 262.89 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6524,6 +6632,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 248.92 113.03 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1a164441-b264-4599-a420-629a79a3d00d")
+		(property "Reference" "#PWR089"
+			(at 248.92 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 249.047 117.4242 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 248.92 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 248.92 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 248.92 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2e4b87bb-dcb2-4f77-aa6a-7bdc29701b2a")
+		)
+		(instances
+			(project "Backplane"
+				(path "/44c1abe6-d0e9-4dcf-bdc6-e99c93b8e491"
+					(reference "#PWR089")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C_Small")
 		(at 144.78 106.68 0)
 		(unit 1)
@@ -6603,7 +6776,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 250.19 99.06 90)
+		(at 262.89 99.06 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6612,7 +6785,7 @@
 		(fields_autoplaced yes)
 		(uuid "1ca465f3-d3fd-4a50-9556-87f3bc28410a")
 		(property "Reference" "D2"
-			(at 254 99.3774 90)
+			(at 266.7 99.3774 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6621,7 +6794,7 @@
 			)
 		)
 		(property "Value" "VBUS OK"
-			(at 254 101.9174 90)
+			(at 266.7 101.9174 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6630,7 +6803,7 @@
 			)
 		)
 		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
-			(at 250.19 99.06 0)
+			(at 262.89 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6639,7 +6812,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 250.19 99.06 0)
+			(at 262.89 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6648,7 +6821,7 @@
 			)
 		)
 		(property "Description" "Light emitting diode"
-			(at 250.19 99.06 0)
+			(at 262.89 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6657,7 +6830,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 250.19 99.06 0)
+			(at 262.89 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6666,7 +6839,7 @@
 			)
 		)
 		(property "DIGIKEY" "3147-B19Y1USD-20C000113U1930CT-ND"
-			(at 250.19 99.06 90)
+			(at 262.89 99.06 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7468,6 +7641,94 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:LED")
+		(at 248.92 99.06 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4d95d60f-c418-46fc-a97f-26d8279c11c8")
+		(property "Reference" "D8"
+			(at 252.73 99.3774 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "3.3V OK"
+			(at 252.73 101.9174 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
+			(at 248.92 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 248.92 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Light emitting diode"
+			(at 248.92 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 248.92 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DIGIKEY" "3147-B19Y1UYG-20C000313U1930CT-ND"
+			(at 248.92 99.06 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a74d722d-1ec1-49ca-8727-bb84d40f068c")
+		)
+		(pin "2"
+			(uuid "dbe2e6b6-c9ae-4b08-b1ba-e7ac3ecd8481")
+		)
+		(instances
+			(project "Backplane"
+				(path "/44c1abe6-d0e9-4dcf-bdc6-e99c93b8e491"
+					(reference "D8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Mechanical:MountingHole")
 		(at 290.83 119.38 0)
 		(unit 1)
@@ -7918,7 +8179,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3.3V OK"
+		(property "Value" "3.3V Fault"
 			(at 236.728 98.0948 90)
 			(effects
 				(font
@@ -7963,7 +8224,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "3147-B19Y1UYG-20C000313U1930CT-ND"
+		(property "DIGIKEY" "3147-B19Y1USD-20C000113U1930CT-ND"
 			(at 238.76 99.06 90)
 			(effects
 				(font
@@ -8901,6 +9162,72 @@
 			(project "Backplane"
 				(path "/44c1abe6-d0e9-4dcf-bdc6-e99c93b8e491"
 					(reference "#PWR017")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 248.92 92.71 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "966e6d15-fa7c-4d2b-a924-aea216c00be9")
+		(property "Reference" "#PWR088"
+			(at 248.92 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 248.539 88.3158 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 248.92 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 248.92 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 248.92 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ad568188-5556-46da-814b-b6cede95692a")
+		)
+		(instances
+			(project "Backplane"
+				(path "/44c1abe6-d0e9-4dcf-bdc6-e99c93b8e491"
+					(reference "#PWR088")
 					(unit 1)
 				)
 			)
@@ -9929,7 +10256,7 @@
 	)
 	(symbol
 		(lib_id "Device:R_Small")
-		(at 250.19 107.95 0)
+		(at 262.89 107.95 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9937,7 +10264,7 @@
 		(dnp no)
 		(uuid "c29ff0b1-f7db-48e2-91e1-523ee7cd7f6c")
 		(property "Reference" "R7"
-			(at 251.6886 106.7816 0)
+			(at 264.3886 106.7816 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9946,7 +10273,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 251.6886 109.093 0)
+			(at 264.3886 109.093 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9955,7 +10282,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 250.19 107.95 0)
+			(at 262.89 107.95 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9964,7 +10291,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 250.19 107.95 0)
+			(at 262.89 107.95 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9973,7 +10300,7 @@
 			)
 		)
 		(property "Description" "Resistor, small symbol"
-			(at 250.19 107.95 0)
+			(at 262.89 107.95 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9982,7 +10309,7 @@
 			)
 		)
 		(property "DIGIKEY" "P10.0KHCT-ND"
-			(at 250.19 107.95 0)
+			(at 262.89 107.95 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11182,7 +11509,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 250.19 113.03 0)
+		(at 262.89 113.03 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11190,7 +11517,7 @@
 		(dnp no)
 		(uuid "ffabbd5c-acab-4395-9611-d1e01f37561d")
 		(property "Reference" "#PWR024"
-			(at 250.19 119.38 0)
+			(at 262.89 119.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11199,7 +11526,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 250.317 117.4242 0)
+			(at 263.017 117.4242 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11207,7 +11534,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 250.19 113.03 0)
+			(at 262.89 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11216,7 +11543,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 250.19 113.03 0)
+			(at 262.89 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11225,7 +11552,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 250.19 113.03 0)
+			(at 262.89 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
