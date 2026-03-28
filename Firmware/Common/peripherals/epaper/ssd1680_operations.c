@@ -42,7 +42,12 @@ spi_transaction_t *
 ssd1680_operation_fill_send_bw_enter_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
   pin_write(epaper->dc, false);
-  fsm_transition(&epaper->fsm, &ssd1680_operation_fill_send_red_cmd);
+
+  if (epaper->colours.red == 1) {
+    fsm_transition(&epaper->fsm, &ssd1680_operation_fill_send_red_cmd);
+  } else {
+    fsm_transition(&epaper->fsm, &ssd1680_queue_return);
+  }
   return NULL;
 }
 
@@ -65,14 +70,16 @@ void ssd1680_operation_fill_send_bw_enter(fsm_t *fsm) {
   epaper->spi_transaction.callback =
       &ssd1680_operation_fill_send_bw_enter_spi_callback;
   epaper->spi_transaction.write_size = 4;
-  epaper->spi_transaction.write_repeats = (epaper->commited->_mapped.bytes / 4) - 1;
+  epaper->spi_transaction.write_repeats =
+      (epaper->commited->_mapped.bytes / 4) - 1;
 
   spi_queue(&epaper->spi_transaction);
 }
 
 const fs_t ssd1680_operation_fill_send_bw = {
     .name = "FILL BW",
-    .next_states = {&ssd1680_operation_fill_send_red_cmd, NULL},
+    .next_states = {&ssd1680_operation_fill_send_red_cmd, &ssd1680_queue_return,
+                    NULL},
     .enter = ssd1680_operation_fill_send_bw_enter};
 
 spi_transaction_t *
@@ -166,8 +173,14 @@ ssd1680_operation_copy_from_flash_send_bw_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
   if (epaper->phase >= epaper->commited->_mapped.bytes) {
-    fsm_transition(&epaper->fsm, &ssd1680_operation_copy_from_flash_red_cmd);
     pin_write(epaper->dc, false);
+
+    if (epaper->colours.red == 1) {
+      fsm_transition(&epaper->fsm, &ssd1680_operation_copy_from_flash_red_cmd);
+    } else {
+      fsm_transition(&epaper->fsm, &ssd1680_queue_return);
+    }
+
     return NULL;
   }
 
@@ -239,7 +252,8 @@ void ssd1680_operation_copy_from_flash_send_bw_enter(fsm_t *fsm) {
 
 const fs_t ssd1680_operation_copy_from_flash_send_bw = {
     .name = "CFF BW CMD",
-    .next_states = {&ssd1680_operation_copy_from_flash_red_cmd, NULL},
+    .next_states = {&ssd1680_operation_copy_from_flash_red_cmd,
+                    &ssd1680_queue_return, NULL},
     .enter = ssd1680_operation_copy_from_flash_send_bw_enter};
 
 spi_transaction_t *

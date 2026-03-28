@@ -23,15 +23,14 @@ struct epaper_command_t {
   uint8_t operation;
   union {
     struct {
-        uint8_t colour;
+      uint8_t colour;
     } fill;
     struct {
       const uint8_t *addr;
-        uint8_t fg_colour;
-                uint8_t bg_colour;
+      uint8_t fg_colour;
+      uint8_t bg_colour;
     } copy_from_flash;
   } operation_data;
-
 
   struct {
     uint16_t x;
@@ -68,6 +67,9 @@ struct epaper_t {
   uint16_t width;
   uint16_t height;
   uint8_t rotation;
+  struct {
+    unsigned red :1;
+  } colours;
 
   fsm_t fsm;
 
