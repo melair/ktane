@@ -18,7 +18,7 @@ void epaper_init(epaper_t *epaper) {
   epaper->spi_transaction.cs_pin = epaper->cs;
   epaper->spi_transaction.cs_bounce = true;
   epaper->spi_transaction.cs_wait_ms = 0;
-  epaper->spi_transaction.baud = SPI_BAUD_1000K;
+  epaper->spi_transaction.baud = SPI_BAUD_2000K;
   epaper->spi_transaction.bits = 8;
   epaper->spi_transaction.cke = 1;
   epaper->spi_transaction.lsb_first = 0;

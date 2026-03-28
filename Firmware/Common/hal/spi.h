@@ -32,6 +32,8 @@ struct spi_t {
 #define SPI_BAUD_500K 65
 #define SPI_BAUD_1000K 33
 #define SPI_BAUD_2000K 17
+#define SPI_BAUD_4000K 8
+#define SPI_BAUD_8000K 4
 
 struct spi_transaction_t {
     unsigned operation :3;

@@ -128,7 +128,7 @@ const fs_t ssd1680_sw_reset_phase_two = {
     .next_states = {&ssd1680_configure, NULL},
     .service = ssd1680_sw_reset_phase_two_service};
 
-const uint8_t ROTATION_TABLE[4] = {0x03, 0x06, 0x00, 0x05};
+const uint8_t ROTATION_TABLE[4] = {0x03, 0x05, 0x00, 0x06};
 
 #define INIT_DATA_SIZE 13
 const spi_queue_t init_data[INIT_DATA_SIZE] = {
@@ -248,83 +248,27 @@ spi_transaction_t *ssd1680_setup_canvas_spi_callback(spi_transaction_t *spi) {
                         &epaper->spi_transaction, &epaper->phase)) {
     switch (epaper->phase - 1) {
     case 1: // RAM X
-      if (epaper->rotation == ROTATION_0) {
-        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
-        epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x2;
-      } else if (epaper->rotation == ROTATION_90) {
-        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x2;
-        epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x1;   
-      } else if (epaper->rotation == ROTATION_180) {
-        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x2;
-        epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x1;
-      } else if (epaper->rotation == ROTATION_270) {
-        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
-        epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x2;
-      } 
+      epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
+      epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x2;
       break;
     case 3: // RAM Y
-      if (epaper->rotation == ROTATION_0) {
-        epaper->spi_transaction.buffer[0] =
-            (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
-        epaper->spi_transaction.buffer[1] =
-            (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
-        epaper->spi_transaction.buffer[2] =
-            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
-        epaper->spi_transaction.buffer[2] =
-            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
-        epaper->spi_transaction.buffer[3] =
-            (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
-      } else if (epaper->rotation == ROTATION_90) {
-        epaper->spi_transaction.buffer[0] =
-            (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
-        epaper->spi_transaction.buffer[1] =
-            (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
-        epaper->spi_transaction.buffer[2] =
-            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
-        epaper->spi_transaction.buffer[2] =
-            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
-        epaper->spi_transaction.buffer[3] =
-            (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
-      } else if (epaper->rotation == ROTATION_180) {
-        epaper->spi_transaction.buffer[0] =
-            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
-        epaper->spi_transaction.buffer[1] =
-            (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
-        epaper->spi_transaction.buffer[2] =
-            (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
-        epaper->spi_transaction.buffer[3] =
-            (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
-      }
-      else if (epaper->rotation == ROTATION_270) {
-        epaper->spi_transaction.buffer[0] =
-            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
-        epaper->spi_transaction.buffer[1] =
-            (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
-        epaper->spi_transaction.buffer[2] =
-            (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
-        epaper->spi_transaction.buffer[3] =
-            (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
-      }
+      epaper->spi_transaction.buffer[0] =
+          (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
+      epaper->spi_transaction.buffer[1] =
+          (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
+      epaper->spi_transaction.buffer[2] =
+          (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
+      epaper->spi_transaction.buffer[3] =
+          (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
       break;
     case 5: // RAM X Cursor
-      if (epaper->rotation == ROTATION_0 || epaper->rotation == ROTATION_270) {
-        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
-      } else {
-        epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x2;
-      }
+      epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
       break;
     case 7: // RAM Y Cursor
-      if (epaper->rotation == ROTATION_0 || epaper->rotation == ROTATION_90) {
-        epaper->spi_transaction.buffer[0] =
-            (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
-        epaper->spi_transaction.buffer[1] =
-            (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
-      } else {
-        epaper->spi_transaction.buffer[0] =
-            (uint8_t)(epaper->commited->_mapped.y2 & 0xff);
-        epaper->spi_transaction.buffer[1] =
-            (uint8_t)((epaper->commited->_mapped.y2 >> 8) & 0x01);
-      }
+      epaper->spi_transaction.buffer[0] =
+          (uint8_t)(epaper->commited->_mapped.y1 & 0xff);
+      epaper->spi_transaction.buffer[1] =
+          (uint8_t)((epaper->commited->_mapped.y1 >> 8) & 0x01);
       break;
     }
 
@@ -333,6 +277,10 @@ spi_transaction_t *ssd1680_setup_canvas_spi_callback(spi_transaction_t *spi) {
     switch (epaper->commited->operation) {
     case OPERATION_FILL:
       fsm_transition(&epaper->fsm, &ssd1680_operation_fill);
+      break;
+
+    case OPERATION_COPY_FROM_FLASH:
+      fsm_transition(&epaper->fsm, &ssd1680_operation_copy_from_flash);
       break;
 
     default:
@@ -361,8 +309,8 @@ void ssd1680_setup_canvas_enter(fsm_t *fsm) {
   case ROTATION_90:
     x1 = epaper->commited->canvas.y1;
     x2 = epaper->commited->canvas.y2;
-    y1 = epaper->height - epaper->commited->canvas.x2 - 1;
-    y2 = epaper->height - epaper->commited->canvas.x1 - 1;
+    y1 = epaper->height - epaper->commited->canvas.x1 - 1;
+    y2 = epaper->height - epaper->commited->canvas.x2 - 1;
     break;
   case ROTATION_180:
     x1 = epaper->width - epaper->commited->canvas.x2 - 1;
@@ -371,8 +319,8 @@ void ssd1680_setup_canvas_enter(fsm_t *fsm) {
     y2 = epaper->height - epaper->commited->canvas.y1 - 1;
     break;
   case ROTATION_270:
-    x1 = epaper->width - epaper->commited->canvas.y2;
-    x2 = epaper->width - epaper->commited->canvas.y1;
+    x1 = epaper->width - epaper->commited->canvas.y1 - 1;
+    x2 = epaper->width - epaper->commited->canvas.y2 - 1;
     y1 = epaper->commited->canvas.x1;
     y2 = epaper->commited->canvas.x2;
     break;
@@ -401,7 +349,8 @@ void ssd1680_setup_canvas_enter(fsm_t *fsm) {
 
 const fs_t ssd1680_setup_canvas = {
     .name = "CANVAS",
-    .next_states = {&ssd1680_queue_return, &ssd1680_operation_fill, NULL},
+    .next_states = {&ssd1680_queue_return, &ssd1680_operation_fill,
+                    &ssd1680_operation_copy_from_flash, NULL},
     .enter = &ssd1680_setup_canvas_enter};
 
 void ssd1680_queue_return_enter(fsm_t *fsm) {
