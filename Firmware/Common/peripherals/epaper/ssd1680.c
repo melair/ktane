@@ -298,36 +298,38 @@ void ssd1680_setup_canvas_enter(fsm_t *fsm) {
   uint16_t x2;
   uint16_t y1;
   uint16_t y2;
+  uint16_t bytes;
 
   switch (epaper->rotation) {
   case ROTATION_0:
-    x1 = epaper->commited->canvas.x1;
-    x2 = epaper->commited->canvas.x2;
-    y1 = epaper->commited->canvas.y1;
-    y2 = epaper->commited->canvas.y2;
+    x1 = epaper->commited->canvas.x;
+    x2 = epaper->commited->canvas.x + epaper->commited->canvas.width - 1;
+    y1 = epaper->commited->canvas.y;
+    y2 = epaper->commited->canvas.y + epaper->commited->canvas.height - 1;
+    bytes = epaper->commited->canvas.width * (epaper->commited->canvas.height / 8);
     break;
   case ROTATION_90:
-    x1 = epaper->commited->canvas.y1;
-    x2 = epaper->commited->canvas.y2;
-    y1 = epaper->height - epaper->commited->canvas.x1 - 1;
-    y2 = epaper->height - epaper->commited->canvas.x2 - 1;
+    x1 = epaper->commited->canvas.y;
+    x2 = epaper->commited->canvas.y + epaper->commited->canvas.height - 1;
+    y1 = epaper->height - epaper->commited->canvas.x - 1;
+    y2 = epaper->height - (epaper->commited->canvas.x + epaper->commited->canvas.width) - 1;
+    bytes = (epaper->commited->canvas.width / 8) * epaper->commited->canvas.height;
     break;
   case ROTATION_180:
-    x1 = epaper->width - epaper->commited->canvas.x2 - 1;
-    x2 = epaper->width - epaper->commited->canvas.x1 - 1;
-    y1 = epaper->height - epaper->commited->canvas.y2 - 1;
-    y2 = epaper->height - epaper->commited->canvas.y1 - 1;
+    x1 = epaper->width - (epaper->commited->canvas.x + epaper->commited->canvas.width - 1) - 1;
+    x2 = epaper->width - epaper->commited->canvas.x - 1;
+    y1 = epaper->height - (epaper->commited->canvas.y + epaper->commited->canvas.height - 1) - 1;
+    y2 = epaper->height - epaper->commited->canvas.y - 1;
+    bytes = epaper->commited->canvas.width * (epaper->commited->canvas.height / 8);
     break;
   case ROTATION_270:
-    x1 = epaper->width - epaper->commited->canvas.y1 - 1;
-    x2 = epaper->width - epaper->commited->canvas.y2 - 1;
-    y1 = epaper->commited->canvas.x1;
-    y2 = epaper->commited->canvas.x2;
+    x1 = epaper->width - epaper->commited->canvas.y - 1;
+    x2 = epaper->width - (epaper->commited->canvas.y + epaper->commited->canvas.height) - 1;
+    y1 = epaper->commited->canvas.x;
+    y2 = epaper->commited->canvas.x + epaper->commited->canvas.width - 1;
+    bytes = (epaper->commited->canvas.width / 8) * epaper->commited->canvas.height;
     break;
   }
-
-  uint16_t width = ((x2 - x1) / 8) + 1;
-  uint16_t height = (y2 - y1) + 1;
 
   x1 = (x1 / 8);
   x2 = (x2 / 8);
@@ -336,8 +338,7 @@ void ssd1680_setup_canvas_enter(fsm_t *fsm) {
   epaper->commited->_mapped.x2 = x2;
   epaper->commited->_mapped.y1 = y1;
   epaper->commited->_mapped.y2 = y2;
-  epaper->commited->_mapped.width = width;
-  epaper->commited->_mapped.height = height;
+  epaper->commited->_mapped.bytes = bytes;
 
   epaper->phase = 0;
   epaper->spi_transaction.callback = &ssd1680_setup_canvas_spi_callback;

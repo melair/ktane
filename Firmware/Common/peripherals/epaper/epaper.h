@@ -34,10 +34,11 @@ struct epaper_command_t {
 
 
   struct {
-    uint16_t x1;
-    uint16_t y1;
-    uint16_t x2;
-    uint16_t y2;
+    uint16_t x;
+    uint16_t y;
+
+    uint16_t width;
+    uint16_t height;
   } canvas;
 
   struct {
@@ -45,9 +46,7 @@ struct epaper_command_t {
     uint16_t x2;
     uint16_t y1;
     uint16_t y2;
-
-    uint8_t width;
-    uint16_t height;
+    uint16_t bytes;
   } _mapped;
 
   epaper_command_t *next;

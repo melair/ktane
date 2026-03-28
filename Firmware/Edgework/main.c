@@ -10,7 +10,6 @@
 #include <utils/time.h>
 #include <xc.h>
 
-
 #define FONT_GLYPH_COUNT 36
 #define FONT_GLYPH_HEIGHT 40
 #define FONT_GLYPH_PAGE_COUNT 5
@@ -65,44 +64,98 @@ int main() {
   epaper_command_t a;
   a.operation = OPERATION_FILL;
   a.operation_data.fill.colour = OPERATION_COLOUR_WHITE;
-  a.canvas.x1 = 0;
-  a.canvas.x2 = 295;
-  a.canvas.y1 = 56;
-  a.canvas.y2 = 127;
+  a.canvas.x = 0;
+  a.canvas.width = epaper.height;
+  a.canvas.y = 56;
+  a.canvas.height = (epaper.width - 56);
 
   epaper_command_t b;
   b.operation = OPERATION_FILL;
   b.operation_data.fill.colour = OPERATION_COLOUR_RED;
-  b.canvas.x1 = 0;
-  b.canvas.x2 = 295;
-  b.canvas.y1 = 0;
-  b.canvas.y2 = 55;
+  b.canvas.x = 0;
+  b.canvas.width = epaper.height;
+  b.canvas.y = 0;
+  b.canvas.height = 56;
 
   epaper_command_t c;
   c.operation = OPERATION_COPY_FROM_FLASH;
   c.operation_data.copy_from_flash.addr = &serial_text_epaper;
   c.operation_data.copy_from_flash.fg_colour = OPERATION_COLOUR_WHITE;
   c.operation_data.copy_from_flash.bg_colour = OPERATION_COLOUR_RED;
-  c.canvas.x1 = 71;
-  c.canvas.x2 = 222;
-  c.canvas.y1 = 16;
-  c.canvas.y2 = 39;
-
+  c.canvas.x = 71;
+  c.canvas.width = 152;
+  c.canvas.y = 16;
+  c.canvas.height = 40;
 
   epaper_command_t lk;
   lk.operation = OPERATION_COPY_FROM_FLASH;
-  lk.operation_data.copy_from_flash.addr = &font_glyphs[0][0];
+  lk.operation_data.copy_from_flash.addr = &font_glyphs['K' - 'A'][0];
   lk.operation_data.copy_from_flash.fg_colour = OPERATION_COLOUR_BLACK;
   lk.operation_data.copy_from_flash.bg_colour = OPERATION_COLOUR_WHITE;
-  lk.canvas.x1 = 64;
-  lk.canvas.x2 = 91;
-  lk.canvas.y1 = 64;
-  lk.canvas.y2 = 102;  
+  lk.canvas.x = 64;
+  lk.canvas.width = 28;
+  lk.canvas.y = 72;
+  lk.canvas.height = 40;
+
+  epaper_command_t lt;
+  lt.operation = OPERATION_COPY_FROM_FLASH;
+  lt.operation_data.copy_from_flash.addr = &font_glyphs['T' - 'A'][0];
+  lt.operation_data.copy_from_flash.fg_colour = OPERATION_COLOUR_BLACK;
+  lt.operation_data.copy_from_flash.bg_colour = OPERATION_COLOUR_WHITE;
+  lt.canvas.x = 64 + (1 * 28);
+  lt.canvas.width = 28;
+  lt.canvas.y = 72;
+  lt.canvas.height = 40;
+
+  epaper_command_t la;
+  la.operation = OPERATION_COPY_FROM_FLASH;
+  la.operation_data.copy_from_flash.addr = &font_glyphs['A' - 'A'][0];
+  la.operation_data.copy_from_flash.fg_colour = OPERATION_COLOUR_BLACK;
+  la.operation_data.copy_from_flash.bg_colour = OPERATION_COLOUR_WHITE;
+  la.canvas.x = 64 + (2 * 28);
+  la.canvas.width = 28;
+  la.canvas.y = 72;
+  la.canvas.height = 40;
+
+  epaper_command_t ln;
+  ln.operation = OPERATION_COPY_FROM_FLASH;
+  ln.operation_data.copy_from_flash.addr = &font_glyphs['N' - 'A'][0];
+  ln.operation_data.copy_from_flash.fg_colour = OPERATION_COLOUR_BLACK;
+  ln.operation_data.copy_from_flash.bg_colour = OPERATION_COLOUR_WHITE;
+  ln.canvas.x = 64 + (3 * 28);
+  ln.canvas.width = 28;
+  ln.canvas.y = 72;
+  ln.canvas.height = 40;
+
+  epaper_command_t le;
+  le.operation = OPERATION_COPY_FROM_FLASH;
+  le.operation_data.copy_from_flash.addr = &font_glyphs['E' - 'A'][0];
+  le.operation_data.copy_from_flash.fg_colour = OPERATION_COLOUR_BLACK;
+  le.operation_data.copy_from_flash.bg_colour = OPERATION_COLOUR_WHITE;
+  le.canvas.x = 64 + (4 * 28);
+  le.canvas.width = 28;
+  le.canvas.y = 72;
+  le.canvas.height = 40;
+
+  epaper_command_t l1;
+  l1.operation = OPERATION_COPY_FROM_FLASH;
+  l1.operation_data.copy_from_flash.addr = &font_glyphs[27][0];
+  l1.operation_data.copy_from_flash.fg_colour = OPERATION_COLOUR_BLACK;
+  l1.operation_data.copy_from_flash.bg_colour = OPERATION_COLOUR_WHITE;
+  l1.canvas.x = 64 + (5 * 28);
+  l1.canvas.width = 28;
+  l1.canvas.y = 72;
+  l1.canvas.height = 40;
 
   epaper_queue(&epaper, &a);
   epaper_queue(&epaper, &b);
   epaper_queue(&epaper, &c);
-    epaper_queue(&epaper, &lk);
+  epaper_queue(&epaper, &lk);
+  epaper_queue(&epaper, &lt);
+  epaper_queue(&epaper, &la);
+  epaper_queue(&epaper, &ln);
+  epaper_queue(&epaper, &le);
+  epaper_queue(&epaper, &l1);
   epaper_refresh(&epaper, false);
 
   while (1) {
@@ -185,7 +238,7 @@ const uint8_t serial_text_epaper[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x83, 0xFF, 0xFC, 0x80, 0x80,
     0x80, 0x80, 0x80, 0x87, 0xFF, 0xF8, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00,
 };
- const uint8_t font_glyphs[FONT_GLYPH_COUNT][FONT_GLYPH_BYTES_PER_CHAR] = {
+const uint8_t font_glyphs[FONT_GLYPH_COUNT][FONT_GLYPH_BYTES_PER_CHAR] = {
     /* A */
     {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x07, 0x07,

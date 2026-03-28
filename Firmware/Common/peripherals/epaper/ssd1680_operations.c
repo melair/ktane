@@ -65,10 +65,7 @@ void ssd1680_operation_fill_send_bw_enter(fsm_t *fsm) {
   epaper->spi_transaction.callback =
       &ssd1680_operation_fill_send_bw_enter_spi_callback;
   epaper->spi_transaction.write_size = 4;
-  epaper->spi_transaction.write_repeats =
-      ((epaper->commited->_mapped.height * epaper->commited->_mapped.width) /
-       4) -
-      1;
+  epaper->spi_transaction.write_repeats = (epaper->commited->_mapped.bytes / 4) - 1;
 
   spi_queue(&epaper->spi_transaction);
 }
@@ -130,9 +127,7 @@ void ssd1680_operation_fill_send_red_enter(fsm_t *fsm) {
       &ssd1680_operation_fill_send_red_enter_spi_callback;
   epaper->spi_transaction.write_size = 4;
   epaper->spi_transaction.write_repeats =
-      ((epaper->commited->_mapped.height * epaper->commited->_mapped.width) /
-       4) -
-      1;
+      (epaper->commited->_mapped.bytes / 4) - 1;
 
   spi_queue(&epaper->spi_transaction);
 }
@@ -170,7 +165,7 @@ spi_transaction_t *
 ssd1680_operation_copy_from_flash_send_bw_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (epaper->phase >= 140) {
+  if (epaper->phase >= epaper->commited->_mapped.bytes) {
     fsm_transition(&epaper->fsm, &ssd1680_operation_copy_from_flash_red_cmd);
     pin_write(epaper->dc, false);
     return NULL;
@@ -275,7 +270,7 @@ spi_transaction_t *ssd1680_operation_copy_from_flash_send_red_spi_callback(
     spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (epaper->phase >= 140) {
+  if (epaper->phase >= epaper->commited->_mapped.bytes) {
     fsm_transition(&epaper->fsm, &ssd1680_queue_return);
     pin_write(epaper->dc, false);
     return NULL;
