@@ -2467,7 +2467,7 @@
 				)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "296-TPS259631DDARCT-ND"
 			(at 105.41 38.1 0)
 			(effects
 				(font

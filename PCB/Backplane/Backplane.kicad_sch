@@ -6204,7 +6204,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "1000"
 			(at 250.4186 109.093 0)
 			(effects
 				(font
@@ -6240,7 +6240,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "P10.0KHCT-ND"
+		(property "DIGIKEY" "P1.0KHCT-ND"
 			(at 248.92 107.95 0)
 			(effects
 				(font
@@ -6385,7 +6385,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "150-PIC18F25Q43-I/SS-ND"
 			(at 67.31 100.33 0)
 			(effects
 				(font
@@ -7595,7 +7595,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "CDSOT23-T24CANCT-ND"
 			(at 358.14 59.69 0)
 			(effects
 				(font
@@ -9558,6 +9558,15 @@
 		)
 		(property "Description" "3.000V Precision Micropower Shunt Voltage Reference, SOT-23"
 			(at 250.19 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "DIGIKEY" "31-LM4040C33FTACT-ND"
+			(at 250.19 50.8 90)
 			(effects
 				(font
 					(size 1.27 1.27)

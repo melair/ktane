@@ -1765,12 +1765,6 @@
 		(uuid "643c69ae-647b-4e5d-a765-1ea264d185a9")
 	)
 	(junction
-		(at 72.39 138.43)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "70cbfc26-b52e-482c-8da3-5fa2bcaac8f7")
-	)
-	(junction
 		(at 82.55 127)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2202,16 +2196,6 @@
 	)
 	(wire
 		(pts
-			(xy 62.23 138.43) (xy 72.39 138.43)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a0a144af-0f12-4815-bdfc-71f289fcef93")
-	)
-	(wire
-		(pts
 			(xy 29.21 36.83) (xy 29.21 34.29)
 		)
 		(stroke
@@ -2595,7 +2579,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "STOCK/AMASS"
 			(at 69.85 33.02 0)
 			(effects
 				(font
@@ -2655,7 +2639,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "1000"
 			(at 133.5786 79.883 0)
 			(effects
 				(font
@@ -2691,7 +2675,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "P10.0KHCT-ND "
+		(property "DIGIKEY" "P1.00KHCT-ND"
 			(at 132.08 78.74 0)
 			(effects
 				(font
@@ -4529,7 +4513,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "1000"
 			(at 133.5786 134.493 0)
 			(effects
 				(font
@@ -4565,7 +4549,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "P10.0KHCT-ND "
+		(property "DIGIKEY" "P1.00KHCT-ND"
 			(at 132.08 133.35 0)
 			(effects
 				(font
@@ -5651,7 +5635,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "P10.0KHCT-ND "
+		(property "DIGIKEY" "P10.0KHCT-ND"
 			(at 151.13 78.74 0)
 			(effects
 				(font

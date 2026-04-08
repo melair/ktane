@@ -8817,7 +8817,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "150-PIC18F57Q84-I/PT-ND"
 			(at 66.04 62.23 0)
 			(effects
 				(font
@@ -10194,7 +10194,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "CDSOT23-T24CANCT-ND"
 			(at 184.15 34.29 0)
 			(effects
 				(font
@@ -11211,7 +11211,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "STOCK/HEADER"
 			(at 157.48 77.47 0)
 			(effects
 				(font

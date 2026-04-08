@@ -4218,7 +4218,7 @@
 				(hide yes)
 			)
 		)
-		(property "DIGIKEY" "STOCK"
+		(property "DIGIKEY" "CDSOT23-T24CANCT-ND"
 			(at 66.04 147.32 0)
 			(effects
 				(font
