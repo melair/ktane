@@ -8,8 +8,16 @@
             "properties": {
                 "HI-TECH-LINK.code-model-rom": "200-7FFF",
                 "HI-TECH-LINK.additional-options-code-offset": "200",
-                "HI-TECH-COMP.asmlist": true
+                "HI-TECH-COMP.asmlist": true,
+                "HI-TECH-COMP.extra-include-directories": [
+                    "../Common"
+                ]
             }
+        },
+        {
+            "name": "Backplane-tool-base",
+            "type": "tool",
+            "properties": {}
         },
         {
             "name": "ControlBoard-tool-base",
@@ -44,9 +52,10 @@
     "configurations": [
         {
             "name": "Backplane",
-            "id": "conf1",
+            "id": "",
             "device": "PIC18F25Q43",
             "imagePath": "./out/Backplane/default.elf",
+            "toolProperties": "Backplane-tool-base",
             "tool": "PICkit 4",
             "packs": [
                 {

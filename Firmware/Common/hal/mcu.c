@@ -44,6 +44,6 @@ void arbiter_init(void) {
 }
 
 /* Cause CPU to idle on sleep(), rather than actually sleep. This is often needed when peripherals depend on FOSC. */
-inline void sleep_init(void) {
+inline void sleep_doze(void) {
     CPUDOZEbits.IDLEN = 1;
 }

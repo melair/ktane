@@ -36,6 +36,9 @@
 #elif defined(_PIC18F57Q84_H_)
 #define SPIPPSCOPI 0x35
 #define SPIPPSCLK 0x34
+#elif defined(_PIC18F25Q43_H_)
+#define SPIPPSCOPI 0x35
+#define SPIPPSCLK 0x34
 #else
 #error Unsupported PIC, requires PPS values.
 #endif
@@ -66,9 +69,11 @@
 #elif defined(_PIC18F57Q84_H_)
 #define SPIPPSCOPI 0x32
 #define SPIPPSCLK 0x31
+#elif defined(_PIC18F25Q43_H_)
+#define SPIPPSCOPI 0x32
+#define SPIPPSCLK 0x31
 #else
 #error Unsupported PIC, requires PPS values.
 #endif
 #endif
-
 #endif

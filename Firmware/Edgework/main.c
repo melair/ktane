@@ -6,6 +6,7 @@
 #include <hal/spi.h>
 #include <language_support.h>
 #include <peripherals/epaper/epaper.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <utils/time.h>
 #include <xc.h>
@@ -27,7 +28,7 @@ int main() {
   arbiter_init();
 
   /* Initialise sleep mode. */
-  sleep_init();
+  sleep_doze();
 
   /* Initialise vectored interrupt handling. */
   int_init(0x208);
@@ -159,8 +160,8 @@ int main() {
   epaper_queue(&epaper, &l1);
   epaper_refresh(&epaper, false);
 
-  while (1) {
-    // Clear Watchdog.
+  while (true) {
+    /* Clear Watchdog. */
     CLRWDT();
 
     /* Start the timer processing. */
@@ -172,7 +173,7 @@ int main() {
     /* Temp: Service ePaper */
     epaper_service(&epaper);
 
-    // Sleep, if there's no time update.
+    /* Sleep, if there's no time update. */
     if (time_service_end()) {
       SLEEP();
     }
