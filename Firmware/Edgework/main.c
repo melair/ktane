@@ -39,7 +39,7 @@ int main() {
   /* Temp: Initialise SPI. */
   pin_config(GPIO_4, OUTPUT, 0); // COPI
   pin_config(GPIO_5, OUTPUT, 0); // CLK
-  spi_init(GPIO_4, GPIO_5, PORTPIN_NONE, DMA1);
+  spi_init(GPIO_4, GPIO_5, PORTPIN_NONE);
 
   /* Temp: Initialise ePaper. */
   pin_config(GPIO_6, OUTPUT, 0); // /CS

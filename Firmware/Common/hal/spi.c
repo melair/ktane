@@ -139,7 +139,7 @@ void spi_state_write_enter(fsm_t *fsm) {
   SPITCNTH = (spi.current->write_size >> 8) & 0x07;
   SPITCNTL = (spi.current->write_size) & 0xff;
 
-  DMASELECT = spi.dma_peripheral;
+  DMASELECT = SPI_DMA;
 
   DMAnCON1bits.SMODE = 0b01;
   DMAnCON1bits.DMODE = 0b00;
@@ -192,7 +192,7 @@ void spi_state_read_enter(fsm_t *fsm) {
   SPITCNTH = (spi.current->read_size >> 8) & 0x07;
   SPITCNTL = (spi.current->read_size) & 0xff;
 
-  DMASELECT = spi.dma_peripheral;
+  DMASELECT = SPI_DMA;
 
   DMAnCON1bits.SMODE = 0b00;
   DMAnCON1bits.DMODE = 0b01;
@@ -232,7 +232,7 @@ const fs_t state_read = {.name = "READ",
 
 void spi_state_callback_enter(fsm_t *fsm) {
   SPICON0 &= ~_SPI1CON0_EN_MASK;
-  DMASELECT = spi.dma_peripheral;
+  DMASELECT = SPI_DMA;
   DMAnCON0bits.EN = 0;
 
   if (spi.current->callback != NULL) {
@@ -271,9 +271,7 @@ const fs_t state_cs_deassert = {
     .next_states = {&state_idle, &state_configure, NULL},
     .enter = spi_stat_cs_deassert_enter};
 
-void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config) {
-  spi.dma_peripheral = DMA_NUM(config);
-
+void spi_init(pin_t copi, pin_t clk, pin_t cipo) {
   /* Set clock to FOSC. */
   SPICLK = 0x00;
 
@@ -293,7 +291,7 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config) {
   SPIIE = 1;
   SPISDIPPS = cipo;
 
-  dma_inte_dcnt(spi.dma_peripheral, true);
+  dma_inte_dcnt(SPI_DMA, true);
 
   /* Ensure that SPI queues and pointers are empty. */
   spi.queue_head = NULL;
@@ -309,7 +307,7 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config) {
 void spi_service(void) { fsm_service(&spi.fsm); }
 
 void spi_interrupt(void) {
-  DMA_SELECT_BEGIN(spi.dma_peripheral);
+  DMA_SELECT_BEGIN(SPI_DMA);
 
   if ((DMAnCON0 & _DMAnCON0_DGO_MASK) != _DMAnCON0_DGO_MASK &&
       (SPICON2 & _SPI1CON2_BUSY_MASK) != _SPI1CON2_BUSY_MASK &&
@@ -340,7 +338,7 @@ void spi_interrupt(void) {
     }
   }
 
-  if (dma_intf_dcnt(spi.dma_peripheral)) {
+  if (dma_intf_dcnt(SPI_DMA)) {
     if (spi.current->operation == SPI_OPERATION_READ) {
       spi.RW_DONE = 1;
     }

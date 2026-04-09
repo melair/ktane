@@ -12,8 +12,6 @@ typedef struct spi_t spi_t;
 struct spi_t {
     fsm_t fsm;
 
-    uint8_t dma_peripheral;
-
     spi_transaction_t *queue_head;
     spi_transaction_t *queue_tail;
 
@@ -58,7 +56,7 @@ struct spi_transaction_t {
     spi_transaction_t *queue_next;
 };
 
-void spi_init(pin_t copi, pin_t clk, pin_t cipo, uint8_t config);
+void spi_init(pin_t copi, pin_t clk, pin_t cipo);
 void spi_service(void);
 void spi_interrupt(void);
 void spi_queue(spi_transaction_t *transaction);

@@ -9,6 +9,11 @@
 #warning No SPI peripheral defined, assuming SPI1.
 #endif
 
+#ifndef SPI_DMA
+#define SPI_DMA DMA1
+#warning No SPI DMA defined, assuming DMA1.
+#endif
+
 #if SPI_PERIPHERAL == SPI2
 #define SPICLK SPI2CLK
 #define SPICON0 SPI2CON0
