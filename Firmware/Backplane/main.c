@@ -4,6 +4,7 @@
 #include <hal/pin.h>
 #include <utils/time.h>
 #include "gpio.h"
+#include "power.h"
 
 /* Main entry point for backplane. */
 int main() {
@@ -19,6 +20,9 @@ int main() {
   /* Initialise time. */
   time_init();
 
+  /* Initialise power manager. */
+  power_init();
+
   /* Main loop. */
   while (true) {
     /* Clear Watchdog. */
@@ -26,6 +30,9 @@ int main() {
 
     /* Start the timer processing. */
     time_service_start();
+
+    /* Service power manager. */
+    power_service();
 
     /* Sleep, if there's no time update. */
     if (time_service_end()) {

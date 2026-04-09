@@ -11,7 +11,7 @@
 typedef struct fsm_t fsm_t;
 typedef struct fs_t fs_t;
 
-struct fs_t{
+struct fs_t {
     const char *name;
 
     void (*enter)(fsm_t *);
