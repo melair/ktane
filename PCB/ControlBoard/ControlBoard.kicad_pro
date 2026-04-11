@@ -268,7 +268,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "B01"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -541,6 +541,7 @@
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.25,
+        "tuning_profile": "",
         "via_diameter": 0.8,
         "via_drill": 0.4,
         "wire_width": 6
@@ -558,13 +559,14 @@
         "priority": 0,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 1.5,
+        "tuning_profile": "",
         "via_diameter": 0.8,
         "via_drill": 0.4,
         "wire_width": 6
       }
     ],
     "meta": {
-      "version": 4
+      "version": 5
     },
     "net_colors": null,
     "netclass_assignments": null,
@@ -759,7 +761,7 @@
       {
         "filename": "ControlBoard.kicad_sch",
         "name": "ControlBoard",
-        "uuid": "00000000-0000-0000-0000-000000000000"
+        "uuid": "8a650ebf-3f78-4ca4-a26b-a5028693e36d"
       }
     ],
     "used_designators": "",
@@ -768,7 +770,7 @@
   "sheets": [
     [
       "8a650ebf-3f78-4ca4-a26b-a5028693e36d",
-      "Root"
+      "ControlBoard"
     ],
     [
       "5424ff00-1761-4193-8e82-28a4c0bc55c6",
