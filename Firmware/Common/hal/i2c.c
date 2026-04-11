@@ -54,12 +54,16 @@ void i2c_state_configure_enter(fsm_t *fsm) {
   case I2C_OPERATION_READ:
     fsm_transition(fsm, &i2c_state_read);
     break;
+
+  default:
+    i2c.current->status = I2C_STATUS_ERROR_UNKNOWN;
+    fsm_transition(fsm, &i2c_state_callback);
   }
 }
 
 const fs_t i2c_state_configure = {
     .name = "CONFIGURE",
-    .next_states = {&i2c_state_write, &i2c_state_read, NULL},
+    .next_states = {&i2c_state_write, &i2c_state_read, &i2c_state_callback, NULL},
     .enter = i2c_state_configure_enter};
 
 void i2c_state_write_enter(fsm_t *fsm) {
@@ -283,7 +287,7 @@ void i2c_init(pin_t clk, pin_t dat) {
   i2c.queue_tail = NULL;
   i2c.current = NULL;
 
-  /* Initialise SPI FSM. */
+  /* Initialise I2C FSM. */
   i2c.fsm.ctx = NULL;
   i2c.fsm.initial = &i2c_state_idle;
   fsm_init(&i2c.fsm);
@@ -296,27 +300,31 @@ void i2c_interrupt(void) {
     if (I2C1ERRbits.BTOIF) {
       I2C1ERRbits.BTOIF = 0;
 
-      i2c.current->status = I2C_STATUS_ERROR_BTO;
+      if (i2c.current != NULL) {
+        i2c.current->status = I2C_STATUS_ERROR_BTO;
+      }
     }
 
     if (I2C1ERRbits.NACKIF) {
       I2C1ERRbits.NACKIF = 0;
       I2C1CON1bits.P = 1;
 
-      i2c.current->status = I2C_STATUS_ERROR_NACK;
+      if (i2c.current != NULL) {
+        i2c.current->status = I2C_STATUS_ERROR_NACK;
+      }
     }
   }
 
   if (I2C1PIRbits.CNTIF) {
     I2C1PIRbits.CNTIF = 0;
 
-    if (i2c.current->operation != I2C_OPERATION_READ) {
+    if (i2c.current != NULL && i2c.current->operation != I2C_OPERATION_READ) {
       i2c.RW_DONE = 1;
     }
   }
 
   if (dma_intf_dcnt(I2C_DMA)) {
-    if (i2c.current->operation == I2C_OPERATION_READ) {
+    if (i2c.current != NULL && i2c.current->operation == I2C_OPERATION_READ) {
       i2c.RW_DONE = 1;
     }
   }

@@ -16,7 +16,7 @@ struct i2c_t {
 
   i2c_transaction_t *current;
 
-  unsigned RW_DONE : 1;
+  volatile unsigned RW_DONE : 1;
 };
 
 #define I2C_OPERATION_WRITE 0
@@ -27,10 +27,11 @@ struct i2c_t {
 #define I2C_STATUS_SUCCESS 0
 #define I2C_STATUS_ERROR_BTO 1
 #define I2C_STATUS_ERROR_NACK 2
+#define I2C_STATUS_ERROR_UNKNOWN 3
 
 struct i2c_transaction_t {
   unsigned operation : 3;
-  unsigned status : 2;
+  volatile unsigned status : 2;
 
   uint8_t addr;
 
