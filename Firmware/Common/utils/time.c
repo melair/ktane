@@ -15,6 +15,13 @@ volatile uint16_t internal_tick = 0;
 /* Last proxessed tick. */
 volatile uint16_t processed_tick = 0;
 
+/* Countdown divisors for deriving slower periodic ticks from the 2kHz base. */
+static uint8_t countdown_1khz = 2;
+static uint8_t countdown_100hz = 20;
+static uint8_t countdown_20hz = 100;
+static uint16_t countdown_2hz = 1000;
+static uint16_t countdown_1hz = 2000;
+
 void time_init(void) {
   /* Set clock to 500kHz source. */
   T0CON1bits.CS = 0b101;
@@ -52,24 +59,34 @@ void time_service_start(void) {
         processed_tick++;
         tick_flags |= TIME_TICK_2KHZ;
 
-        if (processed_tick % 2 == 0) {
+        countdown_1khz--;
+        if (countdown_1khz == 0) {
+            countdown_1khz = 2;
             tick_flags |= TIME_TICK_1KHZ;
             uptime_in_ms++;
         }
 
-        if (processed_tick % 20 == 0) {
+        countdown_100hz--;
+        if (countdown_100hz == 0) {
+            countdown_100hz = 20;
             tick_flags |= TIME_TICK_100HZ;
         }
 
-        if (processed_tick % 100 == 0) {
+        countdown_20hz--;
+        if (countdown_20hz == 0) {
+            countdown_20hz = 100;
             tick_flags |= TIME_TICK_20HZ;
         }
 
-        if (processed_tick % 1000 == 0) {
+        countdown_2hz--;
+        if (countdown_2hz == 0) {
+            countdown_2hz = 1000;
             tick_flags |= TIME_TICK_2HZ;
         }
 
-        if (processed_tick % 2000 == 0) {
+        countdown_1hz--;
+        if (countdown_1hz == 0) {
+            countdown_1hz = 2000;
             tick_flags |= TIME_TICK_1HZ;
             reset_internal = true;
         }
