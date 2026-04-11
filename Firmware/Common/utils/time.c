@@ -5,20 +5,10 @@
 
 /* Current millisecond of uptime module has, will wrap at roughly 50 days,
  * long enough not to care. */
-volatile uint32_t uptime = 0;
+volatile uint32_t uptime_in_ms = 0;
 
-/* 1Hz tick flag. */
-volatile bool tick_1hz = false;
-/* 2Hz tick flag. */
-volatile bool tick_2hz = false;
-/* 20Hz tick flag. */
-volatile bool tick_20hz = false;
-/* 100Hz tick flag. */
-volatile bool tick_100hz = false;
-/* 1kHz tick flag. */
-volatile bool tick_1khz = false;
-/* 2kHz tick flag. */
-volatile bool tick_2khz = false;
+/* Tick flags bit-pack periodic events to reduce RAM usage. */
+volatile uint8_t tick_flags = 0;
 
 /* Internal tick counter, used to maintain above tick flags. */
 volatile uint16_t internal_tick = 0;
@@ -60,27 +50,27 @@ void time_service_start(void) {
 
     for (uint32_t i = 0; i < diff; i++) {
         processed_tick++;
-        tick_2khz = true;
+        tick_flags |= TIME_TICK_2KHZ;
 
         if (processed_tick % 2 == 0) {
-            tick_1khz = true;
-            uptime++;
+            tick_flags |= TIME_TICK_1KHZ;
+            uptime_in_ms++;
         }
 
         if (processed_tick % 20 == 0) {
-            tick_100hz = true;
+            tick_flags |= TIME_TICK_100HZ;
         }
 
         if (processed_tick % 100 == 0) {
-            tick_20hz = true;
+            tick_flags |= TIME_TICK_20HZ;
         }
 
         if (processed_tick % 1000 == 0) {
-            tick_2hz = true;
+            tick_flags |= TIME_TICK_2HZ;
         }
 
         if (processed_tick % 2000 == 0) {
-            tick_1hz = true;
+            tick_flags |= TIME_TICK_1HZ;
             reset_internal = true;
         }
     }
@@ -92,12 +82,6 @@ void time_service_start(void) {
 }
 
 bool time_service_end(void) {
-    tick_1hz = false;
-    tick_2hz = false;
-    tick_20hz = false;
-    tick_100hz = false;
-    tick_1khz = false;
-    tick_2khz = false;
-
+    tick_flags = 0;
     return (internal_tick == processed_tick);
 }

@@ -55,8 +55,11 @@ uint24_t select_application(void) {
     uint8_t app = nvm_eeprom_read(0x000);
 
     if (app != 0xFF) {
-      selected = app;
       nvm_eeprom_write(0x000, 0xFF);
+    }
+
+    if (app < APPLICATION_COUNT) {
+      selected = app;
     }
   }
 

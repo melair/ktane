@@ -71,11 +71,8 @@ uint16_t d;
 bool pin_read(pin_t pin) {
     uint8_t port_num = PORT_NUM(pin);
     uint8_t pin_mask = PIN_MASK(pin);
-    d = (uint16_t)&pin ;
 
     volatile uint8_t *port = (volatile uint8_t *)(((uintptr_t)&PORTA) + (PORT_INTERVAL * port_num));
-
-    d = (uint16_t)port ;
     return (*port & pin_mask) == pin_mask;
 }
 

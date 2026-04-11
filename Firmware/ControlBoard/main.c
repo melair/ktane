@@ -7,8 +7,8 @@ int main() {
   /* Initialise the MCU memory arbiter. */
   arbiter_init();
 
-  /* Initialise sleep mode. */
-  sleep_init();
+  /* Set sleep mode to doze. */
+  sleep_doze();
 
   /* Initialise vectored interrupt handling. */
   int_init(0x208);

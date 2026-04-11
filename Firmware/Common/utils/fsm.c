@@ -37,7 +37,7 @@ void fsm_service(fsm_t *fsm) {
     count++;
 
     /* Check to see if we need to transition. */
-    if (fsm->transition != NULL && fsm->transition_at <= uptime) {
+    if (fsm->transition != NULL && fsm->transition_at <= uptime_in_ms) {
       /* If we have a current state (may not at init) and we have an exit
        * callback, do it. */
       if (fsm->current != NULL && fsm->current->exit != NULL) {
@@ -110,7 +110,7 @@ bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
 
 bool fsm_transition_in(fsm_t *fsm, const fs_t *new_state, uint32_t delayInMs) {
   if (fsm_transition(fsm, new_state)) {
-    fsm->transition_at = uptime + delayInMs;
+    fsm->transition_at = uptime_in_ms + delayInMs;
 
     return true;
   } else {
