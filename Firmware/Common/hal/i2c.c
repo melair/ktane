@@ -5,6 +5,24 @@
 #include "pin.h"
 #include <xc.h>
 
+/*
+---
+title: I2C
+---
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Dequeue
+    Dequeue --> Configure
+    Configure --> Write
+    Configure --> Read
+    Configure --> Callback
+    Write --> Read
+    Write --> Callback
+    Read --> Callback
+    Callback --> Configure
+    Callback --> Idle
+*/
+
 extern const fs_t i2c_state_idle;
 extern const fs_t i2c_state_dequeue;
 extern const fs_t i2c_state_configure;
