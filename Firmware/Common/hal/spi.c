@@ -31,26 +31,26 @@ stateDiagram-v2
     CSDeassert --> Idle
 */
 
-extern const fs_t state_idle;
-extern const fs_t state_dequeue;
-extern const fs_t state_configure;
-extern const fs_t state_cs_assert;
-extern const fs_t state_ready;
-extern const fs_t state_write;
-extern const fs_t state_read;
-extern const fs_t state_callback;
-extern const fs_t state_cs_deassert;
+extern const fs_t spi_state_idle;
+extern const fs_t spi_state_dequeue;
+extern const fs_t spi_state_configure;
+extern const fs_t spi_state_cs_assert;
+extern const fs_t spi_state_ready;
+extern const fs_t spi_state_write;
+extern const fs_t spi_state_read;
+extern const fs_t spi_state_callback;
+extern const fs_t spi_state_cs_deassert;
 
 spi_t spi;
 
 void spi_state_idle_service(fsm_t *fsm) {
   if (spi.queue_head != NULL) {
-    fsm_transition(fsm, &state_dequeue);
+    fsm_transition(fsm, &spi_state_dequeue);
   }
 }
 
-const fs_t state_idle = {.name = "IDLE",
-                         .next_states = {&state_dequeue, NULL},
+const fs_t spi_state_idle = {.name = "IDLE",
+                         .next_states = {&spi_state_dequeue, NULL},
                          .service = spi_state_idle_service};
 
 void spi_state_dequeue_enter(fsm_t *fsm) {
@@ -61,11 +61,11 @@ void spi_state_dequeue_enter(fsm_t *fsm) {
     spi.queue_tail = NULL;
   }
 
-  fsm_transition(fsm, &state_configure);
+  fsm_transition(fsm, &spi_state_configure);
 }
 
-const fs_t state_dequeue = {.name = "DEQUEUE",
-                            .next_states = {&state_configure, NULL},
+const fs_t spi_state_dequeue = {.name = "DEQUEUE",
+                            .next_states = {&spi_state_configure, NULL},
                             .enter = spi_state_dequeue_enter};
 
 void spi_state_configure_enter(fsm_t *fsm) {
@@ -83,17 +83,17 @@ void spi_state_configure_enter(fsm_t *fsm) {
     SPICON1 &= ~_SPI1CON1_CKE_MASK;
   }
 
-    if (spi.current->bits == 8) {
-      SPITWIDTH = 8;
-    } else {
-      SPITWIDTH = spi.current->bits;
-    }
+  if (spi.current->bits == 8) {
+    SPITWIDTH = 8;
+  } else {
+    SPITWIDTH = spi.current->bits;
+  }
 
-  fsm_transition(fsm, &state_cs_assert);
+  fsm_transition(fsm, &spi_state_cs_assert);
 }
 
-const fs_t state_configure = {.name = "CONFIGURE",
-                              .next_states = {&state_cs_assert, NULL},
+const fs_t spi_state_configure = {.name = "CONFIGURE",
+                              .next_states = {&spi_state_cs_assert, NULL},
                               .enter = spi_state_configure_enter};
 
 void spi_state_cs_assert_enter(fsm_t *fsm) {
@@ -101,32 +101,31 @@ void spi_state_cs_assert_enter(fsm_t *fsm) {
   pin_write(spi.current_cs_pin, false);
 
   if (spi.current->cs_wait_ms != 0) {
-    fsm_transition_in(fsm, &state_ready, spi.current->cs_wait_ms);
+    fsm_transition_in(fsm, &spi_state_ready, spi.current->cs_wait_ms);
   } else {
-    fsm_transition(fsm, &state_ready);
+    fsm_transition(fsm, &spi_state_ready);
   }
 }
 
-const fs_t state_cs_assert = {
-    .name = "CS ASSERT",
-    .next_states = {&state_ready, NULL},
-    .enter = spi_state_cs_assert_enter};
+const fs_t spi_state_cs_assert = {.name = "CS ASSERT",
+                              .next_states = {&spi_state_ready, NULL},
+                              .enter = spi_state_cs_assert_enter};
 
 void spi_state_ready_enter(fsm_t *fsm) {
   switch (spi.current->operation) {
   case SPI_OPERATION_WRITE:
   case SPI_OPERATION_WRITE_THEN_READ:
-    fsm_transition(fsm, &state_write);
+    fsm_transition(fsm, &spi_state_write);
     break;
 
   case SPI_OPERATION_READ:
-    fsm_transition(fsm, &state_read);
+    fsm_transition(fsm, &spi_state_read);
     break;
   }
 }
 
-const fs_t state_ready = {.name = "READY",
-                          .next_states = {&state_write, &state_read, NULL},
+const fs_t spi_state_ready = {.name = "READY",
+                          .next_states = {&spi_state_write, &spi_state_read, NULL},
                           .enter = spi_state_ready_enter};
 
 /* SPI writing is complete when the SPI peripheral is idle. */
@@ -169,15 +168,15 @@ void spi_state_write_service(fsm_t *fsm) {
     spi.RW_DONE = 0;
 
     if (spi.current->operation == SPI_OPERATION_WRITE_THEN_READ) {
-      fsm_transition(fsm, &state_read);
+      fsm_transition(fsm, &spi_state_read);
     } else {
-      fsm_transition(fsm, &state_callback);
+      fsm_transition(fsm, &spi_state_callback);
     }
   }
 }
 
-const fs_t state_write = {.name = "WRITE",
-                          .next_states = {&state_read, &state_callback, NULL},
+const fs_t spi_state_write = {.name = "WRITE",
+                          .next_states = {&spi_state_read, &spi_state_callback, NULL},
                           .enter = spi_state_write_enter,
                           .service = spi_state_write_service};
 
@@ -221,12 +220,12 @@ void spi_state_read_service(fsm_t *fsm) {
   if (spi.RW_DONE) {
     spi.RW_DONE = 0;
 
-    fsm_transition(fsm, &state_callback);
+    fsm_transition(fsm, &spi_state_callback);
   }
 }
 
-const fs_t state_read = {.name = "READ",
-                         .next_states = {&state_callback, NULL},
+const fs_t spi_state_read = {.name = "READ",
+                         .next_states = {&spi_state_callback, NULL},
                          .enter = spi_state_read_enter,
                          .service = spi_state_read_service};
 
@@ -238,40 +237,55 @@ void spi_state_callback_enter(fsm_t *fsm) {
   if (spi.current->callback != NULL) {
     spi.current = spi.current->callback(spi.current);
 
-    if (spi.current_cs_pin == spi.current->cs_pin &&
-        !spi.current->cs_bounce) {
-      fsm_transition(fsm, &state_configure);
+    if (spi.current_cs_pin == spi.current->cs_pin && !spi.current->cs_bounce) {
+      fsm_transition(fsm, &spi_state_configure);
     } else {
-      fsm_transition(fsm, &state_cs_deassert);
+      fsm_transition(fsm, &spi_state_cs_deassert);
     }
 
     return;
+  } else {
+    spi.current = NULL;
   }
 
-  fsm_transition(fsm, &state_cs_deassert);
+  fsm_transition(fsm, &spi_state_cs_deassert);
 }
 
-const fs_t state_callback = {
+const fs_t spi_state_callback = {
     .name = "CALLBACK",
-    .next_states = {&state_cs_deassert, &state_configure, NULL},
+    .next_states = {&spi_state_cs_deassert, &spi_state_configure, NULL},
     .enter = spi_state_callback_enter};
 
 void spi_stat_cs_deassert_enter(fsm_t *fsm) {
   pin_write(spi.current_cs_pin, true);
 
   if (spi.current != NULL) {
-    fsm_transition(fsm, &state_configure);
+    fsm_transition(fsm, &spi_state_configure);
   } else {
-    fsm_transition(fsm, &state_idle);
+    fsm_transition(fsm, &spi_state_idle);
   }
 }
 
-const fs_t state_cs_deassert = {
+const fs_t spi_state_cs_deassert = {
     .name = "CS DEASSERT",
-    .next_states = {&state_idle, &state_configure, NULL},
+    .next_states = {&spi_state_idle, &spi_state_configure, NULL},
     .enter = spi_stat_cs_deassert_enter};
 
 void spi_init(pin_t copi, pin_t clk, pin_t cipo) {
+  /* Configure pins. */
+  pin_config(clk, OUTPUT, 0);
+  *pin_to_pps(clk) = SPIPPSCLK;
+
+  if (copi != PORTPIN_NONE) {
+    pin_config(copi, OUTPUT, 0);
+    *pin_to_pps(copi) = SPIPPSCOPI;
+  }
+
+  if (cipo != PORTPIN_NONE) {
+    pin_config(cipo, INPUT, 0);
+    SPISDIPPS = cipo;
+  }
+
   /* Set clock to FOSC. */
   SPICLK = 0x00;
 
@@ -285,11 +299,8 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo) {
   /* Enable zero count interrupt. */
   SPIINTE |= _SPI1INTE_TCZIE_MASK;
 
-  *pin_to_pps(copi) = SPIPPSCOPI;
-  *pin_to_pps(clk) = SPIPPSCLK;
-
+  /* Enable SPI generic interrupt. */
   SPIIE = 1;
-  SPISDIPPS = cipo;
 
   dma_inte_dcnt(SPI_DMA, true);
 
@@ -300,7 +311,7 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo) {
 
   /* Initialise SPI FSM. */
   spi.fsm.ctx = NULL;
-  spi.fsm.initial = &state_idle;
+  spi.fsm.initial = &spi_state_idle;
   fsm_init(&spi.fsm);
 }
 

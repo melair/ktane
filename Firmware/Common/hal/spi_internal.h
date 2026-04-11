@@ -1,6 +1,8 @@
 #ifndef SPI_INTERNAL_H
 #define SPI_INTERNAL_H
 
+#include <xc.h>
+
 #define SPI1 1
 #define SPI2 2
 
