@@ -67,6 +67,14 @@
                     "../Common"
                 ]
             }
+        },
+        {
+            "name": "ControlBoard-tool-base",
+            "type": "tool",
+            "properties": {
+                "poweroptions.powerenable": true,
+                "voltagevalue": "3.3"
+            }
         }
     ],
     "fileSets": [
