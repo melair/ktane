@@ -1,7 +1,8 @@
 #include "time.h"
-#include <xc.h>
-#include <stdint.h>
+#include "../hal/interrupt.h"
 #include <stdbool.h>
+#include <stdint.h>
+#include <xc.h>
 
 /* Current millisecond of uptime module has, will wrap at roughly 50 days,
  * long enough not to care. */
@@ -48,57 +49,71 @@ void time_interrupt(void) {
 }
 
 void time_service_start(void) {
-    if (internal_tick == processed_tick) {
-        return;
+  uint16_t shadow_internal_tick;
+
+  int_disable();
+  shadow_internal_tick = internal_tick;
+  int_enable();
+
+  if (shadow_internal_tick == processed_tick) {
+    return;
+  }
+
+  uint32_t diff = shadow_internal_tick - processed_tick;
+  bool reset_internal = false;
+
+  for (uint32_t i = 0; i < diff; i++) {
+    processed_tick++;
+    tick_flags |= TIME_TICK_2KHZ;
+
+    countdown_1khz--;
+    if (countdown_1khz == 0) {
+      countdown_1khz = 2;
+      tick_flags |= TIME_TICK_1KHZ;
+      uptime_in_ms++;
     }
 
-    uint32_t diff = internal_tick - processed_tick;
-    bool reset_internal = false;
-
-    for (uint32_t i = 0; i < diff; i++) {
-        processed_tick++;
-        tick_flags |= TIME_TICK_2KHZ;
-
-        countdown_1khz--;
-        if (countdown_1khz == 0) {
-            countdown_1khz = 2;
-            tick_flags |= TIME_TICK_1KHZ;
-            uptime_in_ms++;
-        }
-
-        countdown_100hz--;
-        if (countdown_100hz == 0) {
-            countdown_100hz = 20;
-            tick_flags |= TIME_TICK_100HZ;
-        }
-
-        countdown_20hz--;
-        if (countdown_20hz == 0) {
-            countdown_20hz = 100;
-            tick_flags |= TIME_TICK_20HZ;
-        }
-
-        countdown_2hz--;
-        if (countdown_2hz == 0) {
-            countdown_2hz = 1000;
-            tick_flags |= TIME_TICK_2HZ;
-        }
-
-        countdown_1hz--;
-        if (countdown_1hz == 0) {
-            countdown_1hz = 2000;
-            tick_flags |= TIME_TICK_1HZ;
-            reset_internal = true;
-        }
+    countdown_100hz--;
+    if (countdown_100hz == 0) {
+      countdown_100hz = 20;
+      tick_flags |= TIME_TICK_100HZ;
     }
 
-    if (reset_internal) {
-      internal_tick = 0;
-      processed_tick = 0;
+    countdown_20hz--;
+    if (countdown_20hz == 0) {
+      countdown_20hz = 100;
+      tick_flags |= TIME_TICK_20HZ;
     }
+
+    countdown_2hz--;
+    if (countdown_2hz == 0) {
+      countdown_2hz = 1000;
+      tick_flags |= TIME_TICK_2HZ;
+    }
+
+    countdown_1hz--;
+    if (countdown_1hz == 0) {
+      countdown_1hz = 2000;
+      tick_flags |= TIME_TICK_1HZ;
+      reset_internal = true;
+    }
+  }
+
+  if (reset_internal) {
+    int_disable();
+    internal_tick = 0;
+    int_enable();
+    processed_tick = 0;
+  }
 }
 
 bool time_service_end(void) {
-    tick_flags = 0;
-    return (internal_tick == processed_tick);
+  uint16_t shadow_internal_tick;
+
+  int_disable();
+  shadow_internal_tick = internal_tick;
+  int_enable();
+
+  tick_flags = 0;
+  return (shadow_internal_tick == processed_tick);
 }
