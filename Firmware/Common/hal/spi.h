@@ -16,9 +16,10 @@ struct spi_t {
     spi_transaction_t *queue_tail;
 
     spi_transaction_t *current;
+    uint16_t current_write_repeats;
 
     pin_t current_cs_pin;
-    unsigned RW_DONE :1;
+    volatile unsigned RW_DONE :1;
 };
 
 #define SPI_OPERATION_WRITE           0
