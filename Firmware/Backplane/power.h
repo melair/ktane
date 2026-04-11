@@ -4,8 +4,8 @@
 #include <hal/pin.h>
 #include <utils/fsm.h>
 
-#define I2C_FRONT_POT_ADDR 0b0101111
-#define I2C_REAR_POT_ADDR 0b0101100
+#define I2C_FRONT_POT_ADDR 0b01011110
+#define I2C_REAR_POT_ADDR 0b01011000
 
 typedef struct  {
     fsm_t fsm;

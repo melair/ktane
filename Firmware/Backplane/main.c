@@ -5,6 +5,7 @@
 #include <utils/time.h>
 #include "gpio.h"
 #include "power.h"
+#include <hal/i2c.h>
 
 /* Main entry point for backplane. */
 int main() {
@@ -20,6 +21,9 @@ int main() {
   /* Initialise time. */
   time_init();
 
+  /* Initialise I2C. */
+  i2c_init(GPIO_SCL, GPIO_SDA);
+
   /* Initialise power manager. */
   power_init();
 
@@ -30,6 +34,9 @@ int main() {
 
     /* Start the timer processing. */
     time_service_start();
+
+    /* Service I2C. */
+    i2c_service();
 
     /* Service power manager. */
     power_service();
@@ -49,4 +56,9 @@ void __interrupt(irq(default), base(0x208)) int_default(void) {}
 /* Timer0 for time. */
 void __interrupt(irq(IRQ_TMR0), base(0x208)) int_tmr0(void) {
   time_interrupt();
+}
+
+/* I2C and it's DMA. */
+void __interrupt(irq(IRQ_I2C1, IRQ_I2C1E, IRQ_DMA2DCNT), base(0x208)) int_i2c(void) {
+  i2c_interrupt();
 }
