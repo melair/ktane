@@ -4,6 +4,7 @@
 #include <hal/mcu.h>
 #include <hal/pin.h>
 #include <hal/spi.h>
+#include <hal/i2c.h>
 #include <language_support.h>
 #include <peripherals/epaper/epaper.h>
 #include <stdbool.h>
@@ -36,9 +37,10 @@ int main() {
   /* Initialise time. */
   time_init();
 
+  /* Initialise I2C */
+  i2c_init(GPIO_SCL, GPIO_SDA);
+
   /* Temp: Initialise SPI. */
-  pin_config(GPIO_4, OUTPUT, 0); // COPI
-  pin_config(GPIO_5, OUTPUT, 0); // CLK
   spi_init(GPIO_4, GPIO_5, PORTPIN_NONE);
 
   /* Temp: Initialise ePaper. */
@@ -160,12 +162,29 @@ int main() {
   epaper_queue(&epaper, &l1);
   epaper_refresh(&epaper, false);
 
+    i2c_transaction_t it;
+
+    uint8_t i2c_buff[2];
+    i2c_buff[0] = 0x00;
+
+    it.addr = 0b10100000; 
+    it.operation = I2C_OPERATION_WRITE_RESTART_READ;
+    it.write_size = 1;
+    it.read_size = 1;
+    it.buffer = &i2c_buff[0];
+    it.callback = NULL;
+
+    i2c_queue(&it);
+
   while (true) {
     /* Clear Watchdog. */
     CLRWDT();
 
     /* Start the timer processing. */
     time_service_start();
+
+    /* Service I2C. */
+    i2c_service();
 
     /* Temp: Service SPI. */
     spi_service();
@@ -186,6 +205,11 @@ int main() {
  * Default interrupt handler, should never be used.
  */
 void __interrupt(irq(default), base(0x208)) int_default(void) {}
+
+/* I2C and it's DMA. */
+void __interrupt(irq(IRQ_I2C1, IRQ_I2C1E, IRQ_DMA2DCNT), base(0x208)) int_i2c(void) {
+  i2c_interrupt();
+}
 
 /* Temp: SPI Interrupt routing. */
 void __interrupt(irq(IRQ_SPI2, IRQ_DMA1DCNT), base(0x208)) int_spi2(void) {
