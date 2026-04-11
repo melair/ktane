@@ -54,7 +54,7 @@ void fsm_service(fsm_t *fsm) {
     }
 
     /* Also then service. */
-    if (fsm->current->service != NULL) {
+    if (fsm->current != NULL && fsm->current->service != NULL) {
       fsm->current->service(fsm);
     }
   } while (fsm->transition != NULL && count < FSM_SERVICE_LOOP_LIMIT);
@@ -75,10 +75,18 @@ bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
   }
 
 #ifndef FSM_SKIP_LEGAL_CHECK
+  if (fsm->current == NULL) {
+    return false;
+  }
+
   bool legal = false;
 
   /* Ensure next state is a legal transition. */
-  for (uint8_t i = 0; fsm->current->next_states[i] != NULL; i++) {
+  for (uint8_t i = 0; i < FSM_MAX_NEXT_STATES; i++) {
+    if (fsm->current->next_states[i] == NULL) {
+      continue;
+    }
+
     if (fsm->current->next_states[i] == new_state) {
       legal = true;
       break;
@@ -88,12 +96,14 @@ bool fsm_transition(fsm_t *fsm, const fs_t *new_state) {
   /* If the move is legal, queue it. */
   if (legal) {
     fsm->transition = new_state;
+    fsm->transition_at = 0;
     return true;
   } else {
     return false;
   }
 #else
   fsm->transition = new_state;
+  fsm->transition_at = 0;
   return true;
 #endif
 }
