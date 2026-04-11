@@ -14,5 +14,5 @@ typedef struct {
   uint8_t buffer[SPI_QUEUE_BUFFER_SIZE];
 } spi_queue_t;
 
-bool spi_queue_process(const spi_queue_t (*queue)[], uint8_t queue_size, pin_t data, spi_transaction_t *spi, uint8_t *phase);
+bool spi_queue_process(const spi_queue_t (*queue)[], uint8_t queue_size, pin_t data, spi_transaction_t *spi, uint16_t *phase);
 #endif

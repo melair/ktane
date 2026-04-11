@@ -2,7 +2,7 @@
 #include <xc.h>
 #include "../../hal/spi.h"
 
-bool spi_queue_process(const spi_queue_t (*queue)[], uint8_t queue_size, pin_t data, spi_transaction_t *spi, uint8_t *phase) {
+bool spi_queue_process(const spi_queue_t (*queue)[], uint8_t queue_size, pin_t data, spi_transaction_t *spi, uint16_t *phase) {
     if (*phase >= queue_size) {
         pin_write(data, false);
         return false;
