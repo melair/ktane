@@ -1,11 +1,11 @@
 #include "gpio.h"
+#include <hal/argb.h>
 #include <hal/dma.h>
 #include <hal/i2c.h>
 #include <hal/interrupt.h>
 #include <hal/mcu.h>
 #include <hal/pin.h>
 #include <hal/spi.h>
-#include <hal/argb.h>
 #include <language_support.h>
 #include <peripherals/epaper/epaper.h>
 #include <stdbool.h>
@@ -31,7 +31,7 @@ int main() {
   i2c_init(GPIO_SCL, GPIO_SDA);
 
   /* Temp: Intialise ARGB */
-  argb_init(GPIO_0, true);
+  argb_init(GPIO_0, false);
 
   argb_set(0, 0x00, 0xff, 0xff);
 
@@ -71,6 +71,11 @@ void __interrupt(irq(default), base(0x208)) int_default(void) {}
 void __interrupt(irq(IRQ_I2C1, IRQ_I2C1E, IRQ_DMA2DCNT), base(0x208))
     int_i2c(void) {
   i2c_interrupt();
+}
+
+/* ARGB's SPI. */
+void __interrupt(irq(IRQ_SPI1), base(0x208)) int_argb(void) {
+  argb_interrupt();
 }
 
 /* Timer0 for time. */

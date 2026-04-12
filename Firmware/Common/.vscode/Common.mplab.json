@@ -6,7 +6,17 @@
             "type": "toolchain",
             "provider": "microchip.toolchains:xc8@3.10",
             "properties": {
-                "HI-TECH-COMP.asmlist": true
+                "HI-TECH-COMP.asmlist": true,
+                "HI-TECH-COMP.define-macros": [
+                    "SPI_PERIPHERAL=SPI2",
+                    "SPI_DMA=DMA1",
+                    "I2C_DMA=DMA2",
+                    "ARGB_PWM_PERIPHERAL=PWM2",
+                    "ARGB_CLC_PWM_SPI_PERIPHERAL=CLC7",
+                    "ARGB_SPI_PERIPHERAL=SPI1",
+                    "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC8",
+                    "ARGB_DMA=DMA3"
+                ]
             }
         },
         {
@@ -16,7 +26,14 @@
             "properties": {
                 "HI-TECH-COMP.asmlist": true,
                 "HI-TECH-COMP.define-macros": [
-                    "SPI_PERIPHERAL=SPI2"
+                    "SPI_PERIPHERAL=SPI2",
+                    "SPI_DMA=DMA1",
+                    "I2C_DMA=DMA2",
+                    "ARGB_PWM_PERIPHERAL=PWM2",
+                    "ARGB_CLC_PWM_SPI_PERIPHERAL=CLC7",
+                    "ARGB_SPI_PERIPHERAL=SPI1",
+                    "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC8",
+                    "ARGB_DMA=DMA3"
                 ]
             }
         },
@@ -27,7 +44,14 @@
             "properties": {
                 "HI-TECH-COMP.asmlist": true,
                 "HI-TECH-COMP.define-macros": [
-                    "SPI_PERIPHERAL=SPI2"
+                    "SPI_PERIPHERAL=SPI2",
+                    "SPI_DMA=DMA1",
+                    "I2C_DMA=DMA2",
+                    "ARGB_PWM_PERIPHERAL=PWM2",
+                    "ARGB_CLC_PWM_SPI_PERIPHERAL=CLC3",
+                    "ARGB_SPI_PERIPHERAL=SPI1",
+                    "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC4",
+                    "ARGB_DMA=DMA3"
                 ]
             }
         }
@@ -68,6 +92,7 @@
             "device": "PIC18F57Q84",
             "imageType": "library",
             "imagePath": "./out/Common/ControlBoard.a",
+            "tool": "PICkit 4",
             "packs": [
                 {
                     "name": "PIC18F-Q_DFP",
