@@ -29,6 +29,8 @@ void fsm_init(fsm_t *fsm) {
    fsm_service() will perform in one service loop (FSM_SERVICE_LOOP_LIMIT). This
    is an antipattern and FSMs should not make use of this functionality.
    */
+extern const fs_t i2c_state_idle;
+
 void fsm_service(fsm_t *fsm) {
   uint8_t count = 0;
 

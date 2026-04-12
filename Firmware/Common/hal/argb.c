@@ -5,8 +5,8 @@
 #include "pin.h"
 #include <xc.h>
 
-extern fs_t argb_state_idle;
-extern fs_t argb_state_updating;
+extern const fs_t argb_state_idle;
+extern const fs_t argb_state_updating;
 
 typedef struct {
   fsm_t fsm;
@@ -28,7 +28,7 @@ void argb_state_idle_service(fsm_t *fsm) {
   }
 }
 
-fs_t argb_state_idle = {.name = "IDLE",
+const fs_t argb_state_idle = {.name = "IDLE",
                         .service = &argb_state_idle_service,
                         .next_states = {&argb_state_updating, NULL}};
 
@@ -52,7 +52,7 @@ void argb_state_updating_service(fsm_t *fsm) {
   }
 }
 
-fs_t argb_state_updating = {.name = "UPDATING",
+const fs_t argb_state_updating = {.name = "UPDATING",
                             .enter = &argb_state_updating_enter,
                             .service = &argb_state_updating_service,
                             .next_states = {&argb_state_idle, NULL}};
@@ -157,6 +157,9 @@ void argb_init(pin_t out, bool negate) {
   }
   /* Enable CLC. */
   CLCnCONbits.EN = 1;
+
+  /* Output CLC to pin. */
+  *pin_to_pps(out) = 0x01 + ARGB_CLC_SPI_OUT_PERIPHERAL;
 
   /* Select DMA. */
   DMA_SELECT_BEGIN(ARGB_DMA);

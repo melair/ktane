@@ -43,7 +43,8 @@ int main() {
     time_service_start();
 
     /* Cause ARGB to output. */
-    if (tick_1hz) {
+    if (tick_20hz) {
+      argb_set(0, 0x00, uptime_in_ms & 0xff, (0xff - (uptime_in_ms & 0xff)));
       argb_update();
     }
 

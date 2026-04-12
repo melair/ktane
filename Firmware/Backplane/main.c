@@ -25,7 +25,7 @@ int main() {
   i2c_init(GPIO_SCL, GPIO_SDA);
 
   /* Initialise power manager. */
-  power_init();
+ // power_init();
 
   /* Main loop. */
   while (true) {
@@ -39,7 +39,7 @@ int main() {
     i2c_service();
 
     /* Service power manager. */
-    power_service();
+  //  power_service();
 
     /* Sleep, if there's no time update. */
     if (time_service_end()) {

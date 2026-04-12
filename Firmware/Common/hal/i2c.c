@@ -40,7 +40,7 @@ void i2c_state_idle_service(fsm_t *fsm) {
 
 const fs_t i2c_state_idle = {.name = "IDLE",
                              .next_states = {&i2c_state_dequeue, NULL},
-                             .service = i2c_state_idle_service};
+                             .service = &i2c_state_idle_service};
 
 void i2c_state_dequeue_enter(fsm_t *fsm) {
   i2c.current = i2c.queue_head;
@@ -57,7 +57,7 @@ void i2c_state_dequeue_enter(fsm_t *fsm) {
 
 const fs_t i2c_state_dequeue = {.name = "DEQUEUE",
                                 .next_states = {&i2c_state_configure, NULL},
-                                .enter = i2c_state_dequeue_enter};
+                                .enter = &i2c_state_dequeue_enter};
 
 void i2c_state_configure_enter(fsm_t *fsm) {
   I2C1STAT1bits.CLRBF = 1;
@@ -79,10 +79,11 @@ void i2c_state_configure_enter(fsm_t *fsm) {
   }
 }
 
-const fs_t i2c_state_configure = {
-    .name = "CONFIGURE",
-    .next_states = {&i2c_state_write, &i2c_state_read, &i2c_state_callback, NULL},
-    .enter = i2c_state_configure_enter};
+const fs_t i2c_state_configure = {.name = "CONFIGURE",
+                                  .next_states = {&i2c_state_write,
+                                                  &i2c_state_read,
+                                                  &i2c_state_callback, NULL},
+                                  .enter = &i2c_state_configure_enter};
 
 void i2c_state_write_enter(fsm_t *fsm) {
   if (i2c.current->operation == I2C_OPERATION_WRITE_RESTART_READ) {
@@ -152,8 +153,8 @@ void i2c_state_write_service(fsm_t *fsm) {
 const fs_t i2c_state_write = {
     .name = "WRITE",
     .next_states = {&i2c_state_read, &i2c_state_callback, NULL},
-    .enter = i2c_state_write_enter,
-    .service = i2c_state_write_service};
+    .enter = &i2c_state_write_enter,
+    .service = &i2c_state_write_service};
 
 void i2c_state_read_enter(fsm_t *fsm) {
   i2c.RW_DONE = 0;
@@ -215,9 +216,9 @@ void i2c_state_read_exit(fsm_t *fsm) { I2C1CON0bits.RSEN = 0; }
 
 const fs_t i2c_state_read = {.name = "READ",
                              .next_states = {&i2c_state_callback, NULL},
-                             .enter = i2c_state_read_enter,
-                             .service = i2c_state_read_service,
-                             .exit = i2c_state_read_exit};
+                             .enter = &i2c_state_read_enter,
+                             .service = &i2c_state_read_service,
+                             .exit = &i2c_state_read_exit};
 
 void i2c_state_callback_enter(fsm_t *fsm) {
   DMA_SELECT_BEGIN(I2C_DMA);
@@ -240,7 +241,7 @@ void i2c_state_callback_enter(fsm_t *fsm) {
 const fs_t i2c_state_callback = {
     .name = "CALLBACK",
     .next_states = {&i2c_state_configure, &i2c_state_idle, NULL},
-    .enter = i2c_state_callback_enter};
+    .enter = &i2c_state_callback_enter};
 
 void i2c_init(pin_t clk, pin_t dat) {
   /* Configure pins, all KTANE boards have external I2C pull ups, so don't
@@ -325,7 +326,10 @@ void i2c_interrupt(void) {
 
     if (I2C1ERRbits.NACKIF) {
       I2C1ERRbits.NACKIF = 0;
+#if defined(_PIC18F15Q40_H_) || defined(_PIC18F57Q84_H_)
+// TODO - Check that NACKS are forced to stop.
       I2C1CON1bits.P = 1;
+#endif
 
       if (i2c.current != NULL) {
         i2c.current->status = I2C_STATUS_ERROR_NACK;
