@@ -10,11 +10,11 @@
 extern power_t front;
 extern power_t rear;
 
-extern fs_t power_state_init;
-extern fs_t power_state_idle;
-extern fs_t power_state_active;
-extern fs_t power_state_trip;
-extern fs_t power_state_shutdown;
+extern const fs_t power_state_init;
+extern const fs_t power_state_idle;
+extern const fs_t power_state_active;
+extern const fs_t power_state_trip;
+extern const fs_t power_state_shutdown;
 
 power_t front = {.fsm = {.ctx = &front, .initial = &power_state_init},
                  .module_detect = GPIO_FRONT_MODULE_DETECT,
@@ -50,7 +50,7 @@ void power_state_init_enter(fsm_t *fsm) {
   fsm_transition_in(fsm, &power_state_idle, INIT_DELAY);
 }
 
-fs_t power_state_init = {.enter = &power_state_init_enter,
+const fs_t power_state_init = {.enter = &power_state_init_enter,
                          .next_states = {&power_state_idle, NULL}};
 
 void power_state_idle_service(fsm_t *fsm) {
@@ -63,7 +63,7 @@ void power_state_idle_service(fsm_t *fsm) {
   }
 }
 
-fs_t power_state_idle = {.service = &power_state_idle_service,
+const fs_t power_state_idle = {.service = &power_state_idle_service,
                          .next_states = {&power_state_active, NULL}};
 
 void power_state_active_enter(fsm_t *fsm) {
@@ -85,7 +85,7 @@ void power_state_active_service(fsm_t *fsm) {
   }
 }
 
-fs_t power_state_active = {
+const fs_t power_state_active = {
     .enter = &power_state_active_enter,
     .service = &power_state_active_service,
     .next_states = {&power_state_shutdown, &power_state_trip, NULL}};
@@ -106,7 +106,7 @@ void power_state_trip_service(fsm_t *fsm) {
   }
 }
 
-fs_t power_state_trip = {.enter = &power_state_trip_enter,
+const fs_t power_state_trip = {.enter = &power_state_trip_enter,
                          .service = &power_state_trip_service,
                          .next_states = {&power_state_shutdown, NULL}};
 
@@ -119,5 +119,5 @@ void power_state_shutdown_enter(fsm_t *fsm) {
   fsm_transition(fsm, &power_state_idle);
 }
 
-fs_t power_state_shutdown = {.enter = &power_state_shutdown_enter,
+const fs_t power_state_shutdown = {.enter = &power_state_shutdown_enter,
                              .next_states = {&power_state_idle, NULL}};

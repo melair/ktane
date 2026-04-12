@@ -34,7 +34,6 @@ void ssd1680_operation_fill_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_fill = {
-    .name = "FILL",
     .next_states = {&ssd1680_operation_fill_send_bw, NULL},
     .enter = ssd1680_operation_fill_enter};
 
@@ -77,7 +76,6 @@ void ssd1680_operation_fill_send_bw_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_fill_send_bw = {
-    .name = "FILL BW",
     .next_states = {&ssd1680_operation_fill_send_red_cmd, &ssd1680_queue_return,
                     NULL},
     .enter = ssd1680_operation_fill_send_bw_enter};
@@ -102,7 +100,6 @@ void ssd1680_operation_fill_send_red_cmd_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_fill_send_red_cmd = {
-    .name = "FILL RED CMD",
     .next_states = {&ssd1680_operation_fill_send_red, NULL},
     .enter = ssd1680_operation_fill_send_red_cmd_enter};
 
@@ -140,7 +137,6 @@ void ssd1680_operation_fill_send_red_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_fill_send_red = {
-    .name = "FILL RED",
     .next_states = {&ssd1680_queue_return, NULL},
     .enter = ssd1680_operation_fill_send_red_enter};
 
@@ -164,7 +160,6 @@ void ssd1680_operation_copy_from_flash_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_copy_from_flash = {
-    .name = "CFF BW CMD",
     .next_states = {&ssd1680_operation_copy_from_flash_send_bw, NULL},
     .enter = ssd1680_operation_copy_from_flash_enter};
 
@@ -251,7 +246,6 @@ void ssd1680_operation_copy_from_flash_send_bw_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_copy_from_flash_send_bw = {
-    .name = "CFF BW CMD",
     .next_states = {&ssd1680_operation_copy_from_flash_red_cmd,
                     &ssd1680_queue_return, NULL},
     .enter = ssd1680_operation_copy_from_flash_send_bw_enter};
@@ -276,7 +270,6 @@ void ssd1680_operation_copy_from_flash_red_cmd_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_copy_from_flash_red_cmd = {
-    .name = "CFF RED CMD",
     .next_states = {&ssd1680_operation_copy_from_flash_send_red, NULL},
     .enter = ssd1680_operation_copy_from_flash_red_cmd_enter};
 
@@ -340,6 +333,5 @@ void ssd1680_operation_copy_from_flash_send_red_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_operation_copy_from_flash_send_red = {
-    .name = "CFF RED",
     .next_states = {&ssd1680_queue_return, NULL},
     .enter = ssd1680_operation_copy_from_flash_send_red_enter};

@@ -48,7 +48,7 @@ void spi_state_idle_service(fsm_t *fsm) {
   }
 }
 
-const fs_t spi_state_idle = {.name = "IDLE",
+const fs_t spi_state_idle = {
                              .next_states = {&spi_state_dequeue, NULL},
                              .service = spi_state_idle_service};
 
@@ -64,7 +64,7 @@ void spi_state_dequeue_enter(fsm_t *fsm) {
   fsm_transition(fsm, &spi_state_configure);
 }
 
-const fs_t spi_state_dequeue = {.name = "DEQUEUE",
+const fs_t spi_state_dequeue = {
                                 .next_states = {&spi_state_configure, NULL},
                                 .enter = spi_state_dequeue_enter};
 
@@ -92,7 +92,7 @@ void spi_state_configure_enter(fsm_t *fsm) {
   fsm_transition(fsm, &spi_state_cs_assert);
 }
 
-const fs_t spi_state_configure = {.name = "CONFIGURE",
+const fs_t spi_state_configure = {
                                   .next_states = {&spi_state_cs_assert, NULL},
                                   .enter = spi_state_configure_enter};
 
@@ -107,7 +107,7 @@ void spi_state_cs_assert_enter(fsm_t *fsm) {
   }
 }
 
-const fs_t spi_state_cs_assert = {.name = "CS ASSERT",
+const fs_t spi_state_cs_assert = {
                                   .next_states = {&spi_state_ready, NULL},
                                   .enter = spi_state_cs_assert_enter};
 
@@ -125,7 +125,6 @@ void spi_state_ready_enter(fsm_t *fsm) {
 }
 
 const fs_t spi_state_ready = {
-    .name = "READY",
     .next_states = {&spi_state_write, &spi_state_read, NULL},
     .enter = spi_state_ready_enter};
 
@@ -177,7 +176,6 @@ void spi_state_write_service(fsm_t *fsm) {
 }
 
 const fs_t spi_state_write = {
-    .name = "WRITE",
     .next_states = {&spi_state_read, &spi_state_callback, NULL},
     .enter = spi_state_write_enter,
     .service = spi_state_write_service};
@@ -226,7 +224,7 @@ void spi_state_read_service(fsm_t *fsm) {
   }
 }
 
-const fs_t spi_state_read = {.name = "READ",
+const fs_t spi_state_read = {
                              .next_states = {&spi_state_callback, NULL},
                              .enter = spi_state_read_enter,
                              .service = spi_state_read_service};
@@ -255,7 +253,6 @@ void spi_state_callback_enter(fsm_t *fsm) {
 }
 
 const fs_t spi_state_callback = {
-    .name = "CALLBACK",
     .next_states = {&spi_state_cs_deassert, &spi_state_configure, NULL},
     .enter = spi_state_callback_enter};
 
@@ -270,7 +267,6 @@ void spi_state_cs_deassert_enter(fsm_t *fsm) {
 }
 
 const fs_t spi_state_cs_deassert = {
-    .name = "CS DEASSERT",
     .next_states = {&spi_state_idle, &spi_state_configure, NULL},
     .enter = spi_state_cs_deassert_enter};
 

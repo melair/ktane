@@ -38,8 +38,10 @@ void i2c_state_idle_service(fsm_t *fsm) {
   }
 }
 
-const fs_t i2c_state_idle = {.name = "IDLE",
+ const fs_t i2c_state_idle = {
                              .next_states = {&i2c_state_dequeue, NULL},
+                             .enter = NULL,
+                             .exit = NULL,
                              .service = &i2c_state_idle_service};
 
 void i2c_state_dequeue_enter(fsm_t *fsm) {
@@ -55,7 +57,7 @@ void i2c_state_dequeue_enter(fsm_t *fsm) {
   fsm_transition(fsm, &i2c_state_configure);
 }
 
-const fs_t i2c_state_dequeue = {.name = "DEQUEUE",
+ const fs_t i2c_state_dequeue = {
                                 .next_states = {&i2c_state_configure, NULL},
                                 .enter = &i2c_state_dequeue_enter};
 
@@ -79,7 +81,7 @@ void i2c_state_configure_enter(fsm_t *fsm) {
   }
 }
 
-const fs_t i2c_state_configure = {.name = "CONFIGURE",
+ const fs_t i2c_state_configure = {
                                   .next_states = {&i2c_state_write,
                                                   &i2c_state_read,
                                                   &i2c_state_callback, NULL},
@@ -150,8 +152,7 @@ void i2c_state_write_service(fsm_t *fsm) {
   }
 }
 
-const fs_t i2c_state_write = {
-    .name = "WRITE",
+ const fs_t i2c_state_write = {
     .next_states = {&i2c_state_read, &i2c_state_callback, NULL},
     .enter = &i2c_state_write_enter,
     .service = &i2c_state_write_service};
@@ -214,7 +215,7 @@ void i2c_state_read_service(fsm_t *fsm) {
 
 void i2c_state_read_exit(fsm_t *fsm) { I2C1CON0bits.RSEN = 0; }
 
-const fs_t i2c_state_read = {.name = "READ",
+ const fs_t i2c_state_read = {
                              .next_states = {&i2c_state_callback, NULL},
                              .enter = &i2c_state_read_enter,
                              .service = &i2c_state_read_service,
@@ -238,8 +239,7 @@ void i2c_state_callback_enter(fsm_t *fsm) {
   }
 }
 
-const fs_t i2c_state_callback = {
-    .name = "CALLBACK",
+ const fs_t i2c_state_callback = {
     .next_states = {&i2c_state_configure, &i2c_state_idle, NULL},
     .enter = &i2c_state_callback_enter};
 

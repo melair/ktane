@@ -12,23 +12,21 @@ typedef struct fsm_t fsm_t;
 typedef struct fs_t fs_t;
 
 struct fs_t {
-    const char *name;
+  void (*enter)(fsm_t *);
+  void (*service)(fsm_t *);
+  void (*exit)(fsm_t *);
 
-    void (*enter)(fsm_t *);
-    void (*service)(fsm_t *);
-    void (*exit)(fsm_t *);
-
-    const fs_t *next_states[FSM_MAX_NEXT_STATES];
+  const fs_t *next_states[FSM_MAX_NEXT_STATES];
 };
 
 struct fsm_t {
-    const fs_t *initial;
+  const fs_t *initial;
 
-    const fs_t *current;
-    const fs_t *transition;
-    uint32_t transition_at;
+  const fs_t *current;
+  const fs_t *transition;
+  uint32_t transition_at;
 
-    void *ctx;
+  void *ctx;
 };
 
 void fsm_init(fsm_t *fsm);

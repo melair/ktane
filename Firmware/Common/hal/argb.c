@@ -28,7 +28,7 @@ void argb_state_idle_service(fsm_t *fsm) {
   }
 }
 
-const fs_t argb_state_idle = {.name = "IDLE",
+const fs_t argb_state_idle = {
                         .service = &argb_state_idle_service,
                         .next_states = {&argb_state_updating, NULL}};
 
@@ -52,7 +52,7 @@ void argb_state_updating_service(fsm_t *fsm) {
   }
 }
 
-const fs_t argb_state_updating = {.name = "UPDATING",
+const fs_t argb_state_updating = {
                             .enter = &argb_state_updating_enter,
                             .service = &argb_state_updating_service,
                             .next_states = {&argb_state_idle, NULL}};
@@ -244,7 +244,7 @@ void argb_set_buffer(argb_led_t *buffer, uint8_t len) {
 }
 
 void argb_set(uint8_t idx, uint8_t r, uint8_t g, uint8_t b) {
-  if (idx <= argb.buffer_len) {
+  if (idx < argb.buffer_len) {
     argb.buffer[idx].R = r;
     argb.buffer[idx].G = g;
     argb.buffer[idx].B = b;

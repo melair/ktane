@@ -33,7 +33,7 @@ void ssd1680_idle_service(fsm_t *fsm) {
   }
 }
 
-const fs_t ssd1680_idle = {.name = "IDLE",
+const fs_t ssd1680_idle = {
                            .next_states = {&ssd1680_power_on, NULL},
                            .service = ssd1680_idle_service};
 
@@ -48,7 +48,6 @@ void ssd1680_power_on_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_power_on = {
-    .name = "POWER_ON",
     .next_states = {&ssd1680_hw_reset_phase_one, NULL},
     .enter = ssd1680_power_on_enter};
 
@@ -60,7 +59,6 @@ void ssd1680_hw_reset_phase_one_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_hw_reset_phase_one = {
-    .name = "HW RESET 1",
     .next_states = {&ssd1680_hw_reset_phase_two, NULL},
     .enter = ssd1680_hw_reset_phase_one_enter};
 
@@ -72,7 +70,6 @@ void ssd1680_hw_reset_phase_two_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_hw_reset_phase_two = {
-    .name = "HW RESET 2",
     .next_states = {&ssd1680_hw_reset_phase_three, NULL},
     .enter = ssd1680_hw_reset_phase_two_enter};
 
@@ -85,7 +82,6 @@ void ssd1680_hw_reset_phase_three_service(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_hw_reset_phase_three = {
-    .name = "HW RESET 3",
     .next_states = {&ssd1680_sw_reset_phase_one, NULL},
     .service = ssd1680_hw_reset_phase_three_service};
 
@@ -111,7 +107,6 @@ void ssd1680_sw_reset_phase_one_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_sw_reset_phase_one = {
-    .name = "SW RESET 1",
     .next_states = {&ssd1680_sw_reset_phase_two, NULL},
     .enter = ssd1680_sw_reset_phase_one_enter};
 
@@ -124,7 +119,6 @@ void ssd1680_sw_reset_phase_two_service(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_sw_reset_phase_two = {
-    .name = "SW RESET 2",
     .next_states = {&ssd1680_configure, NULL},
     .service = ssd1680_sw_reset_phase_two_service};
 
@@ -192,7 +186,7 @@ void ssd1680_configure_enter(fsm_t *fsm) {
   spi_queue(t);
 }
 
-const fs_t ssd1680_configure = {.name = "CONFIGURE",
+const fs_t ssd1680_configure = {
                                 .next_states = {&ssd1680_configure_wait, NULL},
                                 .enter = ssd1680_configure_enter};
 
@@ -204,7 +198,7 @@ void ssd1680_configure_wait_service(fsm_t *fsm) {
   }
 }
 
-const fs_t ssd1680_configure_wait = {.name = "CONFIGURE_COMPLETE",
+const fs_t ssd1680_configure_wait = {
                                      .next_states = {&ssd1680_queue, NULL},
                                      .service = ssd1680_configure_wait_service};
 
@@ -220,7 +214,6 @@ void ssd1680_queue_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_queue = {
-    .name = "QUEUE",
     .next_states = {&ssd1680_refresh_display, &ssd1680_setup_canvas, NULL},
     .enter = ssd1680_queue_enter};
 
@@ -349,7 +342,6 @@ void ssd1680_setup_canvas_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_setup_canvas = {
-    .name = "CANVAS",
     .next_states = {&ssd1680_queue_return, &ssd1680_operation_fill,
                     &ssd1680_operation_copy_from_flash, NULL},
     .enter = &ssd1680_setup_canvas_enter};
@@ -361,7 +353,7 @@ void ssd1680_queue_return_enter(fsm_t *fsm) {
   fsm_transition(&epaper->fsm, &ssd1680_queue);
 }
 
-const fs_t ssd1680_queue_return = {.name = "QUEUE_RETURN",
+const fs_t ssd1680_queue_return = {
                                    .next_states = {&ssd1680_queue, NULL},
                                    .enter = ssd1680_queue_return_enter};
 
@@ -405,7 +397,6 @@ void ssd1680_refresh_display_enter(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_refresh_display = {
-    .name = "REFRESH",
     .next_states = {&ssd1680_refresh_display_wait, NULL},
     .enter = ssd1680_refresh_display_enter};
 
@@ -418,7 +409,6 @@ void ssd1680_refresh_display_wait_service(fsm_t *fsm) {
 }
 
 const fs_t ssd1680_refresh_display_wait = {
-    .name = "REFRESH_WAIT",
     .next_states = {&ssd1680_sleep, NULL},
     .service = ssd1680_refresh_display_wait_service};
 
@@ -449,7 +439,7 @@ void ssd1680_sleep_enter(fsm_t *fsm) {
   spi_queue(t);
 }
 
-const fs_t ssd1680_sleep = {.name = "SLEEP",
+const fs_t ssd1680_sleep = {
                             .next_states = {&ssd1680_power_off, NULL},
                             .enter = ssd1680_sleep_enter};
 
@@ -465,6 +455,6 @@ void ssd1680_power_off_enter(fsm_t *fsm) {
   fsm_transition(fsm, &ssd1680_idle);
 }
 
-const fs_t ssd1680_power_off = {.name = "POWER_ON",
+const fs_t ssd1680_power_off = {
                                 .next_states = {&ssd1680_idle, NULL},
                                 .enter = ssd1680_power_off_enter};
