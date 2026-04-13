@@ -48,7 +48,7 @@
 #if defined(_PIC18F15Q40_H_)
 #define CLC_PWM_BASE 21
 #elif defined(_PIC18F57Q84_H_) || defined(_PIC18F25Q43_H_)
-#define CLC_PWM_BASE 66
+#define CLC_PWM_BASE 34
 #else
 #error Unsupported PIC, requires CLC PWM base number.
 #endif

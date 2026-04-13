@@ -28,9 +28,8 @@ void argb_state_idle_service(fsm_t *fsm) {
   }
 }
 
-const fs_t argb_state_idle = {
-                        .service = &argb_state_idle_service,
-                        .next_states = {&argb_state_updating, NULL}};
+const fs_t argb_state_idle = {.service = &argb_state_idle_service,
+                              .next_states = {&argb_state_updating, NULL}};
 
 void argb_state_updating_enter(fsm_t *fsm) {
   argb.update_complete = 0;
@@ -52,10 +51,9 @@ void argb_state_updating_service(fsm_t *fsm) {
   }
 }
 
-const fs_t argb_state_updating = {
-                            .enter = &argb_state_updating_enter,
-                            .service = &argb_state_updating_service,
-                            .next_states = {&argb_state_idle, NULL}};
+const fs_t argb_state_updating = {.enter = &argb_state_updating_enter,
+                                  .service = &argb_state_updating_service,
+                                  .next_states = {&argb_state_idle, NULL}};
 
 void argb_init(pin_t out, bool negate) {
   /* Configure output pin. */
@@ -202,7 +200,7 @@ void argb_init(pin_t out, bool negate) {
 void argb_service(void) { fsm_service(&argb.fsm); }
 
 void argb_interrupt(void) {
-  DMA_SELECT_BEGIN(SPI_DMA);
+  DMA_SELECT_BEGIN(ARGB_DMA);
 
   if (ARGB_SPI_INTF.TCZIF) {
     ARGB_SPI_INTF.TCZIF = 0;
