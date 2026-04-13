@@ -30,11 +30,6 @@ int main() {
   /* Initialise I2C */
   i2c_init(GPIO_SCL, GPIO_SDA);
 
-  /* Temp: Intialise ARGB */
-  argb_init(GPIO_0, false);
-
-  argb_set(0, 0x00, 0xff, 0xff);
-
   while (true) {
     /* Clear Watchdog. */
     CLRWDT();
@@ -42,17 +37,8 @@ int main() {
     /* Start the timer processing. */
     time_service_start();
 
-    /* Cause ARGB to output. */
-    if (tick_20hz) {
-      argb_set(0, 0x00, uptime_in_ms & 0xff, (0xff - (uptime_in_ms & 0xff)));
-      argb_update();
-    }
-
     /* Service I2C. */
     i2c_service();
-
-    /* Service ARGB */
-    argb_service();
 
     /* Sleep, if there's no time update. */
     if (time_service_end()) {
