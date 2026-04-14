@@ -6,6 +6,7 @@
 #include "gpio.h"
 #include "power.h"
 #include <hal/i2c.h>
+#include <peripherals/status.h>
 
 /* Main entry point for backplane. */
 int main() {
@@ -21,6 +22,9 @@ int main() {
   /* Initialise time. */
   time_init();
 
+  /* Initialise status. */
+  status_init(GPIO_STATUS, GPIO_BOOT);
+
   /* Initialise I2C. */
   i2c_init(GPIO_SCL, GPIO_SDA);
 
@@ -34,6 +38,9 @@ int main() {
 
     /* Start the timer processing. */
     time_service_start();
+
+    /* Service status. */
+    status_service();
 
     /* Service I2C. */
     i2c_service();
