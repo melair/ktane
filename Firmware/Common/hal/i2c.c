@@ -38,7 +38,7 @@ void i2c_state_idle_service(fsm_t *fsm) {
   }
 }
 
- const fs_t i2c_state_idle = {
+const fs_t i2c_state_idle = {
                              .next_states = {&i2c_state_dequeue, NULL},
                              .enter = NULL,
                              .exit = NULL,

@@ -15,7 +15,8 @@
                     "ARGB_CLC_PWM_SPI_PERIPHERAL=CLC7",
                     "ARGB_SPI_PERIPHERAL=SPI1",
                     "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC8",
-                    "ARGB_DMA=DMA3"
+                    "ARGB_DMA=DMA3",
+                    "FSM_SKIP_LEGAL_CHECK"
                 ],
                 "HI-TECH-COMP.warning-level": "-9"
             }
@@ -34,7 +35,8 @@
                     "ARGB_CLC_PWM_SPI_PERIPHERAL=CLC7",
                     "ARGB_SPI_PERIPHERAL=SPI1",
                     "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC8",
-                    "ARGB_DMA=DMA3"
+                    "ARGB_DMA=DMA3",
+                    "FSM_SKIP_LEGAL_CHECK"
                 ]
             }
         },
@@ -52,7 +54,8 @@
                     "ARGB_CLC_PWM_SPI_PERIPHERAL=CLC3",
                     "ARGB_SPI_PERIPHERAL=SPI1",
                     "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC4",
-                    "ARGB_DMA=DMA3"
+                    "ARGB_DMA=DMA3",
+                    "FSM_SKIP_LEGAL_CHECK"
                 ]
             }
         }
