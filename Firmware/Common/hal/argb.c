@@ -1,6 +1,7 @@
 #include "argb.h"
 #include "../utils/fsm.h"
 #include "argb_internal.h"
+#include "polyfill/pic.h"
 #include "dma.h"
 #include "pin.h"
 #include <xc.h>
@@ -127,9 +128,9 @@ void argb_init(pin_t out, bool negate) {
   /* Link CLC data register 1 to PWMxS1P1. */
   CLCnSEL0 = CLC_PWM_BASE + ((ARGB_PWM_PERIPHERAL - 1) * 2);
   /* Link CLC data register 2 to SPI CLK. */
-  CLCnSEL1 = CLC_SPI_SCK_BASE + (ARGB_SPI_PERIPHERAL * 3);
+  CLCnSEL1 = CLC_SRC_SPI1_SCK + (ARGB_SPI_PERIPHERAL * 3);
   /* Link CLC data register 3 to SPI SDO. */
-  CLCnSEL2 = CLC_SPI_SDO_BASE + (ARGB_SPI_PERIPHERAL * 3);
+  CLCnSEL2 = CLC_SRC_SPI1_SDO + (ARGB_SPI_PERIPHERAL * 3);
   /* Clear data registers 4. */
   CLCnSEL3 = 0x00;
   /* Set mode to AND-OR. */

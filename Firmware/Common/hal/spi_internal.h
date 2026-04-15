@@ -2,6 +2,7 @@
 #define SPI_INTERNAL_H
 
 #include <xc.h>
+#include "polyfill/pic.h"
 
 #define SPI1 1
 #define SPI2 2
@@ -34,21 +35,12 @@
 #define SPIIE SPI2IE
 #define SPIIF SPI2IF
 
-#define SPITXVECTOR 0x29
-#define SPIRXVECTOR 0x28
+#define SPITXVECTOR DMA_TRIG_SPI2TX
+#define SPIRXVECTOR DMA_TRIG_SPI2RX
 
-#if defined(_PIC18F15Q40_H_)
-#define SPIPPSCOPI 0x1F
-#define SPIPPSCLK 0x1E
-#elif defined(_PIC18F57Q84_H_)
-#define SPIPPSCOPI 0x35
-#define SPIPPSCLK 0x34
-#elif defined(_PIC18F25Q43_H_)
-#define SPIPPSCOPI 0x35
-#define SPIPPSCLK 0x34
-#else
-#error Unsupported PIC, requires PPS values.
-#endif
+#define SPIPPSCOPI PPS_OUT_SPI2_SDO
+#define SPIPPSCLK PPS_OUT_SPI2_SCK
+
 #else
 #define SPICLK SPI1CLK
 #define SPICON0 SPI1CON0
@@ -67,20 +59,10 @@
 #define SPIIE SPI1IE
 #define SPIIF SPI1IF
 
-#define SPITXVECTOR 0x19
-#define SPIRXVECTOR 0x18
+#define SPITXVECTOR DMA_TRIG_SPI1TX
+#define SPIRXVECTOR DMA_TRIG_SPI1RX
 
-#if defined(_PIC18F15Q40_H_)
-#define SPIPPSCOPI 0x1C
-#define SPIPPSCLK 0x1B
-#elif defined(_PIC18F57Q84_H_)
-#define SPIPPSCOPI 0x32
-#define SPIPPSCLK 0x31
-#elif defined(_PIC18F25Q43_H_)
-#define SPIPPSCOPI 0x32
-#define SPIPPSCLK 0x31
-#else
-#error Unsupported PIC, requires PPS values.
-#endif
+#define SPIPPSCOPI PPS_OUT_SPI1_SDO
+#define SPIPPSCLK PPS_OUT_SPI1_SCK
 #endif
 #endif

@@ -77,7 +77,7 @@
 #define ARGB_SPI_CON_BMODE SPI1CON0bits.BMODE
 #define ARGB_SPI_CON_EN SPI1CON0bits.EN
 #define ARGB_SPI_TXB SPI1TXB
-#define ARGB_SPI_TXVECTOR 0x19
+#define ARGB_SPI_TXVECTOR DMA_TRIG_SPI1TX
 #define ARGB_SPI_INTE SPI1INTEbits
 #define ARGB_SPI_INTF SPI1INTFbits
 #define ARGB_SPI_IE SPI1IE
@@ -92,7 +92,7 @@
 #define ARGB_SPI_CON_BMODE SPI2CON0bits.BMODE
 #define ARGB_SPI_CON_EN SPI2CON0bits.EN
 #define ARGB_SPI_TXB SPI2TXB
-#define ARGB_SPI_TXVECTOR 0x29
+#define ARGB_SPI_TXVECTOR DMA_TRIG_SPI2TX
 #define ARGB_SPI_INTE SPI2INTEbits
 #define ARGB_SPI_INTF SPI2INTFbits
 #define ARGB_SPI_IE SPI2IE
@@ -113,16 +113,6 @@
 #ifndef ARGB_CLC_SPI_OUT_PERIPHERAL
 #define ARGB_CLC_SPI_OUT_PERIPHERAL CLC2
 #warning No ARGB CLC (SPI->OUT) defined, assuming CLC2 - CHECK PIN PPS MAPPINGS!
-#endif
-
-#if defined(_PIC18F15Q40_H_)
-#define CLC_SPI_SDO_BASE 41
-#define CLC_SPI_SCK_BASE 42
-#elif defined(_PIC18F57Q84_H_) || defined(_PIC18F25Q43_H_)
-#define CLC_SPI_SDO_BASE 64
-#define CLC_SPI_SCK_BASE 65
-#else
-#error Unsupported PIC, requires CLC SPI SDO/SCK base number.
 #endif
 
 #ifndef ARGB_DMA

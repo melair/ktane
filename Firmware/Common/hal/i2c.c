@@ -3,6 +3,7 @@
 #include "dma.h"
 #include "i2c_internal.h"
 #include "pin.h"
+#include "polyfill/pic.h"
 #include <xc.h>
 
 /*
@@ -252,8 +253,8 @@ void i2c_init(pin_t clk, pin_t dat) {
   I2C1SCLPPS = clk;
   I2C1SDAPPS = dat;
 
-  *pin_to_pps(clk) = I2CCLKPPS;
-  *pin_to_pps(dat) = I2CDATPPS;
+  *pin_to_pps(clk) = PPS_OUT_I2C1_SCL;
+  *pin_to_pps(dat) = PPS_OUT_I2C1_SDA;
 
   /* Configure I2C. */
   I2C1CON0bits.MODE = 0b100; // Host, 7-bit address mode

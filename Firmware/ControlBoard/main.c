@@ -5,8 +5,12 @@
 #include <hal/spi.h>
 #include <hal/argb.h>
 #include <peripherals/status.h>
+#include <peripherals/csp/csp.h>
 #include <utils/time.h>
 #include "gpio.h"
+#include "hal/pin.h"
+
+csp_t csp_backplane;
 
 /* Main entry point for control board. */
 int main() {
@@ -31,6 +35,9 @@ int main() {
   /* Initialise SPI. */
   spi_init(GPIO_SPI_COPI, GPIO_SPI_CLK, GPIO_SPI_CIPO);
 
+  /* Initialise CSP. */
+  csp_init(&csp_backplane, GPIO_UART_RX, GPIO_UART_TX, PORTPIN_NONE, 4);
+
   /* Intialise ARGB */
   argb_init(GPIO_ARGB, false);
   argb_set(0x00, 0x00, 0x00, 0x00);
@@ -52,6 +59,9 @@ int main() {
 
     /* Service SPI. */
     spi_service();
+
+    /* Service CSP. */
+    csp_service(&csp_backplane);
 
     /* Service ARGB. */
     argb_service();
