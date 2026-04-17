@@ -46,6 +46,7 @@ struct spi_transaction_t {
     uint8_t baud;
     bool lsb_first;
     bool cke;
+    bool ckp;
 
     pin_t cs_pin;
     bool cs_bounce;

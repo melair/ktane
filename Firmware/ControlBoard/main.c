@@ -54,21 +54,23 @@ int main() {
 
   spi_transaction_t t;
 
-  uint8_t buffer[4];
+  uint8_t buffer[5];
   buffer[0] = 0xff;
   buffer[1] = 0xff;
   buffer[2] = 0xff;
   buffer[3] = 0xff;
+  buffer[4] = 0xff;
 
   t.baud = SPI_BAUD_125K;
   t.cs_pin = LATCH;
   t.buffer = &buffer[0];
-  t.write_size = 4;
+  t.write_size = 5;
   t.write_repeats = 0;
   t.operation = SPI_OPERATION_WRITE;
   t.callback = NULL;
   t.cs_wait_ms = 0;
   t.cke = 0;
+  t.ckp = 1;
   t.lsb_first = 0;
   t.bits = 8;
 

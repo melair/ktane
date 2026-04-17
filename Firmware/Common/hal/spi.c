@@ -5,6 +5,7 @@
 #include "mcu.h"
 #include "pin.h"
 #include "spi_internal.h"
+#include <pic18f57q84.h>
 #include <stdint.h>
 #include <xc.h>
 
@@ -81,6 +82,12 @@ void spi_state_configure_enter(fsm_t *fsm) {
     SPICON1 |= _SPI1CON1_CKE_MASK;
   } else {
     SPICON1 &= ~_SPI1CON1_CKE_MASK;
+  }
+
+  if (spi.current->ckp) {
+    SPICON1 |= _SPI1CON1_CKP_MASK;
+  } else {
+    SPICON1 &= ~_SPI1CON1_CKP_MASK;
   }
 
   if (spi.current->bits == 8) {
