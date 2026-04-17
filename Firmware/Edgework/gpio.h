@@ -16,8 +16,8 @@
 #define GPIO_10         (PORT_C | PIN_4)
 #define GPIO_11         (PORT_C | PIN_3)
 
-#define GPIO_UART_RX    (PORT_B | PIN_7)
-#define GPIO_UART_TX    (PORT_C | PIN_6)
-#define GPIO_UART_DE    (PORT_C | PIN_7)
+#define GPIO_BUS_UART_RX    (PORT_B | PIN_7)
+#define GPIO_BUS_UART_TX    (PORT_C | PIN_6)
+#define GPIO_BUS_UART_DE    (PORT_C | PIN_7)
 
 #endif

@@ -10,16 +10,23 @@
 #define CSP_NO_OBJECT 0xff
 
 typedef struct {
+    uint8_t uart;
+    uint8_t config;
     uint8_t address;
 
+    unsigned in_sync :1;
+
     uint8_t buffer[CSP_PAYLOAD_MAX * CSP_OBJECT_COUNT];
-
-    uint8_t buffer_busy;
-    uint8_t buffer_tx;
-
 } csp_t;
 
-void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart);
+#define CFG_CSP_HALF_DUPLEX 0b00000000
+#define CFG_CSP_FULL_DUPLEX 0b00000001
+
+#define CSP_ADDR_COORDINATOR 0x00
+#define CSP_ADDR_UNKNOWN 0xfe
+#define CSP_ADDR_GENERAL_CALL 0xff
+
+void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart, uint8_t cfg);
 void csp_service(csp_t *csp);
 void csp_interrupt_tx(csp_t *csp);
 void csp_interrupt_rx(csp_t *csp);

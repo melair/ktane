@@ -7,6 +7,7 @@
 #pragma config CLKOUTEN = OFF     // Clock Out Enable->CLKOUT function is disabled
 #pragma config FCMEN = OFF     // Fail-Safe Clock Monitor Enable->Fail-Safe Clock Monitor disabled
 #pragma config CSWEN = ON     // Clock Switch Enable->Writing to NOSC and NDIV is allowed
+#pragma config JTAGEN = OFF     // JTAG Enable bit (Disable JTAG Boundary Scan mode, JTAG pins revert to user functions)
 #pragma config FCMENS = OFF     // Fail-Safe Clock Monitor Enable - Secondary XTAL Enable->Fail-Safe Clock Monitor Disabled
 #pragma config PR1WAY = OFF     // PRLOCKED One-Way Set Enable->PRLOCKED bit can be set and cleared repeatedly
 

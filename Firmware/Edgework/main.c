@@ -7,11 +7,14 @@
 #include <hal/pin.h>
 #include <hal/spi.h>
 #include <language_support.h>
+#include <peripherals/csp/csp.h>
 #include <peripherals/epaper/epaper.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <utils/time.h>
 #include <xc.h>
+
+csp_t csp_bus;
 
 /* Main entry point for edgework widget. */
 int main() {
@@ -30,6 +33,10 @@ int main() {
   /* Initialise I2C */
   i2c_init(GPIO_SCL, GPIO_SDA);
 
+  /* Initialise CSP. */
+  csp_init(&csp_bus, GPIO_BUS_UART_RX, GPIO_BUS_UART_TX, GPIO_BUS_UART_DE, 1,
+           CFG_CSP_HALF_DUPLEX);
+
   while (true) {
     /* Clear Watchdog. */
     CLRWDT();
@@ -39,6 +46,9 @@ int main() {
 
     /* Service I2C. */
     i2c_service();
+
+    /* Service CSP. */
+    csp_service(&csp_bus);
 
     /* Sleep, if there's no time update. */
     if (time_service_end()) {
@@ -68,4 +78,15 @@ void __interrupt(irq(IRQ_SPI1), base(0x208)) int_argb(void) {
 /* Timer0 for time. */
 void __interrupt(irq(IRQ_TMR0), base(0x208)) int_tmr0(void) {
   time_interrupt();
+}
+
+/* UART for CSP. */
+void __interrupt(irq(IRQ_U1TX), irq(IRQ_U1RX), base(0x208)) int_csp(void) {
+  if (PIR4bits.U1TXIF) {
+    csp_interrupt_tx(&csp_bus);
+  }
+
+  if (PIR4bits.U1RXIF) {
+    csp_interrupt_rx(&csp_bus);
+  }
 }

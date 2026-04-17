@@ -116,7 +116,7 @@ void power_state_idle_service(fsm_t *fsm) {
   /* Has a module been plugged in? */
   if (!pin_read(pwr->module_detect)) {
     /* Current limit to 200mA. */
-    pwr->current_limit = 2;
+    pwr->current_limit = 20;
     /* This will spin for 100ms, and fsm_transition_in will return false. */
     fsm_transition_in(fsm, &power_state_set_current, ENABLE_DELAY);
   }
