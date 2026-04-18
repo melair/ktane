@@ -1,7 +1,11 @@
 #include "csp.h"
 #include "../../hal/pin.h"
 #include "../../hal/polyfill/pic.h"
+#include <stdbool.h>
 #include <xc.h>
+
+void csp_set_tx_int(uint8_t uart, bool en);
+uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last);
 
 void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart,
               uint8_t cfg) {
@@ -9,6 +13,24 @@ void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart,
   csp->uart = uart;
   csp->config = cfg;
   csp->address = CSP_ADDR_UNKNOWN;
+
+  csp->buffer_ready = 0x00;
+  csp->buffer_type = 0x00;
+  csp->buffer_used = 0x00;
+
+  csp->rx.in_sync = 0;
+  csp->rx.last = 0;
+  csp->rx.active = CSP_INACTIVE_OBJECT;
+  csp->rx.pos = 0;
+
+  csp->tx.active = CSP_INACTIVE_OBJECT;
+  csp->tx.pos = 0;
+
+  csp->errors.rx_overflow = 0;
+
+  for (uint8_t i = 0; i < CSP_OBJECT_COUNT; i++) {
+    csp->buffer_size[i] = 0x00;
+  }
 
   pin_config(rx, INPUT, 0);
   pin_config(tx, OUTPUT, 0);
@@ -100,10 +122,74 @@ void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart,
   }
 }
 
-void csp_service(csp_t *csp) {}
+void csp_service(csp_t *csp) {
+  uint8_t ready_rx = (~csp->buffer_type & csp->buffer_ready & csp->buffer_used);
+  if (ready_rx != 0x00) {
+    for (uint8_t i = 0; i < CSP_OBJECT_COUNT; i++) {
+      uint8_t mask = (0x01 << i);
+      if ((ready_rx & mask) != 0x00) {
+        if (csp->callback != NULL) {
+          csp->callback(csp, &csp->buffer[i * CSP_PAYLOAD_MAX], csp->buffer_size[i]);
+        }
+
+        csp->buffer_used &= ~mask;
+        csp->buffer_ready &= ~mask;
+      }
+    }
+  }
+
+  if (csp->tx.active == CSP_INACTIVE_OBJECT) {
+    uint8_t ready_tx =
+        (csp->buffer_type & csp->buffer_ready & csp->buffer_used);
+    if (ready_tx != 0x00) {
+      for (uint8_t i = 0; i < CSP_OBJECT_COUNT; i++) {
+        uint8_t mask = (0x01 << i);
+        if ((ready_tx & mask) != 0x00) {
+          csp->tx.pos = 0;
+          csp->tx.active = i;
+          csp_set_tx_int(csp->uart, true);
+          break;
+        }
+      }
+    }
+  }
+}
 
 void csp_interrupt_tx(csp_t *csp) {
+  if (csp->tx.pos >= csp->buffer_size[csp->tx.active]) {
+    csp_set_tx_int(csp->uart, false);
+    csp->buffer_used &= ~(0x01 << csp->tx.active);
+    csp->buffer_ready &= ~(0x01 << csp->tx.active);
+    csp->buffer_type &= ~(0x01 << csp->tx.active);
+    csp->tx.active = CSP_INACTIVE_OBJECT;
+    csp->tx.pos = 0x00;
+    return;
+  }
 
+  uint8_t data = csp->buffer[(csp->tx.active * CSP_PAYLOAD_MAX) + csp->tx.pos];
+  csp->tx.pos++;
+
+  switch (csp->uart) {
+  case 1:
+    U1TXB = data;
+    break;
+  case 2:
+    U2TXB = data;
+    break;
+  case 3:
+    U3TXB = data;
+    break;
+#ifdef U4TXB
+  case 4:
+    U4TXB = data;
+    break;
+#endif
+#ifdef U5TXB
+  case 5:
+    U5TXB = data;
+    break;
+#endif
+  }
 }
 
 void csp_interrupt_rx(csp_t *csp) {
@@ -131,21 +217,111 @@ void csp_interrupt_rx(csp_t *csp) {
 #endif
   }
 
-  if (!csp->in_sync) {
+  if (!csp->rx.in_sync) {
     if (data == 0x00) {
-        csp->in_sync;
+      csp->rx.in_sync = 1;
     }
   } else {
+    if (csp->rx.active == CSP_INACTIVE_OBJECT) {
+      uint8_t new = csp_find_free_buffer(csp, csp->rx.last);
+      if (new != CSP_NO_OBJECT) {
+        csp->rx.active = new;
+        csp->rx.last = new;
+        csp->rx.pos = 0;
+        csp->buffer_type &= ~(0x01 << new);
+        csp->buffer_ready &= ~(0x01 << new);
+      }
+    }
 
+    if (csp->rx.active != CSP_INACTIVE_OBJECT) {
+      if (csp->rx.pos >= CSP_PAYLOAD_MAX) {
+        csp->errors.rx_giant++;
+        csp->buffer_used &= ~(0x01 << csp->rx.active);
+        csp->rx.active = CSP_INACTIVE_OBJECT;
+      } else {
+        csp->buffer[(csp->rx.active * CSP_PAYLOAD_MAX) + csp->rx.pos] = data;
+        csp->rx.pos++;
+
+        if (data == 0x00) {
+          csp->buffer_ready |= (0x01 << csp->rx.active);
+          csp->buffer_size[csp->rx.active] = csp->rx.pos;
+          csp->rx.pos = 0x00;
+          csp->rx.active = CSP_INACTIVE_OBJECT;
+        }
+      }
+    } else {
+      csp->errors.rx_overflow++;
+    }
   }
 }
 
+void csp_set_tx_int(uint8_t uart, bool en) {
+  switch (uart) {
+  case 1:
+    PIE4bits.U1TXIE = (en ? 1 : 0);
+    break;
+  case 2:
+    PIE8bits.U2TXIE = (en ? 1 : 0);
+    break;
+  case 3:
+    PIE9bits.U3TXIE = (en ? 1 : 0);
+    break;
+#ifdef U4TXB
+  case 4:
+    PIE12bits.U4TXIE = (en ? 1 : 0);
+    break;
+#endif
+#ifdef U5TXB
+  case 5:
+    PIE13bits.U5TXIE = (en ? 1 : 0);
+    break;
+#endif
+  }
+}
+
+uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last) {
+  uint8_t mask;
+
+  for (uint8_t i = last; i < CSP_OBJECT_COUNT; i++) {
+    mask = 0x01 << i;
+
+    if ((csp->buffer_used & mask) == 0) {
+      csp->buffer_used |= mask;
+      return i;
+    }
+  }
+
+  for (uint8_t i = 0; i < last; i++) {
+    mask = 0x01 << i;
+
+    if ((csp->buffer_used & mask) == 0) {
+      csp->buffer_used |= mask;
+      return i;
+    }
+  }
+
+  return CSP_NO_OBJECT;
+}
+
+void csp_tx(csp_t *csp, uint8_t *ptr, uint8_t len) {
+  if (len > CSP_PAYLOAD_MAX) {
+    return;
+  }
+
+  uint8_t bn = csp_find_free_buffer(csp, 0);
+
+  if (bn == CSP_NO_OBJECT) {
+    return;
+  }
+
+  for (uint8_t i = 0; i < len; i++) {
+    csp->buffer[(bn * CSP_PAYLOAD_MAX) + i] = ptr[i];
+  }
+  csp->buffer_size[bn] = len;
+
+  uint8_t mask = 0x01 << bn;
+  csp->buffer_type |= mask;
+  csp->buffer_ready |= mask;
+}
+
 void csp_set_addr(csp_t *csp, uint8_t addr) {}
-
-uint8_t csp_get_rx_obj(csp_t *csp) { return CSP_NO_OBJECT; }
-
-uint8_t csp_get_tx_obj(csp_t *csp) { return CSP_NO_OBJECT; }
-
-void csp_send_tx_obj(csp_t *csp, uint8_t obj) {}
-
-uint8_t *csp_get_object(csp_t *csp, uint8_t obj) { return NULL; }

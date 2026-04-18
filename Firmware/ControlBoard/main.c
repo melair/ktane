@@ -10,7 +10,7 @@
 #include <utils/time.h>
 #include <xc.h>
 
-csp_t csp_backplane;
+csp_t csp_backplane = {.callback = NULL};
 
 /* Main entry point for control board. */
 int main() {

@@ -9,9 +9,9 @@
 #include <peripherals/status.h>
 #include <peripherals/csp/csp.h>
 
-csp_t csp_front;
-csp_t csp_rear;
-csp_t csp_bus;
+csp_t csp_front = {.callback = NULL};
+csp_t csp_rear = {.callback = NULL};
+csp_t csp_bus = {.callback = NULL};
 
 /* Main entry point for backplane. */
 int main() {

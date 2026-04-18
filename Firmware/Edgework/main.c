@@ -14,7 +14,7 @@
 #include <utils/time.h>
 #include <xc.h>
 
-csp_t csp_bus;
+csp_t csp_bus = {.callback = NULL};
 
 /* Main entry point for edgework widget. */
 int main() {
