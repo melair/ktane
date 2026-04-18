@@ -1,6 +1,7 @@
 #include "csp.h"
 #include "../../hal/pin.h"
 #include "../../hal/polyfill/pic.h"
+#include "../../hal/interrupt.h"
 #include <stdbool.h>
 #include <xc.h>
 
@@ -27,6 +28,8 @@ void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart,
   csp->tx.pos = 0;
 
   csp->errors.rx_overflow = 0;
+  csp->errors.rx_giant = 0;
+  csp->errors.rx_runt = 0;
 
   for (uint8_t i = 0; i < CSP_OBJECT_COUNT; i++) {
     csp->buffer_size[i] = 0x00;
@@ -129,7 +132,8 @@ void csp_service(csp_t *csp) {
       uint8_t mask = (0x01 << i);
       if ((ready_rx & mask) != 0x00) {
         if (csp->callback != NULL) {
-          csp->callback(csp, &csp->buffer[i * CSP_PAYLOAD_MAX], csp->buffer_size[i]);
+          csp->callback(csp, &csp->buffer[i * CSP_PAYLOAD_MAX],
+                        csp->buffer_size[i]);
         }
 
         csp->buffer_used &= ~mask;
@@ -156,7 +160,9 @@ void csp_service(csp_t *csp) {
 }
 
 void csp_interrupt_tx(csp_t *csp) {
-  if (csp->tx.pos >= csp->buffer_size[csp->tx.active]) {
+  uint8_t data;
+
+  if (csp->tx.pos > csp->buffer_size[csp->tx.active]) {
     csp_set_tx_int(csp->uart, false);
     csp->buffer_used &= ~(0x01 << csp->tx.active);
     csp->buffer_ready &= ~(0x01 << csp->tx.active);
@@ -164,9 +170,12 @@ void csp_interrupt_tx(csp_t *csp) {
     csp->tx.active = CSP_INACTIVE_OBJECT;
     csp->tx.pos = 0x00;
     return;
+  } else if (csp->tx.pos == csp->buffer_size[csp->tx.active]) {
+    data = 0x00;
+  } else {
+    data = csp->buffer[(csp->tx.active * CSP_PAYLOAD_MAX) + csp->tx.pos];
   }
 
-  uint8_t data = csp->buffer[(csp->tx.active * CSP_PAYLOAD_MAX) + csp->tx.pos];
   csp->tx.pos++;
 
   switch (csp->uart) {
@@ -189,6 +198,8 @@ void csp_interrupt_tx(csp_t *csp) {
     U5TXB = data;
     break;
 #endif
+  default:
+    return;
   }
 }
 
@@ -215,6 +226,8 @@ void csp_interrupt_rx(csp_t *csp) {
     data = U5RXB;
     break;
 #endif
+  default:
+    return;
   }
 
   if (!csp->rx.in_sync) {
@@ -238,15 +251,16 @@ void csp_interrupt_rx(csp_t *csp) {
         csp->errors.rx_giant++;
         csp->buffer_used &= ~(0x01 << csp->rx.active);
         csp->rx.active = CSP_INACTIVE_OBJECT;
+        csp->rx.in_sync = 0;
       } else {
-        csp->buffer[(csp->rx.active * CSP_PAYLOAD_MAX) + csp->rx.pos] = data;
-        csp->rx.pos++;
-
         if (data == 0x00) {
           csp->buffer_ready |= (0x01 << csp->rx.active);
           csp->buffer_size[csp->rx.active] = csp->rx.pos;
           csp->rx.pos = 0x00;
           csp->rx.active = CSP_INACTIVE_OBJECT;
+        } else {
+          csp->buffer[(csp->rx.active * CSP_PAYLOAD_MAX) + csp->rx.pos] = data;
+          csp->rx.pos++;
         }
       }
     } else {
@@ -276,10 +290,13 @@ void csp_set_tx_int(uint8_t uart, bool en) {
     PIE13bits.U5TXIE = (en ? 1 : 0);
     break;
 #endif
+  default:
+    return;
   }
 }
 
 uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last) {
+  int_disable();
   uint8_t mask;
 
   for (uint8_t i = last; i < CSP_OBJECT_COUNT; i++) {
@@ -287,6 +304,7 @@ uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last) {
 
     if ((csp->buffer_used & mask) == 0) {
       csp->buffer_used |= mask;
+      int_enable();
       return i;
     }
   }
@@ -296,10 +314,12 @@ uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last) {
 
     if ((csp->buffer_used & mask) == 0) {
       csp->buffer_used |= mask;
+      int_enable();
       return i;
     }
   }
 
+  int_enable();
   return CSP_NO_OBJECT;
 }
 
