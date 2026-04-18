@@ -33,6 +33,8 @@ struct csp_t {
         uint8_t rx_overflow;
         uint8_t rx_giant;
         uint8_t rx_runt;
+        uint8_t tx_overflow;
+        uint8_t tx_giant;
     } errors;
 
     uint8_t buffer[CSP_PAYLOAD_MAX * CSP_OBJECT_COUNT];

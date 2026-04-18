@@ -30,6 +30,8 @@ void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart,
   csp->errors.rx_overflow = 0;
   csp->errors.rx_giant = 0;
   csp->errors.rx_runt = 0;
+  csp->errors.tx_overflow = 0;
+  csp->errors.tx_giant = 0;
 
   for (uint8_t i = 0; i < CSP_OBJECT_COUNT; i++) {
     csp->buffer_size[i] = 0x00;
@@ -131,6 +133,11 @@ void csp_service(csp_t *csp) {
     for (uint8_t i = 0; i < CSP_OBJECT_COUNT; i++) {
       uint8_t mask = (0x01 << i);
       if ((ready_rx & mask) != 0x00) {
+        if (csp->buffer_size[i] == 0) {
+          csp->errors.rx_runt++;
+          continue;
+        }
+
         if (csp->callback != NULL) {
           csp->callback(csp, &csp->buffer[i * CSP_PAYLOAD_MAX],
                         csp->buffer_size[i]);
@@ -161,6 +168,11 @@ void csp_service(csp_t *csp) {
 
 void csp_interrupt_tx(csp_t *csp) {
   uint8_t data;
+
+  if (csp->tx.active == CSP_INACTIVE_OBJECT) {
+    csp_set_tx_int(csp->uart, false);
+    return;
+  }
 
   if (csp->tx.pos > csp->buffer_size[csp->tx.active]) {
     csp_set_tx_int(csp->uart, false);
@@ -325,12 +337,13 @@ uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last) {
 
 void csp_tx(csp_t *csp, uint8_t *ptr, uint8_t len) {
   if (len > CSP_PAYLOAD_MAX) {
+    csp->errors.tx_giant++;
     return;
   }
 
   uint8_t bn = csp_find_free_buffer(csp, 0);
-
   if (bn == CSP_NO_OBJECT) {
+    csp->errors.tx_overflow++;
     return;
   }
 
