@@ -5,6 +5,8 @@
 #include <hal/interrupt.h>
 #include <hal/mcu.h>
 #include <hal/spi.h>
+#include <hal/can.h>
+#include <language_support.h>
 #include <peripherals/csp/csp.h>
 #include <peripherals/status.h>
 #include <utils/time.h>
@@ -35,6 +37,9 @@ int main() {
   /* Initialise SPI. */
   spi_init(GPIO_SPI_COPI, GPIO_SPI_CLK, GPIO_SPI_CIPO);
 
+  /* Initialise CAN. */
+  can_init(GPIO_CAN_TX, GPIO_CAN_RX, GPIO_CAN_ACT, NULL);
+
   /* Initialise CSP. */
   csp_init(&csp_backplane, GPIO_UART_RX, GPIO_UART_TX, PORTPIN_NONE, 2,
            CFG_CSP_FULL_DUPLEX);
@@ -52,6 +57,12 @@ int main() {
     /* Start the timer processing. */
     time_service_start();
 
+    if (tick_2hz) {
+      uint8_t d[4] = {0x01, 0x02, 0x03, 0x04};
+      can_tx(0xaa, 4, &d[0]);
+    }
+
+
     /* Service status. */
     status_service();
 
@@ -60,6 +71,9 @@ int main() {
 
     /* Service SPI. */
     spi_service();
+
+    /* Service CAN. */
+    can_service();
 
     /* Service CSP. */
     csp_service(&csp_backplane);
@@ -111,4 +125,9 @@ void __interrupt(irq(IRQ_U2TX), irq(IRQ_U2RX), base(0x208)) int_csp(void) {
   if (PIR8bits.U2RXIF) {
     csp_interrupt_rx(&csp_backplane);
   }
+}
+
+/* CAN. */
+void __interrupt(irq(IRQ_CAN), base(0x208)) int_can(void) {
+  can_interrupt();
 }

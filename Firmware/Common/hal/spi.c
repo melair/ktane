@@ -5,7 +5,6 @@
 #include "mcu.h"
 #include "pin.h"
 #include "spi_internal.h"
-#include <pic18f57q84.h>
 #include <stdint.h>
 #include <xc.h>
 
