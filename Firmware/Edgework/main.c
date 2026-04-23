@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <utils/time.h>
 #include <xc.h>
+#include <utils/uniqueid.h>
 
 csp_t csp_bus = {.callback = NULL};
 
@@ -23,6 +24,9 @@ int main() {
 
   /* Initialise sleep mode. */
   sleep_doze();
+
+  /* Calculate unique id. */
+  unique_init();
 
   /* Initialise vectored interrupt handling. */
   int_init(0x208);

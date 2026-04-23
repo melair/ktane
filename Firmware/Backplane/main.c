@@ -8,6 +8,7 @@
 #include <hal/i2c.h>
 #include <peripherals/status.h>
 #include <peripherals/csp/csp.h>
+#include <utils/uniqueid.h>
 
 csp_t csp_front = {.callback = NULL};
 csp_t csp_rear = {.callback = NULL};
@@ -20,6 +21,9 @@ int main() {
 
   /* Initialise sleep mode. */
   sleep_doze();
+
+  /* Calculate unique id. */
+  unique_init();
 
   /* Initialise vectored interrupt handling. */
   int_init(0x208);

@@ -20,6 +20,10 @@ inline uint16_t nvm_eeprom_size(void) { return _DCI_EESIZ; }
  * @return byte read from eeprom
  */
 uint8_t nvm_eeprom_read(uint16_t addr) {
+  if (addr >= nvm_eeprom_size()) {
+    return 0;
+  }
+
   /* Clear NVCON0, NVCON1, setting command to READ byte. */
   NVMCON0 = 0x00;
   NVMCON1 = 0x00;
@@ -48,6 +52,10 @@ uint8_t nvm_eeprom_read(uint16_t addr) {
  * @param data byte to write to EEPROM
  */
 void nvm_eeprom_write(uint16_t addr, uint8_t data) {
+  if (addr >= nvm_eeprom_size()) {
+    return;
+  }
+
   /* Load address, EEPROM base is 0x380000. */
   NVMADRL = addr & 0xff;
   NVMADRH = (addr >> 8) & 0x03;

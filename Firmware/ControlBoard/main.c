@@ -10,6 +10,7 @@
 #include <peripherals/csp/csp.h>
 #include <peripherals/status.h>
 #include <utils/time.h>
+#include <utils/uniqueid.h>
 #include <xc.h>
 
 csp_t csp_backplane = {.callback = NULL};
@@ -21,6 +22,9 @@ int main() {
 
   /* Initialise sleep mode, doze don't sleep. */
   sleep_doze();
+
+  /* Calculate unique id. */
+  unique_init();
 
   /* Initialise vectored interrupt handling. */
   int_init(0x208);
