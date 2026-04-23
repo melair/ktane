@@ -3,7 +3,7 @@
 
 #include "pin.h"
 
-#define CAN_ID_UNKNOWN 0xff
+#define CAN_ID_UNKNOWN 0x7ff
 
 void can_init(pin_t tx, pin_t rx, pin_t act, void (*callback)(uint16_t can_id, uint8_t len, uint8_t *ptr));
 void can_tx(uint16_t can_id, uint8_t len, uint8_t *ptr);

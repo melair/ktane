@@ -9,20 +9,24 @@ bool can_change_mode(uint8_t mode);
 typedef struct {
   pin_t act_led;
   bool act_led_on;
+  uint32_t act_led_on_time;
 
   struct {
-    uint16_t error;
+    struct {
+      uint16_t system;
+      uint16_t bus;
+    } errors;
 
     struct {
-        uint16_t overflow;
-        uint16_t received;
+      uint16_t overflow;
+      uint16_t received;
     } rx;
 
     struct {
-        uint16_t overflow;
-        uint16_t giant;
-        uint16_t failure;
-        uint16_t queued;
+      uint16_t overflow;
+      uint16_t giant;
+      uint16_t failure;
+      uint16_t queued;
     } tx;
   } stats;
 
@@ -86,7 +90,8 @@ void can_init(pin_t tx, pin_t rx, pin_t act,
   /* Do not store transmitted messages in TEF. */
   C1CONUbits.STEF = 0;
 
-  /* Do not move to listen only on system error, instead restricted operation. */
+  /* Do not move to listen only on system error, instead restricted operation.
+   */
   C1CONUbits.SERR2LOM = 0;
 
   /* Set ESI bit to be error status of CAN controller. */
@@ -126,7 +131,7 @@ void can_init(pin_t tx, pin_t rx, pin_t act,
   /* CAN message max payload size to 64 bytes. */
   C1TXQCONTbits.PLSIZE = 0b111;
   /* TX FIFO depth to 16. */
-  C1TXQCONTbits.FSIZE = 0x10;
+  C1TXQCONTbits.FSIZE = 0x0F;
 
   /*** RX FIFO Configuration ***/
   /* Set FIFO to RX mode. */
@@ -141,7 +146,7 @@ void can_init(pin_t tx, pin_t rx, pin_t act,
   C1FIFOCON1Lbits.TFHRFHIE = 0;
   C1FIFOCON1Lbits.TFNRFNIE = 0;
   /* Interrupt for the RX overflow. */
-  C1FIFOCON1Lbits.RXOVIE = 0;
+  C1FIFOCON1Lbits.RXOVIE = 1;
 
   /* Clear the FIFO. */
   C1FIFOCON1Hbits.FRESET = 1;
@@ -158,20 +163,22 @@ void can_init(pin_t tx, pin_t rx, pin_t act,
   /* CAN message max payload size to 64 bytes. */
   C1FIFOCON1Tbits.PLSIZE = 0b111;
   /* RX FIFO depth to 16. */
-  C1FIFOCON1Tbits.FSIZE = 0x10;
+  C1FIFOCON1Tbits.FSIZE = 0x0F;
 
   /* Enable interrupts. */
   C1INTTbits.RXOVIE = 1;
   C1INTTbits.TXATIE = 1;
   C1INTTbits.WAKIE = 1;
+  PIE0bits.CANIE = 1;
 
   /* Start CAN module. */
   if (!can_change_mode(CAN_MODE_NORMAL_CAN_FD)) {
     return;
   }
 
-  /* Enable system error interrupt. */
+  /* Enable system and bus error interrupt. */
   C1INTTbits.SERRIE = 1;
+  C1INTTbits.CERRIE = 1;
 
   /*** Configure filter to allow receipt of all messages. ***/
   /* Place all matched messages in FIFO1. */
@@ -198,7 +205,7 @@ bool can_change_mode(uint8_t mode) {
     /* If a system error occurred increase the statistic and return false. */
     if (C1INTHbits.SERRIF == 1) {
       C1INTHbits.SERRIF = 0;
-      can.stats.error++;
+      can.stats.errors.system++;
       return false;
     }
   }
@@ -206,112 +213,132 @@ bool can_change_mode(uint8_t mode) {
   return true;
 }
 
-static const uint8_t dlc_to_bytes[] = {0U, 1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U, 12U, 16U, 20U, 24U, 32U, 48U, 64U};
+static const uint8_t dlc_to_bytes[] = {0U, 1U,  2U,  3U,  4U,  5U,  6U,  7U,
+                                       8U, 12U, 16U, 20U, 24U, 32U, 48U, 64U};
 
 void can_tx(uint16_t can_id, uint8_t len, uint8_t *ptr) {
-    /* Check size isn't beyond CAN. */
-    if (len > 64) {
-        can.stats.tx.giant++;
-        return;
-    }
+  /* Check size isn't beyond CAN. */
+  if (len > 64) {
+    can.stats.tx.giant++;
+    return;
+  } else if (ptr == NULL) {
+    return;
+  }
 
-    /* Check to see if TX FIFO is full. */
-    if (C1TXQSTALbits.TXQNIF == 0) {
-        can.stats.tx.overflow++;
-        return;
-    }
+  /* Check to see if TX FIFO is full. */
+  if (C1TXQSTALbits.TXQNIF == 0) {
+    can.stats.tx.overflow++;
+    return;
+  }
 
-    /* Get TX buffer. */
-    uint8_t *txbuffer = (uint8_t *) C1TXQUA;
+  /* Get TX buffer. */
+  uint8_t *txbuffer = (uint8_t *)C1TXQUA;
 
-    /* Calculate wire size. */
-    uint8_t dlc;
-    for (dlc = 0; len > dlc_to_bytes[dlc]; dlc++);
+  /* Calculate wire size. */
+  uint8_t dlc;
+  for (dlc = 0; len > dlc_to_bytes[dlc]; dlc++)
+    ;
 
-    /* Set CAN header. */
-    txbuffer[0] = can_id & 0xff;
-    txbuffer[1] = (can_id >> 8) & 0x07;
-    txbuffer[2] = 0x00;
-    txbuffer[3] = 0x00;
-    txbuffer[4] = 0x80 | (dlc & 0x0f); // FDF = 1, CAN-FD frame.
-    txbuffer[5] = 0x00;
-    txbuffer[6] = 0x00;
-    txbuffer[7] = 0x00;
+  /* Set CAN header. */
+  txbuffer[0] = can_id & 0xff;
+  txbuffer[1] = (can_id >> 8) & 0x07;
+  txbuffer[2] = 0x00;
+  txbuffer[3] = 0x00;
+  txbuffer[4] = 0x80 | (dlc & 0x0f); // FDF = 1, CAN-FD frame.
+  txbuffer[5] = 0x00;
+  txbuffer[6] = 0x00;
+  txbuffer[7] = 0x00;
 
-    /* Copy payload into CAN packet, ensure unused bytes are 0x00. */
-    uint8_t i;
+  /* Copy payload into CAN packet, ensure unused bytes are 0x00. */
+  uint8_t i;
 
-    for (i = 0; i < len; i++) {
-        txbuffer[8 + i] = ptr[i];
-    }
+  for (i = 0; i < len; i++) {
+    txbuffer[8 + i] = ptr[i];
+  }
 
-    for (; i < dlc_to_bytes[dlc]; i++) {
-        txbuffer[8 + i] = 0x00;
-    }
+  for (; i < dlc_to_bytes[dlc]; i++) {
+    txbuffer[8 + i] = 0x00;
+  }
 
-    /* Request packet is sent, and increment FIFO head. */
-    C1TXQCONHbits.UINC = 1;
-    C1TXQCONHbits.TXREQ = 1;
+  /* Request packet is sent, and increment FIFO head. */
+  C1TXQCONHbits.UINC = 1;
+  C1TXQCONHbits.TXREQ = 1;
 
-    /* Turn on TX activity light. */
-    if (!can.act_led_on) {
-        can.act_led_on = true;
-        pin_write(can.act_led, false);
-    }
+  /* Turn on TX activity light. */
+  if (can.act_led != PORTPIN_NONE && !can.act_led_on) {
+    can.act_led_on = true;
+    can.act_led_on_time = uptime_in_ms;
+    pin_write(can.act_led, false);
+  }
 
-    can.stats.tx.queued++;
+  can.stats.tx.queued++;
 }
 
 void can_service(void) {
-    /* If the TX light is on, and the queue is empty, turn it off. */
-    if (C1TXQSTALbits.TXQEIF == 1 && can.act_led_on) {
-        pin_write(can.act_led, true);
-        can.act_led_on = false;
+  /* If the TX light is on, and the queue is empty, turn it off. */
+  if (can.act_led != PORTPIN_NONE && C1TXQSTALbits.TXQEIF == 1 &&
+      can.act_led_on) {
+    if (uptime_in_ms > can.act_led_on_time + 10) {
+      pin_write(can.act_led, true);
+      can.act_led_on = false;
+    }
+  }
+
+  /* Loop through the FIFO for new packets. */
+  while (C1FIFOSTA1Lbits.TFNRFNIF == 1) {
+    can.stats.rx.received++;
+
+    /* Process packet. */
+    uint8_t *rxbuffer = (uint8_t *)C1FIFOUA1;
+
+    /* Decode data, objects are differently formatted to TX. */
+    uint16_t can_id = rxbuffer[0] | ((rxbuffer[1] & 0x07) << 8);
+    uint8_t dlc = rxbuffer[5] & 0x0f;
+    uint8_t len = dlc_to_bytes[dlc];
+
+    /* Pass packet to protocol handling. */
+    if (can.callback != NULL) {
+      can.callback(can_id, len, &rxbuffer[8]);
     }
 
-    /* Loop through the FIFO for new packets. */
-    while (C1FIFOSTA1Lbits.TFNRFNIF == 1) {
-        can.stats.rx.received++;
-
-        /* Process packet. */
-        uint8_t *rxbuffer = (uint8_t *) C1FIFOUA1;
-
-        /* Decode data. */
-        uint16_t can_id = rxbuffer[0] | ((rxbuffer[1] & 0x07) << 8);
-        uint8_t dlc = rxbuffer[5] & 0x0f;   
-        uint8_t len = dlc_to_bytes[dlc];
-
-        /* Pass packet to protocol handling. */
-        if (can.callback != NULL) {
-            can.callback(can_id, len, &rxbuffer[8]);
-        }
-        
-        /* Increment the buffer. */
-        C1FIFOCON1Hbits.UINC = 1;
-    }
+    /* Increment the buffer. */
+    C1FIFOCON1Hbits.UINC = 1;
+  }
 }
 
 void can_interrupt(void) {
-    /* Check to see if the RX buffer is too full and has overflowed. */
-    if (C1FIFOSTA1Lbits.RXOVIF == 1) {
-        C1FIFOSTA1Lbits.RXOVIF = 0;
-        can.stats.rx.overflow++;
-    }
+  PIR0bits.CANIF = 0;
 
-    /* Check to see if the TX attempts are exceeded. */
-    if (C1TXQSTALbits.TXATIF == 1) {
-        C1TXQSTALbits.TXATIF = 0;
-        can.stats.tx.failure++;
-    }
+  /* Check to see if the RX buffer is too full and has overflowed. */
+  if (C1FIFOSTA1Lbits.RXOVIF == 1) {
+    C1FIFOSTA1Lbits.RXOVIF = 0;
+    can.stats.rx.overflow++;
+  }
 
-    /* CAN system error. */
-    if (C1INTHbits.SERRIF == 1) {
-        C1INTHbits.SERRIF = 0;
-        can.stats.error++;
-    }
+  /* Check to see if the TX attempts are exceeded. */
+  if (C1TXQSTALbits.TXATIF == 1) {
+    C1TXQSTALbits.TXATIF = 0;
+    can.stats.tx.failure++;
 
-    /* Wake the MCU. */
-    if (C1INTHbits.WAKIF == 1) {
-        C1INTHbits.WAKIF = 0;
-    }
+    /* It's undocumented, but it appears that failed TX messages consume space
+       in the TXQ. So FRESET clears the queue - this prevents the deadlock. */
+    C1TXQCONHbits.FRESET = 1;
+  }
+
+  /* CAN system error. */
+  if (C1INTHbits.SERRIF == 1) {
+    C1INTHbits.SERRIF = 0;
+    can.stats.errors.system++;
+  }
+
+  /* CAN bus error. */
+  if (C1INTHbits.CERRIF == 1) {
+    C1INTHbits.CERRIF = 0;
+    can.stats.errors.bus++;
+  }
+
+  /* Wake the MCU. */
+  if (C1INTHbits.WAKIF == 1) {
+    C1INTHbits.WAKIF = 0;
+  }
 }

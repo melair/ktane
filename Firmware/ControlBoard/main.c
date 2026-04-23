@@ -57,12 +57,6 @@ int main() {
     /* Start the timer processing. */
     time_service_start();
 
-    if (tick_2hz) {
-      uint8_t d[4] = {0x01, 0x02, 0x03, 0x04};
-      can_tx(0xaa, 4, &d[0]);
-    }
-
-
     /* Service status. */
     status_service();
 
