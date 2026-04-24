@@ -43,7 +43,7 @@
                 ],
                 "HI-TECH-LINK.code-model-rom": "0-1FF",
                 "HI-TECH-COMP.asmlist": true,
-                "HI-TECH-COMP.optimization-level": "-O2",
+                "HI-TECH-COMP.optimization-level": "-O0",
                 "HI-TECH-COMP.extra-include-directories": [
                     "../Common"
                 ]

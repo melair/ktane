@@ -37,7 +37,8 @@
                     "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC8",
                     "ARGB_DMA=DMA3",
                     "FSM_SKIP_LEGAL_CHECK"
-                ]
+                ],
+                "HI-TECH-COMP.warning-level": "-9"
             }
         },
         {
@@ -56,7 +57,8 @@
                     "ARGB_CLC_SPI_OUT_PERIPHERAL=CLC4",
                     "ARGB_DMA=DMA3",
                     "FSM_SKIP_LEGAL_CHECK"
-                ]
+                ],
+                "HI-TECH-COMP.warning-level": "-9"
             }
         }
     ],

@@ -32,7 +32,7 @@ int main() {
   time_init();
 
   /* Initialise status. */
-  status_init(GPIO_STATUS, GPIO_BOOT);
+  status_init(GPIO_STATUS, GPIO_BOOT, 2);
 
   /* Initialise I2C. */
   i2c_init(GPIO_SCL, GPIO_SDA);
