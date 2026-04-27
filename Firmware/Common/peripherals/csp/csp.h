@@ -37,7 +37,7 @@ struct csp_t {
         uint8_t tx_giant;
     } errors;
 
-    uint8_t buffer[CSP_PAYLOAD_MAX * CSP_OBJECT_COUNT];
+    uint8_t buffer[CSP_OBJECT_COUNT][CSP_PAYLOAD_MAX];
     uint8_t buffer_size[CSP_OBJECT_COUNT];
     uint8_t buffer_used;   // Unused = 0, Used = 1
     uint8_t buffer_type;   // RX = 0, TX = 1

@@ -139,7 +139,7 @@ void csp_service(csp_t *csp) {
         }
 
         if (csp->callback != NULL) {
-          csp->callback(csp, &csp->buffer[i * CSP_PAYLOAD_MAX],
+          csp->callback(csp, &csp->buffer[i][0],
                         csp->buffer_size[i]);
         }
 
@@ -185,7 +185,7 @@ void csp_interrupt_tx(csp_t *csp) {
   } else if (csp->tx.pos == csp->buffer_size[csp->tx.active]) {
     data = 0x00;
   } else {
-    data = csp->buffer[(csp->tx.active * CSP_PAYLOAD_MAX) + csp->tx.pos];
+    data = csp->buffer[csp->tx.active][csp->tx.pos];
   }
 
   csp->tx.pos++;
@@ -271,7 +271,7 @@ void csp_interrupt_rx(csp_t *csp) {
           csp->rx.pos = 0x00;
           csp->rx.active = CSP_INACTIVE_OBJECT;
         } else {
-          csp->buffer[(csp->rx.active * CSP_PAYLOAD_MAX) + csp->rx.pos] = data;
+          csp->buffer[csp->rx.active][csp->rx.pos] = data;
           csp->rx.pos++;
         }
       }
@@ -348,7 +348,7 @@ void csp_tx(csp_t *csp, uint8_t *ptr, uint8_t len) {
   }
 
   for (uint8_t i = 0; i < len; i++) {
-    csp->buffer[(bn * CSP_PAYLOAD_MAX) + i] = ptr[i];
+    csp->buffer[bn][i] = ptr[i];
   }
   csp->buffer_size[bn] = len;
 
