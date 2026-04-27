@@ -62,7 +62,7 @@ void status_state_idle_service(fsm_t *fsm) {
 
   for (keymatrix_event_t *event = keymatric_get_event(&status.keymatrix);
        event != NULL; event = keymatric_get_event(&status.keymatrix)) {
-    if (event->event == KEYMATRIC_EVENTS_UP &&
+    if (event->event == KEYMATRIX_EVENTS_UP &&
         event->duration >= MENU_ENTER_TIME) {
       fsm_transition(fsm, &status_state_menu);
     }
@@ -104,7 +104,7 @@ void status_state_menu_service(fsm_t *fsm) {
 
   for (keymatrix_event_t *event = keymatric_get_event(&status.keymatrix);
        event != NULL; event = keymatric_get_event(&status.keymatrix)) {
-    if (event->event == KEYMATRIC_EVENTS_UP) {
+    if (event->event == KEYMATRIX_EVENTS_UP) {
       status.menu.enter_at = uptime_in_ms;
 
       if (event->duration <= MENU_ENTER_TIME) {
@@ -142,7 +142,7 @@ void status_init(pin_t led, pin_t button, uint8_t max_option, void (*callback)(u
   keymatrix_init(&status.keymatrix, &status.keymatrix_state[0],
                  &status.keymatrix_sense[0], NULL,
                  KEYMATRIX_PRESSED_LOW | KEYMATRIX_SENSE_NO_PULL_UPS |
-                     KEYMATRIX_DEBOUNCE_50MS | KEYMATRIC_EVENTS_UP);
+                     KEYMATRIX_DEBOUNCE_50MS | KEYMATRIX_EVENTS_UP);
 
   status.led = led;
   status.max_option = max_option;

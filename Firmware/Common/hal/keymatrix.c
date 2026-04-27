@@ -13,6 +13,14 @@ void keymatrix_init(keymatrix_t *km, keymatrix_state_t *kms, pin_t *sense,
   km->state = kms;
   km->sense = sense;
   km->drive = drive;
+  km->drive_count = 0;
+  km->event_read = 0;
+  km->event_write = 0;
+
+  if (options == 0) {
+    options++;
+  }
+
   km->options = options;
 
   bool sense_pin_opts = 0;
@@ -83,7 +91,7 @@ void keymatrix_service_sense(keymatrix_t *km, uint8_t base) {
           st->current_state_read_count = 0;
           st->last_state_change = uptime_in_ms;
 
-          uint8_t event = (pressed ? KEYMATRIX_EVENTS_DOWN : KEYMATRIC_EVENTS_UP);
+          uint8_t event = (pressed ? KEYMATRIX_EVENTS_DOWN : KEYMATRIX_EVENTS_UP);
 
           if ((km->options & event) != 0) {
             keymatric_event(km, i, event, time & 0xffff);

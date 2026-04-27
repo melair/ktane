@@ -45,7 +45,7 @@ typedef struct {
 
 /* Event subscriptions. */
 #define KEYMATRIX_EVENTS_DOWN 0b00000100
-#define KEYMATRIC_EVENTS_UP   0b00001000
+#define KEYMATRIX_EVENTS_UP   0b00001000
 
 /* Debound counts. */
 #define KEYMATRIX_DEBOUNCE_MASK 0b11100000
