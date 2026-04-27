@@ -6,7 +6,7 @@
 #include "gpio.h"
 #include "power.h"
 #include <hal/i2c.h>
-#include <peripherals/status.h>
+#include <utils/status.h>
 #include <peripherals/csp/csp.h>
 #include <utils/uniqueid.h>
 
@@ -32,7 +32,7 @@ int main() {
   time_init();
 
   /* Initialise status. */
-  status_init(GPIO_STATUS, GPIO_BOOT, 2);
+  status_init(GPIO_STATUS, GPIO_BOOT, 7, NULL);
 
   /* Initialise I2C. */
   i2c_init(GPIO_SCL, GPIO_SDA);

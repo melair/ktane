@@ -8,14 +8,19 @@
 #include <hal/can.h>
 #include <language_support.h>
 #include <peripherals/csp/csp.h>
-#include <peripherals/status.h>
+#include <utils/status.h>
 #include <utils/time.h>
 #include <utils/uniqueid.h>
+#include <utils/fsm.h>
 #include <xc.h>
+
+/* XC8 BUG: Resolves _status_state_ functions not being identified as used. */
+fsm_t unused_fsm;
 
 csp_t csp_backplane = {.callback = NULL};
 
 /* Main entry point for control board. */
+
 int main() {
   /* Initialise the MCU memory arbiter. */
   arbiter_init();
@@ -33,7 +38,7 @@ int main() {
   time_init();
 
   /* Initialise status. */
-  status_init(GPIO_STATUS, GPIO_BOOT, 1);
+  status_init(GPIO_STATUS, GPIO_BOOT, 1, NULL);
 
   /* Initialise I2C. */
   i2c_init(GPIO_SCL, GPIO_SDA);
