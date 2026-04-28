@@ -1,5 +1,6 @@
 #include "argb.h"
 #include "../utils/fsm.h"
+#include "../utils/mem.h"
 #include "argb_internal.h"
 #include "polyfill/pic.h"
 #include "dma.h"
@@ -20,7 +21,7 @@ typedef struct {
 
 argb_led_t argb_default_buffer[ARGB_DEFAULT_BUFFER_SIZE];
 
-argb_t argb = {.buffer_len = 0, .fsm = {.initial = &argb_state_idle}};
+argb_t argb;
 
 void argb_state_idle_service(fsm_t *fsm) {
   if (argb.update_requested) {
@@ -57,6 +58,9 @@ const fs_t argb_state_updating = {.enter = &argb_state_updating_enter,
                                   .next_states = {&argb_state_idle, NULL}};
 
 void argb_init(pin_t out, bool negate) {
+  memset(&argb, 0, sizeof(argb_t));
+  memset(&argb_default_buffer, 0, ARGB_DEFAULT_BUFFER_SIZE * sizeof(argb_led_t));
+
   /* Configure output pin. */
   pin_config(out, OUTPUT, 0);
 
@@ -195,7 +199,7 @@ void argb_init(pin_t out, bool negate) {
   argb.update_requested = 0;
 
   /* Init FSM. */
-  fsm_init(&argb.fsm);
+  fsm_init(&argb.fsm, &argb_state_idle, NULL);
 }
 
 void argb_service(void) { fsm_service(&argb.fsm); }

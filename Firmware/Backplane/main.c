@@ -10,9 +10,9 @@
 #include <peripherals/csp/csp.h>
 #include <utils/uniqueid.h>
 
-csp_t csp_front = {.callback = NULL};
-csp_t csp_rear = {.callback = NULL};
-csp_t csp_bus = {.callback = NULL};
+csp_t csp_front;
+csp_t csp_rear;
+csp_t csp_bus;
 
 /* Main entry point for backplane. */
 int main() {
@@ -38,9 +38,9 @@ int main() {
   i2c_init(GPIO_SCL, GPIO_SDA);
 
   /* Initialise CSP. */
-  csp_init(&csp_front, GPIO_FRONT_UART_RX, GPIO_FRONT_UART_TX, PORTPIN_NONE, 1, CFG_CSP_FULL_DUPLEX);
-  csp_init(&csp_rear, GPIO_REAR_UART_RX, GPIO_REAR_UART_TX, PORTPIN_NONE, 3, CFG_CSP_FULL_DUPLEX);
-  csp_init(&csp_bus, GPIO_BUS_UART_RX, GPIO_BUS_UART_TX, GPIO_BUS_UART_DE, 2, CFG_CSP_HALF_DUPLEX);
+  csp_init(&csp_front, GPIO_FRONT_UART_RX, GPIO_FRONT_UART_TX, PORTPIN_NONE, 1, CFG_CSP_FULL_DUPLEX, NULL);
+  csp_init(&csp_rear, GPIO_REAR_UART_RX, GPIO_REAR_UART_TX, PORTPIN_NONE, 3, CFG_CSP_FULL_DUPLEX, NULL);
+  csp_init(&csp_bus, GPIO_BUS_UART_RX, GPIO_BUS_UART_TX, GPIO_BUS_UART_DE, 2, CFG_CSP_HALF_DUPLEX, NULL);
 
   /* Initialise power manager. */
   power_init();

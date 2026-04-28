@@ -1,5 +1,6 @@
 #include "i2c.h"
 #include "../utils/fsm.h"
+#include "../utils/mem.h"
 #include "dma.h"
 #include "i2c_internal.h"
 #include "pin.h"
@@ -245,6 +246,9 @@ void i2c_state_callback_enter(fsm_t *fsm) {
     .enter = &i2c_state_callback_enter};
 
 void i2c_init(pin_t clk, pin_t dat) {
+  /* Clear structure. */
+  memset(&i2c, 0, sizeof(i2c_t));
+
   /* Configure pins, all KTANE boards have external I2C pull ups, so don't
    * enable internal weak pull up. */
   pin_config(clk, OUTPUT, CFG_OPENDRAIN);
@@ -308,9 +312,7 @@ void i2c_init(pin_t clk, pin_t dat) {
   i2c.current = NULL;
 
   /* Initialise I2C FSM. */
-  i2c.fsm.ctx = NULL;
-  i2c.fsm.initial = &i2c_state_idle;
-  fsm_init(&i2c.fsm);
+  fsm_init(&i2c.fsm, &i2c_state_idle, NULL);
 }
 
 void i2c_service(void) { fsm_service(&i2c.fsm); }

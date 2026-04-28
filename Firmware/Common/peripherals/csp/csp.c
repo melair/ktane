@@ -2,40 +2,29 @@
 #include "../../hal/pin.h"
 #include "../../hal/polyfill/pic.h"
 #include "../../hal/interrupt.h"
+#include "../../utils/mem.h"
 #include <stdbool.h>
 #include <xc.h>
 
 void csp_set_tx_int(uint8_t uart, bool en);
 uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last);
+bool csp_cobs_encode(uint8_t *dst, uint8_t *encoded_len, const uint8_t *src,
+                     uint8_t src_len);
+bool csp_cobs_decode(uint8_t *buffer, uint8_t *len);
 
 void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart,
-              uint8_t cfg) {
+              uint8_t cfg, void (*callback)(csp_t *csp, uint8_t *ptr, uint8_t len)) {
 
+  memset(csp, 0, sizeof(csp_t));
+
+  csp->callback = callback;
+  
   csp->uart = uart;
   csp->config = cfg;
   csp->address = CSP_ADDR_UNKNOWN;
 
-  csp->buffer_ready = 0x00;
-  csp->buffer_type = 0x00;
-  csp->buffer_used = 0x00;
-
-  csp->rx.in_sync = 0;
-  csp->rx.last = 0;
   csp->rx.active = CSP_INACTIVE_OBJECT;
-  csp->rx.pos = 0;
-
   csp->tx.active = CSP_INACTIVE_OBJECT;
-  csp->tx.pos = 0;
-
-  csp->errors.rx_overflow = 0;
-  csp->errors.rx_giant = 0;
-  csp->errors.rx_runt = 0;
-  csp->errors.tx_overflow = 0;
-  csp->errors.tx_giant = 0;
-
-  for (uint8_t i = 0; i < CSP_OBJECT_COUNT; i++) {
-    csp->buffer_size[i] = 0x00;
-  }
 
   pin_config(rx, INPUT, 0);
   pin_config(tx, OUTPUT, 0);
@@ -126,6 +115,83 @@ void csp_init(csp_t *csp, pin_t rx, pin_t tx, pin_t de, uint8_t uart,
 #endif
   }
 }
+bool csp_cobs_encode(uint8_t *dst, uint8_t *encoded_len, const uint8_t *src,
+                     uint8_t src_len) {
+  uint8_t read_index = 0;
+  uint8_t write_index = 1;
+  uint8_t code_index = 0;
+  uint8_t code = 1;
+
+  while (read_index < src_len) {
+    uint8_t value = src[read_index];
+
+    if (value == 0x00) {
+      dst[code_index] = code;
+      code_index = write_index;
+      write_index++;
+      code = 1;
+
+      if (write_index > CSP_PAYLOAD_MAX) {
+        return false;
+      }
+    } else {
+      if (write_index >= CSP_PAYLOAD_MAX) {
+        return false;
+      }
+
+      dst[write_index] = value;
+      write_index++;
+      code++;
+    }
+
+    read_index++;
+  }
+
+  dst[code_index] = code;
+  *encoded_len = write_index;
+  return true;
+}
+
+bool csp_cobs_decode(uint8_t *buffer, uint8_t *len) {
+  uint8_t read_index = 0;
+  uint8_t write_index = 0;
+  uint8_t encoded_len = *len;
+
+  while (read_index < encoded_len) {
+    uint8_t code = buffer[read_index];
+    if (code == 0x00) {
+      return false;
+    }
+
+    read_index++;
+
+    for (uint8_t i = 1; i < code; i++) {
+      if (read_index >= encoded_len) {
+        return false;
+      }
+
+      buffer[write_index] = buffer[read_index];
+      write_index++;
+      read_index++;
+    }
+
+    if ((code == 0xFF) && (read_index < encoded_len)) {
+      return false;
+    }
+
+    if (read_index < encoded_len) {
+      if (write_index >= CSP_PAYLOAD_MAX) {
+        return false;
+      }
+
+      buffer[write_index] = 0x00;
+      write_index++;
+    }
+  }
+
+  *len = write_index;
+  return true;
+}
 
 void csp_service(csp_t *csp) {
   uint8_t ready_rx = (~csp->buffer_type & csp->buffer_ready & csp->buffer_used);
@@ -134,13 +200,19 @@ void csp_service(csp_t *csp) {
       uint8_t mask = (0x01 << i);
       if ((ready_rx & mask) != 0x00) {
         if (csp->buffer_size[i] == 0) {
-          csp->errors.rx_runt++;
+          csp->errors.rx.runt++;
+          continue;
+        }
+
+        if (!csp_cobs_decode(csp->buffer[i], &csp->buffer_size[i])) {
+          csp->errors.rx.decode++;
+          csp->buffer_used &= ~mask;
+          csp->buffer_ready &= ~mask;
           continue;
         }
 
         if (csp->callback != NULL) {
-          csp->callback(csp, &csp->buffer[i][0],
-                        csp->buffer_size[i]);
+          csp->callback(csp, &csp->buffer[i][0], csp->buffer_size[i]);
         }
 
         csp->buffer_used &= ~mask;
@@ -260,7 +332,7 @@ void csp_interrupt_rx(csp_t *csp) {
 
     if (csp->rx.active != CSP_INACTIVE_OBJECT) {
       if (csp->rx.pos >= CSP_PAYLOAD_MAX) {
-        csp->errors.rx_giant++;
+        csp->errors.rx.giant++;
         csp->buffer_used &= ~(0x01 << csp->rx.active);
         csp->rx.active = CSP_INACTIVE_OBJECT;
         csp->rx.in_sync = 0;
@@ -276,7 +348,7 @@ void csp_interrupt_rx(csp_t *csp) {
         }
       }
     } else {
-      csp->errors.rx_overflow++;
+      csp->errors.rx.overflow++;
     }
   }
 }
@@ -337,20 +409,24 @@ uint8_t csp_find_free_buffer(csp_t *csp, uint8_t last) {
 
 void csp_tx(csp_t *csp, uint8_t *ptr, uint8_t len) {
   if (len > CSP_PAYLOAD_MAX) {
-    csp->errors.tx_giant++;
+    csp->errors.tx.giant++;
     return;
   }
 
   uint8_t bn = csp_find_free_buffer(csp, 0);
   if (bn == CSP_NO_OBJECT) {
-    csp->errors.tx_overflow++;
+    csp->errors.tx.overflow++;
     return;
   }
 
-  for (uint8_t i = 0; i < len; i++) {
-    csp->buffer[bn][i] = ptr[i];
+  uint8_t encoded_len = 0;
+  if (!csp_cobs_encode(csp->buffer[bn], &encoded_len, ptr, len)) {
+    csp->errors.tx.encode++;
+    csp->buffer_used &= ~(0x01 << bn);
+    return;
   }
-  csp->buffer_size[bn] = len;
+
+  csp->buffer_size[bn] = encoded_len;
 
   uint8_t mask = 0x01 << bn;
   csp->buffer_type |= mask;

@@ -2,17 +2,18 @@
 #include "time.h"
 #include <stddef.h>
 #include <stdint.h>
+#include "mem.h"
 
 #ifndef FSM_SERVICE_LOOP_LIMIT
 #define FSM_SERVICE_LOOP_LIMIT 8
 #endif
 
 /* Initialise the FSM so that fsm_service() will start the FSM correctly. */
-void fsm_init(fsm_t *fsm) {
-  /* Ensure current is NULL, and set first transition to initial state. */
-  fsm->current = NULL;
-  fsm->transition = fsm->initial;
-  fsm->transition_at = 0;
+void fsm_init(fsm_t *fsm, const fs_t *initial, void *ctx) {
+  memset(fsm, 0, sizeof(fsm_t));
+  
+  fsm->transition = initial;
+  fsm->ctx = ctx;
 }
 
 /* Service the fsm.

@@ -1,7 +1,8 @@
 #include "keymatrix.h"
+#include "../utils/mem.h"
+#include "../utils/time.h"
 #include "pin.h"
 #include "time.h"
-#include "../utils/time.h"
 #include <xc.h>
 
 void keymatrix_service_sense(keymatrix_t *km, uint8_t base);
@@ -10,12 +11,12 @@ void keymatric_event(keymatrix_t *km, uint8_t i, uint8_t event,
 
 void keymatrix_init(keymatrix_t *km, keymatrix_state_t *kms, pin_t *sense,
                     pin_t *drive, uint8_t options) {
+
+  memset(km, 0, sizeof(keymatrix_t));
+
   km->state = kms;
   km->sense = sense;
   km->drive = drive;
-  km->drive_count = 0;
-  km->event_read = 0;
-  km->event_write = 0;
 
   if (options == 0) {
     options++;
@@ -91,7 +92,8 @@ void keymatrix_service_sense(keymatrix_t *km, uint8_t base) {
           st->current_state_read_count = 0;
           st->last_state_change = uptime_in_ms;
 
-          uint8_t event = (pressed ? KEYMATRIX_EVENTS_DOWN : KEYMATRIX_EVENTS_UP);
+          uint8_t event =
+              (pressed ? KEYMATRIX_EVENTS_DOWN : KEYMATRIX_EVENTS_UP);
 
           if ((km->options & event) != 0) {
             keymatric_event(km, i, event, time & 0xffff);
@@ -125,21 +127,21 @@ void keymatric_event(keymatrix_t *km, uint8_t i, uint8_t event,
 }
 
 void keymatrix_clear_events(keymatrix_t *km) {
-    km->event_read = 0;
-    km->event_write = 0;
+  km->event_read = 0;
+  km->event_write = 0;
 }
 
 keymatrix_event_t *keymatric_get_event(keymatrix_t *km) {
-    if (km->event_write == km->event_read) {
-        return NULL;
-    }
+  if (km->event_write == km->event_read) {
+    return NULL;
+  }
 
-    uint8_t ret = km->event_read;
+  uint8_t ret = km->event_read;
 
-    km->event_read++;
-    if (km->event_read >= KEYMATRIX_EVENT_HISTORY) {
-        km->event_read = 0;
-    }
+  km->event_read++;
+  if (km->event_read >= KEYMATRIX_EVENT_HISTORY) {
+    km->event_read = 0;
+  }
 
-    return &km->events[ret];
+  return &km->events[ret];
 }

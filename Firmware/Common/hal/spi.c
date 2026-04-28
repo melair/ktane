@@ -1,6 +1,7 @@
 #include "spi.h"
 #include "../utils/fsm.h"
 #include "../utils/time.h"
+#include "../utils/mem.h"
 #include "dma.h"
 #include "mcu.h"
 #include "pin.h"
@@ -277,6 +278,8 @@ const fs_t spi_state_cs_deassert = {
     .enter = spi_state_cs_deassert_enter};
 
 void spi_init(pin_t copi, pin_t clk, pin_t cipo) {
+  memset(&spi, 0, sizeof(spi_t));
+
   /* Configure pins. */
   pin_config(clk, OUTPUT, 0);
   *pin_to_pps(clk) = SPIPPSCLK;
@@ -316,9 +319,7 @@ void spi_init(pin_t copi, pin_t clk, pin_t cipo) {
   spi.current_write_repeats = 0;
 
   /* Initialise SPI FSM. */
-  spi.fsm.ctx = NULL;
-  spi.fsm.initial = &spi_state_idle;
-  fsm_init(&spi.fsm);
+  fsm_init(&spi.fsm, &spi_state_idle, NULL);
 }
 
 void spi_service(void) { fsm_service(&spi.fsm); }

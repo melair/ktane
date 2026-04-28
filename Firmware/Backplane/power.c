@@ -47,21 +47,19 @@ const uint16_t power_i2c_ilim_values[POWER_CURRENT_LEN] = {
     30   // 2.0A
 };
 
-power_t front = {.fsm = {.ctx = &front, .initial = &power_state_init},
-                 .module_detect = GPIO_FRONT_MODULE_DETECT,
+power_t front = {.module_detect = GPIO_FRONT_MODULE_DETECT,
                  .efuse_en = GPIO_FRONT_EFUSE_EN,
                  .efuse_flt = GPIO_FRONT_EFUSE_FLT,
                  .pot_i2c = {.addr = I2C_FRONT_POT_ADDR}};
 
-power_t rear = {.fsm = {.ctx = &rear, .initial = &power_state_init},
-                .module_detect = GPIO_REAR_MODULE_DETECT,
+power_t rear = {.module_detect = GPIO_REAR_MODULE_DETECT,
                 .efuse_en = GPIO_REAR_EFUSE_EN,
                 .efuse_flt = GPIO_REAR_EFUSE_FLT,
                 .pot_i2c = {.addr = I2C_REAR_POT_ADDR}};
 
 void power_init(void) {
-  fsm_init(&front.fsm);
-  fsm_init(&rear.fsm);
+  fsm_init(&front.fsm, &power_state_init, &front);
+  fsm_init(&rear.fsm, &power_state_init, &rear);
 }
 
 void power_service(void) {

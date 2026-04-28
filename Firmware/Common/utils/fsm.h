@@ -29,7 +29,7 @@ struct fsm_t {
   void *ctx;
 };
 
-void fsm_init(fsm_t *fsm);
+void fsm_init(fsm_t *fsm, const fs_t *initial, void *ctx);
 void fsm_service(fsm_t *fsm);
 bool fsm_transition(fsm_t *fsm, const fs_t *fs);
 bool fsm_transition_in(fsm_t *fsm, const fs_t *new_state, uint32_t delayInMs);

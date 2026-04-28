@@ -17,10 +17,9 @@
 /* XC8 BUG: Resolves _status_state_ functions not being identified as used. */
 fsm_t unused_fsm;
 
-csp_t csp_backplane = {.callback = NULL};
+csp_t csp_backplane;
 
 /* Main entry point for control board. */
-
 int main() {
   /* Initialise the MCU memory arbiter. */
   arbiter_init();
@@ -51,7 +50,7 @@ int main() {
 
   /* Initialise CSP. */
   csp_init(&csp_backplane, GPIO_UART_RX, GPIO_UART_TX, PORTPIN_NONE, 2,
-           CFG_CSP_FULL_DUPLEX);
+           CFG_CSP_FULL_DUPLEX, NULL);
 
   /* Intialise ARGB */
   argb_init(GPIO_ARGB, false);

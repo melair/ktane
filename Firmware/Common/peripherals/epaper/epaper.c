@@ -2,18 +2,20 @@
 #include "../../hal/pin.h"
 #include "../../hal/spi.h"
 #include "../../utils/fsm.h"
+#include "../../utils/mem.h"
 #include "ssd1680.h"
 #include <xc.h>
 
 void epaper_init(epaper_t *epaper) {
-  epaper->fsm.ctx = epaper;
-  epaper->fsm.initial = &ssd1680_idle;
+  // TODO: Move require variables to constructor for init.
+  memset(epaper, 0, sizeof(epaper_t));
 
   epaper->queue_head = NULL;
   epaper->queue_tail = NULL;
   epaper->commited = NULL;
 
-  fsm_init(&epaper->fsm);
+  fsm_init(&epaper->fsm, &ssd1680_idle, NULL);
+  epaper->fsm.ctx = epaper;
 
   epaper->spi_transaction.cs_pin = epaper->cs;
   epaper->spi_transaction.cs_bounce = true;

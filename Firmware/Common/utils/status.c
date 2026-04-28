@@ -46,7 +46,7 @@ typedef struct {
 extern const fs_t status_state_idle_blink;
 extern const fs_t status_state_menu;
 
-static status_t status = {.fsm = {.initial = &status_state_idle_blink}};
+static status_t status;
 
 void status_state_idle_enter(fsm_t *fsm) {
   status.blink.state = false;
@@ -148,7 +148,7 @@ void status_init(pin_t led, pin_t button, uint8_t max_option, void (*callback)(u
   status.max_option = max_option;
   status.callback = callback;
 
-  fsm_init(&status.fsm);
+  fsm_init(&status.fsm, &status_state_idle_blink, NULL);
 }
 
 void status_service(void) {
