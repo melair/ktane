@@ -698,7 +698,7 @@
       {
         "filename": "Widget.kicad_sch",
         "name": "Widget",
-        "uuid": "00000000-0000-0000-0000-000000000000"
+        "uuid": "54591a7f-b6c5-4ebf-9cf1-e545fe53609d"
       }
     ],
     "used_designators": "",
@@ -707,7 +707,7 @@
   "sheets": [
     [
       "54591a7f-b6c5-4ebf-9cf1-e545fe53609d",
-      "Root"
+      "Widget"
     ],
     [
       "7f78f51f-98cf-4346-9927-442a00542c1f",
