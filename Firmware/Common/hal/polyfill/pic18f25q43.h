@@ -267,3 +267,5 @@
 #define CLC_SRC_CWG2B 0x4B
 #define CLC_SRC_CWG3A 0x4C
 #define CLC_SRC_CWG3B 0x4D
+
+#define EEPROM_SIZE 1024

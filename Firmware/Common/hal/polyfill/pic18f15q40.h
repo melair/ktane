@@ -204,3 +204,5 @@
 
 #define CLC_SRC_CWG1A 0x31
 #define CLC_SRC_CWG1B 0x32
+
+#define EEPROM_SIZE 512

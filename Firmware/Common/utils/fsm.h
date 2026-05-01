@@ -12,6 +12,8 @@ typedef struct fsm_t fsm_t;
 typedef struct fs_t fs_t;
 
 struct fs_t {
+  uint8_t id;
+  
   void (*enter)(fsm_t *);
   void (*service)(fsm_t *);
   void (*exit)(fsm_t *);
@@ -25,6 +27,7 @@ struct fsm_t {
   const fs_t *current;
   const fs_t *transition;
   uint32_t transition_at;
+  uint8_t current_id;
 
   void *ctx;
 };

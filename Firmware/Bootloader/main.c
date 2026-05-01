@@ -1,6 +1,7 @@
 #include <hal/nvm.h>
 #include <stdint.h>
 #include <xc.h>
+#include "config.h"
 
 #define APPLICATION_COUNT 4
 #define APPLICATION_DEFAULT 0x00
@@ -41,25 +42,20 @@ uint24_t select_application(void) {
   /* If the boot button is held down at power on, boot the last application on
    * the MCU. */
   if (BOOT_SELECTOR_BUTTON_PORTbits == 0) {
-    for (uint8_t i = APPLICATION_COUNT; i > 0; i--) {
-      if (APPLICATIONS[i - 1] != NO_APPLICATION) {
-        selected = i - 1;
-        break;
-      }
-    }
+    selected = (APPLICATION_COUNT - 1);
   }
 #endif
 
   /* If the boot selector has not been used, read from EEPROM. */
   if (selected == APPLICATION_DEFAULT) {
-    uint8_t app = nvm_eeprom_read(0x000);
-
-    if (app != 0xFF) {
-      nvm_eeprom_write(0x000, 0xFF);
-    }
-
+    uint8_t app;
+    nvm_eeprom_read(CONFIG_LOC_APPLICATION, &app, sizeof(uint8_t));
+    
     if (app < APPLICATION_COUNT) {
       selected = app;
+      
+      app = 0xff;
+      nvm_eeprom_write(CONFIG_LOC_APPLICATION, &app, sizeof(uint8_t));
     }
   }
 

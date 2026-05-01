@@ -52,6 +52,8 @@ void fsm_service(fsm_t *fsm) {
       if (fsm->current->enter != NULL) {
         fsm->current->enter(fsm);
       }
+
+      fsm->current_id = fsm->current->id;
     }
 
     /* Also then service. */

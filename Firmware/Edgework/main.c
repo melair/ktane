@@ -39,7 +39,7 @@ int main() {
 
   /* Initialise CSP. */
   csp_init(&csp_bus, GPIO_BUS_UART_RX, GPIO_BUS_UART_TX, GPIO_BUS_UART_DE, 1,
-           CFG_CSP_HALF_DUPLEX);
+           CFG_CSP_HALF_DUPLEX, NULL);
 
   while (true) {
     /* Clear Watchdog. */

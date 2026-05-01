@@ -4,11 +4,7 @@
 #include "nvm.h"
 #include <stdint.h>
 #include <xc.h>
-
-/**
- * Get the EEPROM size.
- */
-inline uint16_t nvm_eeprom_size(void) { return _DCI_EESIZ; }
+#include "polyfill/pic.h"
 
 /**
  * Read byte from NVM EEPROM.
@@ -17,28 +13,29 @@ inline uint16_t nvm_eeprom_size(void) { return _DCI_EESIZ; }
  * from EEPROM should not spin.
  *
  * @param addr EEPROM relative address 0x000-0x3ff
- * @return byte read from eeprom
+ * @param ptr destination of read data
+ * @param len length of data to read from EEPROM
  */
-uint8_t nvm_eeprom_read(uint16_t addr) {
-  if (addr >= nvm_eeprom_size()) {
-    return 0;
+void nvm_eeprom_read(uint16_t addr, void *ptr, uint8_t len) {
+  uint8_t *out = (uint8_t *)ptr;
+
+  for (uint8_t i = 0; i < len; i++) {
+    /* Clear NVCON0, NVCON1, setting command to READ byte. */
+    NVMCON0 = 0x00;
+    NVMCON1 = 0x00;
+
+    /* Load address, EEPROM base is 0x380000. */
+    NVMADRL = addr & 0xff;
+    NVMADRH = (addr >> 8) & 0x03;
+    NVMADRU = 0x38;
+
+    /* Execute command, and wait until done. */
+    NVMCON0bits.GO = 1;
+    while (NVMCON0bits.GO == 1)
+      ;
+
+    *out = NVMDATL;
   }
-
-  /* Clear NVCON0, NVCON1, setting command to READ byte. */
-  NVMCON0 = 0x00;
-  NVMCON1 = 0x00;
-
-  /* Load address, EEPROM base is 0x380000. */
-  NVMADRL = addr & 0xff;
-  NVMADRH = (addr >> 8) & 0x03;
-  NVMADRU = 0x38;
-
-  /* Execute command, and wait until done. */
-  NVMCON0bits.GO = 1;
-  while (NVMCON0bits.GO == 1);
-
-  /* Return read byte. */
-  return NVMDATL;
 }
 
 /**
@@ -49,32 +46,34 @@ uint8_t nvm_eeprom_read(uint16_t addr) {
  * the interrupt flag NVMIF.
  *
  * @param addr EEPROM relative address 0x000-0x3ff
- * @param data byte to write to EEPROM
+ * @param ptr destination of write data
+ * @param len length of data to write to EEPROM
  */
-void nvm_eeprom_write(uint16_t addr, uint8_t data) {
-  if (addr >= nvm_eeprom_size()) {
-    return;
+void nvm_eeprom_write(uint16_t addr, void *ptr, uint8_t len) {
+  uint8_t *in = (uint8_t *)ptr;
+
+  for (uint8_t i = 0; i < len; i++) {
+    /* Load address, EEPROM base is 0x380000. */
+    NVMADRL = addr & 0xff;
+    NVMADRH = (addr >> 8) & 0x03;
+    NVMADRU = 0x38;
+
+    /* Load byte to be written. */
+    NVMDATL = *in;
+
+    /* Clear NVCON0, NVCON1, and set command to WRITE byte. */
+    NVMCON0 = 0x00;
+    NVMCON1 = 0x03;
+
+    /* Perform unlock procedure. */
+    __asm(" MOVLW   0x55");
+    __asm(" MOVWF   NVMLOCK");
+    __asm(" MOVLW   0xAA");
+    __asm(" MOVWF   NVMLOCK");
+
+    /* Execute command, and wait until done. */
+    NVMCON0bits.GO = 1;
+    while (NVMCON0bits.GO == 1)
+      ;
   }
-
-  /* Load address, EEPROM base is 0x380000. */
-  NVMADRL = addr & 0xff;
-  NVMADRH = (addr >> 8) & 0x03;
-  NVMADRU = 0x38;
-
-  /* Load byte to be written. */
-  NVMDATL = data;
-
-  /* Clear NVCON0, NVCON1, and set command to WRITE byte. */
-  NVMCON0 = 0x00;
-  NVMCON1 = 0x03;
-
-  /* Perform unlock procedure. */
-  __asm(" MOVLW   0x55");
-  __asm(" MOVWF   NVMLOCK");
-  __asm(" MOVLW   0xAA");
-  __asm(" MOVWF   NVMLOCK");
-
-  /* Execute command, and wait until done. */
-  NVMCON0bits.GO = 1;
-  while (NVMCON0bits.GO == 1);
 }

@@ -1,3 +1,4 @@
+#include "config.h"
 #include "gpio.h"
 #include "hal/pin.h"
 #include <hal/argb.h>
@@ -12,6 +13,7 @@
 #include <utils/time.h>
 #include <utils/uniqueid.h>
 #include <utils/fsm.h>
+#include "mode/mode.h"
 #include <xc.h>
 
 /* XC8 BUG: Resolves _status_state_ functions not being identified as used. */
@@ -29,6 +31,9 @@ int main() {
 
   /* Calculate unique id. */
   unique_init();
+
+  /* Migrate NVM configuration. */
+  config_init();
 
   /* Initialise vectored interrupt handling. */
   int_init(0x208);
@@ -57,6 +62,9 @@ int main() {
   argb_set(0x00, 0x00, 0x00, 0x00);
   argb_update();
 
+  /* Initialise Mode. */
+  mode_init();
+
   /* Main loop. */
   while (true) {
     /* Clear Watchdog. */
@@ -79,6 +87,9 @@ int main() {
 
     /* Service CSP. */
     csp_service(&csp_backplane);
+
+    /* Service Mode. */
+    mode_service();
 
     /* Service ARGB. */
     argb_service();
