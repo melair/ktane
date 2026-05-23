@@ -3,6 +3,7 @@
 
 void mode_init(void);
 void mode_service(void);
+void mode_enable_common_service(void);
 
 #include <stdint.h>
 #include <utils/fsm.h>
@@ -27,8 +28,20 @@ void mode_service(void);
 #define MODE_STATE_OVER 8
 #define MODE_STATE_ABORT 9
 
+fs_t mode_state_init;
+fs_t mode_state_startup;
+fs_t mode_state_idle;
+fs_t mode_state_attract;
+fs_t mode_state_prepare;
+fs_t mode_state_ready;
+fs_t mode_state_starting;
+fs_t mode_state_running;
+fs_t mode_state_solved;
+fs_t mode_state_abort;
+fs_t mode_state_over;
+
 typedef struct {
-  void (*entry)(fsm_t *);
+  void (*enter)(fsm_t *);
   void (*service)(fsm_t *);
   void (*exit)(fsm_t *);  
 } mode_state_func_t;
@@ -44,7 +57,8 @@ typedef struct {
   
   uint8_t name[MODE_NAME_LEN];
 
-  const mode_state_func_t *state_funcs[MODE_STATE_COUNT];
+  void (*common_service) (void);
+  const mode_state_func_t (*state_funcs)[MODE_STATE_COUNT];
 } mode_t;
 
 #endif

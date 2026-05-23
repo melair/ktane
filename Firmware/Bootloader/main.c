@@ -41,7 +41,8 @@ uint24_t select_application(void) {
 #ifdef BOOT_SELECTOR
   /* If the boot button is held down at power on, boot the last application on
    * the MCU. */
-  if (BOOT_SELECTOR_BUTTON_PORTbits == 0) {
+  // TODO - This isn't quite right.
+  if (BOOT_SELECTOR_BUTTON_PORTbits == 1) {
     selected = (APPLICATION_COUNT - 1);
   }
 #endif

@@ -5,6 +5,7 @@
 
 #include "../../hal/pin.h"
 #include "../../hal/spi.h"
+#include "../../hal/spi_queue.h"
 #include "../../utils/fsm.h"
 
 #define EPAPER_TYPE_SSD1680 0
@@ -79,9 +80,10 @@ struct epaper_t {
   epaper_command_t *commited;
   bool partial;
 
+  spi_queue_t spi_queue;
   spi_transaction_t spi_transaction;
   uint8_t cmd_buffer[4];
-  uint16_t phase;
+  uint8_t progress;
 };
 
 void epaper_init(epaper_t *epaper);

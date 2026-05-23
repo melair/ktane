@@ -247,11 +247,8 @@ void spi_state_callback_enter(fsm_t *fsm) {
     if (spi.current != NULL && spi.current_cs_pin == spi.current->cs_pin &&
         !spi.current->cs_bounce) {
       fsm_transition(fsm, &spi_state_configure);
-    } else {
-      fsm_transition(fsm, &spi_state_cs_deassert);
+      return;
     }
-
-    return;
   } else {
     spi.current = NULL;
   }

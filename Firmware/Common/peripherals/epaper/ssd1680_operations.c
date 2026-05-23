@@ -1,8 +1,8 @@
 #include "ssd1680_operations.h"
 #include "../../hal/spi.h"
+#include "../../hal/spi_queue.h"
 #include "../../utils/fsm.h"
 #include "epaper.h"
-#include "spi_queue.h"
 #include "ssd1680.h"
 #include <stdint.h>
 #include <xc.h>
@@ -167,7 +167,7 @@ spi_transaction_t *
 ssd1680_operation_copy_from_flash_send_bw_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (epaper->phase >= epaper->commited->_mapped.bytes) {
+  if (epaper->progress >= epaper->commited->_mapped.bytes) {
     pin_write(epaper->dc, false);
 
     if (epaper->colours.red == 1) {
@@ -187,44 +187,44 @@ ssd1680_operation_copy_from_flash_send_bw_spi_callback(spi_transaction_t *spi) {
   switch (epaper->commited->operation_data.copy_from_flash.fg_colour) {
   case OPERATION_COLOUR_WHITE:
     spi->buffer[0] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[1] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[2] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[3] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     break;
   case OPERATION_COLOUR_BLACK:
     spi->buffer[0] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[1] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[2] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[3] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     break;
   case OPERATION_COLOUR_RED:
     if (epaper->commited->operation_data.copy_from_flash.bg_colour ==
         OPERATION_COLOUR_WHITE) {
       spi->buffer[0] = epaper->commited->operation_data.copy_from_flash
-                           .addr[epaper->phase++];
+                           .addr[epaper->progress++];
       spi->buffer[1] = epaper->commited->operation_data.copy_from_flash
-                           .addr[epaper->phase++];
+                           .addr[epaper->progress++];
       spi->buffer[2] = epaper->commited->operation_data.copy_from_flash
-                           .addr[epaper->phase++];
+                           .addr[epaper->progress++];
       spi->buffer[3] = epaper->commited->operation_data.copy_from_flash
-                           .addr[epaper->phase++];
+                           .addr[epaper->progress++];
     } else {
       spi->buffer[0] = ~epaper->commited->operation_data.copy_from_flash
-                            .addr[epaper->phase++];
+                            .addr[epaper->progress++];
       spi->buffer[1] = ~epaper->commited->operation_data.copy_from_flash
-                            .addr[epaper->phase++];
+                            .addr[epaper->progress++];
       spi->buffer[2] = ~epaper->commited->operation_data.copy_from_flash
-                            .addr[epaper->phase++];
+                            .addr[epaper->progress++];
       spi->buffer[3] = ~epaper->commited->operation_data.copy_from_flash
-                            .addr[epaper->phase++];
+                            .addr[epaper->progress++];
     }
 
     break;
@@ -235,7 +235,7 @@ ssd1680_operation_copy_from_flash_send_bw_spi_callback(spi_transaction_t *spi) {
 
 void ssd1680_operation_copy_from_flash_send_bw_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
-  epaper->phase = 0;
+  epaper->progress = 0;
   epaper->spi_transaction.callback =
       &ssd1680_operation_copy_from_flash_send_bw_spi_callback;
   pin_write(epaper->dc, true);
@@ -277,7 +277,7 @@ spi_transaction_t *ssd1680_operation_copy_from_flash_send_red_spi_callback(
     spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (epaper->phase >= epaper->commited->_mapped.bytes) {
+  if (epaper->progress >= epaper->commited->_mapped.bytes) {
     fsm_transition(&epaper->fsm, &ssd1680_queue_return);
     pin_write(epaper->dc, false);
     return NULL;
@@ -291,29 +291,29 @@ spi_transaction_t *ssd1680_operation_copy_from_flash_send_red_spi_callback(
   if (epaper->commited->operation_data.copy_from_flash.bg_colour ==
       OPERATION_COLOUR_RED) {
     spi->buffer[0] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[1] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[2] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[3] =
-        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        ~epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
   } else if (epaper->commited->operation_data.copy_from_flash.fg_colour ==
              OPERATION_COLOUR_RED) {
     spi->buffer[0] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[1] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[2] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
     spi->buffer[3] =
-        epaper->commited->operation_data.copy_from_flash.addr[epaper->phase++];
+        epaper->commited->operation_data.copy_from_flash.addr[epaper->progress++];
   } else {
     spi->buffer[0] = 0x00;
     spi->buffer[1] = 0x00;
     spi->buffer[2] = 0x00;
     spi->buffer[3] = 0x00;
-    epaper->phase += 4;
+    epaper->progress += 4;
   }
 
   return spi;
@@ -321,7 +321,7 @@ spi_transaction_t *ssd1680_operation_copy_from_flash_send_red_spi_callback(
 
 void ssd1680_operation_copy_from_flash_send_red_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
-  epaper->phase = 0;
+  epaper->progress = 0;
   epaper->spi_transaction.callback =
       &ssd1680_operation_copy_from_flash_send_red_spi_callback;
   pin_write(epaper->dc, true);

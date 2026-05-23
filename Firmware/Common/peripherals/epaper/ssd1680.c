@@ -1,9 +1,9 @@
 #include "ssd1680.h"
 #include "../../hal/pin.h"
 #include "../../hal/spi.h"
+#include "../../hal/spi_queue.h"
 #include "../../utils/fsm.h"
 #include "epaper.h"
-#include "spi_queue.h"
 #include "ssd1680_operations.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -125,30 +125,21 @@ const fs_t ssd1680_sw_reset_phase_two = {
 const uint8_t ROTATION_TABLE[4] = {0x03, 0x05, 0x00, 0x06};
 
 #define INIT_DATA_SIZE 13
-const spi_queue_t init_data[INIT_DATA_SIZE] = {
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DRIVER_OUTPUT_CONTROL}},
-    {
-        .data = 1, .size = 3, .buffer = {0xaa, 0xaa, 0x00} // EPD Height
-    },
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DATA_ENTRY_MODE}},
-    {.data = 1, .size = 1, .buffer = {0xaa}},
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_BORDER_WAVEFORM_CONTROL}},
-    {.data = 1, .size = 1, .buffer = {0x05}}, // Follow LUT | LUT1
 
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_1}},
-    {.data = 1,
-     .size = 2,
-     .buffer = {0x00,
-                0x80}}, // Red+B/W RAM Normal, Source Output Mode = S8-S167
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_TEMPERATURE_SENSOR_CONTROL}},
-    {
-        .data = 1, .size = 1, .buffer = {0x80} // Internal temperature sensor
-    },
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_2}},
-    {.data = 1,
-     .size = 1,
-     .buffer = {0xb1}}, // Load temp, load LUT, disable clock.
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_MASTER_ACTIVIATION}},
+const spi_queue_element_t init_data[INIT_DATA_SIZE] = {
+    {.data = 0, BUFFER(SSD1680_CMD_DRIVER_OUTPUT_CONTROL)},
+    {.data = 1, BUFFER(0xaa, 0xaa, 0x00)}, // EPD Height
+    {.data = 0, BUFFER(SSD1680_CMD_DATA_ENTRY_MODE)},
+    {.data = 1, BUFFER(0xaa)},
+    {.data = 0, BUFFER(SSD1680_CMD_BORDER_WAVEFORM_CONTROL)},
+    {.data = 1, BUFFER(0x05)}, // Follow LUT | LUT1
+    {.data = 0, BUFFER(SSD1680_CMD_DISPLAY_UPDATE_CONTROL_1)},
+    {.data = 1, BUFFER(0x00, 0x80)}, // Red+B/W RAM Normal, Source Output Mode = S8-S167
+    {.data = 0, BUFFER(SSD1680_CMD_TEMPERATURE_SENSOR_CONTROL)},
+    {.data = 1, BUFFER(0x80)}, // Internal temperature sensor
+    {.data = 0, BUFFER(SSD1680_CMD_DISPLAY_UPDATE_CONTROL_2)},
+    {.data = 1, BUFFER(0xb1)}, // Load temp, load LUT, disable clock.
+    {.data = 0, BUFFER(SSD1680_CMD_MASTER_ACTIVIATION)},
 };
 
 spi_transaction_t *
@@ -157,9 +148,8 @@ ssd1680_configure_enter_spi_callback(spi_transaction_t *spi) {
   uint16_t height = epaper->height - 1;
   uint8_t width = (epaper->width / 8) - 1;
 
-  if (spi_queue_process(&init_data, INIT_DATA_SIZE, epaper->dc,
-                        &epaper->spi_transaction, &epaper->phase)) {
-    switch (epaper->phase - 1) {
+  if (spi_queue_process(&epaper->spi_queue, &epaper->spi_transaction)) {
+    switch (epaper->spi_queue.phase - 1) {
     case 1:
       epaper->spi_transaction.buffer[0] = (uint8_t)(height & 0xff);
       epaper->spi_transaction.buffer[1] = (uint8_t)((height >> 8) & 0x01);
@@ -178,8 +168,9 @@ ssd1680_configure_enter_spi_callback(spi_transaction_t *spi) {
 
 void ssd1680_configure_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
-  epaper->phase = 0;
   epaper->spi_transaction.callback = &ssd1680_configure_enter_spi_callback;
+
+  spi_queue_init(&epaper->spi_queue, &init_data, INIT_DATA_SIZE, epaper->dc);
 
   spi_transaction_t *t =
       ssd1680_configure_enter_spi_callback(&epaper->spi_transaction);
@@ -218,28 +209,22 @@ const fs_t ssd1680_queue = {
     .enter = ssd1680_queue_enter};
 
 #define CANVAS_DATA_SIZE 8
-const spi_queue_t canvas_data[CANVAS_DATA_SIZE] = {
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_SET_RAM_X}},
-    {
-        .data = 1, .size = 2, .buffer = {0xaa, 0xbb} // 0 = Start, 1 = End
-    },
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_SET_RAM_Y}},
-    {
-        .data = 1,
-        .size = 4,
-        .buffer = {0xaa, 0xaa, 0xbb, 0xbb} // 0-1 = Start, 2-3 = End
-    },
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_SET_RAM_X_COUNTER}},
-    {.data = 1, .size = 1, .buffer = {0xaa}},
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_SET_RAM_Y_COUNTER}},
-    {.data = 1, .size = 2, .buffer = {0xaa, 0xaa}}};
+const spi_queue_element_t canvas_data[] = {
+    {.data = 0, BUFFER(SSD1680_CMD_SET_RAM_X)},
+    {.data = 1, BUFFER(0xaa, 0xbb)}, // 0 = Start, 1 = End
+    {.data = 0, BUFFER(SSD1680_CMD_SET_RAM_Y)},
+    {.data = 1, BUFFER(0xaa, 0xaa, 0xbb, 0xbb)}, // 0-1 = Start, 2-3 = End
+    {.data = 0, BUFFER(SSD1680_CMD_SET_RAM_X_COUNTER)},
+    {.data = 1, BUFFER(0xaa)},
+    {.data = 0, BUFFER(SSD1680_CMD_SET_RAM_Y_COUNTER)},
+    {.data = 1, BUFFER(0xaa, 0xaa)},
+};
 
 spi_transaction_t *ssd1680_setup_canvas_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (spi_queue_process(&canvas_data, CANVAS_DATA_SIZE, epaper->dc,
-                        &epaper->spi_transaction, &epaper->phase)) {
-    switch (epaper->phase - 1) {
+  if (spi_queue_process(&epaper->spi_queue, &epaper->spi_transaction)) {
+    switch (epaper->spi_queue.phase - 1) {
     case 1: // RAM X
       epaper->spi_transaction.buffer[0] = epaper->commited->_mapped.x1;
       epaper->spi_transaction.buffer[1] = epaper->commited->_mapped.x2;
@@ -333,8 +318,9 @@ void ssd1680_setup_canvas_enter(fsm_t *fsm) {
   epaper->commited->_mapped.y2 = y2;
   epaper->commited->_mapped.bytes = bytes;
 
-  epaper->phase = 0;
   epaper->spi_transaction.callback = &ssd1680_setup_canvas_spi_callback;
+
+  spi_queue_init(&epaper->spi_queue, &canvas_data, CANVAS_DATA_SIZE, epaper->dc);
 
   spi_transaction_t *t =
       ssd1680_setup_canvas_spi_callback(&epaper->spi_transaction);
@@ -358,27 +344,16 @@ const fs_t ssd1680_queue_return = {
                                    .enter = ssd1680_queue_return_enter};
 
 #define REFRESH_DATA_SIZE 3
-const spi_queue_t refresh_data[REFRESH_DATA_SIZE] = {
-    {
-        .data = 0,
-        .size = 1,
-        .buffer = {SSD1680_CMD_DISPLAY_UPDATE_CONTROL_2} // Confgiure
-    },
-    {.data = 1,
-     .size = 1,
-     .buffer = {0xf7}}, // Enable analog, load temp, display with mode 1,
-                        // disable analog, disable clock.
-    {
-        .data = 0,
-        .size = 1,
-        .buffer = {SSD1680_CMD_MASTER_ACTIVIATION} // Refresh
-    }};
+const spi_queue_element_t refresh_data[] = {
+    {.data = 0, BUFFER(SSD1680_CMD_DISPLAY_UPDATE_CONTROL_2)}, // Configure
+    {.data = 1, BUFFER(0xf7)}, // Enable analog, load temp, display with mode 1, disable analog, disable clock.
+    {.data = 0, BUFFER(SSD1680_CMD_MASTER_ACTIVIATION)}, // Refresh
+};
 
 spi_transaction_t *ssd1680_refresh_display_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (spi_queue_process(&refresh_data, REFRESH_DATA_SIZE, epaper->dc,
-                        &epaper->spi_transaction, &epaper->phase)) {
+  if (spi_queue_process(&epaper->spi_queue, &epaper->spi_transaction)) {
     return spi;
   } else {
     fsm_transition(&epaper->fsm, &ssd1680_refresh_display_wait);
@@ -388,8 +363,9 @@ spi_transaction_t *ssd1680_refresh_display_callback(spi_transaction_t *spi) {
 
 void ssd1680_refresh_display_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
-  epaper->phase = 0;
   epaper->spi_transaction.callback = &ssd1680_refresh_display_callback;
+
+  spi_queue_init(&epaper->spi_queue, &refresh_data, REFRESH_DATA_SIZE, epaper->dc);
 
   spi_transaction_t *t =
       ssd1680_refresh_display_callback(&epaper->spi_transaction);
@@ -413,16 +389,15 @@ const fs_t ssd1680_refresh_display_wait = {
     .service = ssd1680_refresh_display_wait_service};
 
 #define SLEEP_DATA_SIZE 2
-const spi_queue_t sleep_data[SLEEP_DATA_SIZE] = {
-    {.data = 0, .size = 1, .buffer = {SSD1680_CMD_DEEP_SLEEP}},
-    {.data = 1, .size = 1, .buffer = {0x01}}, // Mode 1
+const spi_queue_element_t sleep_data[] = {
+    {.data = 0, BUFFER(SSD1680_CMD_DEEP_SLEEP)},
+    {.data = 1, BUFFER(0x01)}, // Mode 1
 };
 
 spi_transaction_t *ssd1680_sleep_spi_callback(spi_transaction_t *spi) {
   epaper_t *epaper = (epaper_t *)spi->callback_data;
 
-  if (spi_queue_process(&sleep_data, SLEEP_DATA_SIZE, epaper->dc,
-                        &epaper->spi_transaction, &epaper->phase)) {
+  if (spi_queue_process(&epaper->spi_queue, &epaper->spi_transaction)) {
     return spi;
   } else {
     fsm_transition(&epaper->fsm, &ssd1680_power_off);
@@ -432,8 +407,9 @@ spi_transaction_t *ssd1680_sleep_spi_callback(spi_transaction_t *spi) {
 
 void ssd1680_sleep_enter(fsm_t *fsm) {
   epaper_t *epaper = (epaper_t *)fsm->ctx;
-  epaper->phase = 0;
   epaper->spi_transaction.callback = &ssd1680_sleep_spi_callback;
+
+  spi_queue_init(&epaper->spi_queue, &sleep_data, SLEEP_DATA_SIZE, epaper->dc);
 
   spi_transaction_t *t = ssd1680_sleep_spi_callback(&epaper->spi_transaction);
   spi_queue(t);

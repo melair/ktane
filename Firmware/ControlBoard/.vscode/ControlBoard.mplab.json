@@ -11,7 +11,8 @@
                 "HI-TECH-COMP.asmlist": true,
                 "HI-TECH-COMP.extra-include-directories": [
                     "../Common"
-                ]
+                ],
+                "HI-TECH-COMP.optimization-level": "-O1"
             }
         },
         {

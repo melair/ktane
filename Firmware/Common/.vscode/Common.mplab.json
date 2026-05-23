@@ -39,7 +39,8 @@
                     "FSM_SKIP_LEGAL_CHECK"
                 ],
                 "HI-TECH-COMP.warning-level": "-9",
-                "XC8-config-global.constdata-progmem": false
+                "XC8-config-global.constdata-progmem": false,
+                "HI-TECH-COMP.optimization-level": "-O1"
             }
         },
         {

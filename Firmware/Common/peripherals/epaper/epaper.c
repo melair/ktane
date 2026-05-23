@@ -14,9 +14,7 @@ void epaper_init(epaper_t *epaper) {
   epaper->queue_tail = NULL;
   epaper->commited = NULL;
 
-  fsm_init(&epaper->fsm, &ssd1680_idle, NULL);
-  epaper->fsm.ctx = epaper;
-
+  fsm_init(&epaper->fsm, &ssd1680_idle, &epaper);
   epaper->spi_transaction.cs_pin = epaper->cs;
   epaper->spi_transaction.cs_bounce = true;
   epaper->spi_transaction.cs_wait_ms = 0;

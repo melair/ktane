@@ -9,3 +9,9 @@ void memset(void *ptr, uint8_t val, uint16_t len) {
         cptr[i] = val;
     }
 }
+
+void memcpy(uint8_t *src, uint8_t *dst, uint16_t len) {
+    for (uint16_t i = 0; i < len; i++) {
+        dst[i] = src[i];
+    }
+}
