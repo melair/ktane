@@ -1,4 +1,4 @@
 (sym_lib_table
-  (version 7)
-  (lib (name "KTANE")(type "KiCad")(uri "/Volumes/unix/workspace/ktane/GitHubReleased/PCB/Libraries/KTANE.kicad_sym")(options "")(descr ""))
+	(version 7)
+	(lib (name "KTANE") (type "KiCad") (uri "/Users/peter/KTANEVersionTwo/PCB/Libraries/KTANE.kicad_sym") (options "") (descr ""))
 )

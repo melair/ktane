@@ -51,7 +51,23 @@
         "silk_text_upright": false,
         "zones": {
           "45_degree_only": false,
-          "min_clearance": 0.2
+          "border_display_style": 2,
+          "border_hatch_pitch": 0.5,
+          "corner_radius": 0.0,
+          "corner_smoothing": 0,
+          "fill_mode": 0,
+          "hatch_gap": 1.5,
+          "hatch_orientation": 0.0,
+          "hatch_smoothing_level": 0,
+          "hatch_smoothing_value": 0.1,
+          "hatch_thickness": 1.0,
+          "min_clearance": 0.25,
+          "min_island_area": 10.0,
+          "min_thickness": 0.25,
+          "pad_connection": 1,
+          "remove_islands": 0,
+          "thermal_relief_gap": 0.5,
+          "thermal_relief_spoke_width": 0.5
         }
       },
       "diff_pair_dimensions": [
@@ -202,13 +218,10 @@
       ],
       "track_widths": [
         0.0,
-        0.2,
         0.3,
-        0.4,
-        0.5,
+        0.6,
         1.0,
-        1.27,
-        2.0
+        1.5
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -242,20 +255,8 @@
           "drill": 0.0
         },
         {
-          "diameter": 0.45,
-          "drill": 0.3
-        },
-        {
           "diameter": 0.6,
           "drill": 0.3
-        },
-        {
-          "diameter": 0.8,
-          "drill": 0.4
-        },
-        {
-          "diameter": 1.7,
-          "drill": 1.0
         }
       ],
       "zones_allow_external_fillets": false,
@@ -268,7 +269,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "B01"
+      "sch_revision": "C01"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -577,7 +578,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "ControlBoard.net",
-      "plot": "Gerber/B03/",
+      "plot": "Gerber/C01",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
@@ -764,7 +765,7 @@
         "uuid": "8a650ebf-3f78-4ca4-a26b-a5028693e36d"
       }
     ],
-    "used_designators": "",
+    "used_designators": "J11-12",
     "variants": []
   },
   "sheets": [

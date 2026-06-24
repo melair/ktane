@@ -3577,7 +3577,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1000"
+		(property "Value" "10k"
 			(at 117.0686 79.883 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3621,7 +3621,7 @@
 				)
 			)
 		)
-		(property "DIGIKEY" "P1.00KHCT-ND"
+		(property "DIGIKEY" "P10.0KHCT-ND"
 			(at 115.57 78.74 0)
 			(hide yes)
 			(show_name no)
@@ -4131,6 +4131,84 @@
 		)
 	)
 	(symbol
+		(lib_id "power:VDD")
+		(at 115.57 63.5 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4043605c-74ae-468f-9de4-775b05ff3e3f")
+		(property "Reference" "#PWR086"
+			(at 115.57 67.31 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "VDD"
+			(at 115.57 58.42 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 115.57 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 115.57 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDD\""
+			(at 115.57 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "94b712db-56f2-4fc8-8b13-1a5b52ea75ab")
+		)
+		(instances
+			(project "ControlBoard"
+				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/8aac65e2-4dfd-463b-a6c0-b675e1c87ded"
+					(reference "#PWR086")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C_Polarized_Small")
 		(at 29.21 31.75 0)
 		(mirror y)
@@ -4436,7 +4514,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1000"
+		(property "Value" "10k"
 			(at 117.0686 134.493 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4480,7 +4558,7 @@
 				)
 			)
 		)
-		(property "DIGIKEY" "P1.00KHCT-ND"
+		(property "DIGIKEY" "P10.0KHCT-ND"
 			(at 115.57 133.35 0)
 			(hide yes)
 			(show_name no)
@@ -5409,84 +5487,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 115.57 118.11 0)
-		(mirror y)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "8a3e46ce-02d0-4c6a-9cc3-02b420af7a54")
-		(property "Reference" "#PWR086"
-			(at 115.57 121.92 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+5V"
-			(at 115.189 113.7158 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 115.57 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 115.57 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 115.57 118.11 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "56e198d7-c850-42f9-bf63-49325911115c")
-		)
-		(instances
-			(project "ControlBoard"
-				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/8aac65e2-4dfd-463b-a6c0-b675e1c87ded"
-					(reference "#PWR086")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 132.08 83.82 0)
 		(unit 1)
@@ -5558,83 +5558,6 @@
 			(project "ControlBoard"
 				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/8aac65e2-4dfd-463b-a6c0-b675e1c87ded"
 					(reference "#PWR085")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3.3V")
-		(at 115.57 63.5 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "934d5aa3-2a5d-4ab0-af47-b0e63c839b90")
-		(property "Reference" "#PWR073"
-			(at 115.57 67.31 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 115.951 59.1058 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 115.57 63.5 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 115.57 63.5 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 115.57 63.5 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "23da5f04-5a55-4edf-a7bf-80c4211528d3")
-		)
-		(instances
-			(project "ControlBoard"
-				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/8aac65e2-4dfd-463b-a6c0-b675e1c87ded"
-					(reference "#PWR073")
 					(unit 1)
 				)
 			)
@@ -7822,6 +7745,84 @@
 			(project "ControlBoard"
 				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/8aac65e2-4dfd-463b-a6c0-b675e1c87ded"
 					(reference "#PWR071")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDD")
+		(at 115.57 118.11 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f6357d07-a7d3-4fec-8096-7c20f4153e2e")
+		(property "Reference" "#PWR097"
+			(at 115.57 121.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "VDD"
+			(at 115.57 113.03 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 115.57 118.11 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 115.57 118.11 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDD\""
+			(at 115.57 118.11 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "783530a2-05cc-4a45-9b60-254b02705983")
+		)
+		(instances
+			(project "ControlBoard"
+				(path "/8a650ebf-3f78-4ca4-a26b-a5028693e36d/8aac65e2-4dfd-463b-a6c0-b675e1c87ded"
+					(reference "#PWR097")
 					(unit 1)
 				)
 			)
