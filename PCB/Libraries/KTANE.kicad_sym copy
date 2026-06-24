@@ -12962,8 +12962,8 @@
 						)
 					)
 				)
-				(alternate "I2S_SDO" output line)
-				(alternate "UART_RX" input line)
+				(alternate "I2S-SDO" output line)
+				(alternate "UART-TX" input line)
 			)
 			(pin input line
 				(at -13.97 8.89 0)
