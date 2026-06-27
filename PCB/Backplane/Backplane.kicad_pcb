@@ -147,7 +147,7 @@
 			(mirror no)
 			(drillshape 0)
 			(scaleselection 1)
-			(outputdirectory "Gerber/A02/")
+			(outputdirectory "Gerber/B01/")
 		)
 	)
 	(footprint "KTANE:PinHeader_2x05_P2.54mm_VerticalAndHorizontal_Centered"
