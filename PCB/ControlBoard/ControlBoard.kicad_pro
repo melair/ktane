@@ -593,7 +593,7 @@
       "method": 0,
       "sort_order": 0
     },
-    "bom_export_filename": "Gerber/ControlBoard - B01.csv",
+    "bom_export_filename": "Gerber/ControlBoard - C01.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",

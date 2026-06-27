@@ -278,7 +278,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": "1"
+      "sch_revision": "C01"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -600,7 +600,7 @@
       "method": 0,
       "sort_order": 0
     },
-    "bom_export_filename": "Gerber/Comms - B01.csv",
+    "bom_export_filename": "Gerber/Comms - C01.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -778,7 +778,7 @@
         "uuid": "e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
       }
     ],
-    "used_designators": "D1,#PWR4,#PWR13,#PWR17-20,#PWR48-49,#PWR126,Q1,JP1,R7-9,NT1",
+    "used_designators": "",
     "variants": []
   },
   "sheets": [

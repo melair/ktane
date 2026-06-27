@@ -264,7 +264,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "B01"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -567,7 +567,7 @@
       "method": 0,
       "sort_order": 0
     },
-    "bom_export_filename": "Gerber/Backplane - A01.csv",
+    "bom_export_filename": "Gerber/Backplane - B01.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -698,7 +698,7 @@
       "version": 1
     },
     "net_format_name": "",
-    "page_layout_descr_file": "",
+    "page_layout_descr_file": "KTANE - Module backplane",
     "plot_directory": "",
     "reuse_designators": true,
     "space_save_all_events": true,

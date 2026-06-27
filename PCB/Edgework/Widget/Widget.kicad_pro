@@ -266,7 +266,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "B01"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -567,7 +567,7 @@
       "method": 0,
       "sort_order": 0
     },
-    "bom_export_filename": "Gerber/A01.csv",
+    "bom_export_filename": "Gerber/Edgework Widget - B01.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",

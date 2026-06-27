@@ -265,7 +265,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "C01"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -566,7 +566,7 @@
       "method": 0,
       "sort_order": 0
     },
-    "bom_export_filename": "Gerber/Audio - B01.csv",
+    "bom_export_filename": "Gerber/Audio - C01.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",

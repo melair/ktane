@@ -7,7 +7,7 @@
 	(title_block
 		(title "KTANE Physical Edition - Edgework Bus / BLE")
 		(date "2021-04-17")
-		(rev "1")
+		(rev "C01")
 		(company "Designed by Melair")
 		(comment 1 "A board for breaking out the edgework bus, and BLE MCU for control.")
 	)
