@@ -14,7 +14,7 @@
 "C30","1","0.1μF","Capacitor_SMD:C_0603_1608Metric","","1276-1005-1-ND"
 "C36","1","8pF","Capacitor_SMD:C_0603_1608Metric","","490-GCM1885C2A8R0BA16JCT-ND"
 "C41","1","8pF","Capacitor_SMD:C_0603_1608Metric","","490-GCM1885C2A8R0BA16JCT-ND"
-"D1","1","BAT54S","Package_TO_SOT_SMD:SOT-23","",""
+"D1","1","BAT54S","Package_TO_SOT_SMD:SOT-23","","BAT54SLT1GOSCT-ND"
 "D6","1","T24CAN","Package_TO_SOT_SMD:SOT-23","","STOCK"
 "J1","1","In","KTANE:PinHeader_2x08_P2.54mm_Vertical-Centered","","S9171-ND"
 "J2","1","Test","Connector_Coaxial:U.FL_Hirose_U.FL-R-SMT-1_Vertical","","26-U.FL-R-SMT-1(32)CT-ND"
