@@ -1,6 +1,6 @@
 #MicroXplorer Configuration settings - do not modify
-CAD.formats=
-CAD.pinconfig=
+CAD.formats=[]
+CAD.pinconfig=Dual
 CAD.provider=
 File.Version=6
 GPIO.groupedBy=
@@ -160,7 +160,7 @@ ProjectManager.ToolChainLocation=
 ProjectManager.UAScriptAfterPath=
 ProjectManager.UAScriptBeforePath=
 ProjectManager.UnderRoot=false
-ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,0-MX_CORTEX_M0+_Init-CORTEX_M0+-false-HAL-true,0-MX_PWR_Init-PWR-false-HAL-true
+ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_I2C1_Init-I2C1-false-HAL-true,4-MX_LPUART1_UART_Init-LPUART1-false-HAL-true,5-MX_RADIO_Init-RADIO-false-HAL-true,6-MX_RADIO_TIMER_Init-RADIO_TIMER-false-HAL-true,7-MX_SPI3_Init-SPI3-false-HAL-true,8-MX_TIM2_Init-TIM2-false-HAL-true,0-MX_CORTEX_M0+_Init-CORTEX_M0+-false-HAL-true,0-MX_PWR_Init-PWR-false-HAL-true
 RCC.BLEFreq_VALUE=32000000
 RCC.CLKI2S3Freq_VALUE=64000000
 RCC.CLKSYSFreq_VALUE=32000000
