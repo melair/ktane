@@ -32,8 +32,6 @@
 /**
   * Initializes the Global MSP.
   */
-void HAL_MspInit(void)
-{
-
+void HAL_MspInit(void) {
   /* System interrupt init*/
 }

@@ -38,6 +38,7 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/mcu_init.c
 )
 
 set(MCU_SUPPORT_SOURCES
