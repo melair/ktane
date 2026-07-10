@@ -1,67 +1,117 @@
 cmake_minimum_required(VERSION 3.22)
 
-#
-# This file is generated only once,
-# and is not re-generated if converter is called multiple times.
-#
-# User is free to modify the file as much as necessary
-#
-
-# Setup compiler settings
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
-# Define the build type
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif ()
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
 
-# Set the project name
 set(CMAKE_PROJECT_NAME ControlBoard)
-
-# Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-# Core project settings
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
-# Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
-# Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
-# Add STM32CubeMX generated sources
-add_subdirectory(cmake/stm32cubemx)
-
-# Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-        # Add user defined library search paths
+set(APP_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Inc
 )
 
-# Add sources to executable
+set(MCU_SUPPORT_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Inc
+)
+
+set(HAL_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Inc/Legacy
+)
+
+set(CMSIS_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS_Device/Include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS_Core/CMSIS/Core/Include
+)
+
+set(APP_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Core/Src/main.c
+)
+
+set(MCU_SUPPORT_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Src/stm32h5xx_hal_msp.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Src/stm32h5xx_it.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Src/syscalls.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Src/sysmem.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Src/system_stm32h5xx.c
+)
+
+set(CMSIS_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS_Device/Source/Templates/gcc/startup_stm32h562xx.s
+)
+
+set(HAL_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_cortex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_dma.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_dma_ex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_exti.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_flash.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_flash_ex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_gpio.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_icache.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr_ex.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rcc.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rcc_ex.c
+)
+
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-        # Add user sources here
+    ${APP_SOURCES}
+    ${MCU_SUPPORT_SOURCES}
+    ${CMSIS_SOURCES}
+    ${HAL_SOURCES}
+
+    # Add user sources here
 )
 
-# Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-        # Add user defined include paths
+    ${APP_INCLUDE_DIRS}
+    ${MCU_SUPPORT_INCLUDE_DIRS}
+    ${HAL_INCLUDE_DIRS}
+    ${CMSIS_INCLUDE_DIRS}
+
+    # Add user defined include paths here
 )
 
-# Add project symbols (macros)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-        # Add user defined symbols
+    USE_HAL_DRIVER
+    STM32H562xx
+    $<$<CONFIG:Debug>:DEBUG>
+
+    # Add user defined symbols here
+)
+
+target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    # Add user defined library search paths here
 )
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
-# Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
-        stm32cubemx
+    ${TOOLCHAIN_LINK_LIBRARIES}
 
-        # Add user defined libraries
+    # Add user defined libraries here
 )
+
+set_target_properties(${CMAKE_PROJECT_NAME}
+    PROPERTIES
+    ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map
+)
+
+if((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))
+    message(FATAL_ERROR "Generated code requires C11 or higher")
+endif()
