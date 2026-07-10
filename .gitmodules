@@ -1,0 +1,9 @@
+[submodule "Firmware/STM32/ControlBoard/Drivers/CMSIS"]
+	path = Firmware/STM32/ControlBoard/Drivers/CMSIS_Device
+	url = https://github.com/STMicroelectronics/cmsis-device-h5.git
+[submodule "Firmware/STM32/ControlBoard/Drivers/HAL"]
+	path = Firmware/STM32/ControlBoard/Drivers/HAL
+	url = https://github.com/STMicroelectronics/stm32h5xx-hal-driver
+[submodule "Firmware/STM32/ControlBoard/Drivers/CMSIS_Core"]
+	path = Firmware/STM32/ControlBoard/Drivers/CMSIS_Core
+	url = https://github.com/STMicroelectronics/cmsis-core.git
