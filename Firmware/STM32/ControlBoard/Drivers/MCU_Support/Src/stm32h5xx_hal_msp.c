@@ -29,9 +29,3 @@
 /* Private function prototypes -----------------------------------------------*/
 
 /* External functions --------------------------------------------------------*/
-/**
-  * Initializes the Global MSP.
-  */
-void HAL_MspInit(void) {
-  /* System interrupt init*/
-}
