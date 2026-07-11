@@ -14,33 +14,18 @@
   *
   ******************************************************************************
   */
-/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "mcu_init.h"
-
-/* Private includes ----------------------------------------------------------*/
-
-/* Private typedef -----------------------------------------------------------*/
-
-/* Private define ------------------------------------------------------------*/
-
-/* Private macro -------------------------------------------------------------*/
-
-/* Private variables ---------------------------------------------------------*/
-
-/* Private user code ---------------------------------------------------------*/
 
 /**
   * @brief  The application entry point.
   * @retval int
   */
 int main(void) {
-    /* MCU Configuration--------------------------------------------------------*/
-
-    /* MPU Configuration--------------------------------------------------------*/
+    /* Configure MPU */
     MPU_Init();
 
-    /* Reset of all peripherals, initializes the Flash interface and the Systick. */
+    /* Reset of all peripherals, initializes the Flash interface and the Systick */
     HAL_Init();
 
     /* Configure the system clock */
@@ -49,9 +34,10 @@ int main(void) {
     /* Configure PLL2 and PLL3 ahead of time */
     PeripheralClock_Init();
 
-    /* Initialize all configured peripherals */
+    /* Initialize base peripherals */
     GPIO_Init();
     ICACHE_Init();
+    RTC_Init();
 
     /* Infinite loop */
     while (1) {
