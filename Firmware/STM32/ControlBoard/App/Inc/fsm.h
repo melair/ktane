@@ -6,29 +6,36 @@
 
 typedef struct FSM FSM;
 typedef struct FSM_State FSM_State;
+typedef uint8_t FSM_StateId;
+typedef uint32_t FSM_NextMask;
+
+#define FSM_INVALID_STATE UINT8_MAX
+#define FSM_MAX_STATES 32U
+#define FSM_NEXT(state_id) ((FSM_NextMask) 1UL << (state_id))
 
 struct FSM_State {
-    uint8_t id;
-
     void (*enter)(FSM *fsm);
     void (*service)(FSM *fsm);
     void (*exit)(FSM *fsm);
 
-    const FSM_State *const *next_states;
+    FSM_NextMask next_mask;
 };
 
 struct FSM {
-    const FSM_State *current;
-    const FSM_State *transition;
+    const FSM_State *states;
+
+    FSM_StateId current_id;
+    FSM_StateId transition_id;
+    bool transition_pending;
     uint32_t transition_at;
-    uint8_t current_id;
 
     void *context;
 };
 
-void FSM_Init(FSM *fsm, const FSM_State *initial_state, void *context);
+bool FSM_Init(FSM *fsm, const FSM_State *states, FSM_StateId initial_state_id,
+              void *context);
 void FSM_Service(FSM *fsm);
-bool FSM_Transition(FSM *fsm, const FSM_State *new_state);
-bool FSM_TransitionIn(FSM *fsm, const FSM_State *new_state, uint32_t delay_ms);
+bool FSM_Transition(FSM *fsm, FSM_StateId new_state_id);
+bool FSM_TransitionIn(FSM *fsm, FSM_StateId new_state_id, uint32_t delay_ms);
 
 #endif //FSM_H
