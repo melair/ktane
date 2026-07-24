@@ -3,6 +3,8 @@
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_it.h"
 
+static RNG_HandleTypeDef hrng = {0};
+
 /**
   * @brief RNG MSP Initialization
   * This function configures the hardware resources used in this example
@@ -33,8 +35,6 @@ void HAL_RNG_MspDeInit(RNG_HandleTypeDef *hrng) {
 }
 
 void TRNG_Init(void) {
-    RNG_HandleTypeDef hrng;
-
     hrng.Instance = RNG;
     hrng.Init.ClockErrorDetection = RNG_CED_ENABLE;
 

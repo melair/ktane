@@ -119,6 +119,14 @@ void SystemClock_Init(void) {
 
     /* Configure the programming delay */
     __HAL_FLASH_SET_PROGRAM_DELAY(FLASH_PROGRAMMING_DELAY_2);
+
+    RCC_OscInitTypeDef RCC_HSIOscInitStruct = {0};
+
+    RCC_HSIOscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48;
+    RCC_HSIOscInitStruct.HSI48State = RCC_HSI48_ON;
+    if (HAL_RCC_OscConfig(&RCC_HSIOscInitStruct) != HAL_OK) {
+        Error_Handler();
+    }
 }
 
 /**

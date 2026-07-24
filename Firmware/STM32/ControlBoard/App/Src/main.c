@@ -30,7 +30,7 @@ int main(void) {
     GPIO_Init();
     ICACHE_Init();
     RTC_Init();
-    //TRNG_Init();
+    TRNG_Init();
 
     /* Enable DMA peripherals. GPDMA1 for core functions, GPDMA2 for submodules. */
     __HAL_RCC_GPDMA1_CLK_ENABLE();
@@ -52,5 +52,7 @@ int main(void) {
         Status_Service();
         /* Service SPI. */
         SPI_Service();
+        /* Service I2C. */
+        I2C_Service();
     }
 }
