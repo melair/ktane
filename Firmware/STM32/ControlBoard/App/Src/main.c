@@ -2,6 +2,7 @@
 
 #include "argb.h"
 #include "can.h"
+#include "gpio.h"
 #include "i2c.h"
 #include "mcu_init.h"
 #include "rng.h"
@@ -45,9 +46,40 @@ int main(void) {
     // TODO: SDMMC_Init();
     // TODO: USB_Init();
 
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_C0_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIO_C0_Port, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIO_C0_Port, GPIO_C0_Pin, GPIO_PIN_SET);
+
+    uint32_t next = 0;
+
+    SPI_Transaction t = {0};
+    uint8_t data[8] = {0xaa, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x55};
+
     /* Infinite loop */
     while (1) {
         /* Service the status LED, and button. */
         Status_Service();
+        /* Service SPI. */
+        SPI_Service();
+
+        if (uwTick > next) {
+            next = uwTick + 1000;
+
+            t.baud = SPI_BAUD_8MHZ;
+            t.bits = 8;
+            t.cs_pin = GPIO_C0_Pin;
+            t.cs_port = GPIO_C0_Port;
+            t.operation = SPI_OPERATION_WRITE;
+            t.tx_size = 8;
+            t.tx_data = &data;
+
+            SPI_Queue(&t);
+        }
+
     }
 }

@@ -81,12 +81,12 @@ void CAN_Init(void) {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     /* Default value to high, LED off */
-    HAL_GPIO_WritePin(FDCAN_ACT_GPIO_Port, FDCAN_ACT_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(FDCAN_ACT_Port, FDCAN_ACT_Pin, GPIO_PIN_SET);
 
     /* Configure LED */
     GPIO_InitStruct.Pin = FDCAN_ACT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(FDCAN_ACT_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(FDCAN_ACT_Port, &GPIO_InitStruct);
 }

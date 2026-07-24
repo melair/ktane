@@ -179,7 +179,7 @@ void ARGB_Init(void) {
     gpio_init.Pull = GPIO_NOPULL;
     gpio_init.Speed = GPIO_SPEED_FREQ_HIGH;
     gpio_init.Alternate = GPIO_AF2_TIM4;
-    HAL_GPIO_Init(ARGB_GPIO_Port, &gpio_init);
+    HAL_GPIO_Init(ARGB_Port, &gpio_init);
 }
 
 void ARGB_Set(const ARGB_Strip *strip, const uint8_t idx, const uint8_t r, const uint8_t g, const uint8_t b) {
