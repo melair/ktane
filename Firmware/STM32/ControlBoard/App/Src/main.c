@@ -46,6 +46,8 @@ int main(void) {
     // TODO: SDMMC_Init();
     // TODO: USB_Init();
 
+    uint32_t next = 0;
+
     /* Infinite loop */
     while (1) {
         /* Service the status LED, and button. */
@@ -54,5 +56,10 @@ int main(void) {
         SPI_Service();
         /* Service I2C. */
         I2C_Service();
+        /* Service CAN. */
+        CAN_Service(NULL);
+
+        if (uwTick >= next) {
+        }
     }
 }
