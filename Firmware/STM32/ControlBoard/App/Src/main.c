@@ -44,11 +44,6 @@ int main(void) {
     CAN_Init();
     ARGB_Init();
     CBUS_Init();
-    // TODO: SDMMC_Init();
-    // TODO: USB_Init();
-
-    uint32_t next = 0;
-    uint8_t data[8] = {0x55, 0x00, 0x00, 0xaa, 0x01, 0x02, 0x03, 0x04};
 
     /* Infinite loop */
     while (1) {
@@ -62,11 +57,5 @@ int main(void) {
         CAN_Service(NULL);
         /* Service CBUS. */
         CBUS_Service(NULL);
-
-        if (uwTick >= next) {
-            next = uwTick + 250;
-
-            CBUS_Queue(2, &data);
-        }
     }
 }
