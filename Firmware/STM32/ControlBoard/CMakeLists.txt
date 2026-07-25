@@ -46,6 +46,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/rng.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/argb.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/fsm.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/cbus.c
 )
 
 set(MCU_SUPPORT_SOURCES
@@ -84,6 +85,10 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_spi_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_tim.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_tim_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_uart.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_uart_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_usart.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_usart_ex.c
 )
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE

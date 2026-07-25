@@ -2,6 +2,7 @@
 
 #include "argb.h"
 #include "can.h"
+#include "cbus.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "mcu_init.h"
@@ -42,11 +43,12 @@ int main(void) {
     SPI_Init();
     CAN_Init();
     ARGB_Init();
-    // TODO: CBUS_Init();
+    CBUS_Init();
     // TODO: SDMMC_Init();
     // TODO: USB_Init();
 
     uint32_t next = 0;
+    uint8_t data[8] = {0x55, 0x00, 0x00, 0xaa, 0x01, 0x02, 0x03, 0x04};
 
     /* Infinite loop */
     while (1) {
@@ -58,8 +60,13 @@ int main(void) {
         I2C_Service();
         /* Service CAN. */
         CAN_Service(NULL);
+        /* Service CBUS. */
+        CBUS_Service(NULL);
 
         if (uwTick >= next) {
+            next = uwTick + 250;
+
+            CBUS_Queue(2, &data);
         }
     }
 }
