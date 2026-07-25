@@ -30,12 +30,19 @@ typedef struct {
 static i2c_t i2c = {0};
 
 static void i2c_fsm_idle_service(FSM *fsm);
+
 static void i2c_fsm_dequeue_enter(FSM *fsm);
+
 static void i2c_fsm_configure_enter(FSM *fsm);
+
 static void i2c_fsm_write_enter(FSM *fsm);
+
 static void i2c_fsm_write_service(FSM *fsm);
+
 static void i2c_fsm_read_enter(FSM *fsm);
+
 static void i2c_fsm_read_service(FSM *fsm);
+
 static void i2c_fsm_callback_enter(FSM *fsm);
 
 static const FSM_State i2c_fsm_states[] = {

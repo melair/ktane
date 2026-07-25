@@ -5,6 +5,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+
 #endif
 
 typedef enum {
@@ -35,13 +36,16 @@ struct I2C_Transaction {
     uint16_t rx_size;
 
     I2C_Transaction *(*callback)(I2C_Transaction *);
+
     void *callback_data;
 
     I2C_Transaction *queue_next;
 };
 
 void I2C_Init(void);
+
 void I2C_Service(void);
+
 void I2C_Queue(I2C_Transaction *tx);
 
 #ifdef __cplusplus

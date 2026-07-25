@@ -15,7 +15,9 @@ typedef uint32_t FSM_NextMask;
 
 struct FSM_State {
     void (*enter)(FSM *fsm);
+
     void (*service)(FSM *fsm);
+
     void (*exit)(FSM *fsm);
 
     FSM_NextMask next_mask;
@@ -34,8 +36,11 @@ struct FSM {
 
 bool FSM_Init(FSM *fsm, const FSM_State *states, FSM_StateId initial_state_id,
               void *context);
+
 void FSM_Service(FSM *fsm);
+
 bool FSM_Transition(FSM *fsm, FSM_StateId new_state_id);
+
 bool FSM_TransitionIn(FSM *fsm, FSM_StateId new_state_id, uint32_t delay_ms);
 
 #endif //FSM_H

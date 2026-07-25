@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 void Status_Init(void);
+
 void Status_Service(void);
 
 #ifdef __cplusplus

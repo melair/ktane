@@ -67,7 +67,7 @@ static void flashActivityLed(can_t *canBus, uint32_t durationMs) {
 
 static void serviceActivityLed(can_t *canBus) {
     if ((HAL_FDCAN_GetTxFifoFreeLevel(&canBus->handle) == CAN_TX_FIFO_LENGTH) &&
-        ((int32_t)(HAL_GetTick() - canBus->activityUntil) >= 0)) {
+        ((int32_t) (HAL_GetTick() - canBus->activityUntil) >= 0)) {
         HAL_GPIO_WritePin(FDCAN_ACT_Port, FDCAN_ACT_Pin, GPIO_PIN_SET);
     }
 }
@@ -140,7 +140,7 @@ void CAN_Init(void) {
 
     // Same rate since BRS is off — mirror nominal values
     can.handle.Init.DataPrescaler = can.handle.Init.NominalPrescaler;
-    can.handle.Init.DataSyncJumpWidth = can.handle.Init.NominalSyncJumpWidth ;
+    can.handle.Init.DataSyncJumpWidth = can.handle.Init.NominalSyncJumpWidth;
     can.handle.Init.DataTimeSeg1 = can.handle.Init.NominalTimeSeg1;
     can.handle.Init.DataTimeSeg2 = can.handle.Init.NominalTimeSeg2;
 
@@ -214,7 +214,7 @@ void CAN_Service(void (*packetHandler)(uint16_t mailbox, uint8_t length, void *d
             const uint8_t length = dlcToLength(rxHeader.DataLength);
 
             if ((length >= 8) && (length <= 64)) {
-                packetHandler((uint16_t)rxHeader.Identifier, length, rxData);
+                packetHandler((uint16_t) rxHeader.Identifier, length, rxData);
             }
         }
     }

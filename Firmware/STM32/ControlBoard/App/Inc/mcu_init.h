@@ -12,10 +12,15 @@ extern "C" {
 #endif
 
 void MPU_Init(void);
+
 void SystemClock_Init(void);
+
 void PeripheralClock_Init(void);
+
 void GPIO_Init(void);
+
 void ICACHE_Init(void);
+
 void RTC_Init(void);
 
 #ifdef __cplusplus

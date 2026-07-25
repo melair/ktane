@@ -33,14 +33,23 @@ typedef struct {
 static spi_t spi = {0};
 
 static void spi_fsm_idle_service(FSM *fsm);
+
 static void spi_fsm_dequeue_enter(FSM *fsm);
+
 static void spi_fsm_cs_assert_enter(FSM *fsm);
+
 static void spi_fsm_ready_enter(FSM *fsm);
+
 static void spi_fsm_tx_enter(FSM *fsm);
+
 static void spi_fsm_tx_service(FSM *fsm);
+
 static void spi_fsm_rx_enter(FSM *fsm);
+
 static void spi_fsm_rx_service(FSM *fsm);
+
 static void spi_fsm_callback_enter(FSM *fsm);
+
 static void spi_fsm_cs_deassert_enter(FSM *fsm);
 
 static const FSM_State spi_fsm_states[] = {

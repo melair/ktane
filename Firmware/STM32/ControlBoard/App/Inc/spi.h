@@ -5,8 +5,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-
-
 #endif
 
 typedef enum {
@@ -55,6 +53,7 @@ struct SPI_Transaction {
     SPI_State state;
 
     SPI_Transaction *(*callback)(SPI_Transaction *);
+
     void *callback_data;
 
     SPI_Transaction *queue_next;

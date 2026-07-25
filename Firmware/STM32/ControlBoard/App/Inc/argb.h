@@ -9,8 +9,11 @@ extern "C" {
 typedef struct ARGB_Strip ARGB_Strip;
 
 void ARGB_Init(void);
+
 void ARGB_Set(const ARGB_Strip *strip, uint8_t idx, uint8_t r, uint8_t g, uint8_t b);
+
 ARGB_Strip *ARGB_Add_Strip(uint8_t colour_order, uint8_t led_count);
+
 void ARGB_Update(void);
 
 #define BITS_PER_COLOUR 8
