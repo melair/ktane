@@ -1,6 +1,15 @@
 #ifndef GPIO_H
 #define GPIO_H
 
+#include "stm32h5xx_hal.h"
+
+typedef struct {
+    GPIO_TypeDef *port;
+    uint16_t pin;
+} GPIO_PinDef;
+
+#define GPIO_SUBMODULE_PIN_COUNT 8
+
 #define BUTTON_Pin GPIO_PIN_7
 #define BUTTON_Port GPIOB
 
@@ -108,5 +117,10 @@
 #define GPIO_C1_Port GPIOA
 #define GPIO_C0_Pin GPIO_PIN_0
 #define GPIO_C0_Port GPIOA
+
+extern const GPIO_PinDef GPIO_A_Pins[GPIO_SUBMODULE_PIN_COUNT];
+extern const GPIO_PinDef GPIO_B_Pins[GPIO_SUBMODULE_PIN_COUNT];
+extern const GPIO_PinDef GPIO_C_Pins[GPIO_SUBMODULE_PIN_COUNT];
+extern const GPIO_PinDef GPIO_Button_Pin;
 
 #endif //GPIO_H

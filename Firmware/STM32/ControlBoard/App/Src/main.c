@@ -5,6 +5,7 @@
 #include "cbus.h"
 #include "gpio.h"
 #include "i2c.h"
+#include "input_manager.h"
 #include "mcu_init.h"
 #include "rng.h"
 #include "spi.h"
@@ -38,15 +39,20 @@ int main(void) {
     __HAL_RCC_GPDMA2_CLK_ENABLE();
 
     /* Initialize common controlboard processes and peripherals. */
-    Status_Init();
+    IM_Init();
     I2C_Init();
     SPI_Init();
     CAN_Init();
     ARGB_Init();
     CBUS_Init();
 
+    /* Base service init. */
+    Status_Init();
+
     /* Infinite loop */
     while (1) {
+        /* Service input manager. */
+        IM_Service();
         /* Service the status LED, and button. */
         Status_Service();
         /* Service SPI. */
