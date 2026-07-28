@@ -26,13 +26,21 @@ typedef struct {
     } config;
 } IM_Registration;
 
-static IM_Registration registrations[IM_MAX_REGISTRATIONS];
-static ADC_HandleTypeDef analogue_adc;
-static const IM_AnalogueInputConfig *analogue_active_config;
-static IM_Handle analogue_active_handle;
-static uint8_t analogue_active_pin;
-static const IM_AnalogueInputConfig *analogue_scan_config;
-static IM_Handle analogue_scan_handle;
+typedef struct {
+    ADC_HandleTypeDef adc;
+    const IM_AnalogueInputConfig *active_config;
+    IM_Handle active_handle;
+    uint8_t active_pin;
+    const IM_AnalogueInputConfig *scan_config;
+    IM_Handle scan_handle;
+} analogue_t;
+
+typedef struct {
+    IM_Registration registrations[IM_MAX_REGISTRATIONS];
+    analogue_t analogue;
+} im_t;
+
+static im_t im;
 
 static const IM_AnaloguePinMap analogue_pin_map[] = {
     {GPIO_B0_Port, GPIO_B0_Pin, ADC_CHANNEL_18},
@@ -55,8 +63,8 @@ static const IM_AnaloguePinMap analogue_pin_map[] = {
 
 static IM_Handle allocate_registration(IM_RegistrationType type) {
     for (IM_Handle handle = 0; handle < IM_MAX_REGISTRATIONS; handle++) {
-        if (registrations[handle].type == IM_REGISTRATION_UNUSED) {
-            registrations[handle].type = type;
+        if (im.registrations[handle].type == IM_REGISTRATION_UNUSED) {
+            im.registrations[handle].type = type;
             return handle;
         }
     }
@@ -104,29 +112,29 @@ static bool analogue_channel_get(const GPIO_PinDef *pin, uint32_t *channel) {
 }
 
 static bool analogue_adc_init(void) {
-    analogue_adc.Instance = ADC1;
-    analogue_adc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-    analogue_adc.Init.Resolution = ADC_RESOLUTION_12B;
-    analogue_adc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    analogue_adc.Init.ScanConvMode = ADC_SCAN_DISABLE;
-    analogue_adc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-    analogue_adc.Init.LowPowerAutoWait = DISABLE;
-    analogue_adc.Init.ContinuousConvMode = DISABLE;
-    analogue_adc.Init.NbrOfConversion = 1;
-    analogue_adc.Init.DiscontinuousConvMode = DISABLE;
-    analogue_adc.Init.NbrOfDiscConversion = 1;
-    analogue_adc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    analogue_adc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-    analogue_adc.Init.SamplingMode = ADC_SAMPLING_MODE_NORMAL;
-    analogue_adc.Init.DMAContinuousRequests = DISABLE;
-    analogue_adc.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
-    analogue_adc.Init.OversamplingMode = DISABLE;
+    im.analogue.adc.Instance = ADC1;
+    im.analogue.adc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+    im.analogue.adc.Init.Resolution = ADC_RESOLUTION_12B;
+    im.analogue.adc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    im.analogue.adc.Init.ScanConvMode = ADC_SCAN_DISABLE;
+    im.analogue.adc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+    im.analogue.adc.Init.LowPowerAutoWait = DISABLE;
+    im.analogue.adc.Init.ContinuousConvMode = DISABLE;
+    im.analogue.adc.Init.NbrOfConversion = 1;
+    im.analogue.adc.Init.DiscontinuousConvMode = DISABLE;
+    im.analogue.adc.Init.NbrOfDiscConversion = 1;
+    im.analogue.adc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    im.analogue.adc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+    im.analogue.adc.Init.SamplingMode = ADC_SAMPLING_MODE_NORMAL;
+    im.analogue.adc.Init.DMAContinuousRequests = DISABLE;
+    im.analogue.adc.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
+    im.analogue.adc.Init.OversamplingMode = DISABLE;
 
-    if (HAL_ADC_Init(&analogue_adc) != HAL_OK) {
+    if (HAL_ADC_Init(&im.analogue.adc) != HAL_OK) {
         return false;
     }
 
-    if (HAL_ADCEx_Calibration_Start(&analogue_adc, ADC_SINGLE_ENDED) != HAL_OK) {
+    if (HAL_ADCEx_Calibration_Start(&im.analogue.adc, ADC_SINGLE_ENDED) != HAL_OK) {
         return false;
     }
 
@@ -148,17 +156,17 @@ static bool analogue_conversion_start(IM_Handle handle, const IM_AnalogueInputCo
     channel_config.OffsetNumber = ADC_OFFSET_NONE;
     channel_config.Offset = 0;
 
-    if (HAL_ADC_ConfigChannel(&analogue_adc, &channel_config) != HAL_OK) {
+    if (HAL_ADC_ConfigChannel(&im.analogue.adc, &channel_config) != HAL_OK) {
         return false;
     }
 
-    if (HAL_ADC_Start(&analogue_adc) != HAL_OK) {
+    if (HAL_ADC_Start(&im.analogue.adc) != HAL_OK) {
         return false;
     }
 
-    analogue_active_config = config;
-    analogue_active_handle = handle;
-    analogue_active_pin = pin_index;
+    im.analogue.active_config = config;
+    im.analogue.active_handle = handle;
+    im.analogue.active_pin = pin_index;
 
     return true;
 }
@@ -185,9 +193,9 @@ static void analogue_scan_complete(const IM_AnalogueInputConfig *config, uint32_
     state->scan_active = false;
     state->next_scan_ms = now_ms + config->scan_interval_ms;
 
-    if (analogue_scan_config == config) {
-        analogue_scan_config = NULL;
-        analogue_scan_handle = IM_INVALID_HANDLE;
+    if (im.analogue.scan_config == config) {
+        im.analogue.scan_config = NULL;
+        im.analogue.scan_handle = IM_INVALID_HANDLE;
     }
 }
 
@@ -201,18 +209,18 @@ static void analogue_next_pin(const IM_AnalogueInputConfig *config, uint32_t now
 }
 
 static void analogue_conversion_poll(uint32_t now_ms) {
-    if (HAL_ADC_PollForConversion(&analogue_adc, 0) != HAL_OK) {
+    if (HAL_ADC_PollForConversion(&im.analogue.adc, 0) != HAL_OK) {
         return;
     }
 
-    const IM_AnalogueInputConfig *config = analogue_active_config;
+    const IM_AnalogueInputConfig *config = im.analogue.active_config;
     IM_AnalogueInputState *state = config->state;
-    IM_AnalogueChannelState *channel = &state->channels[analogue_active_pin];
-    const uint16_t value = (uint16_t) HAL_ADC_GetValue(&analogue_adc);
+    IM_AnalogueChannelState *channel = &state->channels[im.analogue.active_pin];
+    const uint16_t value = (uint16_t) HAL_ADC_GetValue(&im.analogue.adc);
     int16_t delta = 0;
     bool publish = config->change_threshold == 0;
 
-    HAL_ADC_Stop(&analogue_adc);
+    HAL_ADC_Stop(&im.analogue.adc);
 
     channel->value = value;
 
@@ -225,14 +233,14 @@ static void analogue_conversion_poll(uint32_t now_ms) {
     }
 
     if (publish) {
-        analogue_value_publish(analogue_active_handle, config, analogue_active_pin, value, delta, now_ms);
+        analogue_value_publish(im.analogue.active_handle, config, im.analogue.active_pin, value, delta, now_ms);
         channel->last_published_value = value;
     }
 
     analogue_next_pin(config, now_ms);
 
-    analogue_active_config = NULL;
-    analogue_active_handle = IM_INVALID_HANDLE;
+    im.analogue.active_config = NULL;
+    im.analogue.active_handle = IM_INVALID_HANDLE;
 }
 
 static void analogue_conversion_start_for_scan(IM_Handle handle, const IM_AnalogueInputConfig *config,
@@ -245,17 +253,17 @@ static void analogue_conversion_start_for_scan(IM_Handle handle, const IM_Analog
 }
 
 static void analogue_conversion_start_due(uint32_t now_ms) {
-    if (analogue_scan_config != NULL) {
-        analogue_conversion_start_for_scan(analogue_scan_handle, analogue_scan_config, now_ms);
+    if (im.analogue.scan_config != NULL) {
+        analogue_conversion_start_for_scan(im.analogue.scan_handle, im.analogue.scan_config, now_ms);
         return;
     }
 
     for (IM_Handle handle = 0; handle < IM_MAX_REGISTRATIONS; handle++) {
-        if (registrations[handle].type != IM_REGISTRATION_ANALOGUE) {
+        if (im.registrations[handle].type != IM_REGISTRATION_ANALOGUE) {
             continue;
         }
 
-        const IM_AnalogueInputConfig *config = registrations[handle].config.analogue;
+        const IM_AnalogueInputConfig *config = im.registrations[handle].config.analogue;
         IM_AnalogueInputState *state = config->state;
 
         if (!state->scan_active) {
@@ -265,8 +273,8 @@ static void analogue_conversion_start_due(uint32_t now_ms) {
 
             state->active_pin = 0;
             state->scan_active = true;
-            analogue_scan_config = config;
-            analogue_scan_handle = handle;
+            im.analogue.scan_config = config;
+            im.analogue.scan_handle = handle;
         }
 
         analogue_conversion_start_for_scan(handle, config, now_ms);
@@ -275,7 +283,7 @@ static void analogue_conversion_start_due(uint32_t now_ms) {
 }
 
 static void analogue_service(uint32_t now_ms) {
-    if (analogue_active_config == NULL) {
+    if (im.analogue.active_config == NULL) {
         analogue_conversion_start_due(now_ms);
     } else {
         analogue_conversion_poll(now_ms);
@@ -308,9 +316,9 @@ static TIM_TypeDef *rotary_timer_instance(IM_RotarySlot slot) {
 
 static const IM_RotaryEncoderConfig *rotary_config_get(IM_RotarySlot slot) {
     for (IM_Handle handle = 0; handle < IM_MAX_REGISTRATIONS; handle++) {
-        if ((registrations[handle].type == IM_REGISTRATION_ROTARY) && (
-                registrations[handle].config.rotary->slot == slot)) {
-            return registrations[handle].config.rotary;
+        if ((im.registrations[handle].type == IM_REGISTRATION_ROTARY) && (
+                im.registrations[handle].config.rotary->slot == slot)) {
+            return im.registrations[handle].config.rotary;
         }
     }
 
@@ -576,13 +584,13 @@ static void digital_service(IM_Handle handle, const IM_DigitalInputConfig *confi
 
 void IM_Init(void) {
     for (IM_Handle handle = 0; handle < IM_MAX_REGISTRATIONS; handle++) {
-        registrations[handle].type = IM_REGISTRATION_UNUSED;
+        im.registrations[handle].type = IM_REGISTRATION_UNUSED;
     }
 
-    analogue_active_config = NULL;
-    analogue_active_handle = IM_INVALID_HANDLE;
-    analogue_scan_config = NULL;
-    analogue_scan_handle = IM_INVALID_HANDLE;
+    im.analogue.active_config = NULL;
+    im.analogue.active_handle = IM_INVALID_HANDLE;
+    im.analogue.scan_config = NULL;
+    im.analogue.scan_handle = IM_INVALID_HANDLE;
     analogue_adc_init();
 }
 
@@ -592,12 +600,12 @@ void IM_Service(void) {
     analogue_service(now_ms);
 
     for (IM_Handle handle = 0; handle < IM_MAX_REGISTRATIONS; handle++) {
-        switch (registrations[handle].type) {
+        switch (im.registrations[handle].type) {
             case IM_REGISTRATION_DIGITAL:
-                digital_service(handle, registrations[handle].config.digital, now_ms);
+                digital_service(handle, im.registrations[handle].config.digital, now_ms);
                 break;
             case IM_REGISTRATION_ROTARY:
-                rotary_service(registrations[handle].config.rotary, now_ms);
+                rotary_service(im.registrations[handle].config.rotary, now_ms);
                 break;
             default:
                 break;
@@ -639,7 +647,7 @@ IM_Handle IM_RegisterDigital(const IM_DigitalInputConfig *config) {
     const IM_Handle handle = allocate_registration(IM_REGISTRATION_DIGITAL);
 
     if (handle != IM_INVALID_HANDLE) {
-        registrations[handle].config.digital = config;
+        im.registrations[handle].config.digital = config;
         *config->state = (IM_DigitalInputState){
             .channels = config->state->channels,
             .next_scan_ms = HAL_GetTick(),
@@ -665,13 +673,13 @@ IM_Handle IM_RegisterRotaryEncoder(const IM_RotaryEncoderConfig *config) {
     const IM_Handle handle = allocate_registration(IM_REGISTRATION_ROTARY);
 
     if (handle != IM_INVALID_HANDLE) {
-        registrations[handle].config.rotary = config;
+        im.registrations[handle].config.rotary = config;
         *config->state = (IM_RotaryEncoderState){
             .input_handle = handle,
         };
 
         if (!rotary_timer_configure(config)) {
-            registrations[handle].type = IM_REGISTRATION_UNUSED;
+            im.registrations[handle].type = IM_REGISTRATION_UNUSED;
             return IM_INVALID_HANDLE;
         }
     }
@@ -683,7 +691,7 @@ IM_Handle IM_RegisterAnalogue(const IM_AnalogueInputConfig *config) {
     const IM_Handle handle = allocate_registration(IM_REGISTRATION_ANALOGUE);
 
     if (handle != IM_INVALID_HANDLE) {
-        registrations[handle].config.analogue = config;
+        im.registrations[handle].config.analogue = config;
 
         *config->state = (IM_AnalogueInputState){
             .channels = config->state->channels,
@@ -697,7 +705,7 @@ IM_Handle IM_RegisterAnalogue(const IM_AnalogueInputConfig *config) {
         for (uint8_t pin = 0; pin < config->pin_count; pin++) {
             uint32_t adc_channel = 0;
             if (!analogue_channel_get(&config->pins[pin], &adc_channel)) {
-                registrations[handle].type = IM_REGISTRATION_UNUSED;
+                im.registrations[handle].type = IM_REGISTRATION_UNUSED;
                 return IM_INVALID_HANDLE;
             }
 
