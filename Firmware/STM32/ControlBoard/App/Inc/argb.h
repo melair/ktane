@@ -6,13 +6,22 @@
 extern "C" {
 #endif
 
-typedef struct ARGB_Strip ARGB_Strip;
+typedef struct {
+    uint8_t r, g, b;
+} ARGB_LED;
+
+typedef struct ARGB_Strip {
+    uint8_t count;
+    uint8_t colour_order;
+    ARGB_LED *leds;
+    struct ARGB_Strip *next;
+} ARGB_Strip;
 
 void ARGB_Init(void);
 
 void ARGB_Set(const ARGB_Strip *strip, uint8_t idx, uint8_t r, uint8_t g, uint8_t b);
 
-ARGB_Strip *ARGB_Add_Strip(uint8_t colour_order, uint8_t led_count);
+void ARGB_Add_Strip(ARGB_Strip *strip);
 
 void ARGB_Update(void);
 
@@ -28,9 +37,6 @@ void ARGB_Update(void);
 /* Define colour order definitions for WS2812 and alternatives, reverse order due to them being shifted right. */
 #define COLOUR_ORDER_RGB ((COLOUR_BLUE << 4) | (COLOUR_GREEN << 2) | COLOUR_RED)
 #define COLOUR_ORDER_GRB ((COLOUR_BLUE << 4) | (COLOUR_RED << 2) | COLOUR_GREEN)
-
-#define INDICATOR_COUNT 1
-extern ARGB_Strip *ARGB_Indicator_Strip;
 
 #ifdef __cplusplus
 }
