@@ -27,8 +27,7 @@ typedef enum {
 
 typedef struct {
     IM_Handle handle;
-    uint8_t row;
-    uint8_t col;
+    uint8_t channel;
     IM_EventType event;
     uint32_t timestamp_ms;
     uint32_t duration_ms;
@@ -55,7 +54,6 @@ typedef struct {
 
 typedef struct {
     IM_DigitalChannelState *channels;
-    uint8_t channel_count;
     uint32_t next_scan_ms;
     uint8_t active_col;
     bool column_strobed;
@@ -102,9 +100,23 @@ typedef struct {
 } IM_RotaryEncoderConfig;
 
 typedef struct {
+    uint16_t value;
+    uint16_t last_published_value;
+    bool baseline_valid;
+} IM_AnalogueChannelState;
+
+typedef struct {
+    IM_AnalogueChannelState *channels;
+    uint32_t next_scan_ms;
+    uint8_t active_pin;
+    bool scan_active;
+} IM_AnalogueInputState;
+
+typedef struct {
     const GPIO_PinDef *pins;
     uint8_t pin_count;
     IM_EventQueue *queue;
+    IM_AnalogueInputState *state;
     uint16_t scan_interval_ms;
     uint16_t change_threshold;
 } IM_AnalogueInputConfig;

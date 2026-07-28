@@ -64,6 +64,8 @@ set(CMSIS_SOURCES
 
 set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_adc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_adc_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_fdcan.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_cortex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_dma.c

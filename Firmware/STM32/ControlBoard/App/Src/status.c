@@ -38,7 +38,6 @@ void Status_Init(void) {
 
     button_input_state = (IM_DigitalInputState) {
         .channels = button_channel_state,
-        .channel_count = 1,
     };
 
     button_handle = IM_RegisterDigital(&button_input_config);

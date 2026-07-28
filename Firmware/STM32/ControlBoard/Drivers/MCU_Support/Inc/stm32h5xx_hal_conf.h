@@ -39,7 +39,7 @@ extern "C" {
 
 #define HAL_MODULE_ENABLED
 /*#define HAL_CCB_MODULE_ENABLED */
-/*#define HAL_ADC_MODULE_ENABLED */
+#define HAL_ADC_MODULE_ENABLED
 /*#define HAL_CEC_MODULE_ENABLED */
 /*#define HAL_COMP_MODULE_ENABLED */
 /*#define HAL_CORDIC_MODULE_ENABLED */
@@ -518,4 +518,3 @@ void assert_failed(uint8_t *file, uint32_t line);
 #endif
 
 #endif /* STM32H5xx_HAL_CONF_H */
-
