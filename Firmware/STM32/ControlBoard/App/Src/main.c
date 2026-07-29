@@ -55,8 +55,10 @@ int main(void) {
 
     /* Infinite loop */
     while (1) {
+        /* Record start of loop. */
         const uint32_t loop_tick = HAL_GetTick();
 
+        /* Start accounting time. */
         MCU_Load_Begin();
 
         /* Service input manager. */
@@ -72,6 +74,7 @@ int main(void) {
         /* Service CBUS. */
         CBUS_Service(NULL);
 
+        /* Account time spent. */
         MCU_Load_End();
 
         /* Only wait for interrupt if we're still on the same tick we started at, required if processing
