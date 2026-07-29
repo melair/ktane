@@ -7,6 +7,7 @@
 #include "i2c.h"
 #include "input_manager.h"
 #include "mcu_init.h"
+#include "mcu_load.h"
 #include "rng.h"
 #include "spi.h"
 #include "status.h"
@@ -49,8 +50,15 @@ int main(void) {
     /* Base service init. */
     Status_Init();
 
+    /* Initialize MCU load timing. */
+    MCU_Load_Init();
+
     /* Infinite loop */
     while (1) {
+        const uint32_t loop_tick = HAL_GetTick();
+
+        MCU_Load_Begin();
+
         /* Service input manager. */
         IM_Service();
         /* Service the status LED, and button. */
@@ -63,5 +71,13 @@ int main(void) {
         CAN_Service(NULL);
         /* Service CBUS. */
         CBUS_Service(NULL);
+
+        MCU_Load_End();
+
+        /* Only wait for interrupt if we're still on the same tick we started at, required if processing
+         * crosses ms boundary. */
+        if (HAL_GetTick() == loop_tick) {
+            __WFI();
+        }
     }
 }

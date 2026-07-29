@@ -39,6 +39,7 @@ set(CMSIS_INCLUDE_DIRS
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mcu_init.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mcu_load.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/status.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/i2c.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/spi.c
