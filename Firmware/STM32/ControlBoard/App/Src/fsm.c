@@ -55,7 +55,8 @@ void FSM_Service(FSM *fsm) {
         }
 
         const FSM_State *state = &fsm->states[fsm->current_id];
-        if (state->service != NULL) {
+        if ((state->service != NULL) &&
+            ((state->service_predicate == NULL) || state->service_predicate(fsm))) {
             state->service(fsm);
         }
 

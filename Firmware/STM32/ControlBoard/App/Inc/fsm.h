@@ -18,6 +18,8 @@ struct FSM_State {
 
     void (*service)(FSM *fsm);
 
+    bool (*service_predicate)(FSM *fsm);
+
     void (*exit)(FSM *fsm);
 
     FSM_NextMask next_mask;
