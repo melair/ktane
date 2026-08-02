@@ -18,6 +18,7 @@ typedef enum {
 
 typedef struct {
     ARGB_Strip *strip_list;
+    uint8_t max_brightness;
     ARGB_STATE current_state;
     ARGB_Strip *current_strip;
     uint8_t current_led_idx;
@@ -32,6 +33,7 @@ typedef struct {
 } argb_t;
 
 static argb_t argb = {
+    .max_brightness = ARGB_BRIGHTNESS_MAX,
     .current_state = ARGB_STATE_IDLE,
 };
 
@@ -181,6 +183,22 @@ void ARGB_Set(const ARGB_Strip *strip, const uint8_t idx, const uint8_t r, const
     strip->leds[idx].b = b;
 }
 
+void ARGB_Fill(const ARGB_Strip *strip, const uint8_t r, const uint8_t g, const uint8_t b) {
+    if (strip == NULL || strip->leds == NULL) {
+        return;
+    }
+
+    for (uint8_t idx = 0; idx < strip->count; idx++) {
+        strip->leds[idx].r = r;
+        strip->leds[idx].g = g;
+        strip->leds[idx].b = b;
+    }
+}
+
+void ARGB_Set_Brightness(const uint8_t max_brightness) {
+    argb.max_brightness = max_brightness;
+}
+
 static void populate_pwm_data(const ARGB_Strip *strip, const uint8_t led_idx, const uint8_t pwm_offset) {
     uint8_t colour_order = strip->colour_order;
     uint8_t buffer_idx = pwm_offset;
@@ -201,6 +219,11 @@ static void populate_pwm_data(const ARGB_Strip *strip, const uint8_t led_idx, co
             case COLOUR_BLUE:
                 colour_val = strip->leds[led_idx].b;
                 break;
+        }
+
+        if (strip->max_brightness != ARGB_BRIGHTNESS_MAX || argb.max_brightness != ARGB_BRIGHTNESS_MAX) {
+            colour_val = (uint8_t) (((uint32_t) colour_val * strip->max_brightness * argb.max_brightness) /
+                                    (ARGB_BRIGHTNESS_MAX * ARGB_BRIGHTNESS_MAX));
         }
 
         for (int8_t bit = 7; bit >= 0; bit--) {

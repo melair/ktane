@@ -13,6 +13,7 @@ typedef struct {
 typedef struct ARGB_Strip {
     uint8_t count;
     uint8_t colour_order;
+    uint8_t max_brightness;
     ARGB_LED *leds;
     struct ARGB_Strip *next;
 } ARGB_Strip;
@@ -20,6 +21,10 @@ typedef struct ARGB_Strip {
 void ARGB_Init(void);
 
 void ARGB_Set(const ARGB_Strip *strip, uint8_t idx, uint8_t r, uint8_t g, uint8_t b);
+
+void ARGB_Fill(const ARGB_Strip *strip, uint8_t r, uint8_t g, uint8_t b);
+
+void ARGB_Set_Brightness(uint8_t max_brightness);
 
 void ARGB_Add_Strip(ARGB_Strip *strip);
 
@@ -29,6 +34,8 @@ void ARGB_Update(void);
 #define COLOURS_PER_LED 3
 #define BITS_PER_LED (BITS_PER_COLOUR * COLOURS_PER_LED)
 #define LEDS_IN_TRANSPORT_BUFFER 2
+
+#define ARGB_BRIGHTNESS_MAX 0xff
 
 #define COLOUR_RED 0x00
 #define COLOUR_GREEN 0x01
