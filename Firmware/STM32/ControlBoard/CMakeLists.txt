@@ -46,6 +46,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/spi.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/can.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/rng.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/rtc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/argb.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/cbus.c

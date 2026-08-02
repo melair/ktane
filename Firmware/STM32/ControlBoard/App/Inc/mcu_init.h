@@ -21,8 +21,6 @@ void GPIO_Init(void);
 
 void ICACHE_Init(void);
 
-void RTC_Init(void);
-
 #ifdef __cplusplus
 }
 #endif

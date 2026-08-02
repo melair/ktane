@@ -8,7 +8,9 @@
 #define CAN_TX_FIFO_LENGTH 3U
 #define CAN_DLC_LOOKUP_LENGTH 16U
 #define CAN_ACTIVITY_MS 5U
+#ifndef CAN_FLASH_ON_RX
 #define CAN_FLASH_ON_RX true
+#endif
 
 typedef struct {
     uint8_t length;

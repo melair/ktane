@@ -9,6 +9,7 @@
 #include "mcu_init.h"
 #include "mcu_load.h"
 #include "rng.h"
+#include "rtc.h"
 #include "spi.h"
 #include "status.h"
 #include "tick.h"
