@@ -11,6 +11,7 @@
 #include "rng.h"
 #include "spi.h"
 #include "status.h"
+#include "tick.h"
 
 /**
   * @brief  The application entry point.
@@ -53,10 +54,13 @@ int main(void) {
     /* Initialize MCU load timing. */
     MCU_Load_Init();
 
+    /* Initialize periodic tick flags. */
+    tick_init();
+
     /* Infinite loop */
     while (1) {
-        /* Record start of loop. */
-        const uint32_t loop_tick = HAL_GetTick();
+        /* Update periodic tick flags for this service pass. */
+        tick_service_start();
 
         /* Start accounting time. */
         MCU_Load_Begin();
@@ -77,9 +81,8 @@ int main(void) {
         /* Account time spent. */
         MCU_Load_End();
 
-        /* Only wait for interrupt if we're still on the same tick we started at, required if processing
-         * crosses ms boundary. */
-        if (HAL_GetTick() == loop_tick) {
+        /* Clear tick flags and only wait if processing did not cross an ms boundary. */
+        if (tick_service_end()) {
             __WFI();
         }
     }
