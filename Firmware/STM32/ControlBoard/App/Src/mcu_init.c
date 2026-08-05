@@ -28,6 +28,14 @@ void MPU_Init(void) {
 
     HAL_MPU_ConfigRegion(&MPU_InitStruct);
 
+    /* Flash high-cycle data must not be accessed through the instruction cache. */
+    MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+    MPU_InitStruct.BaseAddress = FLASH_EDATA_BASE;
+    MPU_InitStruct.LimitAddress = FLASH_EDATA_BASE + FLASH_EDATA_SIZE - 1;
+    MPU_InitStruct.AccessPermission = MPU_REGION_ALL_RW;
+
+    HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
     /* Initializes and configures the Attribute 0 and the memory to be protected */
     MPU_AttributesInit.Number = MPU_ATTRIBUTES_NUMBER0;
     MPU_AttributesInit.Attributes = INNER_OUTER(MPU_NOT_CACHEABLE);

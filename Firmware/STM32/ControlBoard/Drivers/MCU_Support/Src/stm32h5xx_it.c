@@ -2,14 +2,6 @@
 #include "stm32h5xx_it.h"
 
 /**
-  * @brief This function handles Non maskable interrupt.
-  */
-void NMI_Handler(void) {
-    while (1) {
-    }
-}
-
-/**
   * @brief This function handles Hard fault interrupt.
   */
 void HardFault_Handler(void) {

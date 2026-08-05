@@ -52,6 +52,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/cbus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/input_manager.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/gpio.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/nvm.c
 )
 
 set(MCU_SUPPORT_SOURCES

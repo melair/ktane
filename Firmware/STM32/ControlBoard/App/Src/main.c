@@ -8,6 +8,7 @@
 #include "input_manager.h"
 #include "mcu_init.h"
 #include "mcu_load.h"
+#include "nvm.h"
 #include "rng.h"
 #include "rtc.h"
 #include "spi.h"
@@ -27,6 +28,9 @@ int main(void) {
 
     /* Configure the system clock */
     SystemClock_Init();
+
+    /* Configure the non-volatile high-cycle data area */
+    NVM_Init();
 
     /* Configure PLL2 and PLL3 ahead of time */
     PeripheralClock_Init();
