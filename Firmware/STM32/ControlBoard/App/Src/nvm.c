@@ -6,12 +6,16 @@
 
 #define NVM_EDATA_SECTOR_COUNT 2
 #define NVM_EDATA_SECTOR_SIZE (6 * 1024)
+#define NVM_EDATA_BASE (FLASH_EDATA_BASE + FLASH_EDATA_BANK_SIZE - \
+                        (NVM_EDATA_SECTOR_COUNT * NVM_EDATA_SECTOR_SIZE))
 #define NVM_ENTRY_HEADER_SIZE 4
 #define NVM_ENTRY_PADDING_VALUE 0x00
 #define NVM_MAX_TRACKED_IDS 64
+#define NVM_MAX_PAYLOAD_LEN 6
 #define SECTOR_0 0x00
 #define SECTOR_1 0x01
 #define SECTOR_NONE 0xff
+#define OTHER_SECTOR(sector) (((sector) == SECTOR_0) ? SECTOR_1 : SECTOR_0)
 
 typedef struct {
     uint16_t id;
@@ -23,26 +27,44 @@ typedef struct {
     uint16_t generation;
 } NVM_MagicData;
 
-static volatile bool nvm_read_active = false;
-static volatile bool nvm_read_failed = false;
-static uint8_t nvm_active_sector = 0;
-static uint16_t nvm_generation = 0;
-static NVM_RecordRef nvm_records[NVM_MAX_TRACKED_IDS];
-static uint8_t nvm_record_count = 0;
-static bool nvm_record_overflow = false;
-static uint16_t nvm_end_offset = 0;
+typedef enum {
+    NVM_READ_OK,
+    NVM_READ_UNWRITTEN,
+    NVM_READ_CORRUPT,
+} NVM_ReadState;
 
-static bool read16(uint32_t address, uint16_t *value) {
-    nvm_read_failed = false;
+typedef enum {
+    NVM_SECTOR_INVALID,
+    NVM_SECTOR_VALID,
+    NVM_SECTOR_CORRUPT,
+} NVM_SectorState;
+
+typedef struct {
+    volatile bool read_active;
+    volatile NVM_ReadState read_state;
+    uint8_t active_sector;
+    uint16_t generation;
+    NVM_RecordRef records[NVM_MAX_TRACKED_IDS];
+    uint8_t record_count;
+    bool record_overflow;
+    uint16_t end_offset;
+} nvm_t;
+
+static nvm_t nvm = {
+    .read_state = NVM_READ_OK,
+};
+
+static NVM_ReadState read16(const uint32_t address, uint16_t *value) {
+    nvm.read_state = NVM_READ_OK;
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ECCR_ERRORS);
 
-    nvm_read_active = true;
+    nvm.read_active = true;
     __DSB();
     *value = *(volatile const uint16_t *) address;
     __DSB();
-    nvm_read_active = false;
+    nvm.read_active = false;
 
-    return !nvm_read_failed;
+    return nvm.read_state;
 }
 
 static bool write16(uint32_t address, uint16_t value) {
@@ -80,10 +102,27 @@ static bool generation_is_newer(const uint16_t candidate, const uint16_t current
     return (difference != 0) && (difference < 0x8000);
 }
 
+static uint8_t select_newest_sector(const NVM_SectorState *states,
+                                    const uint16_t *generations,
+                                    const NVM_SectorState required_state) {
+    if (states[SECTOR_0] != required_state) {
+        return SECTOR_1;
+    }
+    if (states[SECTOR_1] != required_state) {
+        return SECTOR_0;
+    }
+
+    if (generation_is_newer(generations[SECTOR_1], generations[SECTOR_0])) {
+        return SECTOR_1;
+    }
+
+    return SECTOR_0;
+}
+
 static NVM_RecordRef *find_record(const uint16_t id) {
-    for (uint8_t i = 0; i < nvm_record_count; i++) {
-        if (nvm_records[i].id == id) {
-            return &nvm_records[i];
+    for (uint8_t i = 0; i < nvm.record_count; i++) {
+        if (nvm.records[i].id == id) {
+            return &nvm.records[i];
         }
     }
 
@@ -101,14 +140,14 @@ static bool update_record(const uint16_t id, const uint16_t offset) {
         return true;
     }
 
-    if (nvm_record_count >= NVM_MAX_TRACKED_IDS) {
-        nvm_record_overflow = true;
+    if (nvm.record_count >= NVM_MAX_TRACKED_IDS) {
+        nvm.record_overflow = true;
         return false;
     }
 
-    nvm_records[nvm_record_count].id = id;
-    nvm_records[nvm_record_count].offset = offset;
-    nvm_record_count++;
+    nvm.records[nvm.record_count].id = id;
+    nvm.records[nvm.record_count].offset = offset;
+    nvm.record_count++;
     return true;
 }
 
@@ -123,7 +162,7 @@ static bool write_entry(const uint8_t sector, const uint16_t offset, const NVM_Q
         return false;
     }
 
-    const uint32_t address = FLASH_EDATA_BASE + ((uint32_t) sector * NVM_EDATA_SECTOR_SIZE) + offset;
+    const uint32_t address = NVM_EDATA_BASE + ((uint32_t) sector * NVM_EDATA_SECTOR_SIZE) + offset;
     if (!write16(address + 2, query->id)) {
         return false;
     }
@@ -146,32 +185,37 @@ static bool write_entry(const uint8_t sector, const uint16_t offset, const NVM_Q
     return write16(address, (uint16_t) query->type | ((uint16_t) length << 8));
 }
 
-static bool read_entry(const uint8_t sector, const uint16_t offset, NVM_Query *entry) {
-    const uint32_t address = FLASH_EDATA_BASE + ((uint32_t) sector * NVM_EDATA_SECTOR_SIZE) + offset;
+static NVM_ReadState read_entry(const uint8_t sector, const uint16_t offset, NVM_Query *entry) {
+    const uint32_t address = NVM_EDATA_BASE + ((uint32_t) sector * NVM_EDATA_SECTOR_SIZE) + offset;
     uint16_t header;
     uint16_t id;
 
-    if (!read16(address, &header) || !read16(address + 2, &id)) {
-        return false;
+    const NVM_ReadState header_state = read16(address, &header);
+    if (header_state != NVM_READ_OK) {
+        return header_state;
+    }
+
+    if (read16(address + 2, &id) != NVM_READ_OK) {
+        return NVM_READ_CORRUPT;
     }
 
     const NVM_Type type = (NVM_Type) (header & UINT8_MAX);
     const uint8_t length = (uint8_t) (header >> 8);
     const uint8_t expected_length = type_size(type);
     if ((expected_length == 0) || (length != expected_length)) {
-        return false;
+        return NVM_READ_CORRUPT;
     }
 
     const uint16_t padded_length = (uint16_t) ((length + 1) & ~1);
     if (((uint32_t) offset + NVM_ENTRY_HEADER_SIZE + padded_length) > NVM_EDATA_SECTOR_SIZE) {
-        return false;
+        return NVM_READ_CORRUPT;
     }
 
     uint8_t *data = entry->data;
     for (uint8_t i = 0; i < length; i += 2) {
         uint16_t value;
-        if (!read16(address + NVM_ENTRY_HEADER_SIZE + i, &value)) {
-            return false;
+        if (read16(address + NVM_ENTRY_HEADER_SIZE + i, &value) != NVM_READ_OK) {
+            return NVM_READ_CORRUPT;
         }
 
         data[i] = (uint8_t) value;
@@ -182,7 +226,7 @@ static bool read_entry(const uint8_t sector, const uint16_t offset, NVM_Query *e
 
     entry->type = type;
     entry->id = id;
-    return true;
+    return NVM_READ_OK;
 }
 
 static bool erase_sector(const uint32_t sector) {
@@ -213,14 +257,24 @@ static bool erase_journal_sector(const uint8_t sector) {
 static bool handle_nvm_nmi(void) {
     const uint32_t expected_status = FLASH_ECCR_ECCD | FLASH_ECCR_DATA_ECC;
     const uint32_t status = FLASH->ECCDETR;
-    const uint32_t failed_data = FLASH->ECCDR & FLASH_ECCDR_FAIL_DATA;
 
-    if (!nvm_read_active || ((status & expected_status) != expected_status) ||
-        (failed_data != FLASH_ECCDR_FAIL_DATA)) {
+    if (!nvm.read_active || ((status & expected_status) != expected_status) ||
+        ((status & FLASH_ECCR_BK_ECC) != 0)) {
         return false;
     }
 
-    nvm_read_failed = true;
+    FLASH_EccInfoTypeDef error = {0};
+    HAL_FLASHEx_GetEccInfo(&error);
+    if (error.Area != FLASH_ECC_AREA_EDATA_BANK1) {
+        return false;
+    }
+
+    if (error.Data == FLASH_ECCDR_FAIL_DATA) {
+        nvm.read_state = NVM_READ_UNWRITTEN;
+    } else {
+        nvm.read_state = NVM_READ_CORRUPT;
+    }
+
     __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ECCD);
     return true;
 }
@@ -271,90 +325,99 @@ static void init_flash(void) {
     NVIC_SystemReset();
 }
 
-static bool scan_sector(const uint8_t sector) {
-    const uint32_t sector_address = FLASH_EDATA_BASE + ((uint32_t) sector * NVM_EDATA_SECTOR_SIZE);
-    nvm_record_count = 0;
-    nvm_record_overflow = false;
-    nvm_end_offset = 0;
+static NVM_SectorState scan_sector(const uint8_t sector) {
+    const uint32_t sector_address = NVM_EDATA_BASE + ((uint32_t) sector * NVM_EDATA_SECTOR_SIZE);
+    nvm.record_count = 0;
+    nvm.record_overflow = false;
+    nvm.end_offset = 0;
 
     NVM_MagicData magic = {0};
     NVM_Query magic_entry = {
         .data = &magic,
     };
-    if (!read_entry(sector, 0, &magic_entry) ||
+    if ((read_entry(sector, 0, &magic_entry) != NVM_READ_OK) ||
         (magic_entry.type != MAGIC) ||
         (magic_entry.id != NVM_MAGIC_ID) ||
         (magic.magic != NVM_MAGIC_DATA)) {
-        return false;
+        return NVM_SECTOR_INVALID;
     }
-    nvm_generation = magic.generation;
+    nvm.generation = magic.generation;
 
     const uint8_t magic_length = type_size(MAGIC);
     uint16_t offset = NVM_ENTRY_HEADER_SIZE + (uint16_t) ((magic_length + 1) & ~1);
-    nvm_end_offset = offset;
+    nvm.end_offset = offset;
 
     while (((uint32_t) offset + NVM_ENTRY_HEADER_SIZE) <= NVM_EDATA_SECTOR_SIZE) {
         uint16_t header;
         uint16_t id;
 
-        /* If we fail to read the header, then it's likely not yet written, so end. */
-        if (!read16(sector_address + offset, &header)) {
-            return true;
+        /* An unwritten header is only a clean end if the staged identifier is also unwritten. */
+        const NVM_ReadState header_state = read16(sector_address + offset, &header);
+        if (header_state == NVM_READ_UNWRITTEN) {
+            const NVM_ReadState id_state = read16(sector_address + offset + 2, &id);
+            if (id_state == NVM_READ_UNWRITTEN) {
+                return NVM_SECTOR_VALID;
+            }
+
+            return NVM_SECTOR_CORRUPT;
+        }
+        if (header_state == NVM_READ_CORRUPT) {
+            return NVM_SECTOR_CORRUPT;
         }
 
-        if (!read16(sector_address + offset + 2, &id)) {
-            return false;
+        if (read16(sector_address + offset + 2, &id) != NVM_READ_OK) {
+            return NVM_SECTOR_CORRUPT;
         }
 
         const NVM_Type type = (NVM_Type) (header & UINT8_MAX);
         const uint8_t length = (uint8_t) (header >> 8);
         const uint8_t expected_length = type_size(type);
         if ((expected_length == 0) || (length != expected_length)) {
-            return false;
+            return NVM_SECTOR_CORRUPT;
         }
 
         const uint16_t padded_length = (uint16_t) ((length + 1) & ~1);
         const uint16_t entry_length = NVM_ENTRY_HEADER_SIZE + padded_length;
         if (((uint32_t) offset + entry_length) > NVM_EDATA_SECTOR_SIZE) {
-            return false;
+            return NVM_SECTOR_CORRUPT;
         }
 
         for (uint8_t i = 0; i < length; i += 2) {
             uint16_t value;
-            if (!read16(sector_address + offset + NVM_ENTRY_HEADER_SIZE + i, &value)) {
-                return false;
+            if (read16(sector_address + offset + NVM_ENTRY_HEADER_SIZE + i, &value) != NVM_READ_OK) {
+                return NVM_SECTOR_CORRUPT;
             }
         }
 
         if (!update_record(id, offset)) {
-            return false;
+            return NVM_SECTOR_CORRUPT;
         }
 
         offset += entry_length;
-        nvm_end_offset = offset;
+        nvm.end_offset = offset;
     }
 
-    return true;
+    return NVM_SECTOR_VALID;
 }
 
 /*
  * One size fits all, init the new sector, and read from the source, compacting src to dest.
  * if src is invalid, the dst sector is just inited. Use during init, and when sector would
  * breach size limits. */
-bool compact_sector(uint8_t src_sector, uint8_t dst_sector) {
+static bool compact_sector(const uint8_t src_sector, const uint8_t dst_sector) {
     uint16_t destination_generation = 0;
 
     if (src_sector == SECTOR_NONE) {
-        nvm_record_count = 0;
-        nvm_record_overflow = false;
-        nvm_end_offset = 0;
-        nvm_generation = 0;
+        nvm.record_count = 0;
+        nvm.record_overflow = false;
+        nvm.end_offset = 0;
+        nvm.generation = 0;
     } else {
-        const bool source_valid = scan_sector(src_sector);
-        if (!source_valid && nvm_record_overflow) {
+        const NVM_SectorState source_state = scan_sector(src_sector);
+        if ((source_state == NVM_SECTOR_INVALID) || nvm.record_overflow) {
             return false;
         }
-        destination_generation = nvm_generation + 1;
+        destination_generation = nvm.generation + 1;
     }
 
     if (!erase_journal_sector(dst_sector)) {
@@ -364,13 +427,14 @@ bool compact_sector(uint8_t src_sector, uint8_t dst_sector) {
     const uint8_t magic_length = type_size(MAGIC);
     uint16_t dst_offset = NVM_ENTRY_HEADER_SIZE + (uint16_t) ((magic_length + 1) & ~1);
 
-    for (uint8_t record_index = 0; record_index < nvm_record_count; record_index++) {
-        const NVM_RecordRef record = nvm_records[record_index];
-        uint8_t value[NVM_MAGIC_LEN] = {0};
+    for (uint8_t record_index = 0; record_index < nvm.record_count; record_index++) {
+        const NVM_RecordRef record = nvm.records[record_index];
+        uint8_t value[NVM_MAX_PAYLOAD_LEN] = {0};
         NVM_Query entry = {
             .data = value,
         };
-        if (!read_entry(src_sector, record.offset, &entry) || (entry.id != record.id)) {
+        if ((read_entry(src_sector, record.offset, &entry) != NVM_READ_OK) ||
+            (entry.id != record.id)) {
             return false;
         }
 
@@ -396,65 +460,44 @@ bool compact_sector(uint8_t src_sector, uint8_t dst_sector) {
         return false;
     }
 
-    if (!scan_sector(dst_sector)) {
+    if (scan_sector(dst_sector) != NVM_SECTOR_VALID) {
         return false;
     }
 
-    if ((src_sector != SECTOR_NONE) && !erase_journal_sector(src_sector)) {
-        return false;
-    }
-
-    nvm_active_sector = dst_sector;
+    nvm.active_sector = dst_sector;
     return true;
 }
 
-void init_journal(void) {
-    bool valid_sectors[NVM_EDATA_SECTOR_COUNT] = {0};
+static bool init_journal(void) {
+    NVM_SectorState states[NVM_EDATA_SECTOR_COUNT] = {0};
     uint16_t generations[NVM_EDATA_SECTOR_COUNT] = {0};
 
-    for (uint8_t i = 0; i < NVM_EDATA_SECTOR_COUNT; i++) {
-        valid_sectors[i] = scan_sector(i);
-        if (valid_sectors[i]) {
-            generations[i] = nvm_generation;
+    for (uint8_t sector = 0; sector < NVM_EDATA_SECTOR_COUNT; sector++) {
+        states[sector] = scan_sector(sector);
+        if (states[sector] != NVM_SECTOR_INVALID) {
+            generations[sector] = nvm.generation;
         }
     }
 
-    if (valid_sectors[SECTOR_0] != valid_sectors[SECTOR_1]) {
-        /* Only one sector is valid. */
-        if (valid_sectors[SECTOR_0]) {
-            nvm_active_sector = SECTOR_0;
-        } else {
-            nvm_active_sector = SECTOR_1;
-        }
-
-        scan_sector(nvm_active_sector);
-    } else {
-        if (valid_sectors[SECTOR_0]) {
-            /* Both sectors are valid, retain the newest generation. */
-            if (generation_is_newer(generations[SECTOR_1], generations[SECTOR_0])) {
-                nvm_active_sector = SECTOR_1;
-            } else {
-                nvm_active_sector = SECTOR_0;
-            }
-
-            const uint8_t old_sector =
-                    (nvm_active_sector == SECTOR_0) ? SECTOR_1 : SECTOR_0;
-            erase_journal_sector(old_sector);
-            scan_sector(nvm_active_sector);
-        } else {
-            /* Neither sectors are valid, wipe both. */
-            erase_journal_sector(SECTOR_0);
-            erase_journal_sector(SECTOR_1);
-            compact_sector(SECTOR_NONE, SECTOR_0);
-        }
+    if ((states[SECTOR_0] == NVM_SECTOR_VALID) ||
+        (states[SECTOR_1] == NVM_SECTOR_VALID)) {
+        nvm.active_sector = select_newest_sector(states, generations, NVM_SECTOR_VALID);
+        return scan_sector(nvm.active_sector) == NVM_SECTOR_VALID;
     }
+
+    if ((states[SECTOR_0] == NVM_SECTOR_CORRUPT) ||
+        (states[SECTOR_1] == NVM_SECTOR_CORRUPT)) {
+        const uint8_t source_sector =
+                select_newest_sector(states, generations, NVM_SECTOR_CORRUPT);
+        return compact_sector(source_sector, OTHER_SECTOR(source_sector));
+    }
+
+    return compact_sector(SECTOR_NONE, SECTOR_0);
 }
 
 void NVM_Init(void) {
     init_flash();
-    init_journal();
-
-    if (!scan_sector(nvm_active_sector)) {
+    if (!init_journal()) {
         Error_Handler();
     }
 }
@@ -466,11 +509,11 @@ bool NVM_Read(const NVM_Query *queries, const uint8_t query_count) {
             continue;
         }
 
-        uint8_t value[NVM_MAGIC_LEN] = {0};
+        uint8_t value[NVM_MAX_PAYLOAD_LEN] = {0};
         NVM_Query entry = {
             .data = value,
         };
-        if (!read_entry(nvm_active_sector, record->offset, &entry) ||
+        if ((read_entry(nvm.active_sector, record->offset, &entry) != NVM_READ_OK) ||
             (entry.id != queries[query_index].id) ||
             (entry.type != queries[query_index].type)) {
             return false;
@@ -492,34 +535,46 @@ bool NVM_Write(const NVM_Query *query) {
         return false;
     }
 
-    if ((find_record(query->id) == NULL) && (nvm_record_count >= NVM_MAX_TRACKED_IDS)) {
+    if ((find_record(query->id) == NULL) && (nvm.record_count >= NVM_MAX_TRACKED_IDS)) {
         return false;
     }
 
     const uint16_t padded_length = (uint16_t) ((length + 1) & ~1);
     const uint16_t entry_length = NVM_ENTRY_HEADER_SIZE + padded_length;
 
-    if (((uint32_t) nvm_end_offset + entry_length) > NVM_EDATA_SECTOR_SIZE) {
-        const uint8_t destination_sector =
-                (nvm_active_sector == SECTOR_0) ? SECTOR_1 : SECTOR_0;
-        if (!compact_sector(nvm_active_sector, destination_sector)) {
+    if (((uint32_t) nvm.end_offset + entry_length) > NVM_EDATA_SECTOR_SIZE) {
+        const uint8_t destination_sector = OTHER_SECTOR(nvm.active_sector);
+        if (!compact_sector(nvm.active_sector, destination_sector)) {
             return false;
         }
 
-        if (((uint32_t) nvm_end_offset + entry_length) > NVM_EDATA_SECTOR_SIZE) {
+        if (((uint32_t) nvm.end_offset + entry_length) > NVM_EDATA_SECTOR_SIZE) {
             return false;
         }
     }
 
-    const uint16_t entry_offset = nvm_end_offset;
-    if (!write_entry(nvm_active_sector, entry_offset, query)) {
-        return false;
+    uint16_t entry_offset = nvm.end_offset;
+    if (!write_entry(nvm.active_sector, entry_offset, query)) {
+        const uint8_t destination_sector = OTHER_SECTOR(nvm.active_sector);
+        if (!compact_sector(nvm.active_sector, destination_sector)) {
+            return false;
+        }
+
+        entry_offset = nvm.end_offset;
+        if (!write_entry(nvm.active_sector, entry_offset, query)) {
+            const uint8_t cleanup_sector = OTHER_SECTOR(nvm.active_sector);
+            if (!compact_sector(nvm.active_sector, cleanup_sector)) {
+                return false;
+            }
+
+            return false;
+        }
     }
 
     if (!update_record(query->id, entry_offset)) {
         return false;
     }
 
-    nvm_end_offset += entry_length;
+    nvm.end_offset += entry_length;
     return true;
 }
