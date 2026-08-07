@@ -1,6 +1,6 @@
 #include "status.h"
-#include "gpio.h"
-#include "input_manager.h"
+#include "sys/gpio.h"
+#include "sys/input_manager.h"
 #include "stm32h5xx_hal.h"
 
 static IM_EventQueue button_queue = {0};

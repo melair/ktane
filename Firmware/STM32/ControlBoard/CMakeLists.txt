@@ -38,21 +38,21 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mcu_init.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mcu_load.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_load.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/status.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/tick.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/i2c.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/spi.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/can.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/rng.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/rtc.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/argb.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/fsm.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/cbus.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/input_manager.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/gpio.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/nvm.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/tick.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/spi.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/can.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rtc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/fsm.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/cbus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/nvm.c
 )
 
 set(MCU_SUPPORT_SOURCES

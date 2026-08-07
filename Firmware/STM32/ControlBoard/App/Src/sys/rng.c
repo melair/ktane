@@ -1,4 +1,4 @@
-#include "rng.h"
+#include "sys/rng.h"
 
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_it.h"

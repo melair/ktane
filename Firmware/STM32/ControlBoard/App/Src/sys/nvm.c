@@ -1,4 +1,4 @@
-#include "nvm.h"
+#include "sys/nvm.h"
 
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_it.h"
@@ -513,10 +513,11 @@ bool NVM_Read(const NVM_Query *queries, const uint8_t query_count) {
         NVM_Query entry = {
             .data = value,
         };
-        if ((read_entry(nvm.active_sector, record->offset, &entry) != NVM_READ_OK) ||
-            (entry.id != queries[query_index].id) ||
-            (entry.type != queries[query_index].type)) {
+        if ((read_entry(nvm.active_sector, record->offset, &entry) != NVM_READ_OK)) {
             return false;
+        }
+        if ((entry.id != queries[query_index].id) || (entry.type != queries[query_index].type)) {
+            continue;
         }
 
         const uint8_t length = type_size(entry.type);

@@ -4,7 +4,7 @@
   * @brief          : MCU, clock, GPIO, and cache initialization.
   ******************************************************************************
   */
-#include "mcu_init.h"
+#include "sys/mcu_init.h"
 #include "main.h"
 #include "stm32h5xx_it.h"
 

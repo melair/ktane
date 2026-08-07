@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "gpio.h"
+#include "sys/gpio.h"
 
 #ifdef __cplusplus
 extern "C" {

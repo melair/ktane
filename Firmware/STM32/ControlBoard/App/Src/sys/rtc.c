@@ -1,4 +1,4 @@
-#include "rtc.h"
+#include "sys/rtc.h"
 
 #include "main.h"
 #include "stm32h5xx_it.h"

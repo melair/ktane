@@ -1,4 +1,4 @@
-#include "tick.h"
+#include "sys/tick.h"
 
 #include "stm32h5xx_hal.h"
 

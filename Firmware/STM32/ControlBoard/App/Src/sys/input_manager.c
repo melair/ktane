@@ -1,4 +1,4 @@
-#include "input_manager.h"
+#include "sys/input_manager.h"
 
 #define IM_MAX_REGISTRATIONS 8
 #define IM_ROTARY_COUNTER_PERIOD 0xFFFFu

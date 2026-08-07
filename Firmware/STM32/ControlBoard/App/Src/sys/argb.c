@@ -1,8 +1,8 @@
-#include "argb.h"
+#include "sys/argb.h"
 
 #include <stdbool.h>
 
-#include "gpio.h"
+#include "sys/gpio.h"
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_it.h"
 

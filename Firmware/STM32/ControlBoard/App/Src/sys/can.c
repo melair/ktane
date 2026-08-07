@@ -1,5 +1,5 @@
-#include "can.h"
-#include "gpio.h"
+#include "sys/can.h"
+#include "sys/gpio.h"
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_it.h"
 #include <stdbool.h>
