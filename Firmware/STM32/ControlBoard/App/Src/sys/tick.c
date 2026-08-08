@@ -35,7 +35,7 @@ static bool update_countdown(uint32_t elapsed_ms, uint16_t period_ms, uint16_t *
     return true;
 }
 
-void tick_init(void) {
+void Tick_Init(void) {
     tick_flags = 0;
     tick = (tick_t) {
         .processed_tick_ms = HAL_GetTick(),
@@ -46,7 +46,7 @@ void tick_init(void) {
     };
 }
 
-void tick_service_start(void) {
+void Tick_Service_Start(void) {
     const uint32_t current_tick_ms = HAL_GetTick();
     const uint32_t elapsed_ms = current_tick_ms - tick.processed_tick_ms;
 
@@ -71,7 +71,7 @@ void tick_service_start(void) {
     }
 }
 
-bool tick_service_end(void) {
+bool Tick_Service_End(void) {
     const bool tick_is_current = HAL_GetTick() == tick.processed_tick_ms;
 
     tick_flags = 0;

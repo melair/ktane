@@ -8,11 +8,11 @@
 extern "C" {
 #endif
 
-void tick_init(void);
+void Tick_Init(void);
 
-void tick_service_start(void);
+void Tick_Service_Start(void);
 
-bool tick_service_end(void);
+bool Tick_Service_End(void);
 
 /* Tick flags bit-pack periodic events to reduce RAM usage. */
 extern volatile uint8_t tick_flags;

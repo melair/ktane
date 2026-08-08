@@ -8,7 +8,7 @@ extern "C" {
 
 #endif
 
-#define NVM_MAGIC_ID 0x0000
+#define NVM_MAGIC_ID 0xffff
 #define NVM_MAGIC_LEN 6
 #define NVM_MAGIC_DATA 0x14d184c6
 

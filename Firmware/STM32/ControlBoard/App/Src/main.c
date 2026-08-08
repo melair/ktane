@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "module.h"
 #include "sys/argb.h"
 #include "sys/can.h"
 #include "sys/cbus.h"
@@ -60,12 +61,15 @@ int main(void) {
     MCU_Load_Init();
 
     /* Initialize periodic tick flags. */
-    tick_init();
+    Tick_Init();
+
+    /* Initialize the per Module set up. */
+    Module_Init();
 
     /* Infinite loop */
     while (1) {
         /* Update periodic tick flags for this service pass. */
-        tick_service_start();
+        Tick_Service_Start();
 
         /* Start accounting time. */
         MCU_Load_Begin();
@@ -83,11 +87,14 @@ int main(void) {
         /* Service CBUS. */
         CBUS_Service(NULL);
 
+        /* Service the Module. */
+        Module_Service();
+
         /* Account time spent. */
         MCU_Load_End();
 
         /* Clear tick flags and only wait if processing did not cross an ms boundary. */
-        if (tick_service_end()) {
+        if (Tick_Service_End()) {
             __WFI();
         }
     }

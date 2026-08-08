@@ -38,9 +38,11 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/module.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/module_fsm.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/status.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_load.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/status.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/tick.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/spi.c
@@ -53,6 +55,9 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/nvm.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/simon/simon.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/timer/timer.c
 )
 
 set(MCU_SUPPORT_SOURCES

@@ -6,6 +6,8 @@
 
 #define NVM_EDATA_SECTOR_COUNT 2
 #define NVM_EDATA_SECTOR_SIZE (6 * 1024)
+/* EDATA uses the final hardware sectors even when the reported Flash size is smaller. */
+#define NVM_EDATA_FIRST_FLASH_SECTOR (FLASH_SECTOR_NB - NVM_EDATA_SECTOR_COUNT)
 #define NVM_EDATA_BASE (FLASH_EDATA_BASE + FLASH_EDATA_BANK_SIZE - \
                         (NVM_EDATA_SECTOR_COUNT * NVM_EDATA_SECTOR_SIZE))
 #define NVM_ENTRY_HEADER_SIZE 4
@@ -249,9 +251,7 @@ static bool erase_sector(const uint32_t sector) {
 }
 
 static bool erase_journal_sector(const uint8_t sector) {
-    const uint32_t first_edata_sector =
-            (FLASH_BANK_SIZE / FLASH_SECTOR_SIZE) - NVM_EDATA_SECTOR_COUNT;
-    return erase_sector(first_edata_sector + sector);
+    return erase_sector(NVM_EDATA_FIRST_FLASH_SECTOR + sector);
 }
 
 static bool handle_nvm_nmi(void) {
@@ -313,10 +313,8 @@ static void init_flash(void) {
 
     HAL_FLASH_OB_Lock();
 
-    const uint32_t first_edata_sector =
-            (FLASH_BANK_SIZE / FLASH_SECTOR_SIZE) - NVM_EDATA_SECTOR_COUNT;
     for (uint32_t offset = 0; offset < NVM_EDATA_SECTOR_COUNT; offset++) {
-        if (!erase_sector(first_edata_sector + offset)) {
+        if (!erase_sector(NVM_EDATA_FIRST_FLASH_SECTOR + offset)) {
             Error_Handler();
         }
     }
