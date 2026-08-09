@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "indicator.h"
 #include "module.h"
 #include "sys/argb.h"
 #include "sys/can.h"
@@ -63,6 +64,9 @@ int main(void) {
     /* Initialize periodic tick flags. */
     Tick_Init();
 
+    /* Initialize the module indicator to OFF. */
+    Indicator_Init();
+
     /* Initialize the per Module set up. */
     Module_Init();
 
@@ -87,8 +91,14 @@ int main(void) {
         /* Service CBUS. */
         CBUS_Service(NULL);
 
+        /* Service the module indicator. */
+        Indicator_Service();
+
         /* Service the Module. */
         Module_Service();
+
+        /* Service ARGB strips with pending changes. */
+        ARGB_Service();
 
         /* Account time spent. */
         MCU_Load_End();

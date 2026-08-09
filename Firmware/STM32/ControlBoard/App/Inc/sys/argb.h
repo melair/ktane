@@ -1,5 +1,6 @@
 #ifndef ARGB_H
 #define ARGB_H
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -15,20 +16,21 @@ typedef struct ARGB_Strip {
     uint8_t colour_order;
     uint8_t max_brightness;
     ARGB_LED *leds;
+    bool dirty;
     struct ARGB_Strip *next;
 } ARGB_Strip;
 
 void ARGB_Init(void);
 
-void ARGB_Set(const ARGB_Strip *strip, uint8_t idx, uint8_t r, uint8_t g, uint8_t b);
+void ARGB_Set(ARGB_Strip *strip, uint8_t idx, uint8_t r, uint8_t g, uint8_t b);
 
-void ARGB_Fill(const ARGB_Strip *strip, uint8_t r, uint8_t g, uint8_t b);
+void ARGB_Fill(ARGB_Strip *strip, uint8_t r, uint8_t g, uint8_t b);
 
 void ARGB_Set_Brightness(uint8_t max_brightness);
 
 void ARGB_Add_Strip(ARGB_Strip *strip);
 
-void ARGB_Update(void);
+void ARGB_Service(void);
 
 #define BITS_PER_COLOUR 8
 #define COLOURS_PER_LED 3

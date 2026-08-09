@@ -173,22 +173,35 @@ void ARGB_Init(void) {
     HAL_GPIO_Init(ARGB_Port, &gpio_init);
 }
 
-void ARGB_Set(const ARGB_Strip *strip, const uint8_t idx, const uint8_t r, const uint8_t g, const uint8_t b) {
+void ARGB_Set(ARGB_Strip *strip, const uint8_t idx, const uint8_t r, const uint8_t g, const uint8_t b) {
     if (strip == NULL || idx >= strip->count) {
+        return;
+    }
+
+    if ((strip->leds[idx].r == r) &&
+        (strip->leds[idx].g == g) &&
+        (strip->leds[idx].b == b)) {
         return;
     }
 
     strip->leds[idx].r = r;
     strip->leds[idx].g = g;
     strip->leds[idx].b = b;
+    strip->dirty = true;
 }
 
-void ARGB_Fill(const ARGB_Strip *strip, const uint8_t r, const uint8_t g, const uint8_t b) {
+void ARGB_Fill(ARGB_Strip *strip, const uint8_t r, const uint8_t g, const uint8_t b) {
     if (strip == NULL || strip->leds == NULL) {
         return;
     }
 
     for (uint8_t idx = 0; idx < strip->count; idx++) {
+        if ((strip->leds[idx].r != r) ||
+            (strip->leds[idx].g != g) ||
+            (strip->leds[idx].b != b)) {
+            strip->dirty = true;
+        }
+
         strip->leds[idx].r = r;
         strip->leds[idx].g = g;
         strip->leds[idx].b = b;
@@ -196,7 +209,15 @@ void ARGB_Fill(const ARGB_Strip *strip, const uint8_t r, const uint8_t g, const 
 }
 
 void ARGB_Set_Brightness(const uint8_t max_brightness) {
+    if (argb.max_brightness == max_brightness) {
+        return;
+    }
+
     argb.max_brightness = max_brightness;
+
+    for (ARGB_Strip *strip = argb.strip_list; strip != NULL; strip = strip->next) {
+        strip->dirty = true;
+    }
 }
 
 static void populate_pwm_data(const ARGB_Strip *strip, const uint8_t led_idx, const uint8_t pwm_offset) {
@@ -294,6 +315,7 @@ void ARGB_Add_Strip(ARGB_Strip *strip) {
     }
 
     strip->next = NULL;
+    strip->dirty = true;
 
     if (argb.strip_list == NULL) {
         argb.strip_list = strip;
@@ -307,10 +329,32 @@ void ARGB_Add_Strip(ARGB_Strip *strip) {
     }
 }
 
-void ARGB_Update(void) {
+static bool strips_are_dirty(void) {
+    for (const ARGB_Strip *strip = argb.strip_list; strip != NULL; strip = strip->next) {
+        if (strip->dirty) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static void clear_strip_dirty_flags(void) {
+    for (ARGB_Strip *strip = argb.strip_list; strip != NULL; strip = strip->next) {
+        strip->dirty = false;
+    }
+}
+
+void ARGB_Service(void) {
     if (argb.current_state != ARGB_STATE_IDLE || argb.strip_list == NULL) {
         return;
     }
+
+    if (!strips_are_dirty()) {
+        return;
+    }
+
+    clear_strip_dirty_flags();
 
     argb.current_strip = argb.strip_list;
     argb.current_led_idx = 0;
