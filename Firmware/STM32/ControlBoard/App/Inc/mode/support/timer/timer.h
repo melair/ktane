@@ -137,6 +137,8 @@ typedef struct {
     ARGB_Strip strip;
     ARGB_LED leds[TIMER_LED_COUNT];
     ARGB_LED display_colour;
+    uint32_t startup_next_step_ms;
+    uint8_t startup_segment;
 
     IM_EventQueue input_queue;
 

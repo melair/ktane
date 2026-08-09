@@ -6,6 +6,8 @@
 
 #define TIMER_ROTARY_COUNTS_PER_DETENT 4
 #define TIMER_LEDS_PER_DIGIT 11
+#define TIMER_STARTUP_SEGMENT_MS 250u
+#define TIMER_STARTUP_SEGMENT_REPEATS 2u
 
 #define TIMER_DIGIT_1_LED_OFFSET 0
 #define TIMER_DIGIT_2_LED_OFFSET (TIMER_DIGIT_1_LED_OFFSET + TIMER_LEDS_PER_DIGIT)
@@ -29,6 +31,28 @@ static const Timer_Glyph timer_digit_led_segments[TIMER_LEDS_PER_DIGIT] = {
     TIMER_SEGMENT_D,
     TIMER_SEGMENT_C,
     TIMER_SEGMENT_C,
+};
+
+static const Timer_Glyph timer_startup_segments[] = {
+    TIMER_SEGMENT_F,
+    TIMER_SEGMENT_A,
+    TIMER_SEGMENT_B,
+    TIMER_SEGMENT_G,
+    TIMER_SEGMENT_E,
+    TIMER_SEGMENT_D,
+    TIMER_SEGMENT_C,
+    TIMER_SEGMENT_G,
+};
+
+static const uint16_t strikes_startup_segments[] = {
+    STRIKES_SEGMENT_H,
+    STRIKES_SEGMENT_J,
+    STRIKES_SEGMENT_K,
+    STRIKES_SEGMENT_G2,
+    STRIKES_SEGMENT_L,
+    STRIKES_SEGMENT_M,
+    STRIKES_SEGMENT_N,
+    STRIKES_SEGMENT_G1,
 };
 
 static void timer_display_set_led(const uint8_t index, const bool on) {
@@ -57,13 +81,6 @@ static void timer_init_enter(FSM *fsm) {
     };
 
     ARGB_Add_Strip(&timer->strip);
-    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, TIMER_DIGIT_BLANK);
-    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, TIMER_DIGIT_BLANK);
-    timer_display_set_led(TIMER_DECIMAL_POINT_LED_OFFSET, false);
-    timer_display_set_led(TIMER_COLON_LOWER_LED_OFFSET, true);
-    timer_display_set_led(TIMER_COLON_UPPER_LED_OFFSET, true);
-    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, TIMER_DIGIT_BLANK);
-    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, TIMER_DIGIT_BLANK);
 
     timer->rotary_config = (IM_RotaryEncoderConfig){
         .slot = IM_ROTARY_SLOT_MODULE_A,
@@ -136,15 +153,70 @@ static void timer_init_enter(FSM *fsm) {
     timer->strikes_data = (STRIKES_DIGIT_BLANK << 16) | STRIKES_DIGIT_BLANK;
     SPI_Queue(&timer->strikes_transaction);
 
+    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, TIMER_DIGIT_BLANK);
+    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, TIMER_DIGIT_BLANK);
+    timer_display_set_led(TIMER_DECIMAL_POINT_LED_OFFSET, false);
+    timer_display_set_led(TIMER_COLON_LOWER_LED_OFFSET, false);
+    timer_display_set_led(TIMER_COLON_UPPER_LED_OFFSET, false);
+    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, TIMER_DIGIT_BLANK);
+    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, TIMER_DIGIT_BLANK);
+
     FSM_Transition(fsm, MODULE_FSM_STATE_STARTUP);
+}
+
+static void timer_startup_enter(FSM *fsm) {
+    timer->startup_segment = 0;
+    timer->startup_next_step_ms = HAL_GetTick();
+}
+
+static void timer_startup_service(FSM *fsm) {
+    const uint32_t now_ms = HAL_GetTick();
+    if ((int32_t) (now_ms - timer->startup_next_step_ms) < 0) {
+        return;
+    }
+
+    const uint8_t segment_count = sizeof(timer_startup_segments) / sizeof(timer_startup_segments[0]);
+    if (timer->startup_segment >= segment_count * TIMER_STARTUP_SEGMENT_REPEATS) {
+        timer->strikes_data = (STRIKES_DIGIT_BLANK << 16) | STRIKES_DIGIT_BLANK;
+        SPI_Queue(&timer->strikes_transaction);
+
+        FSM_Transition(fsm, MODULE_FSM_STATE_IDLE);
+        return;
+    }
+
+    const uint8_t startup_step = timer->startup_segment++;
+    const Timer_Glyph timer_segment = timer_startup_segments[startup_step % segment_count];
+    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, timer_segment);
+    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, timer_segment);
+    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, timer_segment);
+    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, timer_segment);
+
+    const uint8_t strikes_segment_count = sizeof(strikes_startup_segments) / sizeof(strikes_startup_segments[0]);
+    const uint16_t strikes_segment = strikes_startup_segments[startup_step % strikes_segment_count];
+    timer->strikes_data = ((uint32_t) strikes_segment << 16) | strikes_segment;
+    SPI_Queue(&timer->strikes_transaction);
+
+    timer->startup_next_step_ms = now_ms + TIMER_STARTUP_SEGMENT_MS;
+}
+
+static void timer_idle_enter(FSM *fsm) {
+    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, TIMER_DIGIT_DASH);
+    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, TIMER_DIGIT_DASH);
+    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, TIMER_DIGIT_DASH);
+    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, TIMER_DIGIT_DASH);
 }
 
 static Callbacks timer_state_callbacks[MODULE_FSM_STATE_COUNT] = {
     [MODULE_FSM_STATE_INIT] = {
         .enter = timer_init_enter,
     },
-    [MODULE_FSM_STATE_STARTUP] = {0},
-    [MODULE_FSM_STATE_IDLE] = {0},
+    [MODULE_FSM_STATE_STARTUP] = {
+        .enter = timer_startup_enter,
+        .service = timer_startup_service,
+    },
+    [MODULE_FSM_STATE_IDLE] = {
+        .enter = timer_idle_enter,
+    },
     [MODULE_FSM_STATE_ATTRACT] = {0},
     [MODULE_FSM_STATE_PREPARE] = {0},
     [MODULE_FSM_STATE_READY] = {0},
