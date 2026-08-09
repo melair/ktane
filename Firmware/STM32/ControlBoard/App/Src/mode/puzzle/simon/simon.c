@@ -1,6 +1,9 @@
 #include "mode/puzzle/simon/simon.h"
+#include "mode.h"
 #include "module_fsm.h"
 #include <stddef.h>
+
+static Simon_Data *const simon = &module_data.mode.simon;
 
 static Callbacks simon_state_callbacks[MODULE_FSM_STATE_COUNT] = {
     [MODULE_FSM_STATE_INIT] = {0},
@@ -16,5 +19,5 @@ static Callbacks simon_state_callbacks[MODULE_FSM_STATE_COUNT] = {
 
 Mode_Definition simon_mode = {
     .state_callbacks = simon_state_callbacks,
-    .service = NULL,
+    .always_service = NULL,
 };

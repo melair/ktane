@@ -326,6 +326,10 @@ static const IM_RotaryEncoderConfig *rotary_config_get(IM_RotarySlot slot) {
 }
 
 static void rotary_delta_publish(const IM_RotaryEncoderConfig *config, int16_t delta, uint32_t now_ms) {
+    if ((config->event_mask & IM_EVENT_ROTARY_DELTA) == 0) {
+        return;
+    }
+
     if (config->invert_direction) {
         delta = (int16_t) -delta;
     }

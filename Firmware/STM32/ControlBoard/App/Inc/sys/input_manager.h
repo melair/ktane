@@ -94,6 +94,7 @@ typedef struct {
 typedef struct {
     IM_RotarySlot slot;
     IM_EventQueue *queue;
+    IM_EventMask event_mask;
     IM_RotaryEncoderState *state;
     bool invert_direction;
     bool enable_internal_pullups;

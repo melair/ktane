@@ -22,6 +22,8 @@ static module_t module = {
     .service_enabled = false,
 };
 
+Module_Data module_data = {0};
+
 void Module_Init(void) {
     module.mode = MODE_NONE;
 
@@ -56,8 +58,8 @@ void Module_Init(void) {
 void Module_Service(void) {
     if (module.service_enabled &&
         (module.definition != NULL) &&
-        (module.definition->service != NULL)) {
-        module.definition->service();
+        (module.definition->always_service != NULL)) {
+        module.definition->always_service();
     }
 
     FSM_Service(&module.fsm);

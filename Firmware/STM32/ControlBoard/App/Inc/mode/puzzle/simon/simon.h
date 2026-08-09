@@ -7,6 +7,10 @@
 extern "C" {
 #endif
 
+typedef struct {
+    uint8_t reserved;
+} Simon_Data;
+
 extern Mode_Definition simon_mode;
 
 #ifdef __cplusplus

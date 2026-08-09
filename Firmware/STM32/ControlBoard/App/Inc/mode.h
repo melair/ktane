@@ -1,6 +1,10 @@
 #ifndef MODE_H
 #define MODE_H
 
+#include "mode/puzzle/simon/simon.h"
+#include "mode/support/chassis/chassis.h"
+#include "mode/support/timer/timer.h"
+
 #ifdef __cplusplus
 extern "C" {
 
@@ -30,6 +34,17 @@ extern "C" {
 #define MODE_PUZZLE_SIMON       (MODE_TYPE_PUZZLE | 0x00)
 
 /* Needy Modules */
+
+/* Structures */
+typedef struct {
+    union {
+        Simon_Data simon;
+        Chassis_Data chassis;
+        Timer_Data timer;
+    } mode;
+} Module_Data;
+
+extern Module_Data module_data;
 
 #ifdef __cplusplus
 }

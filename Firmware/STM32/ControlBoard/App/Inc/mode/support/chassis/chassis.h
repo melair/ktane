@@ -7,6 +7,10 @@
 extern "C" {
 #endif
 
+typedef struct {
+    uint8_t reserved;
+} Chassis_Data;
+
 extern Mode_Definition chassis_mode;
 
 #ifdef __cplusplus

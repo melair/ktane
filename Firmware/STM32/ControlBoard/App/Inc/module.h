@@ -18,7 +18,7 @@ typedef struct {
 
 typedef struct {
     Callbacks *state_callbacks;
-    void (*service)(void);
+    void (*always_service)(void);
 } Mode_Definition;
 
 void Module_Init(void);
