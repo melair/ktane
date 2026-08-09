@@ -5,8 +5,42 @@
 #include "sys/spi.h"
 
 #define TIMER_ROTARY_COUNTS_PER_DETENT 4
+#define TIMER_LEDS_PER_DIGIT 11
+
+#define TIMER_DIGIT_1_LED_OFFSET 0
+#define TIMER_DIGIT_2_LED_OFFSET (TIMER_DIGIT_1_LED_OFFSET + TIMER_LEDS_PER_DIGIT)
+#define TIMER_DECIMAL_POINT_LED_OFFSET (TIMER_DIGIT_2_LED_OFFSET + TIMER_LEDS_PER_DIGIT)
+#define TIMER_COLON_LOWER_LED_OFFSET (TIMER_DECIMAL_POINT_LED_OFFSET + 1)
+#define TIMER_COLON_UPPER_LED_OFFSET (TIMER_COLON_LOWER_LED_OFFSET + 1)
+#define TIMER_DIGIT_3_LED_OFFSET (TIMER_COLON_UPPER_LED_OFFSET + 1)
+#define TIMER_DIGIT_4_LED_OFFSET (TIMER_DIGIT_3_LED_OFFSET + TIMER_LEDS_PER_DIGIT)
 
 static Timer_Data *const timer = &module_data.mode.timer;
+
+static const Timer_Glyph timer_digit_led_segments[TIMER_LEDS_PER_DIGIT] = {
+    TIMER_SEGMENT_F,
+    TIMER_SEGMENT_F,
+    TIMER_SEGMENT_A,
+    TIMER_SEGMENT_B,
+    TIMER_SEGMENT_B,
+    TIMER_SEGMENT_G,
+    TIMER_SEGMENT_E,
+    TIMER_SEGMENT_E,
+    TIMER_SEGMENT_D,
+    TIMER_SEGMENT_C,
+    TIMER_SEGMENT_C,
+};
+
+static void timer_display_set_led(const uint8_t index, const bool on) {
+    const ARGB_LED colour = on ? timer->display_colour : (ARGB_LED){0};
+    ARGB_Set(&timer->strip, index, colour.r, colour.g, colour.b);
+}
+
+static void timer_display_set_digit(const uint8_t offset, const Timer_Glyph glyph) {
+    for (uint8_t led = 0; led < TIMER_LEDS_PER_DIGIT; led++) {
+        timer_display_set_led(offset + led, (glyph & timer_digit_led_segments[led]) != 0);
+    }
+}
 
 static void timer_init_enter(FSM *fsm) {
     timer->strip = (ARGB_Strip){
@@ -16,7 +50,20 @@ static void timer_init_enter(FSM *fsm) {
         .leds = timer->leds,
     };
 
+    timer->display_colour = (ARGB_LED){
+        .r = 0xff,
+        .g = 0x00,
+        .b = 0x00,
+    };
+
     ARGB_Add_Strip(&timer->strip);
+    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, TIMER_DIGIT_BLANK);
+    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, TIMER_DIGIT_BLANK);
+    timer_display_set_led(TIMER_DECIMAL_POINT_LED_OFFSET, false);
+    timer_display_set_led(TIMER_COLON_LOWER_LED_OFFSET, true);
+    timer_display_set_led(TIMER_COLON_UPPER_LED_OFFSET, true);
+    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, TIMER_DIGIT_BLANK);
+    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, TIMER_DIGIT_BLANK);
 
     timer->rotary_config = (IM_RotaryEncoderConfig){
         .slot = IM_ROTARY_SLOT_MODULE_A,
