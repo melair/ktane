@@ -75,6 +75,7 @@ typedef struct {
     uint16_t held_event_interval_ms;
 
     bool enable_internal_pullups;
+    bool active_high;
 } IM_DigitalInputConfig;
 
 typedef enum {

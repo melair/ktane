@@ -522,6 +522,12 @@ static void digital_columns_release(const IM_DigitalInputConfig *config) {
     }
 }
 
+static bool digital_input_is_down(const IM_DigitalInputConfig *config, const GPIO_PinDef *pin) {
+    const GPIO_PinState pin_state = HAL_GPIO_ReadPin(pin->port, pin->pin);
+
+    return config->active_high ? pin_state == GPIO_PIN_SET : pin_state == GPIO_PIN_RESET;
+}
+
 static void digital_column_strobe(const IM_DigitalInputConfig *config, uint8_t active_col) {
     digital_columns_release(config);
     HAL_GPIO_WritePin(config->cols[active_col].port, config->cols[active_col].pin, GPIO_PIN_RESET);
@@ -537,7 +543,7 @@ static void digital_direct_service(IM_Handle handle, const IM_DigitalInputConfig
     state->next_scan_ms = now_ms + config->scan_period_ms;
 
     for (uint8_t row = 0; row < config->row_count; row++) {
-        const bool read_down = HAL_GPIO_ReadPin(config->rows[row].port, config->rows[row].pin) == GPIO_PIN_RESET;
+        const bool read_down = digital_input_is_down(config, &config->rows[row]);
         const uint8_t channel = digital_channel_index(config, row, IM_NO_COLUMN);
         digital_channel_update(handle, config, &state->channels[channel], channel, read_down, now_ms);
     }
@@ -558,7 +564,7 @@ static void digital_matrix_service(IM_Handle handle, const IM_DigitalInputConfig
     }
 
     for (uint8_t row = 0; row < config->row_count; row++) {
-        const bool read_down = HAL_GPIO_ReadPin(config->rows[row].port, config->rows[row].pin) == GPIO_PIN_RESET;
+        const bool read_down = digital_input_is_down(config, &config->rows[row]);
         const uint8_t channel = digital_channel_index(config, row, state->active_col);
         digital_channel_update(handle, config, &state->channels[channel], channel, read_down, now_ms);
     }
