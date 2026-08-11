@@ -2,6 +2,7 @@
 
 #include "indicator.h"
 #include "module.h"
+#include "protocol.h"
 #include "sys/argb.h"
 #include "sys/can.h"
 #include "sys/cbus.h"
@@ -52,6 +53,7 @@ int main(void) {
     I2C_Init();
     SPI_Init();
     CAN_Init();
+    Protocol_Init();
     ARGB_Init();
     CBUS_Init();
 
@@ -87,7 +89,9 @@ int main(void) {
         /* Service I2C. */
         I2C_Service();
         /* Service CAN. */
-        CAN_Service(NULL);
+        CAN_Service(Protocol_Receive);
+        /* Service protocol. */
+        Protocol_Service();
         /* Service CBUS. */
         CBUS_Service(NULL);
 

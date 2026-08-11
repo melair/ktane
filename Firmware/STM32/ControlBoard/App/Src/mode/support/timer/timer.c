@@ -278,8 +278,8 @@ static void timer_attract_countdown_render(void) {
 
 static void timer_attract_strikes_schedule_next_event(const uint32_t now_ms) {
     timer->attract_strikes_next_event_ms =
-        now_ms + TRNG_Rand32Range(TIMER_ATTRACT_STRIKES_MIN_DELAY_MS,
-                                  TIMER_ATTRACT_STRIKES_MAX_DELAY_MS);
+            now_ms + TRNG_Rand32Range(TIMER_ATTRACT_STRIKES_MIN_DELAY_MS,
+                                      TIMER_ATTRACT_STRIKES_MAX_DELAY_MS);
 }
 
 static void timer_attract_strikes_set(const bool first, const bool second) {
@@ -308,7 +308,7 @@ static void timer_attract_strikes_service(const uint32_t now_ms) {
                 timer->attract_strikes_state = TIMER_ATTRACT_STRIKES_FLASHING;
                 timer->attract_strikes_visible = true;
                 timer->attract_strikes_next_flash_ms =
-                    now_ms + TIMER_ATTRACT_STRIKES_FLASH_HALF_PERIOD_MS;
+                        now_ms + TIMER_ATTRACT_STRIKES_FLASH_HALF_PERIOD_MS;
                 timer_attract_strikes_schedule_next_event(now_ms);
                 break;
 
@@ -335,7 +335,7 @@ static void timer_attract_strikes_service(const uint32_t now_ms) {
 
 static void timer_attract_countdown_start(const uint32_t now_ms) {
     const uint16_t seconds = TRNG_Rand32Range(TIMER_ATTRACT_MIN_SECONDS,
-                                             TIMER_ATTRACT_MAX_SECONDS);
+                                              TIMER_ATTRACT_MAX_SECONDS);
 
     timer->attract_remaining_centiseconds = seconds * 100u;
     timer->attract_next_tick_ms = now_ms + TIMER_ATTRACT_TICK_MS;

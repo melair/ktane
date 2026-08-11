@@ -12,8 +12,9 @@ extern "C" {
 
 #define MODE_CFG(mode, id)      ((mode << 8) | id)
 
-/* Mode Config Settings, 0x00XX. */
+/* Global Config Settings, 0x00XX. */
 #define MODE_CONFIG_ACTIVE_MODE 0x00
+#define MODE_CONFIG_CAN_ID      0x01
 
 #define MODE_TYPE_SHIFT         6
 #define MODE_TYPE_MASK          (0x03 << MODE_TYPE_SHIFT)
