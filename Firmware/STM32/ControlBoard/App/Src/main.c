@@ -32,6 +32,9 @@ int main(void) {
     /* Configure the system clock */
     SystemClock_Init();
 
+    /* Read and fold the MCU unique identifier. */
+    UID_Init();
+
     /* Configure the non-volatile high-cycle data area */
     NVM_Init();
 

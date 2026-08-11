@@ -22,8 +22,8 @@ extern "C" {
  * packet's consumer callback when it is implemented.
  */
 #define PROTOCOL_PACKETS(X) \
-    X(MODULE_ADDRESS_ANNOUNCE, SUBSYS_MODULE | 0x00U, module.address_announce, NULL) \
-    X(MODULE_ADDRESS_NAK,      SUBSYS_MODULE | 0x01U, module.address_nak,      NULL) \
+    X(MODULE_ADDRESS_ANNOUNCE, SUBSYS_MODULE | 0x00U, module.address_announce, handle_address_announce) \
+    X(MODULE_ADDRESS_NAK,      SUBSYS_MODULE | 0x01U, module.address_nak,      handle_address_nak) \
     X(MODULE_ANNOUNCE,         SUBSYS_MODULE | 0x10U, module.announce,         NULL)
 
 #define PROTOCOL_DECLARE_OPCODE(opcode, value, member, callback) opcode = value,

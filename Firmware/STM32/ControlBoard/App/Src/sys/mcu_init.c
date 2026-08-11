@@ -8,6 +8,12 @@
 #include "main.h"
 #include "stm32h5xx_it.h"
 
+uint32_t UID = 0U;
+
+void UID_Init(void) {
+    UID = HAL_GetUIDw0() ^ HAL_GetUIDw1() ^ HAL_GetUIDw2();
+}
+
 /* MPU Configuration */
 void MPU_Init(void) {
     MPU_Region_InitTypeDef MPU_InitStruct = {0};

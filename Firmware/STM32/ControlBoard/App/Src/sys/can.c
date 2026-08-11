@@ -45,7 +45,7 @@ static const CAN_DlcLookup dlcLookup[CAN_DLC_LOOKUP_LENGTH] = {
 };
 
 static uint32_t lengthToDlc(uint8_t length) {
-    for (uint8_t index = 8; index < CAN_DLC_LOOKUP_LENGTH; index++) {
+    for (uint8_t index = 0; index < CAN_DLC_LOOKUP_LENGTH; index++) {
         if (length <= dlcLookup[index].length) {
             return dlcLookup[index].dlc;
         }
@@ -214,10 +214,7 @@ void CAN_Service(void (*packetHandler)(uint16_t mailbox, uint8_t length, void *d
             (rxHeader.RxFrameType == FDCAN_DATA_FRAME) &&
             (rxHeader.IdType == FDCAN_STANDARD_ID)) {
             const uint8_t length = dlcToLength(rxHeader.DataLength);
-
-            if ((length >= 8) && (length <= 64)) {
-                packetHandler((uint16_t) rxHeader.Identifier, length, rxData);
-            }
+            packetHandler((uint16_t) rxHeader.Identifier, length, rxData);
         }
     }
 
@@ -225,7 +222,7 @@ void CAN_Service(void (*packetHandler)(uint16_t mailbox, uint8_t length, void *d
 }
 
 void CAN_Queue(uint16_t mailbox, uint8_t length, void *data) {
-    if ((length < 8) || (length > 64) || (data == NULL)) {
+    if ((length > 64) || (data == NULL)) {
         return;
     }
 
