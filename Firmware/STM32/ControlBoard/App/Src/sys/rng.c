@@ -7,6 +7,7 @@
 static RNG_HandleTypeDef hrng = {0};
 
 static uint32_t PRNG_Rotl32(uint32_t x, uint8_t k);
+static uint32_t rand32_range(uint32_t random, uint32_t minimum, uint32_t maximum);
 
 /**
   * @brief RNG MSP Initialization
@@ -56,16 +57,16 @@ uint32_t TRNG_Rand32(void) {
     return random;
 }
 
+uint32_t TRNG_Rand32Range(const uint32_t minimum, const uint32_t maximum) {
+    return rand32_range(TRNG_Rand32(), minimum, maximum);
+}
+
 uint8_t TRNG_Rand8(void) {
     return (uint8_t) TRNG_Rand32();
 }
 
-uint8_t TRNG_Rand8Bound(uint8_t max) {
-    if (max == 0U) {
-        return 0;
-    }
-
-    return (uint8_t) (((uint64_t) TRNG_Rand32() * max) >> 32U);
+uint8_t TRNG_Rand8Range(const uint8_t minimum, const uint8_t maximum) {
+    return (uint8_t) rand32_range(TRNG_Rand32(), minimum, maximum);
 }
 
 PRNG_Seed PRNG_Init(uint32_t seed) {
@@ -97,16 +98,16 @@ uint32_t PRNG_Rand32(PRNG_Seed *seed) {
     return random;
 }
 
+uint32_t PRNG_Rand32Range(PRNG_Seed *seed, const uint32_t minimum, const uint32_t maximum) {
+    return rand32_range(PRNG_Rand32(seed), minimum, maximum);
+}
+
 uint8_t PRNG_Rand8(PRNG_Seed *seed) {
     return (uint8_t) PRNG_Rand32(seed);
 }
 
-uint8_t PRNG_Rand8Bound(PRNG_Seed *seed, uint8_t max) {
-    if (max == 0U) {
-        return 0;
-    }
-
-    return (uint8_t) (((uint64_t) PRNG_Rand32(seed) * max) >> 32U);
+uint8_t PRNG_Rand8Range(PRNG_Seed *seed, const uint8_t minimum, const uint8_t maximum) {
+    return (uint8_t) rand32_range(PRNG_Rand32(seed), minimum, maximum);
 }
 
 uint32_t MIXER_LowBias32(uint32_t x) {
@@ -132,4 +133,16 @@ uint32_t MIXER_SplitMix32(uint32_t *seed) {
 
 static uint32_t PRNG_Rotl32(uint32_t x, uint8_t k) {
     return (x << k) | (x >> (32U - k));
+}
+
+static uint32_t rand32_range(const uint32_t random,
+                             const uint32_t minimum,
+                             const uint32_t maximum) {
+    if (maximum < minimum) {
+        return minimum;
+    }
+
+    const uint64_t range = (uint64_t) maximum - minimum + 1U;
+    const uint32_t offset = (uint32_t) (((uint64_t) random * range) >> 32U);
+    return minimum + offset;
 }

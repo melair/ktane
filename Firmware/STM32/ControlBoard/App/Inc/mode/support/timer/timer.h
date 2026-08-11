@@ -138,7 +138,14 @@ typedef struct {
     ARGB_LED leds[TIMER_LED_COUNT];
     ARGB_LED display_colour;
     uint32_t startup_next_step_ms;
-    uint8_t startup_segment;
+    uint8_t startup_step;
+
+    uint32_t attract_next_tick_ms;
+    uint16_t attract_remaining_centiseconds;
+    uint32_t attract_strikes_next_event_ms;
+    uint32_t attract_strikes_next_flash_ms;
+    uint8_t attract_strikes_state;
+    bool attract_strikes_visible;
 
     IM_EventQueue input_queue;
 

@@ -2,12 +2,20 @@
 #include "mode.h"
 #include "module_fsm.h"
 #include "sys/gpio.h"
+#include "sys/rng.h"
 #include "sys/spi.h"
 
 #define TIMER_ROTARY_COUNTS_PER_DETENT 4
 #define TIMER_LEDS_PER_DIGIT 11
+#define TIMER_STARTUP_DELAY_MS 1000u
 #define TIMER_STARTUP_SEGMENT_MS 250u
 #define TIMER_STARTUP_SEGMENT_REPEATS 2u
+#define TIMER_ATTRACT_TICK_MS 10u
+#define TIMER_ATTRACT_MIN_SECONDS 90u
+#define TIMER_ATTRACT_MAX_SECONDS 180u
+#define TIMER_ATTRACT_STRIKES_MIN_DELAY_MS 5000u
+#define TIMER_ATTRACT_STRIKES_MAX_DELAY_MS 10000u
+#define TIMER_ATTRACT_STRIKES_FLASH_HALF_PERIOD_MS 167u
 
 #define TIMER_DIGIT_1_LED_OFFSET 0
 #define TIMER_DIGIT_2_LED_OFFSET (TIMER_DIGIT_1_LED_OFFSET + TIMER_LEDS_PER_DIGIT)
@@ -17,7 +25,15 @@
 #define TIMER_DIGIT_3_LED_OFFSET (TIMER_COLON_UPPER_LED_OFFSET + 1)
 #define TIMER_DIGIT_4_LED_OFFSET (TIMER_DIGIT_3_LED_OFFSET + TIMER_LEDS_PER_DIGIT)
 
+#define ARRAY_COUNT(array) (sizeof(array) / sizeof((array)[0]))
+
 static Timer_Data *const timer = &module_data.mode.timer;
+
+enum {
+    TIMER_ATTRACT_STRIKES_WAIT_FIRST,
+    TIMER_ATTRACT_STRIKES_WAIT_SECOND,
+    TIMER_ATTRACT_STRIKES_FLASHING,
+};
 
 static const Timer_Glyph timer_digit_led_segments[TIMER_LEDS_PER_DIGIT] = {
     TIMER_SEGMENT_F,
@@ -31,6 +47,19 @@ static const Timer_Glyph timer_digit_led_segments[TIMER_LEDS_PER_DIGIT] = {
     TIMER_SEGMENT_D,
     TIMER_SEGMENT_C,
     TIMER_SEGMENT_C,
+};
+
+static const Timer_Glyph timer_digit_glyphs[10] = {
+    TIMER_DIGIT_0,
+    TIMER_DIGIT_1,
+    TIMER_DIGIT_2,
+    TIMER_DIGIT_3,
+    TIMER_DIGIT_4,
+    TIMER_DIGIT_5,
+    TIMER_DIGIT_6,
+    TIMER_DIGIT_7,
+    TIMER_DIGIT_8,
+    TIMER_DIGIT_9,
 };
 
 static const Timer_Glyph timer_startup_segments[] = {
@@ -64,6 +93,51 @@ static void timer_display_set_digit(const uint8_t offset, const Timer_Glyph glyp
     for (uint8_t led = 0; led < TIMER_LEDS_PER_DIGIT; led++) {
         timer_display_set_led(offset + led, (glyph & timer_digit_led_segments[led]) != 0);
     }
+}
+
+static void timer_display_set_all_digits(const Timer_Glyph glyph) {
+    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, glyph);
+    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, glyph);
+    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, glyph);
+    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, glyph);
+}
+
+static void timer_display_set_time(const uint8_t minutes,
+                                   const uint8_t seconds,
+                                   const uint8_t subseconds) {
+    const bool show_minutes = minutes > 0;
+    const uint8_t left_value = (show_minutes ? minutes : seconds) % 100;
+    const uint8_t right_value = (show_minutes ? seconds : subseconds) % 100;
+
+    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, timer_digit_glyphs[left_value / 10]);
+    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, timer_digit_glyphs[left_value % 10]);
+    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, timer_digit_glyphs[right_value / 10]);
+    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, timer_digit_glyphs[right_value % 10]);
+
+    timer_display_set_led(TIMER_DECIMAL_POINT_LED_OFFSET, !show_minutes);
+    timer_display_set_led(TIMER_COLON_LOWER_LED_OFFSET, show_minutes);
+    timer_display_set_led(TIMER_COLON_UPPER_LED_OFFSET, show_minutes);
+}
+
+static void timer_strikes_set(const uint16_t first, const uint16_t second) {
+    timer->strikes_data = ((uint32_t) first << 16u) | second;
+    SPI_Queue(&timer->strikes_transaction);
+}
+
+static bool timer_time_reached(const uint32_t now_ms, const uint32_t target_ms) {
+    return (int32_t) (now_ms - target_ms) >= 0;
+}
+
+static uint32_t timer_elapsed_periods(const uint32_t now_ms,
+                                      uint32_t *const next_ms,
+                                      const uint32_t period_ms) {
+    if (!timer_time_reached(now_ms, *next_ms)) {
+        return 0;
+    }
+
+    const uint32_t elapsed_periods = ((now_ms - *next_ms) / period_ms) + 1u;
+    *next_ms += elapsed_periods * period_ms;
+    return elapsed_periods;
 }
 
 static void timer_init_enter(FSM *fsm) {
@@ -127,6 +201,7 @@ static void timer_init_enter(FSM *fsm) {
     gpio_init.Pin = GPIO_A1_Pin;
     HAL_GPIO_Init(GPIO_A1_Port, &gpio_init);
 
+    /* Pull A7 low to provide ground for button and rotary encoder. */
     HAL_GPIO_WritePin(GPIO_A7_Port, GPIO_A7_Pin, GPIO_PIN_RESET);
 
     gpio_init.Pin = GPIO_A7_Pin;
@@ -149,61 +224,154 @@ static void timer_init_enter(FSM *fsm) {
         .tx_size = sizeof(timer->strikes_data),
     };
 
-    /* Clear the strikes shift register. */
-    timer->strikes_data = (STRIKES_DIGIT_BLANK << 16) | STRIKES_DIGIT_BLANK;
-    SPI_Queue(&timer->strikes_transaction);
+    timer_strikes_set(STRIKES_DIGIT_BLANK, STRIKES_DIGIT_BLANK);
 
-    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, TIMER_DIGIT_BLANK);
-    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, TIMER_DIGIT_BLANK);
+    timer_display_set_all_digits(TIMER_DIGIT_BLANK);
     timer_display_set_led(TIMER_DECIMAL_POINT_LED_OFFSET, false);
     timer_display_set_led(TIMER_COLON_LOWER_LED_OFFSET, false);
     timer_display_set_led(TIMER_COLON_UPPER_LED_OFFSET, false);
-    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, TIMER_DIGIT_BLANK);
-    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, TIMER_DIGIT_BLANK);
 
     FSM_Transition(fsm, MODULE_FSM_STATE_STARTUP);
 }
 
 static void timer_startup_enter(FSM *fsm) {
-    timer->startup_segment = 0;
-    timer->startup_next_step_ms = HAL_GetTick();
+    (void) fsm;
+
+    timer->startup_step = 0;
+    timer->startup_next_step_ms = HAL_GetTick() + TIMER_STARTUP_DELAY_MS;
 }
 
 static void timer_startup_service(FSM *fsm) {
     const uint32_t now_ms = HAL_GetTick();
-    if ((int32_t) (now_ms - timer->startup_next_step_ms) < 0) {
+    if (!timer_time_reached(now_ms, timer->startup_next_step_ms)) {
         return;
     }
 
-    const uint8_t segment_count = sizeof(timer_startup_segments) / sizeof(timer_startup_segments[0]);
-    if (timer->startup_segment >= segment_count * TIMER_STARTUP_SEGMENT_REPEATS) {
-        timer->strikes_data = (STRIKES_DIGIT_BLANK << 16) | STRIKES_DIGIT_BLANK;
-        SPI_Queue(&timer->strikes_transaction);
-
+    const uint8_t step_count = ARRAY_COUNT(timer_startup_segments) * TIMER_STARTUP_SEGMENT_REPEATS;
+    if (timer->startup_step >= step_count) {
+        timer_strikes_set(STRIKES_DIGIT_BLANK, STRIKES_DIGIT_BLANK);
         FSM_Transition(fsm, MODULE_FSM_STATE_IDLE);
         return;
     }
 
-    const uint8_t startup_step = timer->startup_segment++;
-    const Timer_Glyph timer_segment = timer_startup_segments[startup_step % segment_count];
-    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, timer_segment);
-    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, timer_segment);
-    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, timer_segment);
-    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, timer_segment);
-
-    const uint8_t strikes_segment_count = sizeof(strikes_startup_segments) / sizeof(strikes_startup_segments[0]);
-    const uint16_t strikes_segment = strikes_startup_segments[startup_step % strikes_segment_count];
-    timer->strikes_data = ((uint32_t) strikes_segment << 16) | strikes_segment;
-    SPI_Queue(&timer->strikes_transaction);
+    const uint8_t step = timer->startup_step++;
+    const Timer_Glyph timer_segment = timer_startup_segments[step % ARRAY_COUNT(timer_startup_segments)];
+    const uint16_t strikes_segment = strikes_startup_segments[step % ARRAY_COUNT(strikes_startup_segments)];
+    timer_display_set_all_digits(timer_segment);
+    timer_strikes_set(strikes_segment, strikes_segment);
 
     timer->startup_next_step_ms = now_ms + TIMER_STARTUP_SEGMENT_MS;
 }
 
 static void timer_idle_enter(FSM *fsm) {
-    timer_display_set_digit(TIMER_DIGIT_1_LED_OFFSET, TIMER_DIGIT_DASH);
-    timer_display_set_digit(TIMER_DIGIT_2_LED_OFFSET, TIMER_DIGIT_DASH);
-    timer_display_set_digit(TIMER_DIGIT_3_LED_OFFSET, TIMER_DIGIT_DASH);
-    timer_display_set_digit(TIMER_DIGIT_4_LED_OFFSET, TIMER_DIGIT_DASH);
+    timer_display_set_all_digits(TIMER_DIGIT_DASH);
+}
+
+static void timer_attract_countdown_render(void) {
+    const uint16_t total_centiseconds = timer->attract_remaining_centiseconds;
+    const uint8_t minutes = total_centiseconds / 6000u;
+    const uint8_t seconds = (total_centiseconds / 100u) % 60u;
+    const uint8_t centiseconds = total_centiseconds % 100u;
+
+    timer_display_set_time(minutes, seconds, centiseconds);
+}
+
+static void timer_attract_strikes_schedule_next_event(const uint32_t now_ms) {
+    timer->attract_strikes_next_event_ms =
+        now_ms + TRNG_Rand32Range(TIMER_ATTRACT_STRIKES_MIN_DELAY_MS,
+                                  TIMER_ATTRACT_STRIKES_MAX_DELAY_MS);
+}
+
+static void timer_attract_strikes_set(const bool first, const bool second) {
+    timer_strikes_set(first ? STRIKES_DIGIT_ASTERISK : STRIKES_DIGIT_BLANK,
+                      second ? STRIKES_DIGIT_ASTERISK : STRIKES_DIGIT_BLANK);
+}
+
+static void timer_attract_strikes_start(const uint32_t now_ms) {
+    timer_attract_strikes_set(false, false);
+    timer->attract_strikes_state = TIMER_ATTRACT_STRIKES_WAIT_FIRST;
+    timer->attract_strikes_visible = false;
+    timer_attract_strikes_schedule_next_event(now_ms);
+}
+
+static void timer_attract_strikes_service(const uint32_t now_ms) {
+    if (timer_time_reached(now_ms, timer->attract_strikes_next_event_ms)) {
+        switch (timer->attract_strikes_state) {
+            case TIMER_ATTRACT_STRIKES_WAIT_FIRST:
+                timer_attract_strikes_set(true, false);
+                timer->attract_strikes_state = TIMER_ATTRACT_STRIKES_WAIT_SECOND;
+                timer_attract_strikes_schedule_next_event(now_ms);
+                break;
+
+            case TIMER_ATTRACT_STRIKES_WAIT_SECOND:
+                timer_attract_strikes_set(true, true);
+                timer->attract_strikes_state = TIMER_ATTRACT_STRIKES_FLASHING;
+                timer->attract_strikes_visible = true;
+                timer->attract_strikes_next_flash_ms =
+                    now_ms + TIMER_ATTRACT_STRIKES_FLASH_HALF_PERIOD_MS;
+                timer_attract_strikes_schedule_next_event(now_ms);
+                break;
+
+            case TIMER_ATTRACT_STRIKES_FLASHING:
+            default:
+                timer_attract_strikes_start(now_ms);
+                return;
+        }
+    }
+
+    if (timer->attract_strikes_state != TIMER_ATTRACT_STRIKES_FLASHING) {
+        return;
+    }
+
+    const uint32_t elapsed_half_periods = timer_elapsed_periods(
+        now_ms,
+        &timer->attract_strikes_next_flash_ms,
+        TIMER_ATTRACT_STRIKES_FLASH_HALF_PERIOD_MS);
+    if ((elapsed_half_periods & 1u) != 0u) {
+        timer->attract_strikes_visible = !timer->attract_strikes_visible;
+        timer_attract_strikes_set(timer->attract_strikes_visible, timer->attract_strikes_visible);
+    }
+}
+
+static void timer_attract_countdown_start(const uint32_t now_ms) {
+    const uint16_t seconds = TRNG_Rand32Range(TIMER_ATTRACT_MIN_SECONDS,
+                                             TIMER_ATTRACT_MAX_SECONDS);
+
+    timer->attract_remaining_centiseconds = seconds * 100u;
+    timer->attract_next_tick_ms = now_ms + TIMER_ATTRACT_TICK_MS;
+    timer_attract_countdown_render();
+}
+
+static void timer_attract_enter(FSM *fsm) {
+    const uint32_t now_ms = HAL_GetTick();
+    timer_attract_countdown_start(now_ms);
+    timer_attract_strikes_start(now_ms);
+}
+
+static void timer_attract_service(FSM *fsm) {
+    const uint32_t now_ms = HAL_GetTick();
+    timer_attract_strikes_service(now_ms);
+
+    const uint32_t elapsed_ticks = timer_elapsed_periods(
+        now_ms,
+        &timer->attract_next_tick_ms,
+        TIMER_ATTRACT_TICK_MS);
+    if (elapsed_ticks == 0) {
+        return;
+    }
+
+    if (timer->attract_remaining_centiseconds == 0) {
+        timer_attract_countdown_start(now_ms);
+        return;
+    }
+
+    if (elapsed_ticks >= timer->attract_remaining_centiseconds) {
+        timer->attract_remaining_centiseconds = 0;
+    } else {
+        timer->attract_remaining_centiseconds -= elapsed_ticks;
+    }
+
+    timer_attract_countdown_render();
 }
 
 static Callbacks timer_state_callbacks[MODULE_FSM_STATE_COUNT] = {
@@ -217,7 +385,10 @@ static Callbacks timer_state_callbacks[MODULE_FSM_STATE_COUNT] = {
     [MODULE_FSM_STATE_IDLE] = {
         .enter = timer_idle_enter,
     },
-    [MODULE_FSM_STATE_ATTRACT] = {0},
+    [MODULE_FSM_STATE_ATTRACT] = {
+        .enter = timer_attract_enter,
+        .service = timer_attract_service,
+    },
     [MODULE_FSM_STATE_PREPARE] = {0},
     [MODULE_FSM_STATE_READY] = {0},
     [MODULE_FSM_STATE_STARTING] = {0},
