@@ -2,11 +2,15 @@
 #include "mode/support/chassis/dac.h"
 #include "mode.h"
 #include "module_fsm.h"
+#include "sys/i2s.h"
 #include <stddef.h>
 
 static Chassis_Data *const chassis = &module_data.mode.chassis;
 
 static void chassis_fsm_init_enter(FSM *fsm) {
+    chassis->audio.buffer = chassis->audio_buffer;
+    chassis->audio.buffer_size = I2S_AUDIO_BUFFER_SAMPLE_COUNT;
+    I2S_Init(&chassis->audio);
     DAC_Init();
     Module_SetServiceEnabled(true);
 }
@@ -14,10 +18,13 @@ static void chassis_fsm_init_enter(FSM *fsm) {
 static void chassis_fsm_init_service(FSM *fsm) {
     if (DAC_Ready()) {
         FSM_Transition(fsm, MODULE_FSM_STATE_STARTUP);
+        DAC_Volume(-50);
+        DAC_Mute(false);
     }
 }
 
 static void chassis_always_service(void) {
+    I2S_Service(&chassis->audio);
     DAC_Service();
 }
 

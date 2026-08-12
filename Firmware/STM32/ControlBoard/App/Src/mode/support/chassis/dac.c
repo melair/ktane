@@ -18,16 +18,16 @@
 #define DAC_PVDD_POWER_UP_DELAY_MS 5
 #define DAC_TRIM_OSCILLATOR_DELAY_MS 50
 #define DAC_PWM_SWITCHING_RATE_DELAY_MS 250
+#define DAC_ERROR_READ_INTERVAL_MS 250u
 
 #define DAC_I2C_ADDRESS (0x54 >> 1)
+#define DAC_ERROR_REGISTER 0x6bu
 #define DAC_VOLUME_REGISTER 0x07
-#define DAC_VOLUME_LEVEL_MAX 100u
-#define DAC_VOLUME_LEVEL_MIN 1u
-#define DAC_VOLUME_LEVEL_INTERVALS (DAC_VOLUME_LEVEL_MAX - DAC_VOLUME_LEVEL_MIN)
+#define DAC_VOLUME_DB_MAX 0
+#define DAC_VOLUME_DB_MIN (-50)
 #define DAC_VOLUME_0_DB 0x00c0u
-#define DAC_VOLUME_INITIAL 0x03fe
 #define DAC_VOLUME_MUTE 0x03ff
-#define DAC_VOLUME_REGISTER_RANGE (DAC_VOLUME_INITIAL - DAC_VOLUME_0_DB)
+#define DAC_VOLUME_REGISTER_STEPS_PER_DB 8u
 
 typedef enum {
     DAC_FSM_STATE_INIT = 0,
@@ -47,6 +47,7 @@ typedef enum {
     DAC_FSM_STATE_EXIT_SHUTDOWN,
     DAC_FSM_STATE_RUNNING,
     DAC_FSM_STATE_VOLUME,
+    DAC_FSM_STATE_ERROR_READ,
     DAC_FSM_STATE_COUNT,
 } DAC_FSM_State;
 
@@ -116,22 +117,31 @@ static const DAC_I2C_Command dac_i2c_commands[DAC_FSM_STATE_COUNT] = {
     },
 };
 
-static uint16_t dac_volume_register(const uint8_t volume) {
-    const uint32_t scaled_range =
-            (uint32_t) (volume - DAC_VOLUME_LEVEL_MIN) * DAC_VOLUME_REGISTER_RANGE;
-    const uint16_t register_offset =
-            (uint16_t) ((scaled_range + (DAC_VOLUME_LEVEL_INTERVALS / 2u)) /
-                        DAC_VOLUME_LEVEL_INTERVALS);
-    return DAC_VOLUME_INITIAL - register_offset;
+static uint16_t dac_volume_register(const int8_t volume_db) {
+    const uint16_t attenuation_db = (uint16_t) (-((int16_t) volume_db));
+    return DAC_VOLUME_0_DB + (attenuation_db * DAC_VOLUME_REGISTER_STEPS_PER_DB);
 }
 
 static uint16_t dac_volume_target(void) {
-    return (dac->mute_override || (dac->volume == 0u))
+    return dac->mute_override
                ? DAC_VOLUME_MUTE
                : dac_volume_register(dac->volume);
 }
 
 static I2C_Transaction *dac_i2c_complete(I2C_Transaction *transaction) {
+    if (dac->fsm.current_id == DAC_FSM_STATE_ERROR_READ) {
+        if (transaction->status == I2C_STATUS_SUCCESS) {
+            dac->error_register = ((uint32_t) dac->tx_data[0] << 24u) |
+                                  ((uint32_t) dac->tx_data[1] << 16u) |
+                                  ((uint32_t) dac->tx_data[2] << 8u) |
+                                  dac->tx_data[3];
+        }
+
+        dac->next_error_read_ms = HAL_GetTick() + DAC_ERROR_READ_INTERVAL_MS;
+        FSM_Transition(&dac->fsm, DAC_FSM_STATE_RUNNING);
+        return NULL;
+    }
+
     if (transaction->status == I2C_STATUS_SUCCESS) {
         if ((dac->fsm.current_id == DAC_FSM_STATE_VOLUME) &&
             (dac->volume_write != dac_volume_target())) {
@@ -148,7 +158,10 @@ static void dac_fsm_i2c_enter(FSM *fsm) {
     const DAC_I2C_Command *command = &dac_i2c_commands[fsm->current_id];
 
     memcpy(dac->tx_data, command->data, command->size);
+    dac->transaction.operation = I2C_OPERATION_WRITE;
     dac->transaction.tx_size = command->size;
+    dac->transaction.rx_data = NULL;
+    dac->transaction.rx_size = 0u;
     dac->transaction_next_state = command->next_state;
     I2C_Queue(&dac->transaction);
 }
@@ -182,6 +195,7 @@ static void dac_fsm_pwm_switching_rate_delay_enter(FSM *fsm) {
 
 static void dac_fsm_exit_shutdown_exit(FSM *fsm) {
     dac->ready = true;
+    dac->next_error_read_ms = HAL_GetTick() + DAC_ERROR_READ_INTERVAL_MS;
 }
 
 static void dac_fsm_volume_enter(FSM *fsm) {
@@ -189,8 +203,20 @@ static void dac_fsm_volume_enter(FSM *fsm) {
     dac->tx_data[0] = DAC_VOLUME_REGISTER;
     dac->tx_data[1] = (uint8_t) (dac->volume_write >> 8u);
     dac->tx_data[2] = (uint8_t) dac->volume_write;
+    dac->transaction.operation = I2C_OPERATION_WRITE;
     dac->transaction.tx_size = 3u;
+    dac->transaction.rx_data = NULL;
+    dac->transaction.rx_size = 0u;
     dac->transaction_next_state = DAC_FSM_STATE_RUNNING;
+    I2C_Queue(&dac->transaction);
+}
+
+static void dac_fsm_error_read_enter(FSM *fsm) {
+    dac->tx_data[0] = DAC_ERROR_REGISTER;
+    dac->transaction.operation = I2C_OPERATION_WRITE_RESTART_READ;
+    dac->transaction.tx_size = 1u;
+    dac->transaction.rx_data = dac->tx_data;
+    dac->transaction.rx_size = 4u;
     I2C_Queue(&dac->transaction);
 }
 
@@ -257,18 +283,23 @@ static const FSM_State dac_fsm_states[DAC_FSM_STATE_COUNT] = {
         .next_mask = FSM_NEXT(DAC_FSM_STATE_RUNNING),
     },
     [DAC_FSM_STATE_RUNNING] = {
-        .next_mask = FSM_NEXT(DAC_FSM_STATE_VOLUME),
+        .next_mask = FSM_NEXT(DAC_FSM_STATE_VOLUME) |
+                     FSM_NEXT(DAC_FSM_STATE_ERROR_READ),
     },
     [DAC_FSM_STATE_VOLUME] = {
         .enter = dac_fsm_volume_enter,
         .next_mask = FSM_NEXT(DAC_FSM_STATE_VOLUME) |
                      FSM_NEXT(DAC_FSM_STATE_RUNNING),
     },
+    [DAC_FSM_STATE_ERROR_READ] = {
+        .enter = dac_fsm_error_read_enter,
+        .next_mask = FSM_NEXT(DAC_FSM_STATE_RUNNING),
+    },
 };
 
 void DAC_Init(void) {
     *dac = (DAC_Data){0};
-    dac->volume = DAC_VOLUME_LEVEL_MIN;
+    dac->volume = DAC_VOLUME_DB_MIN;
     dac->mute_override = true;
 
     dac->transaction = (I2C_Transaction){
@@ -304,19 +335,27 @@ void DAC_Init(void) {
 
 void DAC_Service(void) {
     FSM_Service(&dac->fsm);
+
+    if (dac->ready &&
+        (dac->fsm.current_id == DAC_FSM_STATE_RUNNING) &&
+        ((int32_t) (HAL_GetTick() - dac->next_error_read_ms) >= 0)) {
+        FSM_Transition(&dac->fsm, DAC_FSM_STATE_ERROR_READ);
+    }
 }
 
 bool DAC_Ready(void) {
     return dac->ready;
 }
 
-void DAC_Volume(uint8_t volume) {
-    if (volume > DAC_VOLUME_LEVEL_MAX) {
-        volume = DAC_VOLUME_LEVEL_MAX;
+void DAC_Volume(int8_t volume_db) {
+    if (volume_db < DAC_VOLUME_DB_MIN) {
+        volume_db = DAC_VOLUME_DB_MIN;
+    } else if (volume_db > DAC_VOLUME_DB_MAX) {
+        volume_db = DAC_VOLUME_DB_MAX;
     }
 
     const uint16_t previous_target = dac_volume_target();
-    dac->volume = volume;
+    dac->volume = volume_db;
 
     if ((dac_volume_target() != previous_target) &&
         (dac->fsm.current_id == DAC_FSM_STATE_RUNNING)) {
@@ -324,7 +363,7 @@ void DAC_Volume(uint8_t volume) {
     }
 }
 
-uint8_t DAC_GetVolume(void) {
+int8_t DAC_GetVolume(void) {
     return dac->volume;
 }
 

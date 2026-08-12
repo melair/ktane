@@ -3,6 +3,7 @@
 
 #include "module.h"
 #include "mode/support/chassis/dac.h"
+#include "sys/i2s.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,6 +11,8 @@ extern "C" {
 
 typedef struct {
     DAC_Data dac;
+    AudioData audio;
+    int16_t audio_buffer[I2S_AUDIO_BUFFER_SAMPLE_COUNT];
 } Chassis_Data;
 
 extern Mode_Definition chassis_mode;

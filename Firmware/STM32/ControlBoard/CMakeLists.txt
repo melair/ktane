@@ -47,6 +47,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_load.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/tick.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2s.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/spi.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/can.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
@@ -88,6 +89,7 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_gpio.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_i2c.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_i2c_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_i2s.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_icache.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr_ex.c

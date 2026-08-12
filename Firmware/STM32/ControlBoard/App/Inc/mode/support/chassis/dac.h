@@ -16,7 +16,9 @@ typedef struct {
     FSM_StateId transaction_next_state;
     uint8_t tx_data[5];
     uint16_t volume_write;
-    uint8_t volume;
+    uint32_t error_register;
+    uint32_t next_error_read_ms;
+    int8_t volume;
     bool mute_override;
     bool ready;
 } DAC_Data;
@@ -27,10 +29,10 @@ void DAC_Service(void);
 
 bool DAC_Ready(void);
 
-/* Volume ranges from 0 (mute) to 100 (0 dB). */
-void DAC_Volume(uint8_t volume);
+/* Volume ranges from -50 dB to 0 dB. */
+void DAC_Volume(int8_t volume_db);
 
-uint8_t DAC_GetVolume(void);
+int8_t DAC_GetVolume(void);
 
 void DAC_Mute(bool muted);
 
