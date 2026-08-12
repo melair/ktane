@@ -14,10 +14,8 @@ typedef struct {
     FSM fsm;
     I2C_Transaction transaction;
     FSM_StateId transaction_next_state;
-    uint8_t tx_data[5];
+    uint8_t tx_data[21];
     uint16_t volume_write;
-    uint32_t error_register;
-    uint32_t next_error_read_ms;
     int8_t volume;
     bool mute_override;
     bool ready;

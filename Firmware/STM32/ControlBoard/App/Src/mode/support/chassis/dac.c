@@ -18,10 +18,8 @@
 #define DAC_PVDD_POWER_UP_DELAY_MS 5
 #define DAC_TRIM_OSCILLATOR_DELAY_MS 50
 #define DAC_PWM_SWITCHING_RATE_DELAY_MS 250
-#define DAC_ERROR_READ_INTERVAL_MS 250u
 
 #define DAC_I2C_ADDRESS (0x54 >> 1)
-#define DAC_ERROR_REGISTER 0x6bu
 #define DAC_VOLUME_REGISTER 0x07
 #define DAC_VOLUME_DB_MAX 0
 #define DAC_VOLUME_DB_MIN (-50)
@@ -42,12 +40,13 @@ typedef enum {
     DAC_FSM_STATE_STEREO_BD_MODE_3,
     DAC_FSM_STATE_STEREO_BD_MODE_4,
     DAC_FSM_STATE_INPUT_MUX_CONFIG,
+    DAC_FSM_STATE_EQ_CONTROL,
+    DAC_FSM_STATE_BASS_BOOST,
     DAC_FSM_STATE_PWM_SWITCHING_RATE,
     DAC_FSM_STATE_PWM_SWITCHING_RATE_DELAY,
     DAC_FSM_STATE_EXIT_SHUTDOWN,
     DAC_FSM_STATE_RUNNING,
     DAC_FSM_STATE_VOLUME,
-    DAC_FSM_STATE_ERROR_READ,
     DAC_FSM_STATE_COUNT,
 } DAC_FSM_State;
 
@@ -66,6 +65,15 @@ static const uint8_t dac_stereo_bd_mode_2_data[] = {0x12, 0x60};
 static const uint8_t dac_stereo_bd_mode_3_data[] = {0x13, 0xa0};
 static const uint8_t dac_stereo_bd_mode_4_data[] = {0x14, 0x48};
 static const uint8_t dac_input_mux_config_data[] = {0x20, 0x00, 0x89, 0x77, 0x72};
+static const uint8_t dac_eq_control_data[] = {0x50, 0x0f, 0x70, 0x80, 0x10};
+static const uint8_t dac_bass_boost_data[] = {
+    0x27,
+    0x00, 0x80, 0x69, 0x26,   // b0
+    0x03, 0x03, 0x2D, 0xD1,   // b1
+    0x00, 0x7C, 0x78, 0xBF,   // b2
+    0x00, 0xFC, 0xD5, 0x15,   // A1 = -a1
+    0x03, 0x83, 0x21, 0x01,   // A2 = -a2
+};
 static const uint8_t dac_pwm_switching_rate_data[] = {0x4f, 0x00, 0x00, 0x00, 0x08};
 static const uint8_t dac_exit_shutdown_data[] = {0x05, 0x00};
 
@@ -103,6 +111,16 @@ static const DAC_I2C_Command dac_i2c_commands[DAC_FSM_STATE_COUNT] = {
     [DAC_FSM_STATE_INPUT_MUX_CONFIG] = {
         .data = dac_input_mux_config_data,
         .size = sizeof(dac_input_mux_config_data),
+        .next_state = DAC_FSM_STATE_EQ_CONTROL,
+    },
+    [DAC_FSM_STATE_EQ_CONTROL] = {
+        .data = dac_eq_control_data,
+        .size = sizeof(dac_eq_control_data),
+        .next_state = DAC_FSM_STATE_BASS_BOOST,
+    },
+    [DAC_FSM_STATE_BASS_BOOST] = {
+        .data = dac_bass_boost_data,
+        .size = sizeof(dac_bass_boost_data),
         .next_state = DAC_FSM_STATE_PWM_SWITCHING_RATE,
     },
     [DAC_FSM_STATE_PWM_SWITCHING_RATE] = {
@@ -129,19 +147,6 @@ static uint16_t dac_volume_target(void) {
 }
 
 static I2C_Transaction *dac_i2c_complete(I2C_Transaction *transaction) {
-    if (dac->fsm.current_id == DAC_FSM_STATE_ERROR_READ) {
-        if (transaction->status == I2C_STATUS_SUCCESS) {
-            dac->error_register = ((uint32_t) dac->tx_data[0] << 24u) |
-                                  ((uint32_t) dac->tx_data[1] << 16u) |
-                                  ((uint32_t) dac->tx_data[2] << 8u) |
-                                  dac->tx_data[3];
-        }
-
-        dac->next_error_read_ms = HAL_GetTick() + DAC_ERROR_READ_INTERVAL_MS;
-        FSM_Transition(&dac->fsm, DAC_FSM_STATE_RUNNING);
-        return NULL;
-    }
-
     if (transaction->status == I2C_STATUS_SUCCESS) {
         if ((dac->fsm.current_id == DAC_FSM_STATE_VOLUME) &&
             (dac->volume_write != dac_volume_target())) {
@@ -195,7 +200,6 @@ static void dac_fsm_pwm_switching_rate_delay_enter(FSM *fsm) {
 
 static void dac_fsm_exit_shutdown_exit(FSM *fsm) {
     dac->ready = true;
-    dac->next_error_read_ms = HAL_GetTick() + DAC_ERROR_READ_INTERVAL_MS;
 }
 
 static void dac_fsm_volume_enter(FSM *fsm) {
@@ -208,15 +212,6 @@ static void dac_fsm_volume_enter(FSM *fsm) {
     dac->transaction.rx_data = NULL;
     dac->transaction.rx_size = 0u;
     dac->transaction_next_state = DAC_FSM_STATE_RUNNING;
-    I2C_Queue(&dac->transaction);
-}
-
-static void dac_fsm_error_read_enter(FSM *fsm) {
-    dac->tx_data[0] = DAC_ERROR_REGISTER;
-    dac->transaction.operation = I2C_OPERATION_WRITE_RESTART_READ;
-    dac->transaction.tx_size = 1u;
-    dac->transaction.rx_data = dac->tx_data;
-    dac->transaction.rx_size = 4u;
     I2C_Queue(&dac->transaction);
 }
 
@@ -267,6 +262,14 @@ static const FSM_State dac_fsm_states[DAC_FSM_STATE_COUNT] = {
     },
     [DAC_FSM_STATE_INPUT_MUX_CONFIG] = {
         .enter = dac_fsm_i2c_enter,
+        .next_mask = FSM_NEXT(DAC_FSM_STATE_EQ_CONTROL),
+    },
+    [DAC_FSM_STATE_EQ_CONTROL] = {
+        .enter = dac_fsm_i2c_enter,
+        .next_mask = FSM_NEXT(DAC_FSM_STATE_BASS_BOOST),
+    },
+    [DAC_FSM_STATE_BASS_BOOST] = {
+        .enter = dac_fsm_i2c_enter,
         .next_mask = FSM_NEXT(DAC_FSM_STATE_PWM_SWITCHING_RATE),
     },
     [DAC_FSM_STATE_PWM_SWITCHING_RATE] = {
@@ -283,17 +286,12 @@ static const FSM_State dac_fsm_states[DAC_FSM_STATE_COUNT] = {
         .next_mask = FSM_NEXT(DAC_FSM_STATE_RUNNING),
     },
     [DAC_FSM_STATE_RUNNING] = {
-        .next_mask = FSM_NEXT(DAC_FSM_STATE_VOLUME) |
-                     FSM_NEXT(DAC_FSM_STATE_ERROR_READ),
+        .next_mask = FSM_NEXT(DAC_FSM_STATE_VOLUME),
     },
     [DAC_FSM_STATE_VOLUME] = {
         .enter = dac_fsm_volume_enter,
         .next_mask = FSM_NEXT(DAC_FSM_STATE_VOLUME) |
                      FSM_NEXT(DAC_FSM_STATE_RUNNING),
-    },
-    [DAC_FSM_STATE_ERROR_READ] = {
-        .enter = dac_fsm_error_read_enter,
-        .next_mask = FSM_NEXT(DAC_FSM_STATE_RUNNING),
     },
 };
 
@@ -335,12 +333,6 @@ void DAC_Init(void) {
 
 void DAC_Service(void) {
     FSM_Service(&dac->fsm);
-
-    if (dac->ready &&
-        (dac->fsm.current_id == DAC_FSM_STATE_RUNNING) &&
-        ((int32_t) (HAL_GetTick() - dac->next_error_read_ms) >= 0)) {
-        FSM_Transition(&dac->fsm, DAC_FSM_STATE_ERROR_READ);
-    }
 }
 
 bool DAC_Ready(void) {

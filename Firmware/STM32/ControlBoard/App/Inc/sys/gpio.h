@@ -44,8 +44,8 @@ typedef struct {
 #define SDMMC_D1_Port GPIOC
 #define SDMMC_DET_Pin GPIO_PIN_8
 #define SDMMC_DET_Port GPIOA
-#define SDMMC_PWR_Pin GPIO_PIN_9
-#define SDMMC_PWR_Port GPIOA
+#define SDMMC_PWR_Pin GPIO_PIN_10
+#define SDMMC_PWR_Port GPIOD
 #define SDMMC_D2_Pin GPIO_PIN_10
 #define SDMMC_D2_Port GPIOC
 #define SDMMC_D3_Pin GPIO_PIN_11
@@ -54,7 +54,7 @@ typedef struct {
 #define SDMMC_CK_Port GPIOC
 #define SDMMC_CMD_Pin GPIO_PIN_2
 #define SDMMC_CMD_Port GPIOD
-#define SDMMC_ACT_Pin GPIO_PIN_15
+#define SDMMC_ACT_Pin GPIO_PIN_10
 #define SDMMC_ACT_Port GPIOA
 
 #define USB_DM_Pin GPIO_PIN_11

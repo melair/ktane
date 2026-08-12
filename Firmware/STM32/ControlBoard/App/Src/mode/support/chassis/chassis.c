@@ -3,7 +3,6 @@
 #include "mode.h"
 #include "module_fsm.h"
 #include "sys/i2s.h"
-#include <stddef.h>
 
 static Chassis_Data *const chassis = &module_data.mode.chassis;
 
