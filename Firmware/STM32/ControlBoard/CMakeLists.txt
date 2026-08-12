@@ -58,6 +58,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/nvm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/simon/simon.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/dac.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/timer/timer.c
 )

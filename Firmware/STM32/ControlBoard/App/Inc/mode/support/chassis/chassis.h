@@ -2,13 +2,14 @@
 #define CHASSIS_H
 
 #include "module.h"
+#include "mode/support/chassis/dac.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
-    uint8_t reserved;
+    DAC_Data dac;
 } Chassis_Data;
 
 extern Mode_Definition chassis_mode;
