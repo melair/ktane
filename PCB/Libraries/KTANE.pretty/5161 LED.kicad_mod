@@ -1,0 +1,248 @@
+(footprint "5161 LED"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -3.81 -10.795 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "bc3dbd55-746c-4518-9db7-c074842f2ca7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "5161 LED"
+		(at 0 -1.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "c07dbb5b-c845-48e3-845f-502f63deaad5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4f0ca433-dd9c-4fdf-8a20-ce5ed198c75f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e9ff6c94-6c66-4737-b084-0e023ef22136")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_rect
+		(start -6.3 -9.5)
+		(end 6.3 9.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "bc799b54-5ed4-4469-aa24-a46a11755915")
+	)
+	(fp_poly
+		(pts
+			(xy -0.635 -5.842) (xy 0 -6.477) (xy 0.635 -5.842)
+		)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.SilkS")
+		(uuid "ecd7d50e-b8d8-4882-9fd5-740ac6944807")
+	)
+	(fp_poly
+		(pts
+			(xy 0.635 5.842) (xy 0 6.477) (xy -0.635 5.842)
+		)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.SilkS")
+		(uuid "969ad16e-7bb3-467a-b4ca-0dbdc84fef79")
+	)
+	(fp_rect
+		(start -6.55 -9.75)
+		(end 6.55 9.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "f30ef223-af42-4346-93ec-c251f3c1dfc3")
+	)
+	(fp_text user "Top"
+		(at -4.445 -6.35 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "423bfa16-8ffd-4211-9428-d2bce5100835")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify top)
+		)
+	)
+	(fp_text user "Anode"
+		(at 0 -5.715 90)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "63dacbbf-d98f-40c0-b4d9-e516e11f782f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify right)
+		)
+	)
+	(fp_text user "Anode"
+		(at 0 5.715 270)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "842902e2-a01c-40a7-8cea-72da5dbf6ec1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify right)
+		)
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "8f5ad5f1-bb76-4c3a-bc20-f7e99d130261")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at -5.08 7.62)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.25)
+		(uuid "faadf1cf-6563-4c39-b8f6-a0157412718d")
+	)
+	(pad "2" thru_hole circle
+		(at -2.54 7.62)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "1902bf94-63fa-4292-a67b-496fcc4502c3")
+	)
+	(pad "3" thru_hole circle
+		(at 0 7.62)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "d4389e47-84f1-4b1c-8031-410689a87e22")
+	)
+	(pad "4" thru_hole circle
+		(at 2.54 7.62)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "5c27435e-f32e-4b51-8926-d29a150dfe74")
+	)
+	(pad "5" thru_hole circle
+		(at 5.08 7.62)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "2d0707ef-bf3c-495c-9e8c-d9ee8e61743a")
+	)
+	(pad "6" thru_hole circle
+		(at 5.08 -7.62 180)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "04c19c82-8b9e-402e-8b2d-2e8f6976889c")
+	)
+	(pad "7" thru_hole circle
+		(at 2.54 -7.62 180)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "476e15b6-4766-4c7d-8cd7-06b7de0c5bef")
+	)
+	(pad "8" thru_hole circle
+		(at 0 -7.62 180)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0a52e284-8f0d-4a12-8a77-e1b8c0aff363")
+	)
+	(pad "9" thru_hole circle
+		(at -2.54 -7.62 180)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "c1118633-6e40-4542-a7a8-d744f364f1e3")
+	)
+	(pad "10" thru_hole circle
+		(at -5.08 -7.62 180)
+		(size 1.75 1.75)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "1650f5f4-8fb5-4da6-9783-57d5c3132a5b")
+	)
+	(embedded_fonts no)
+	(model "/Volumes/unix/workspace/ktane/GitHubReleased/PCB/Libraries/3D Models/LED_16+1 Segment 0.8inch v5.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)
