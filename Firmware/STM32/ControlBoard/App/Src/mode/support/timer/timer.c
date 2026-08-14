@@ -1,6 +1,6 @@
 #include "mode/support/timer/timer.h"
 #include "mode.h"
-#include "module_fsm.h"
+#include "mode_fsm.h"
 #include "sys/gpio.h"
 #include "sys/rng.h"
 #include "sys/spi.h"
@@ -27,7 +27,7 @@
 
 #define ARRAY_COUNT(array) (sizeof(array) / sizeof((array)[0]))
 
-static Timer_Data *const timer = &module_data.mode.timer;
+static Timer_Data *const timer = &mode_data.mode.timer;
 
 enum {
     TIMER_ATTRACT_STRIKES_WAIT_FIRST,
@@ -231,7 +231,7 @@ static void timer_init_enter(FSM *fsm) {
     timer_display_set_led(TIMER_COLON_LOWER_LED_OFFSET, false);
     timer_display_set_led(TIMER_COLON_UPPER_LED_OFFSET, false);
 
-    FSM_Transition(fsm, MODULE_FSM_STATE_STARTUP);
+    FSM_Transition(fsm, MODE_FSM_STATE_STARTUP);
 }
 
 static void timer_startup_enter(FSM *fsm) {
@@ -250,7 +250,7 @@ static void timer_startup_service(FSM *fsm) {
     const uint8_t step_count = ARRAY_COUNT(timer_startup_segments) * TIMER_STARTUP_SEGMENT_REPEATS;
     if (timer->startup_step >= step_count) {
         timer_strikes_set(STRIKES_DIGIT_BLANK, STRIKES_DIGIT_BLANK);
-        FSM_Transition(fsm, MODULE_FSM_STATE_IDLE);
+        FSM_Transition(fsm, MODE_FSM_STATE_IDLE);
         return;
     }
 
@@ -374,26 +374,26 @@ static void timer_attract_service(FSM *fsm) {
     timer_attract_countdown_render();
 }
 
-static Callbacks timer_state_callbacks[MODULE_FSM_STATE_COUNT] = {
-    [MODULE_FSM_STATE_INIT] = {
+static Callbacks timer_state_callbacks[MODE_FSM_STATE_COUNT] = {
+    [MODE_FSM_STATE_INIT] = {
         .enter = timer_init_enter,
     },
-    [MODULE_FSM_STATE_STARTUP] = {
+    [MODE_FSM_STATE_STARTUP] = {
         .enter = timer_startup_enter,
         .service = timer_startup_service,
     },
-    [MODULE_FSM_STATE_IDLE] = {
+    [MODE_FSM_STATE_IDLE] = {
         .enter = timer_idle_enter,
     },
-    [MODULE_FSM_STATE_ATTRACT] = {
+    [MODE_FSM_STATE_ATTRACT] = {
         .enter = timer_attract_enter,
         .service = timer_attract_service,
     },
-    [MODULE_FSM_STATE_PREPARE] = {0},
-    [MODULE_FSM_STATE_READY] = {0},
-    [MODULE_FSM_STATE_STARTING] = {0},
-    [MODULE_FSM_STATE_RUNNING] = {0},
-    [MODULE_FSM_STATE_OVER] = {0},
+    [MODE_FSM_STATE_PREPARE] = {0},
+    [MODE_FSM_STATE_READY] = {0},
+    [MODE_FSM_STATE_STARTING] = {0},
+    [MODE_FSM_STATE_RUNNING] = {0},
+    [MODE_FSM_STATE_OVER] = {0},
 };
 
 Mode_Definition timer_mode = {

@@ -1,6 +1,9 @@
 #ifndef MODE_H
 #define MODE_H
 
+#include <stdbool.h>
+#include <stdint.h>
+#include "mode_fsm.h"
 #include "mode/puzzle/simon/simon.h"
 #include "mode/support/chassis/chassis.h"
 #include "mode/support/timer/timer.h"
@@ -43,9 +46,17 @@ typedef struct {
         Chassis_Data chassis;
         Timer_Data timer;
     } mode;
-} Module_Data;
+} Mode_Data;
 
-extern Module_Data module_data;
+extern Mode_Data mode_data;
+
+void Mode_Init(void);
+
+void Mode_Service(void);
+
+void Mode_SetServiceEnabled(bool enabled);
+
+void Mode_Set(uint8_t mode);
 
 #ifdef __cplusplus
 }

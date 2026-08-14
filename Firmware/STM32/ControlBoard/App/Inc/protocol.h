@@ -53,6 +53,7 @@ typedef struct {
 
             struct {
                 uint32_t serial;
+                uint32_t uptime;
                 uint8_t mode;
                 struct {
                     uint8_t chassis_location :4;

@@ -1,7 +1,7 @@
 #ifndef CHASSIS_H
 #define CHASSIS_H
 
-#include "module.h"
+#include "mode_fsm.h"
 #include "mode/support/chassis/dac.h"
 #include "sys/i2s.h"
 

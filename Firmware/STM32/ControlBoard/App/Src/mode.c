@@ -1,10 +1,9 @@
-#include "module.h"
+#include "mode.h"
 #include <stdint.h>
 #include "stm32h5xx_hal.h"
-#include "mode.h"
 #include "sys/nvm.h"
 #include "sys/fsm.h"
-#include "module_fsm.h"
+#include "mode_fsm.h"
 #include "mode/puzzle/simon/simon.h"
 #include "mode/support/chassis/chassis.h"
 #include "mode/support/timer/timer.h"
@@ -14,68 +13,68 @@ typedef struct {
     FSM fsm;
     Mode_Definition *definition;
     bool service_enabled;
-} module_t;
+} mode_t;
 
-static module_t module = {
+static mode_t mode = {
     .mode = MODE_NONE,
     .definition = NULL,
     .service_enabled = false,
 };
 
-Module_Data module_data = {0};
+Mode_Data mode_data = {0};
 
-void Module_Init(void) {
-    module.mode = MODE_NONE;
+void Mode_Init(void) {
+    mode.mode = MODE_NONE;
 
     const NVM_Query query = {
         .type = UINT8,
         .id = MODE_CFG(MODE_NONE, MODE_CONFIG_ACTIVE_MODE),
-        .data = &module.mode,
+        .data = &mode.mode,
     };
 
     NVM_Read(&query, 1);
 
-    module.definition = NULL;
-    module.service_enabled = false;
+    mode.definition = NULL;
+    mode.service_enabled = false;
 
-    switch (module.mode) {
+    switch (mode.mode) {
         case MODE_PUZZLE_SIMON:
-            module.definition = &simon_mode;
+            mode.definition = &simon_mode;
             break;
         case MODE_SUPPORT_CHASSIS:
-            module.definition = &chassis_mode;
+            mode.definition = &chassis_mode;
             break;
         case MODE_SUPPORT_TIMER:
-            module.definition = &timer_mode;
+            mode.definition = &timer_mode;
             break;
         default:
             break;
     }
 
-    FSM_Init(&module.fsm, module_fsm_states, MODULE_FSM_STATE_INIT, module.definition);
+    FSM_Init(&mode.fsm, mode_fsm_states, MODE_FSM_STATE_INIT, mode.definition);
 }
 
-void Module_Service(void) {
-    if (module.service_enabled &&
-        (module.definition != NULL) &&
-        (module.definition->always_service != NULL)) {
-        module.definition->always_service();
+void Mode_Service(void) {
+    if (mode.service_enabled &&
+        (mode.definition != NULL) &&
+        (mode.definition->always_service != NULL)) {
+        mode.definition->always_service();
     }
 
-    FSM_Service(&module.fsm);
+    FSM_Service(&mode.fsm);
 }
 
-void Module_SetServiceEnabled(const bool enabled) {
-    module.service_enabled = enabled;
+void Mode_SetServiceEnabled(const bool enabled) {
+    mode.service_enabled = enabled;
 }
 
-void Module_Set(const uint8_t mode) {
-    module.mode = mode;
+void Mode_Set(const uint8_t new_mode) {
+    mode.mode = new_mode;
 
     const NVM_Query query = {
         .type = UINT8,
         .id = MODE_CFG(MODE_NONE, MODE_CONFIG_ACTIVE_MODE),
-        .data = &module.mode,
+        .data = &mode.mode,
     };
 
     if (NVM_Write(&query)) {

@@ -56,7 +56,7 @@ typedef struct {
     DAC_FSM_State next_state;
 } DAC_I2C_Command;
 
-static DAC_Data *const dac = &module_data.mode.chassis.dac;
+static DAC_Data *const dac = &mode_data.mode.chassis.dac;
 
 static const uint8_t dac_trim_oscillator_data[] = {0x1b, 0x00};
 static const uint8_t dac_configure_i2s_data[] = {0x04, 0x03};

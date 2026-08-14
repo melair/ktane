@@ -1,7 +1,7 @@
 #include "main.h"
 
 #include "indicator.h"
-#include "module.h"
+#include "mode.h"
 #include "protocol.h"
 #include "sys/argb.h"
 #include "sys/can.h"
@@ -72,8 +72,8 @@ int main(void) {
     /* Initialize the module indicator to OFF. */
     Indicator_Init();
 
-    /* Initialize the per Module set up. */
-    Module_Init();
+    /* Initialize the selected mode. */
+    Mode_Init();
 
     /* Infinite loop */
     while (1) {
@@ -101,8 +101,8 @@ int main(void) {
         /* Service the module indicator. */
         Indicator_Service();
 
-        /* Service the Module. */
-        Module_Service();
+        /* Service the mode. */
+        Mode_Service();
 
         /* Service ARGB strips with pending changes. */
         ARGB_Service();

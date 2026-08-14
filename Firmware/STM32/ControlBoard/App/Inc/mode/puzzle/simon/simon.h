@@ -1,7 +1,7 @@
 #ifndef SIMON_H
 #define SIMON_H
 
-#include "module.h"
+#include "mode_fsm.h"
 
 #ifdef __cplusplus
 extern "C" {

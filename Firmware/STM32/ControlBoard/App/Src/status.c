@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include "mode.h"
-#include "module.h"
 #include "stm32h5xx_hal.h"
 #include "sys/gpio.h"
 #include "sys/input_manager.h"
@@ -73,9 +72,9 @@ static void selected_mode_set(const uint32_t now_ms) {
         MODE_SUPPORT_TIMER,
     };
 
-    Module_Set(modes[status.option - 1u]);
+    Mode_Set(modes[status.option - 1u]);
 
-    /* Module_Set resets the MCU after a successful write. */
+    /* Mode_Set resets the MCU after a successful write. */
     heartbeat_enter(now_ms);
 }
 
