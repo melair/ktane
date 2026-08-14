@@ -3,6 +3,7 @@
 #include "mode.h"
 #include "module_fsm.h"
 #include "sys/i2s.h"
+#include "sys/usb_audio.h"
 
 static Chassis_Data *const chassis = &module_data.mode.chassis;
 
@@ -10,6 +11,7 @@ static void chassis_fsm_init_enter(FSM *fsm) {
     chassis->audio.buffer = chassis->audio_buffer;
     chassis->audio.buffer_size = I2S_AUDIO_BUFFER_SAMPLE_COUNT;
     I2S_Init(&chassis->audio);
+    USB_Audio_Attach(&chassis->audio);
     DAC_Init();
     Module_SetServiceEnabled(true);
 }
@@ -17,7 +19,7 @@ static void chassis_fsm_init_enter(FSM *fsm) {
 static void chassis_fsm_init_service(FSM *fsm) {
     if (DAC_Ready()) {
         FSM_Transition(fsm, MODULE_FSM_STATE_STARTUP);
-        DAC_Volume(-50);
+        DAC_Volume(-20);
         DAC_Mute(false);
     }
 }

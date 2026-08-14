@@ -48,6 +48,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/tick.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2s.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/usb_audio.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/spi.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/can.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
@@ -93,6 +94,8 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_icache.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pcd.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pcd_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rng.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rng_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rcc.c
@@ -107,6 +110,7 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_uart_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_usart.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_usart_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_ll_usb.c
 )
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE

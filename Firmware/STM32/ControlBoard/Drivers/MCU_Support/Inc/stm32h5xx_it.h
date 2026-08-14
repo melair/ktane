@@ -50,6 +50,8 @@ void PendSV_Handler(void);
 
 void SysTick_Handler(void);
 
+void USB_DRD_FS_IRQHandler(void);
+
 void Error_Handler(void);
 
 #ifdef __cplusplus

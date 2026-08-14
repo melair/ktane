@@ -17,6 +17,7 @@
 #include "sys/spi.h"
 #include "status.h"
 #include "sys/tick.h"
+#include "sys/usb_audio.h"
 
 /**
   * @brief  The application entry point.
@@ -50,6 +51,9 @@ int main(void) {
     /* Enable DMA peripherals. GPDMA1 for core functions, GPDMA2 for submodules. */
     __HAL_RCC_GPDMA1_CLK_ENABLE();
     __HAL_RCC_GPDMA2_CLK_ENABLE();
+
+    /* Enumerate as a fixed-format 48 kHz, stereo USB audio output device. */
+    USB_Audio_Init();
 
     /* Initialize common controlboard processes and peripherals. */
     IM_Init();

@@ -22,6 +22,9 @@ void I2S_Service(AudioData *audio);
 
 void I2S_Fill_Sine(AudioData *audio);
 
+/* Current stereo frame being consumed by the circular I2S DMA transfer. */
+uint32_t I2S_GetReadFrame(const AudioData *audio);
+
 #ifdef __cplusplus
 }
 #endif

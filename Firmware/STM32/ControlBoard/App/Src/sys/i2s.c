@@ -32,6 +32,10 @@ static const int16_t i2s_sine_1khz_minus_3db[] = {
 void I2S_Init(AudioData *audio) {
     GPIO_InitTypeDef gpio_init = {0};
 
+    for (uint16_t sample = 0u; sample < audio->buffer_size; ++sample) {
+        audio->buffer[sample] = 0;
+    }
+
     __HAL_RCC_SPI1_CONFIG(RCC_SPI1CLKSOURCE_PLL3P);
     __HAL_RCC_SPI1_CLK_ENABLE();
 
@@ -130,6 +134,23 @@ void I2S_Fill_Sine(AudioData *audio) {
         audio->buffer[sample] = value;
         audio->buffer[sample + 1u] = value;
     }
+}
+
+uint32_t I2S_GetReadFrame(const AudioData *audio) {
+    if ((audio == NULL) || (audio->buffer_size < I2S_AUDIO_CHANNEL_COUNT) ||
+        (i2s_dma.State == HAL_DMA_STATE_RESET)) {
+        return 0u;
+    }
+
+    const uint32_t total_bytes = (uint32_t)audio->buffer_size * sizeof(*audio->buffer);
+    uint32_t remaining_bytes = __HAL_DMA_GET_COUNTER(&i2s_dma);
+    if (remaining_bytes > total_bytes) {
+        remaining_bytes = total_bytes;
+    }
+
+    const uint32_t sample = (total_bytes - remaining_bytes) / sizeof(*audio->buffer);
+    const uint32_t frame_count = audio->buffer_size / I2S_AUDIO_CHANNEL_COUNT;
+    return (sample / I2S_AUDIO_CHANNEL_COUNT) % frame_count;
 }
 
 void GPDMA1_Channel3_IRQHandler(void) {
