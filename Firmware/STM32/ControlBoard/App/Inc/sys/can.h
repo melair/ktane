@@ -9,9 +9,9 @@ extern "C" {
 
 void CAN_Init(void);
 
-void CAN_Service(void (*packetHandler)(uint16_t mailbox, uint8_t length, void *data));
+void CAN_Service(void (*packetHandler)(uint16_t identifier, uint8_t length, void *data));
 
-void CAN_Queue(uint16_t mailbox, uint8_t length, void *data);
+void CAN_Queue(uint16_t identifier, uint8_t length, void *data);
 
 #ifdef __cplusplus
 }

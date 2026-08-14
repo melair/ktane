@@ -1,8 +1,11 @@
 #include "mode.h"
 #include <stdint.h>
+#include "protocol.h"
 #include "stm32h5xx_hal.h"
-#include "sys/nvm.h"
 #include "sys/fsm.h"
+#include "sys/mcu_init.h"
+#include "sys/nvm.h"
+#include "sys/tick.h"
 #include "mode_fsm.h"
 #include "mode/puzzle/simon/simon.h"
 #include "mode/support/chassis/chassis.h"
@@ -62,6 +65,14 @@ void Mode_Service(void) {
     }
 
     FSM_Service(&mode.fsm);
+
+    if (tick_2hz) {
+        Packet announcement = {0};
+        announcement.module.announce.serial = UID;
+        announcement.module.announce.uptime = HAL_GetTick();
+        announcement.module.announce.mode = mode.mode;
+        Protocol_Send(MODULE_ANNOUNCE, &announcement);
+    }
 }
 
 void Mode_SetServiceEnabled(const bool enabled) {

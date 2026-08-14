@@ -191,7 +191,7 @@ void CAN_Init(void) {
     HAL_GPIO_Init(FDCAN_ACT_Port, &GPIO_InitStruct);
 }
 
-void CAN_Service(void (*packetHandler)(uint16_t mailbox, uint8_t length, void *data)) {
+void CAN_Service(void (*packetHandler)(uint16_t identifier, uint8_t length, void *data)) {
     serviceActivityLed(&can);
 
     if (!can.rxPending) {
@@ -221,7 +221,7 @@ void CAN_Service(void (*packetHandler)(uint16_t mailbox, uint8_t length, void *d
     can.rxPending = HAL_FDCAN_GetRxFifoFillLevel(&can.handle, FDCAN_RX_FIFO0) > 0;
 }
 
-void CAN_Queue(uint16_t mailbox, uint8_t length, void *data) {
+void CAN_Queue(uint16_t identifier, uint8_t length, void *data) {
     if ((length > 64) || (data == NULL)) {
         return;
     }
@@ -233,7 +233,7 @@ void CAN_Queue(uint16_t mailbox, uint8_t length, void *data) {
     FDCAN_TxHeaderTypeDef txHeader = {0};
     uint8_t txData[64] = {0};
 
-    txHeader.Identifier = mailbox & 0x7FFU;
+    txHeader.Identifier = identifier & 0x7FFU;
     txHeader.IdType = FDCAN_STANDARD_ID;
     txHeader.TxFrameType = FDCAN_DATA_FRAME;
     txHeader.DataLength = lengthToDlc(length);

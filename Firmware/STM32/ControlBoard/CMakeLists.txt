@@ -41,6 +41,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/indicator.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode_fsm.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/nodes.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/protocol.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/status.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c

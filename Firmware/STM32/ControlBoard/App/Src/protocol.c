@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "mode.h"
+#include "nodes.h"
 #include "protocol.h"
 #include "sys/can.h"
 #include "sys/fsm.h"
@@ -10,10 +11,10 @@
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_it.h"
 
-#define PROTOCOL_ADDRESS_ANNOUNCEMENT_COUNT 3U
-#define PROTOCOL_ADDRESS_WAIT_MIN_MS 50U
-#define PROTOCOL_ADDRESS_WAIT_MAX_MS 100U
-#define PROTOCOL_ADDRESS_FINAL_WAIT_MS 50U
+#define PROTOCOL_IDENTIFIER_ANNOUNCEMENT_COUNT 3U
+#define PROTOCOL_IDENTIFIER_WAIT_MIN_MS 50U
+#define PROTOCOL_IDENTIFIER_WAIT_MAX_MS 100U
+#define PROTOCOL_IDENTIFIER_FINAL_WAIT_MS 50U
 
 typedef enum {
     PROTOCOL_FSM_STATE_WAIT_ANNOUNCE = 0,
@@ -24,27 +25,27 @@ typedef enum {
 } Protocol_FSM_State;
 
 typedef struct {
-    uint8_t id;
+    uint8_t identifier;
 
     struct {
         FSM fsm;
         uint32_t next_action_at;
-        uint8_t stored_id;
+        uint8_t stored_identifier;
         uint8_t announcement_count;
-        bool id_negotiated;
+        bool identifier_negotiated;
         bool collision_detected;
-    } addressing;
+    } identifier_negotiation;
 } protocol_t;
 
 typedef struct {
     OpCode opcode;
     uint8_t minimumLength;
 
-    void (*callback)(uint8_t id, OpCode opcode, Packet *packet);
+    void (*callback)(uint8_t identifier, OpCode opcode, Packet *packet);
 } PacketRegistry;
 
-static void handle_address_announce(uint8_t id, OpCode opcode, Packet *packet);
-static void handle_address_nak(uint8_t id, OpCode opcode, Packet *packet);
+static void handle_identifier_announce(uint8_t identifier, OpCode opcode, Packet *packet);
+static void handle_identifier_nak(uint8_t identifier, OpCode opcode, Packet *packet);
 
 static void protocol_fsm_wait_announce_enter(FSM *fsm);
 static void protocol_fsm_wait_announce_service(FSM *fsm);
@@ -109,52 +110,53 @@ static bool action_is_due(const uint32_t action_at) {
     return (int32_t)(HAL_GetTick() - action_at) >= 0;
 }
 
-static void handle_address_announce(const uint8_t id, const OpCode opcode, Packet *packet) {
-    if (id != protocol.id) {
+static void handle_identifier_announce(const uint8_t identifier, const OpCode opcode, Packet *packet) {
+    if (identifier != protocol.identifier) {
         return;
     }
 
     Packet nak = {0};
-    nak.module.address_nak.serial = UID;
-    Protocol_Send(MODULE_ADDRESS_NAK, &nak);
+    nak.module.identifier_nak.serial = UID;
+    Protocol_Send(MODULE_IDENTIFIER_NAK, &nak);
 
-    if (!protocol.addressing.id_negotiated) {
-        protocol.addressing.collision_detected = true;
+    if (!protocol.identifier_negotiation.identifier_negotiated) {
+        protocol.identifier_negotiation.collision_detected = true;
     }
 }
 
-static void handle_address_nak(const uint8_t id, const OpCode opcode, Packet *packet) {
-    if (!protocol.addressing.id_negotiated && (id == protocol.id)) {
-        protocol.addressing.collision_detected = true;
+static void handle_identifier_nak(const uint8_t identifier, const OpCode opcode, Packet *packet) {
+    if (!protocol.identifier_negotiation.identifier_negotiated &&
+        (identifier == protocol.identifier)) {
+        protocol.identifier_negotiation.collision_detected = true;
     }
 }
 
 static void protocol_fsm_wait_announce_enter(FSM *fsm) {
-    protocol.addressing.next_action_at = HAL_GetTick() +
-                                         TRNG_Rand8Range(PROTOCOL_ADDRESS_WAIT_MIN_MS,
-                                                         PROTOCOL_ADDRESS_WAIT_MAX_MS);
+    protocol.identifier_negotiation.next_action_at = HAL_GetTick() +
+        TRNG_Rand8Range(PROTOCOL_IDENTIFIER_WAIT_MIN_MS,
+                       PROTOCOL_IDENTIFIER_WAIT_MAX_MS);
 }
 
 static void protocol_fsm_wait_announce_service(FSM *fsm) {
-    if (protocol.addressing.collision_detected) {
+    if (protocol.identifier_negotiation.collision_detected) {
         FSM_Transition(fsm, PROTOCOL_FSM_STATE_RETRY);
-    } else if (action_is_due(protocol.addressing.next_action_at)) {
+    } else if (action_is_due(protocol.identifier_negotiation.next_action_at)) {
         FSM_Transition(fsm, PROTOCOL_FSM_STATE_ANNOUNCE);
     }
 }
 
 static void protocol_fsm_announce_enter(FSM *fsm) {
-    if (protocol.addressing.collision_detected) {
+    if (protocol.identifier_negotiation.collision_detected) {
         FSM_Transition(fsm, PROTOCOL_FSM_STATE_RETRY);
         return;
     }
 
     Packet announcement = {0};
-    announcement.module.address_announce.serial = UID;
-    Protocol_Send(MODULE_ADDRESS_ANNOUNCE, &announcement);
+    announcement.module.identifier_announce.serial = UID;
+    Protocol_Send(MODULE_IDENTIFIER_ANNOUNCE, &announcement);
 
-    protocol.addressing.announcement_count++;
-    if (protocol.addressing.announcement_count < PROTOCOL_ADDRESS_ANNOUNCEMENT_COUNT) {
+    protocol.identifier_negotiation.announcement_count++;
+    if (protocol.identifier_negotiation.announcement_count < PROTOCOL_IDENTIFIER_ANNOUNCEMENT_COUNT) {
         FSM_Transition(fsm, PROTOCOL_FSM_STATE_WAIT_ANNOUNCE);
     } else {
         FSM_Transition(fsm, PROTOCOL_FSM_STATE_WAIT_CONFIRM);
@@ -162,88 +164,90 @@ static void protocol_fsm_announce_enter(FSM *fsm) {
 }
 
 static void protocol_fsm_wait_confirm_enter(FSM *fsm) {
-    protocol.addressing.next_action_at = HAL_GetTick() + PROTOCOL_ADDRESS_FINAL_WAIT_MS;
+    protocol.identifier_negotiation.next_action_at = HAL_GetTick() + PROTOCOL_IDENTIFIER_FINAL_WAIT_MS;
 }
 
 static void protocol_fsm_wait_confirm_service(FSM *fsm) {
-    if (protocol.addressing.collision_detected) {
+    if (protocol.identifier_negotiation.collision_detected) {
         FSM_Transition(fsm, PROTOCOL_FSM_STATE_RETRY);
-    } else if (action_is_due(protocol.addressing.next_action_at)) {
+    } else if (action_is_due(protocol.identifier_negotiation.next_action_at)) {
         FSM_Transition(fsm, PROTOCOL_FSM_STATE_CONFIRMED);
     }
 }
 
 static void protocol_fsm_retry_enter(FSM *fsm) {
-    const uint8_t previous_id = protocol.id;
+    const uint8_t previous_identifier = protocol.identifier;
 
     do {
-        protocol.id = TRNG_Rand8Range(1U, 254U);
-    } while (protocol.id == previous_id);
+        protocol.identifier = TRNG_Rand8Range(1U, 254U);
+    } while (protocol.identifier == previous_identifier);
 
-    protocol.addressing.id_negotiated = false;
-    protocol.addressing.collision_detected = false;
-    protocol.addressing.announcement_count = 0U;
+    protocol.identifier_negotiation.identifier_negotiated = false;
+    protocol.identifier_negotiation.collision_detected = false;
+    protocol.identifier_negotiation.announcement_count = 0U;
     FSM_Transition(fsm, PROTOCOL_FSM_STATE_WAIT_ANNOUNCE);
 }
 
 static void protocol_fsm_confirmed_enter(FSM *fsm) {
-    protocol.addressing.id_negotiated = true;
-    protocol.addressing.collision_detected = false;
+    protocol.identifier_negotiation.identifier_negotiated = true;
+    protocol.identifier_negotiation.collision_detected = false;
 
-    if (protocol.id == protocol.addressing.stored_id) {
+    if (protocol.identifier == protocol.identifier_negotiation.stored_identifier) {
         return;
     }
 
     const NVM_Query query = {
         .type = UINT8,
-        .id = MODE_CFG(MODE_NONE, MODE_CONFIG_CAN_ID),
-        .data = &protocol.id,
+        .id = MODE_CFG(MODE_NONE, MODE_CONFIG_CAN_IDENTIFIER),
+        .data = &protocol.identifier,
     };
 
     if (NVM_Write(&query)) {
-        protocol.addressing.stored_id = protocol.id;
+        protocol.identifier_negotiation.stored_identifier = protocol.identifier;
     }
 }
 
 void Protocol_Init(void) {
     protocol = (protocol_t) {
-        .id = TRNG_Rand8Range(1U, 254U),
+        .identifier = TRNG_Rand8Range(1U, 254U),
     };
 
     const NVM_Query query = {
         .type = UINT8,
-        .id = MODE_CFG(MODE_NONE, MODE_CONFIG_CAN_ID),
-        .data = &protocol.addressing.stored_id,
+        .id = MODE_CFG(MODE_NONE, MODE_CONFIG_CAN_IDENTIFIER),
+        .data = &protocol.identifier_negotiation.stored_identifier,
     };
 
     NVM_Read(&query, 1U);
 
-    if ((protocol.addressing.stored_id >= 1U) && (protocol.addressing.stored_id <= 254U)) {
-        protocol.id = protocol.addressing.stored_id;
+    if ((protocol.identifier_negotiation.stored_identifier >= 1U) &&
+        (protocol.identifier_negotiation.stored_identifier <= 254U)) {
+        protocol.identifier = protocol.identifier_negotiation.stored_identifier;
     } else {
-        protocol.addressing.stored_id = 0U;
+        protocol.identifier_negotiation.stored_identifier = 0U;
     }
 
-    if (!FSM_Init(&protocol.addressing.fsm, protocol_fsm_states,
+    if (!FSM_Init(&protocol.identifier_negotiation.fsm, protocol_fsm_states,
                   PROTOCOL_FSM_STATE_WAIT_ANNOUNCE, NULL)) {
         Error_Handler();
     }
 }
 
 void Protocol_Service(void) {
-    if (!protocol.addressing.id_negotiated) {
-        FSM_Service(&protocol.addressing.fsm);
+    /* Service the identifier negotiation fsm if we haven't agreed an address. */
+    if (!protocol.identifier_negotiation.identifier_negotiated) {
+        FSM_Service(&protocol.identifier_negotiation.fsm);
     }
 }
 
-void Protocol_Receive(uint16_t mailbox, uint8_t length, void *data) {
+void Protocol_Receive(uint16_t identifier, uint8_t length, void *data) {
     if ((data == NULL) || (length < SIZE_HEADER)) {
         return;
     }
 
-    uint8_t id = mailbox & MAILBOX_ID_MASK;
+    const uint8_t module_identifier = identifier & MODULE_IDENTIFIER_MASK;
     Packet *packet = (Packet *) data;
-    OpCode opcode = (OpCode) ((mailbox & SUBSYS_MASK) | packet->header.opcode);
+    OpCode opcode = (OpCode) ((identifier & SUBSYS_MASK) | packet->header.opcode);
 
     const PacketRegistry *definition = lookup_registry_entry(opcode);
 
@@ -252,7 +256,7 @@ void Protocol_Receive(uint16_t mailbox, uint8_t length, void *data) {
     }
 
     if (definition->callback != NULL) {
-        definition->callback(id, opcode, packet);
+        definition->callback(module_identifier, opcode, packet);
     }
 }
 
@@ -261,9 +265,9 @@ void Protocol_Send(OpCode opcode, Packet *packet) {
         return;
     }
 
-    if (!protocol.addressing.id_negotiated &&
-        (opcode != MODULE_ADDRESS_ANNOUNCE) &&
-        (opcode != MODULE_ADDRESS_NAK)) {
+    if (!protocol.identifier_negotiation.identifier_negotiated &&
+        (opcode != MODULE_IDENTIFIER_ANNOUNCE) &&
+        (opcode != MODULE_IDENTIFIER_NAK)) {
         return;
     }
 
@@ -275,6 +279,6 @@ void Protocol_Send(OpCode opcode, Packet *packet) {
 
     packet->header.opcode = (uint8_t) ((uint16_t) opcode & OPCODE_MASK);
 
-    const uint16_t mailbox = ((uint16_t) opcode & SUBSYS_MASK) | protocol.id;
-    CAN_Queue(mailbox, definition->minimumLength, packet);
+    const uint16_t identifier = ((uint16_t) opcode & SUBSYS_MASK) | protocol.identifier;
+    CAN_Queue(identifier, definition->minimumLength, packet);
 }

@@ -14,7 +14,7 @@ extern "C" {
 
 #define SUBSYS_MASK 0x700U
 #define OPCODE_MASK 0x0FFU
-#define MAILBOX_ID_MASK 0x0FFU
+#define MODULE_IDENTIFIER_MASK 0x0FFU
 
 /*
  * Add each packet here once. The list generates both OpCode and the
@@ -22,9 +22,9 @@ extern "C" {
  * packet's consumer callback when it is implemented.
  */
 #define PROTOCOL_PACKETS(X) \
-    X(MODULE_ADDRESS_ANNOUNCE, SUBSYS_MODULE | 0x00U, module.address_announce, handle_address_announce) \
-    X(MODULE_ADDRESS_NAK,      SUBSYS_MODULE | 0x01U, module.address_nak,      handle_address_nak) \
-    X(MODULE_ANNOUNCE,         SUBSYS_MODULE | 0x10U, module.announce,         NULL)
+    X(MODULE_IDENTIFIER_ANNOUNCE, SUBSYS_MODULE | 0x00U, module.identifier_announce, handle_identifier_announce) \
+    X(MODULE_IDENTIFIER_NAK,      SUBSYS_MODULE | 0x01U, module.identifier_nak,      handle_identifier_nak) \
+    X(MODULE_ANNOUNCE,            SUBSYS_MODULE | 0x10U, module.announce,            Nodes_ReceiveAnnounce)
 
 #define PROTOCOL_DECLARE_OPCODE(opcode, value, member, callback) opcode = value,
 
@@ -45,11 +45,11 @@ typedef struct {
         union {
             struct {
                 uint32_t serial;
-            } address_announce;
+            } identifier_announce;
 
             struct {
                 uint32_t serial;
-            } address_nak;
+            } identifier_nak;
 
             struct {
                 uint32_t serial;
@@ -80,7 +80,7 @@ void Protocol_Init(void);
 
 void Protocol_Service(void);
 
-void Protocol_Receive(uint16_t mailbox, uint8_t length, void *data);
+void Protocol_Receive(uint16_t identifier, uint8_t length, void *data);
 
 void Protocol_Send(OpCode opcode, Packet *packet);
 

@@ -2,6 +2,7 @@
 
 #include "indicator.h"
 #include "mode.h"
+#include "nodes.h"
 #include "protocol.h"
 #include "sys/argb.h"
 #include "sys/can.h"
@@ -93,6 +94,8 @@ int main(void) {
         I2C_Service();
         /* Service CAN. */
         CAN_Service(Protocol_Receive);
+        /* Update node activity. */
+        Nodes_Service();
         /* Service protocol. */
         Protocol_Service();
         /* Service CBUS. */
