@@ -48,10 +48,10 @@ void Nodes_ReceiveAnnounce(Protocol_Message *message) {
 
     *node = (Node) {
         .identifier = message->identifier,
-        .mode = message->packet->module.announce.mode,
-        .serial = message->packet->module.announce.serial,
-        .uptime = message->packet->module.announce.uptime,
-        .chassis_location = message->packet->module.announce.flags.chassis_location,
+        .mode = message->packet->node.announce.mode,
+        .serial = message->packet->node.announce.serial,
+        .uptime = message->packet->node.announce.uptime,
+        .chassis_location = message->packet->node.announce.flags.chassis_location,
         .last_announcement = now,
         .flags = {
             .active = true,

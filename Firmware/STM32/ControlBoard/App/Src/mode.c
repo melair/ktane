@@ -68,9 +68,11 @@ void Mode_Service(void) {
 
     if (tick_2hz) {
         Packet announcement = {0};
-        announcement.module.announce.serial = UID;
-        announcement.module.announce.uptime = HAL_GetTick();
-        announcement.module.announce.mode = mode.mode;
+        announcement.node.announce.serial = UID;
+        announcement.node.announce.uptime = HAL_GetTick();
+        announcement.node.announce.mode = mode.mode;
+        announcement.node.announce.state = mode.fsm.current_id;
+        announcement.node.announce.flags.chassis_location = NODE_CHASSIS_LOCATION_UNKNOWN;
         Protocol_Send(MODULE_ANNOUNCE, &announcement);
     }
 }

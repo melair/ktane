@@ -117,7 +117,7 @@ static void handle_identifier_announce(Protocol_Message *message) {
     }
 
     Packet nak = {0};
-    nak.module.identifier_nak.serial = UID;
+    nak.node.identifier_nak.serial = UID;
     Protocol_Send(MODULE_IDENTIFIER_NAK, &nak);
 
     if (!protocol.identifier_negotiation.identifier_negotiated) {
@@ -154,7 +154,7 @@ static void protocol_fsm_announce_enter(FSM *fsm) {
     }
 
     Packet announcement = {0};
-    announcement.module.identifier_announce.serial = UID;
+    announcement.node.identifier_announce.serial = UID;
     Protocol_Send(MODULE_IDENTIFIER_ANNOUNCE, &announcement);
 
     protocol.identifier_negotiation.announcement_count++;

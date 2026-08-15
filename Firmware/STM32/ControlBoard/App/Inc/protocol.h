@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #define SUBSYS_GAME       0x000U
-#define SUBSYS_MODULE     0x200U
+#define SUBSYS_NODE       0x200U
 #define SUBSYS_FIRMWARE   0x600U
 #define SUBSYS_DEBUGGING  0x700U
 
@@ -23,9 +23,9 @@ extern "C" {
  * packet's consumer callback when it is implemented.
  */
 #define PROTOCOL_PACKETS(X) \
-    X(MODULE_IDENTIFIER_ANNOUNCE, SUBSYS_MODULE | 0x00U, module.identifier_announce, handle_identifier_announce) \
-    X(MODULE_IDENTIFIER_NAK,      SUBSYS_MODULE | 0x01U, module.identifier_nak,      handle_identifier_nak) \
-    X(MODULE_ANNOUNCE,            SUBSYS_MODULE | 0x10U, module.announce,            Nodes_ReceiveAnnounce)
+    X(MODULE_IDENTIFIER_ANNOUNCE, SUBSYS_NODE | 0x00U, node.identifier_announce, handle_identifier_announce) \
+    X(MODULE_IDENTIFIER_NAK,      SUBSYS_NODE | 0x01U, node.identifier_nak,      handle_identifier_nak) \
+    X(MODULE_ANNOUNCE,            SUBSYS_NODE | 0x10U, node.announce,            Nodes_ReceiveAnnounce)
 
 #define PROTOCOL_DECLARE_OPCODE(opcode, value, member, callback) opcode = value,
 
@@ -45,6 +45,36 @@ typedef struct {
     union {
         union {
             struct {
+                uint8_t state;
+            } request_transition;
+
+            struct {
+                uint32_t seed;
+
+                uint8_t mode;
+                uint8_t state;
+                uint8_t strikes;
+
+                struct {
+                    uint32_t time_in_us;
+                } clock;
+
+                struct {
+                    uint16_t active;
+                    uint16_t puzzle;
+                    uint16_t needy;
+                    uint16_t solved;
+                } node_masks;
+            } update;
+
+            struct {
+                uint8_t event;
+                uint32_t timestamp;
+            } mode_event;
+        } game;
+
+        union {
+            struct {
                 uint32_t serial;
             } identifier_announce;
 
@@ -56,12 +86,13 @@ typedef struct {
                 uint32_t serial;
                 uint32_t uptime;
                 uint8_t mode;
+                uint8_t state;
                 struct {
                     uint8_t chassis_location :4;
                     uint8_t reserved :4;
                 } flags;
             } announce;
-        } module;
+        } node;
     };
 } Packet;
 

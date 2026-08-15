@@ -2,17 +2,12 @@
 
 #include <stdint.h>
 
-#include "main.h"
-#include "stm32h5xx_it.h"
+#include "stm32h5xx_hal.h"
+#include "sys/sys_clock.h"
 
-#define MCU_LOAD_TIM6_CLOCK_HZ 250000000U
-#define MCU_LOAD_TIMER_HZ 200000U
-#define MCU_LOAD_TIMER_PRESCALER ((MCU_LOAD_TIM6_CLOCK_HZ / MCU_LOAD_TIMER_HZ) - 1U)
 #define MCU_LOAD_SAMPLE_PERIOD_MS 1000U
 #define MCU_LOAD_SCALE 10000U
 #define MCU_LOAD_HISTORY_SIZE 60U
-
-/* TIM6 is clocked at 250 MHz. Prescaler 1249 gives a 200 kHz timer, so each tick is 5 us. */
 
 volatile uint16_t mcu_load_1s = 0;
 volatile uint16_t mcu_load_5s = 0;
@@ -25,16 +20,15 @@ volatile uint16_t mcu_wakeups_15s = 0;
 volatile uint16_t mcu_wakeups_60s = 0;
 
 typedef struct {
-    TIM_HandleTypeDef htim6;
     uint16_t load_history[MCU_LOAD_HISTORY_SIZE];
     uint16_t wakeups_history[MCU_LOAD_HISTORY_SIZE];
     uint8_t history_index;
     uint8_t history_count;
-    uint32_t busy_ticks;
-    uint32_t idle_ticks;
+    uint32_t busy_us;
+    uint32_t idle_us;
     uint32_t wakeups;
     uint32_t last_sample_ms;
-    uint16_t period_start_tick;
+    uint32_t period_start_us;
 } mcu_load_t;
 
 static mcu_load_t mcu_load = {0};
@@ -86,12 +80,12 @@ static void calculate(void) {
         return;
     }
 
-    const uint32_t total_ticks = mcu_load.busy_ticks + mcu_load.idle_ticks;
+    const uint32_t total_us = mcu_load.busy_us + mcu_load.idle_us;
     uint32_t load = 0;
     uint32_t wakeups = 0;
 
-    if (total_ticks > 0U) {
-        load = ((mcu_load.busy_ticks * MCU_LOAD_SCALE) + (total_ticks / 2U)) / total_ticks;
+    if (total_us > 0U) {
+        load = (uint32_t) ((((uint64_t) mcu_load.busy_us * MCU_LOAD_SCALE) + (total_us / 2U)) / total_us);
         if (load > MCU_LOAD_SCALE) {
             load = MCU_LOAD_SCALE;
         }
@@ -105,63 +99,33 @@ static void calculate(void) {
 
     recordSample((uint16_t) load, (uint16_t) wakeups);
 
-    mcu_load.busy_ticks = 0;
-    mcu_load.idle_ticks = 0;
+    mcu_load.busy_us = 0;
+    mcu_load.idle_us = 0;
     mcu_load.wakeups = 0;
     mcu_load.last_sample_ms = now_ms;
 }
 
 void MCU_Load_Init(void) {
-    TIM_ClockConfigTypeDef clock_source_config = {0};
-    TIM_MasterConfigTypeDef master_config = {0};
-
-    __HAL_RCC_TIM6_CLK_ENABLE();
-
-    mcu_load.htim6.Instance = TIM6;
-    mcu_load.htim6.Init.Prescaler = MCU_LOAD_TIMER_PRESCALER;
-    mcu_load.htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-    mcu_load.htim6.Init.Period = UINT16_MAX;
-    mcu_load.htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-    if (HAL_TIM_Base_Init(&mcu_load.htim6) != HAL_OK) {
-        Error_Handler();
-    }
-
-    clock_source_config.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-    if (HAL_TIM_ConfigClockSource(&mcu_load.htim6, &clock_source_config) != HAL_OK) {
-        Error_Handler();
-    }
-
-    master_config.MasterOutputTrigger = TIM_TRGO_RESET;
-    master_config.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-    if (HAL_TIMEx_MasterConfigSynchronization(&mcu_load.htim6, &master_config) != HAL_OK) {
-        Error_Handler();
-    }
-
-    __HAL_TIM_SET_COUNTER(&mcu_load.htim6, 0U);
-    if (HAL_TIM_Base_Start(&mcu_load.htim6) != HAL_OK) {
-        Error_Handler();
-    }
-
     mcu_load.last_sample_ms = HAL_GetTick();
-    mcu_load.period_start_tick = (uint16_t) __HAL_TIM_GET_COUNTER(&mcu_load.htim6);
+    mcu_load.period_start_us = SysClock_GetUs();
 }
 
 void MCU_Load_Begin(void) {
-    const uint16_t current_tick = (uint16_t) __HAL_TIM_GET_COUNTER(&mcu_load.htim6);
+    const uint32_t current_us = SysClock_GetUs();
 
     mcu_load.wakeups++;
 
-    mcu_load.idle_ticks += (uint16_t) (current_tick - mcu_load.period_start_tick);
-    mcu_load.period_start_tick = current_tick;
+    mcu_load.idle_us += current_us - mcu_load.period_start_us;
+    mcu_load.period_start_us = current_us;
 }
 
 void MCU_Load_End(void) {
-    const uint16_t busy_end_tick = (uint16_t) __HAL_TIM_GET_COUNTER(&mcu_load.htim6);
+    const uint32_t busy_end_us = SysClock_GetUs();
 
-    mcu_load.busy_ticks += (uint16_t) (busy_end_tick - mcu_load.period_start_tick);
+    mcu_load.busy_us += busy_end_us - mcu_load.period_start_us;
     calculate();
 
-    const uint16_t current_tick = (uint16_t) __HAL_TIM_GET_COUNTER(&mcu_load.htim6);
-    mcu_load.busy_ticks += (uint16_t) (current_tick - busy_end_tick);
-    mcu_load.period_start_tick = current_tick;
+    const uint32_t current_us = SysClock_GetUs();
+    mcu_load.busy_us += current_us - busy_end_us;
+    mcu_load.period_start_us = current_us;
 }

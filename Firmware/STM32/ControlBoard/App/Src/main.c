@@ -16,6 +16,7 @@
 #include "sys/rng.h"
 #include "sys/rtc.h"
 #include "sys/spi.h"
+#include "sys/sys_clock.h"
 #include "status.h"
 #include "sys/tick.h"
 
@@ -47,6 +48,7 @@ int main(void) {
     ICACHE_Init();
     RTC_Init();
     TRNG_Init();
+    SysClock_Init();
 
     /* Enable DMA peripherals. GPDMA1 for core functions, GPDMA2 for submodules. */
     __HAL_RCC_GPDMA1_CLK_ENABLE();
