@@ -25,12 +25,12 @@ typedef struct {
 
 static Node nodes[MAXIMUM_NODES] = {0};
 
-void Nodes_ReceiveAnnounce(const uint8_t identifier, const OpCode opcode, Packet *packet) {
+void Nodes_ReceiveAnnounce(Protocol_Message *message) {
     const uint32_t now = HAL_GetTick();
     Node *node = NULL;
 
     for (uint8_t index = 0U; index < MAXIMUM_NODES; index++) {
-        if (nodes[index].identifier == identifier) {
+        if (nodes[index].identifier == message->identifier) {
             node = &nodes[index];
             break;
         }
@@ -47,11 +47,11 @@ void Nodes_ReceiveAnnounce(const uint8_t identifier, const OpCode opcode, Packet
     }
 
     *node = (Node) {
-        .identifier = identifier,
-        .mode = packet->module.announce.mode,
-        .serial = packet->module.announce.serial,
-        .uptime = packet->module.announce.uptime,
-        .chassis_location = packet->module.announce.flags.chassis_location,
+        .identifier = message->identifier,
+        .mode = message->packet->module.announce.mode,
+        .serial = message->packet->module.announce.serial,
+        .uptime = message->packet->module.announce.uptime,
+        .chassis_location = message->packet->module.announce.flags.chassis_location,
         .last_announcement = now,
         .flags = {
             .active = true,

@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-void Nodes_ReceiveAnnounce(uint8_t identifier, OpCode opcode, Packet *packet);
+void Nodes_ReceiveAnnounce(Protocol_Message *message);
 void Nodes_Service(void);
 
 #ifdef __cplusplus

@@ -41,11 +41,11 @@ typedef struct {
     OpCode opcode;
     uint8_t minimumLength;
 
-    void (*callback)(uint8_t identifier, OpCode opcode, Packet *packet);
+    void (*callback)(Protocol_Message *message);
 } PacketRegistry;
 
-static void handle_identifier_announce(uint8_t identifier, OpCode opcode, Packet *packet);
-static void handle_identifier_nak(uint8_t identifier, OpCode opcode, Packet *packet);
+static void handle_identifier_announce(Protocol_Message *message);
+static void handle_identifier_nak(Protocol_Message *message);
 
 static void protocol_fsm_wait_announce_enter(FSM *fsm);
 static void protocol_fsm_wait_announce_service(FSM *fsm);
@@ -110,8 +110,9 @@ static bool action_is_due(const uint32_t action_at) {
     return (int32_t)(HAL_GetTick() - action_at) >= 0;
 }
 
-static void handle_identifier_announce(const uint8_t identifier, const OpCode opcode, Packet *packet) {
-    if (identifier != protocol.identifier) {
+static void handle_identifier_announce(Protocol_Message *message) {
+    if ((message->direction != CAN_DIRECTION_IN) ||
+        (message->identifier != protocol.identifier)) {
         return;
     }
 
@@ -124,9 +125,10 @@ static void handle_identifier_announce(const uint8_t identifier, const OpCode op
     }
 }
 
-static void handle_identifier_nak(const uint8_t identifier, const OpCode opcode, Packet *packet) {
+static void handle_identifier_nak(Protocol_Message *message) {
     if (!protocol.identifier_negotiation.identifier_negotiated &&
-        (identifier == protocol.identifier)) {
+        (message->direction == CAN_DIRECTION_IN) &&
+        (message->identifier == protocol.identifier)) {
         protocol.identifier_negotiation.collision_detected = true;
     }
 }
@@ -240,27 +242,36 @@ void Protocol_Service(void) {
     }
 }
 
-void Protocol_Receive(uint16_t identifier, uint8_t length, void *data) {
-    if ((data == NULL) || (length < SIZE_HEADER)) {
+void Protocol_Receive(const CAN_Packet *canPacket) {
+    if ((canPacket == NULL) ||
+        (canPacket->data == NULL) ||
+        (canPacket->length < SIZE_HEADER)) {
         return;
     }
 
-    const uint8_t module_identifier = identifier & MODULE_IDENTIFIER_MASK;
-    Packet *packet = (Packet *) data;
-    OpCode opcode = (OpCode) ((identifier & SUBSYS_MASK) | packet->header.opcode);
+    const uint8_t module_identifier = canPacket->identifier & MODULE_IDENTIFIER_MASK;
+    Packet *packet = (Packet *) canPacket->data;
+    const OpCode opcode = (OpCode) ((canPacket->identifier & SUBSYS_MASK) | packet->header.opcode);
 
     const PacketRegistry *definition = lookup_registry_entry(opcode);
 
-    if ((definition == NULL) || (length < definition->minimumLength)) {
+    if ((definition == NULL) || (canPacket->length < definition->minimumLength)) {
         return;
     }
 
     if (definition->callback != NULL) {
-        definition->callback(module_identifier, opcode, packet);
+        Protocol_Message message = {
+            .identifier = module_identifier,
+            .opcode = opcode,
+            .packet = packet,
+            .direction = canPacket->direction,
+            .timing = canPacket->timing,
+        };
+        definition->callback(&message);
     }
 }
 
-void Protocol_Send(OpCode opcode, Packet *packet) {
+void Protocol_Send(const OpCode opcode, Packet *packet) {
     if (packet == NULL) {
         return;
     }

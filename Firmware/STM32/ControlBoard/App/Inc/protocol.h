@@ -2,6 +2,7 @@
 #define PROTOCOL_H
 #include <stddef.h>
 #include <stdint.h>
+#include "sys/can.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,6 +67,15 @@ typedef struct {
 
 #pragma pack(pop)
 
+typedef struct {
+    uint8_t identifier;
+    OpCode opcode;
+    Packet *packet;
+
+    CAN_Direction direction;
+    CAN_Timing timing;
+} Protocol_Message;
+
 #define PROTOCOL_DECLARE_SIZE(opcode, value, member, callback) \
     SIZE_##opcode = offsetof(Packet, member) + sizeof(((Packet *)0)->member),
 
@@ -80,7 +90,7 @@ void Protocol_Init(void);
 
 void Protocol_Service(void);
 
-void Protocol_Receive(uint16_t identifier, uint8_t length, void *data);
+void Protocol_Receive(const CAN_Packet *canPacket);
 
 void Protocol_Send(OpCode opcode, Packet *packet);
 
