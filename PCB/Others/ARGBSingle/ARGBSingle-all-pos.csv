@@ -1,0 +1,4 @@
+Designator,Val,Package,Mid X,Mid Y,Rotation,Layer
+"C1","0.1uF","C_0603_1608Metric",24.500000,-16.000000,0.000000,bottom
+"D1","WS2812B-2020","LED_WS2812B-2020_PLCC4_2.0x2.0mm",24.500000,-18.000000,180.000000,bottom
+
