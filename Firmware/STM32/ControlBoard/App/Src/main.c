@@ -18,6 +18,12 @@
 #include "sys/spi.h"
 #include "status.h"
 #include "sys/tick.h"
+#include "sys/usb_serial.h"
+
+static void handle_can_packet(const CAN_Packet *packet) {
+    USB_Serial_LogCAN(packet);
+    Protocol_Receive(packet);
+}
 
 /**
   * @brief  The application entry point.
@@ -57,6 +63,7 @@ int main(void) {
     I2C_Init();
     SPI_Init();
     CAN_Init();
+    USB_Serial_Init();
     Protocol_Init();
     ARGB_Init();
     CBUS_Init();
@@ -92,8 +99,10 @@ int main(void) {
         SPI_Service();
         /* Service I2C. */
         I2C_Service();
+        /* Service USB CDC output. */
+        USB_Serial_Service();
         /* Service CAN. */
-        CAN_Service(Protocol_Receive);
+        CAN_Service(handle_can_packet);
         /* Update node activity. */
         Nodes_Service();
         /* Service protocol. */
