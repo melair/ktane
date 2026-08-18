@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stddef.h>
+#include "game.h"
 #include "mode.h"
 #include "nodes.h"
 #include "protocol.h"

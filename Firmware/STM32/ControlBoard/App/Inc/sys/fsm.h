@@ -41,6 +41,8 @@ bool FSM_Init(FSM *fsm, const FSM_State *states, FSM_StateId initial_state_id,
 
 void FSM_Service(FSM *fsm);
 
+bool FSM_IsTransitionLegal(const FSM *fsm, FSM_StateId new_state_id);
+
 bool FSM_Transition(FSM *fsm, FSM_StateId new_state_id);
 
 bool FSM_TransitionIn(FSM *fsm, FSM_StateId new_state_id, uint32_t delay_ms);

@@ -249,7 +249,6 @@ static void timer_startup_service(FSM *fsm) {
 
     const uint8_t step_count = ARRAY_COUNT(timer_startup_segments) * TIMER_STARTUP_SEGMENT_REPEATS;
     if (timer->startup_step >= step_count) {
-        timer_strikes_set(STRIKES_DIGIT_BLANK, STRIKES_DIGIT_BLANK);
         FSM_Transition(fsm, MODE_FSM_STATE_IDLE);
         return;
     }
@@ -264,6 +263,7 @@ static void timer_startup_service(FSM *fsm) {
 }
 
 static void timer_idle_enter(FSM *fsm) {
+    timer_strikes_set(STRIKES_DIGIT_BLANK, STRIKES_DIGIT_BLANK);
     timer_display_set_all_digits(TIMER_DIGIT_DASH);
 }
 
@@ -393,7 +393,8 @@ static Callbacks timer_state_callbacks[MODE_FSM_STATE_COUNT] = {
     [MODE_FSM_STATE_READY] = {0},
     [MODE_FSM_STATE_STARTING] = {0},
     [MODE_FSM_STATE_RUNNING] = {0},
-    [MODE_FSM_STATE_OVER] = {0},
+    [MODE_FSM_STATE_SOLVED] = {0},
+    [MODE_FSM_STATE_ENDED] = {0},
 };
 
 Mode_Definition timer_mode = {

@@ -38,6 +38,7 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/indicator.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode_fsm.c

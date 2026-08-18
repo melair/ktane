@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "game.h"
 #include "indicator.h"
 #include "mode.h"
 #include "nodes.h"
@@ -75,6 +76,9 @@ int main(void) {
     /* Initialize the module indicator to OFF. */
     Indicator_Init();
 
+    /* Initialize the game. */
+    Game_Init();
+
     /* Initialize the selected mode. */
     Mode_Init();
 
@@ -103,12 +107,13 @@ int main(void) {
         /* Service CBUS. */
         CBUS_Service(NULL);
 
-        /* Service the module indicator. */
-        Indicator_Service();
-
+        /* Service the game. */
+        Game_Service();
         /* Service the mode. */
         Mode_Service();
 
+        /* Service the module indicator. */
+        Indicator_Service();
         /* Service ARGB strips with pending changes. */
         ARGB_Service();
 

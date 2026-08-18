@@ -81,6 +81,10 @@ void Mode_SetServiceEnabled(const bool enabled) {
     mode.service_enabled = enabled;
 }
 
+uint8_t Mode_Get(void) {
+    return mode.mode;
+}
+
 void Mode_Set(const uint8_t new_mode) {
     mode.mode = new_mode;
 

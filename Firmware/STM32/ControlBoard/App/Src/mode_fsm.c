@@ -98,10 +98,18 @@ const FSM_State mode_fsm_states[] = {
         .enter = mode_fsm_enter,
         .service = mode_fsm_service,
         .exit = mode_fsm_exit,
-        .next_mask = FSM_NEXT(MODE_FSM_STATE_OVER) |
+        .next_mask = FSM_NEXT(MODE_FSM_STATE_ENDED) |
+                     FSM_NEXT(MODE_FSM_STATE_SOLVED) |
                      FSM_NEXT(MODE_FSM_STATE_IDLE),
     },
-    [MODE_FSM_STATE_OVER] = {
+    [MODE_FSM_STATE_SOLVED] = {
+        .enter = mode_fsm_enter,
+        .service = mode_fsm_service,
+        .exit = mode_fsm_exit,
+        .next_mask = FSM_NEXT(MODE_FSM_STATE_ENDED) |
+                     FSM_NEXT(MODE_FSM_STATE_IDLE),
+    },
+    [MODE_FSM_STATE_ENDED] = {
         .enter = mode_fsm_enter,
         .service = mode_fsm_service,
         .exit = mode_fsm_exit,

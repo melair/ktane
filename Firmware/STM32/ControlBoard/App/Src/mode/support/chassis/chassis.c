@@ -39,7 +39,8 @@ static Callbacks chassis_state_callbacks[MODE_FSM_STATE_COUNT] = {
     [MODE_FSM_STATE_READY] = {0},
     [MODE_FSM_STATE_STARTING] = {0},
     [MODE_FSM_STATE_RUNNING] = {0},
-    [MODE_FSM_STATE_OVER] = {0},
+    [MODE_FSM_STATE_SOLVED] = {0},
+    [MODE_FSM_STATE_ENDED] = {0},
 };
 
 Mode_Definition chassis_mode = {

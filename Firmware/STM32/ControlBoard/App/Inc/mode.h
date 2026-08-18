@@ -71,6 +71,8 @@ void Mode_Service(void);
 
 void Mode_SetServiceEnabled(bool enabled);
 
+uint8_t Mode_Get(void);
+
 void Mode_Set(uint8_t mode);
 
 #ifdef __cplusplus

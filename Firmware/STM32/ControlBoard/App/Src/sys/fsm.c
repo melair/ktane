@@ -66,12 +66,19 @@ void FSM_Service(FSM *fsm) {
     } while (fsm->transition_pending && (count < FSM_SERVICE_LOOP_LIMIT));
 }
 
-bool FSM_Transition(FSM *fsm, const FSM_StateId new_state_id) {
-    if (fsm->transition_pending) {
+bool FSM_IsTransitionLegal(const FSM *fsm, const FSM_StateId new_state_id) {
+    if ((fsm == NULL) ||
+        (fsm->states == NULL) ||
+        (fsm->current_id >= FSM_MAX_STATES) ||
+        (new_state_id >= FSM_MAX_STATES)) {
         return false;
     }
 
-    if ((fsm->states[fsm->current_id].next_mask & FSM_NEXT(new_state_id)) == 0U) {
+    return (fsm->states[fsm->current_id].next_mask & FSM_NEXT(new_state_id)) != 0U;
+}
+
+bool FSM_Transition(FSM *fsm, const FSM_StateId new_state_id) {
+    if ((fsm == NULL) || fsm->transition_pending || !FSM_IsTransitionLegal(fsm, new_state_id)) {
         return false;
     }
 
