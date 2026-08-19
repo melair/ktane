@@ -1,0 +1,58 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake"
+        },
+        {
+            "name": "Debug",
+            "displayName": "STM32 Debug",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "Release",
+            "displayName": "STM32 Release",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Backplane-Debug",
+            "configurePreset": "Debug",
+            "targets": [
+                "Backplane"
+            ]
+        },
+        {
+            "name": "Backplane-Release",
+            "configurePreset": "Release",
+            "targets": [
+                "Backplane"
+            ]
+        },
+        {
+            "name": "ControlBoard-Debug",
+            "configurePreset": "Debug",
+            "targets": [
+                "ControlBoard"
+            ]
+        },
+        {
+            "name": "ControlBoard-Release",
+            "configurePreset": "Release",
+            "targets": [
+                "ControlBoard"
+            ]
+        }
+    ]
+}

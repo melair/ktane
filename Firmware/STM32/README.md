@@ -2,6 +2,28 @@
 
 The BOS is based on the STM32 ecosystem, specifically targetting H5, G0 and WB0. These are all kept together so that they may share common headers and code.
 
+## Building with CMake
+
+Open this `STM32` directory as the CMake project in CLion. The root project exposes
+the `Backplane` and `ControlBoard` executable targets in both the `Debug` and
+`Release` CMake profiles.
+
+The same combinations are available from the command line as build presets:
+
+```shell
+cmake --preset Debug
+cmake --build --preset Backplane-Debug
+cmake --build --preset ControlBoard-Debug
+
+cmake --preset Release
+cmake --build --preset Backplane-Release
+cmake --build --preset ControlBoard-Release
+```
+
+Build products are written below `build/Debug` and `build/Release`, separated by
+board. Each board keeps its own sources, HAL/CMSIS includes, MCU flags, and linker
+script; only the common `arm-none-eabi` compiler selection is centralised.
+
 ## STM32CubeMX
 
 **The original project was generated with STM32CubeMX, however it must never be updated with it again.**

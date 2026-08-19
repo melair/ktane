@@ -1,22 +1,6 @@
-cmake_minimum_required(VERSION 3.22)
+set(CONTROL_BOARD_TARGET ControlBoard)
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS ON)
-
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
-endif ()
-
-set(CMAKE_PROJECT_NAME ControlBoard)
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
-
-project(${CMAKE_PROJECT_NAME})
-message("Build type: " ${CMAKE_BUILD_TYPE})
-
-enable_language(C ASM)
-
-add_executable(${CMAKE_PROJECT_NAME})
+add_executable(${CONTROL_BOARD_TARGET})
 
 set(APP_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Inc
@@ -112,42 +96,55 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_usart_ex.c
 )
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+target_sources(${CONTROL_BOARD_TARGET} PRIVATE
         ${APP_SOURCES}
         ${MCU_SUPPORT_SOURCES}
         ${CMSIS_SOURCES}
         ${HAL_SOURCES}
 )
 
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+target_include_directories(${CONTROL_BOARD_TARGET} PRIVATE
         ${APP_INCLUDE_DIRS}
         ${MCU_SUPPORT_INCLUDE_DIRS}
         ${HAL_INCLUDE_DIRS}
         ${CMSIS_INCLUDE_DIRS}
 )
 
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+target_compile_definitions(${CONTROL_BOARD_TARGET} PRIVATE
         USE_HAL_DRIVER
         STM32H562xx
         $<$<CONFIG:Debug>:DEBUG>
 )
 
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
+target_compile_options(${CONTROL_BOARD_TARGET} PRIVATE
+        -mcpu=cortex-m33
+        -mfpu=fpv5-sp-d16
+        -mfloat-abi=hard
+        $<$<COMPILE_LANGUAGE:C,CXX>:-Wall;-fdata-sections;-ffunction-sections;-fstack-usage>
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti;-fno-exceptions;-fno-threadsafe-statics>
+        $<$<COMPILE_LANGUAGE:ASM>:-x;assembler-with-cpp;-MMD;-MP>
+)
+
+target_link_options(${CONTROL_BOARD_TARGET} PRIVATE
+        -mcpu=cortex-m33
+        -mfpu=fpv5-sp-d16
+        -mfloat-abi=hard
+        -T${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/STM32H562xx_FLASH.ld
+        --specs=nano.specs
+        -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${CONTROL_BOARD_TARGET}.map
+        -Wl,--gc-sections
+        -Wl,--print-memory-usage
+)
+
+target_link_directories(${CONTROL_BOARD_TARGET} PRIVATE
         # Add user defined library search paths here
 )
 
-# Remove wrong libob.a library dependency when using cpp files
-list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
-
-target_link_libraries(${CMAKE_PROJECT_NAME}
-        ${TOOLCHAIN_LINK_LIBRARIES}
+target_link_libraries(${CONTROL_BOARD_TARGET}
+        m
 )
 
-set_target_properties(${CMAKE_PROJECT_NAME}
+set_target_properties(${CONTROL_BOARD_TARGET}
         PROPERTIES
-        ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map
+        ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${CONTROL_BOARD_TARGET}.map
 )
-
-if ((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))
-    message(FATAL_ERROR "Generated code requires C11 or higher")
-endif ()
