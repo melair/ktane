@@ -1,7 +1,7 @@
- #include "sys/input_manager.h"
+#include "input_manager.h"
+#include "input_manager_platform.h"
 
 #define IM_MAX_REGISTRATIONS 8
-#define IM_ROTARY_COUNTER_PERIOD 0xFFFFu
 
 typedef enum {
     IM_REGISTRATION_UNUSED,
@@ -21,7 +21,7 @@ typedef struct {
 } IM_Registration;
 
 typedef struct {
-    ADC_HandleTypeDef adc;
+    bool available;
     const IM_AnalogueInputConfig *active_config;
     IM_Handle active_handle;
     uint8_t active_pin;
@@ -75,52 +75,10 @@ static bool has_reached(uint32_t now_ms, uint32_t target_ms) {
     return (int32_t) (now_ms - target_ms) >= 0;
 }
 
-static bool analogue_adc_init(void) {
-    im.analogue.adc.Instance = ADC1;
-    im.analogue.adc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-    im.analogue.adc.Init.Resolution = ADC_RESOLUTION_12B;
-    im.analogue.adc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    im.analogue.adc.Init.ScanConvMode = ADC_SCAN_DISABLE;
-    im.analogue.adc.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-    im.analogue.adc.Init.LowPowerAutoWait = DISABLE;
-    im.analogue.adc.Init.ContinuousConvMode = DISABLE;
-    im.analogue.adc.Init.NbrOfConversion = 1;
-    im.analogue.adc.Init.DiscontinuousConvMode = DISABLE;
-    im.analogue.adc.Init.NbrOfDiscConversion = 1;
-    im.analogue.adc.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    im.analogue.adc.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-    im.analogue.adc.Init.SamplingMode = ADC_SAMPLING_MODE_NORMAL;
-    im.analogue.adc.Init.DMAContinuousRequests = DISABLE;
-    im.analogue.adc.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
-    im.analogue.adc.Init.OversamplingMode = DISABLE;
-
-    if (HAL_ADC_Init(&im.analogue.adc) != HAL_OK) {
-        return false;
-    }
-
-    if (HAL_ADCEx_Calibration_Start(&im.analogue.adc, ADC_SINGLE_ENDED) != HAL_OK) {
-        return false;
-    }
-
-    return true;
-}
-
 static bool analogue_conversion_start(IM_Handle handle, const IM_AnalogueInputConfig *config, uint8_t pin_index) {
     const IM_AnaloguePinConfig *pin = &config->pins[pin_index];
-    ADC_ChannelConfTypeDef channel_config = {0};
 
-    channel_config.Channel = pin->adc_channel;
-    channel_config.Rank = ADC_REGULAR_RANK_1;
-    channel_config.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
-    channel_config.SingleDiff = ADC_SINGLE_ENDED;
-    channel_config.OffsetNumber = ADC_OFFSET_NONE;
-    channel_config.Offset = 0;
-
-    if (HAL_ADC_ConfigChannel(&im.analogue.adc, &channel_config) != HAL_OK) {
-        return false;
-    }
-
-    if (HAL_ADC_Start(&im.analogue.adc) != HAL_OK) {
+    if (!IM_PLATFORM.analogue_start(pin->adc_channel)) {
         return false;
     }
 
@@ -169,18 +127,17 @@ static void analogue_next_pin(const IM_AnalogueInputConfig *config, uint32_t now
 }
 
 static void analogue_conversion_poll(uint32_t now_ms) {
-    if (HAL_ADC_PollForConversion(&im.analogue.adc, 0) != HAL_OK) {
+    uint16_t value = 0;
+
+    if (!IM_PLATFORM.analogue_poll(&value)) {
         return;
     }
 
     const IM_AnalogueInputConfig *config = im.analogue.active_config;
     IM_AnalogueInputState *state = config->state;
     IM_AnalogueChannelState *channel = &state->channels[im.analogue.active_pin];
-    const uint16_t value = (uint16_t) HAL_ADC_GetValue(&im.analogue.adc);
     int16_t delta = 0;
     bool publish = config->change_threshold == 0;
-
-    HAL_ADC_Stop(&im.analogue.adc);
 
     channel->value = value;
 
@@ -261,30 +218,6 @@ static void analogue_pin_configure(const GPIO_PinDef *pin) {
     HAL_GPIO_Init(pin->port, &gpio_init);
 }
 
-static TIM_TypeDef *rotary_timer_instance(IM_RotarySlot slot) {
-    switch (slot) {
-        case IM_ROTARY_SLOT_MODULE_A:
-            return TIM1;
-        case IM_ROTARY_SLOT_MODULE_B:
-            return TIM3;
-        case IM_ROTARY_SLOT_MODULE_C:
-            return TIM5;
-    }
-
-    return TIM1;
-}
-
-static const IM_RotaryEncoderConfig *rotary_config_get(IM_RotarySlot slot) {
-    for (IM_Handle handle = 0; handle < IM_MAX_REGISTRATIONS; handle++) {
-        if ((im.registrations[handle].type == IM_REGISTRATION_ROTARY) && (
-                im.registrations[handle].config.rotary->slot == slot)) {
-            return im.registrations[handle].config.rotary;
-        }
-    }
-
-    return NULL;
-}
-
 static void rotary_delta_publish(const IM_RotaryEncoderConfig *config, int16_t delta, uint32_t now_ms) {
     if ((config->event_mask & IM_EVENT_ROTARY_DELTA) == 0) {
         return;
@@ -309,7 +242,7 @@ static void rotary_delta_publish(const IM_RotaryEncoderConfig *config, int16_t d
 
 static void rotary_service(const IM_RotaryEncoderConfig *config, uint32_t now_ms) {
     IM_RotaryEncoderState *state = config->state;
-    const uint16_t current_count = (uint16_t) __HAL_TIM_GET_COUNTER(&state->handle);
+    const uint16_t current_count = IM_PLATFORM.rotary_count(config->hardware);
     const int16_t raw_delta = (int16_t) (current_count - state->last_count);
 
     state->last_count = current_count;
@@ -329,46 +262,6 @@ static void rotary_service(const IM_RotaryEncoderConfig *config, uint32_t now_ms
             state->residual_counts = (int16_t) (state->residual_counts - (detents * counts_per_detent));
         }
     }
-}
-
-static bool rotary_timer_configure(const IM_RotaryEncoderConfig *config) {
-    IM_RotaryEncoderState *state = config->state;
-    TIM_Encoder_InitTypeDef encoder_config = {0};
-    TIM_MasterConfigTypeDef master_config = {0};
-
-    state->handle.Instance = rotary_timer_instance(config->slot);
-    state->handle.Init.Prescaler = 0;
-    state->handle.Init.CounterMode = TIM_COUNTERMODE_UP;
-    state->handle.Init.Period = IM_ROTARY_COUNTER_PERIOD;
-    state->handle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    state->handle.Init.RepetitionCounter = 0;
-    state->handle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-
-    encoder_config.EncoderMode = TIM_ENCODERMODE_TI12;
-    encoder_config.IC1Polarity = TIM_ICPOLARITY_RISING;
-    encoder_config.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-    encoder_config.IC1Prescaler = TIM_ICPSC_DIV1;
-    encoder_config.IC1Filter = 15;
-    encoder_config.IC2Polarity = TIM_ICPOLARITY_RISING;
-    encoder_config.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-    encoder_config.IC2Prescaler = TIM_ICPSC_DIV1;
-    encoder_config.IC2Filter = 15;
-
-    if (HAL_TIM_Encoder_Init(&state->handle, &encoder_config) != HAL_OK) {
-        return false;
-    }
-
-    master_config.MasterOutputTrigger = TIM_TRGO_RESET;
-    master_config.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-    master_config.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-    if (HAL_TIMEx_MasterConfigSynchronization(&state->handle, &master_config) != HAL_OK) {
-        return false;
-    }
-
-    __HAL_TIM_SET_COUNTER(&state->handle, 0);
-    state->last_count = 0;
-
-    return HAL_TIM_Encoder_Start(&state->handle, TIM_CHANNEL_ALL) == HAL_OK;
 }
 
 static uint8_t digital_channel_index(const IM_DigitalInputConfig *config, uint8_t row, uint8_t col) {
@@ -561,7 +454,7 @@ void IM_Init(void) {
     im.analogue.active_handle = IM_INVALID_HANDLE;
     im.analogue.scan_config = NULL;
     im.analogue.scan_handle = IM_INVALID_HANDLE;
-    analogue_adc_init();
+    im.analogue.available = IM_PLATFORM.analogue_init();
 }
 
 void IM_Service(void) {
@@ -640,6 +533,10 @@ IM_Handle IM_RegisterDigital(const IM_DigitalInputConfig *config) {
 }
 
 IM_Handle IM_RegisterRotaryEncoder(const IM_RotaryEncoderConfig *config) {
+    if ((IM_PLATFORM.rotary_init == NULL) || (IM_PLATFORM.rotary_count == NULL)) {
+        return IM_INVALID_HANDLE;
+    }
+
     const IM_Handle handle = allocate_registration(IM_REGISTRATION_ROTARY);
 
     if (handle != IM_INVALID_HANDLE) {
@@ -648,7 +545,8 @@ IM_Handle IM_RegisterRotaryEncoder(const IM_RotaryEncoderConfig *config) {
             .input_handle = handle,
         };
 
-        if (!rotary_timer_configure(config)) {
+        if ((config->hardware == NULL) ||
+            !IM_PLATFORM.rotary_init(config->hardware, config->enable_internal_pullups)) {
             im.registrations[handle].type = IM_REGISTRATION_UNUSED;
             return IM_INVALID_HANDLE;
         }
@@ -658,6 +556,10 @@ IM_Handle IM_RegisterRotaryEncoder(const IM_RotaryEncoderConfig *config) {
 }
 
 IM_Handle IM_RegisterAnalogue(const IM_AnalogueInputConfig *config) {
+    if (!im.analogue.available) {
+        return IM_INVALID_HANDLE;
+    }
+
     const IM_Handle handle = allocate_registration(IM_REGISTRATION_ANALOGUE);
 
     if (handle != IM_INVALID_HANDLE) {
@@ -678,48 +580,4 @@ IM_Handle IM_RegisterAnalogue(const IM_AnalogueInputConfig *config) {
     }
 
     return handle;
-}
-
-void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc) {
-    if (hadc->Instance == ADC1) {
-        __HAL_RCC_ADCDAC_CONFIG(RCC_ADCDACCLKSOURCE_PLL2R);
-        __HAL_RCC_ADC_CLK_ENABLE();
-    }
-}
-
-void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim) {
-    GPIO_InitTypeDef gpio_init = {0};
-    const IM_RotaryEncoderConfig *config = NULL;
-
-    if (htim->Instance == TIM1) {
-        config = rotary_config_get(IM_ROTARY_SLOT_MODULE_A);
-        __HAL_RCC_TIM1_CLK_ENABLE();
-
-        gpio_init.Pin = GPIO_A6_Pin | GPIO_A4_Pin;
-        gpio_init.Mode = GPIO_MODE_AF_PP;
-        gpio_init.Pull = config->enable_internal_pullups ? GPIO_PULLUP : GPIO_NOPULL;
-        gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
-        gpio_init.Alternate = GPIO_AF1_TIM1;
-        HAL_GPIO_Init(GPIOE, &gpio_init);
-    } else if (htim->Instance == TIM3) {
-        config = rotary_config_get(IM_ROTARY_SLOT_MODULE_B);
-        __HAL_RCC_TIM3_CLK_ENABLE();
-
-        gpio_init.Pin = GPIO_B2_Pin | GPIO_B3_Pin;
-        gpio_init.Mode = GPIO_MODE_AF_PP;
-        gpio_init.Pull = config->enable_internal_pullups ? GPIO_PULLUP : GPIO_NOPULL;
-        gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
-        gpio_init.Alternate = GPIO_AF2_TIM3;
-        HAL_GPIO_Init(GPIOA, &gpio_init);
-    } else if (htim->Instance == TIM5) {
-        config = rotary_config_get(IM_ROTARY_SLOT_MODULE_C);
-        __HAL_RCC_TIM5_CLK_ENABLE();
-
-        gpio_init.Pin = GPIO_C0_Pin | GPIO_C1_Pin;
-        gpio_init.Mode = GPIO_MODE_AF_PP;
-        gpio_init.Pull = config->enable_internal_pullups ? GPIO_PULLUP : GPIO_NOPULL;
-        gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
-        gpio_init.Alternate = GPIO_AF2_TIM5;
-        HAL_GPIO_Init(GPIOA, &gpio_init);
-    }
 }

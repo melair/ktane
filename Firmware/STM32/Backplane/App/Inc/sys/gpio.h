@@ -3,6 +3,11 @@
 
 #include "stm32g0xx_hal.h"
 
+typedef struct {
+    GPIO_TypeDef *port;
+    uint16_t pin;
+} GPIO_PinDef;
+
 #define REAR_EFUSE_FLT_Pin GPIO_PIN_9
 #define REAR_EFUSE_FLT_GPIO_Port GPIOB
 #define REAR_EFUSE_EN_Pin GPIO_PIN_14

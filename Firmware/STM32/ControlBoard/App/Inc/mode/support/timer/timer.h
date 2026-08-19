@@ -3,7 +3,7 @@
 
 #include "mode_fsm.h"
 #include "sys/argb.h"
-#include "sys/input_manager.h"
+#include "input_manager.h"
 #include "sys/spi.h"
 
 #ifdef __cplusplus

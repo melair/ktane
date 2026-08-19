@@ -78,21 +78,16 @@ typedef struct {
     bool active_high;
 } IM_DigitalInputConfig;
 
-typedef enum {
-    IM_ROTARY_SLOT_MODULE_A,
-    IM_ROTARY_SLOT_MODULE_B,
-    IM_ROTARY_SLOT_MODULE_C,
-} IM_RotarySlot;
+typedef struct IM_RotaryHardware IM_RotaryHardware;
 
 typedef struct {
-    TIM_HandleTypeDef handle;
     IM_Handle input_handle;
     uint16_t last_count;
     int16_t residual_counts;
 } IM_RotaryEncoderState;
 
 typedef struct {
-    IM_RotarySlot slot;
+    const IM_RotaryHardware *hardware;
     IM_EventQueue *queue;
     IM_EventMask event_mask;
     IM_RotaryEncoderState *state;

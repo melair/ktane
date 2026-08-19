@@ -41,7 +41,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rtc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/cbus.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/nvm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/simon/simon.c
@@ -141,6 +141,7 @@ target_link_directories(${CONTROL_BOARD_TARGET} PRIVATE
 
 target_link_libraries(${CONTROL_BOARD_TARGET} PRIVATE
         STM32_Common
+        STM32_InputManager_STM32H5
         m
 )
 

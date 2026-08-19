@@ -100,7 +100,8 @@ target_link_directories(${BACKPLANE_TARGET} PRIVATE
         # Add user defined library search paths here
 )
 
-target_link_libraries(${BACKPLANE_TARGET}
+target_link_libraries(${BACKPLANE_TARGET} PRIVATE
+        STM32_InputManager_STM32G0
         m
 )
 

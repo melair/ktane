@@ -10,7 +10,7 @@
 #include "sys/cbus.h"
 #include "sys/gpio.h"
 #include "sys/i2c.h"
-#include "sys/input_manager.h"
+#include "input_manager.h"
 #include "sys/mcu_init.h"
 #include "sys/mcu_load.h"
 #include "sys/nvm.h"

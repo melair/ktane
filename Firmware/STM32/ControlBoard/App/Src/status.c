@@ -6,7 +6,7 @@
 #include "mode.h"
 #include "stm32h5xx_hal.h"
 #include "sys/gpio.h"
-#include "sys/input_manager.h"
+#include "input_manager.h"
 
 #define HEARTBEAT_HALF_PERIOD_MS 250u
 #define MENU_ENTER_HOLD_MS       1000u

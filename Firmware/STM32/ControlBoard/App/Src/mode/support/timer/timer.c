@@ -2,6 +2,7 @@
 #include "mode.h"
 #include "mode_fsm.h"
 #include "sys/gpio.h"
+#include "sys/input_manager_config.h"
 #include "sys/rng.h"
 #include "sys/spi.h"
 
@@ -157,7 +158,7 @@ static void timer_init_enter(FSM *fsm) {
     ARGB_Add_Strip(&timer->strip);
 
     timer->rotary_config = (IM_RotaryEncoderConfig){
-        .slot = IM_ROTARY_SLOT_MODULE_A,
+        .hardware = &CONTROL_BOARD_ROTARY_MODULE_A,
         .queue = &timer->input_queue,
         .event_mask = IM_EVENT_ROTARY_DELTA,
         .state = &timer->rotary_state,
