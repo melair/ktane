@@ -7,3 +7,12 @@
 [submodule "Firmware/STM32/ControlBoard/Drivers/CMSIS_Core"]
 	path = Firmware/STM32/ControlBoard/Drivers/CMSIS_Core
 	url = https://github.com/STMicroelectronics/cmsis-core.git
+[submodule "Firmware/STM32/Backplane/Drivers/CMSIS_Device"]
+	path = Firmware/STM32/Backplane/Drivers/CMSIS_Device
+	url = https://github.com/STMicroelectronics/cmsis-device-g0
+[submodule "Firmware/STM32/Backplane/Drivers/CMSIS_Core"]
+	path = Firmware/STM32/Backplane/Drivers/CMSIS_Core
+	url = https://github.com/STMicroelectronics/cmsis-core.git
+[submodule "Firmware/STM32/Backplane/Drivers/HAL"]
+	path = Firmware/STM32/Backplane/Drivers/HAL
+	url = https://github.com/STMicroelectronics/stm32g0xx-hal-driver
