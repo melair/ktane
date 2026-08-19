@@ -86,37 +86,53 @@ typedef struct {
 
 #define GPIO_B7_Pin GPIO_PIN_1
 #define GPIO_B7_Port GPIOB
+#define GPIO_B7_ADC_Channel ADC_CHANNEL_5
 #define GPIO_B6_Pin GPIO_PIN_0
 #define GPIO_B6_Port GPIOB
+#define GPIO_B6_ADC_Channel ADC_CHANNEL_9
 #define GPIO_B5_Pin GPIO_PIN_5
 #define GPIO_B5_Port GPIOC
+#define GPIO_B5_ADC_Channel ADC_CHANNEL_8
 #define GPIO_B4_Pin GPIO_PIN_4
 #define GPIO_B4_Port GPIOC
+#define GPIO_B4_ADC_Channel ADC_CHANNEL_4
 #define GPIO_B3_Pin GPIO_PIN_7
 #define GPIO_B3_Port GPIOA
+#define GPIO_B3_ADC_Channel ADC_CHANNEL_7
 #define GPIO_B2_Pin GPIO_PIN_6
 #define GPIO_B2_Port GPIOA
+#define GPIO_B2_ADC_Channel ADC_CHANNEL_3
 #define GPIO_B1_Pin GPIO_PIN_5
 #define GPIO_B1_Port GPIOA
+#define GPIO_B1_ADC_Channel ADC_CHANNEL_19
 #define GPIO_B0_Pin GPIO_PIN_4
 #define GPIO_B0_Port GPIOA
+#define GPIO_B0_ADC_Channel ADC_CHANNEL_18
 
 #define GPIO_C7_Pin GPIO_PIN_3
 #define GPIO_C7_Port GPIOC
+#define GPIO_C7_ADC_Channel ADC_CHANNEL_13
 #define GPIO_C6_Pin GPIO_PIN_2
 #define GPIO_C6_Port GPIOC
+#define GPIO_C6_ADC_Channel ADC_CHANNEL_12
 #define GPIO_C5_Pin GPIO_PIN_1
 #define GPIO_C5_Port GPIOC
+#define GPIO_C5_ADC_Channel ADC_CHANNEL_11
 #define GPIO_C4_Pin GPIO_PIN_0
 #define GPIO_C4_Port GPIOC
+#define GPIO_C4_ADC_Channel ADC_CHANNEL_10
 #define GPIO_C3_Pin GPIO_PIN_3
 #define GPIO_C3_Port GPIOA
+#define GPIO_C3_ADC_Channel ADC_CHANNEL_15
 #define GPIO_C2_Pin GPIO_PIN_2
 #define GPIO_C2_Port GPIOA
+#define GPIO_C2_ADC_Channel ADC_CHANNEL_14
 #define GPIO_C1_Pin GPIO_PIN_1
 #define GPIO_C1_Port GPIOA
+#define GPIO_C1_ADC_Channel ADC_CHANNEL_1
 #define GPIO_C0_Pin GPIO_PIN_0
 #define GPIO_C0_Port GPIOA
+#define GPIO_C0_ADC_Channel ADC_CHANNEL_0
 
 extern const GPIO_PinDef GPIO_A_Pins[GPIO_SUBMODULE_PIN_COUNT];
 extern const GPIO_PinDef GPIO_B_Pins[GPIO_SUBMODULE_PIN_COUNT];

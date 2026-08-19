@@ -24,6 +24,7 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 # Remove the incorrect libob.a dependency if C++ is enabled in the future.
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
+add_subdirectory(Common)
 add_subdirectory(Backplane)
 add_subdirectory(ControlBoard)
 

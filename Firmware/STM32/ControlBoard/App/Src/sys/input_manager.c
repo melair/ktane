@@ -1,13 +1,7 @@
-#include "sys/input_manager.h"
+ #include "sys/input_manager.h"
 
 #define IM_MAX_REGISTRATIONS 8
 #define IM_ROTARY_COUNTER_PERIOD 0xFFFFu
-
-typedef struct {
-    GPIO_TypeDef *port;
-    uint16_t pin;
-    uint32_t channel;
-} IM_AnaloguePinMap;
 
 typedef enum {
     IM_REGISTRATION_UNUSED,
@@ -41,25 +35,6 @@ typedef struct {
 } im_t;
 
 static im_t im;
-
-static const IM_AnaloguePinMap analogue_pin_map[] = {
-    {GPIO_B0_Port, GPIO_B0_Pin, ADC_CHANNEL_18},
-    {GPIO_B1_Port, GPIO_B1_Pin, ADC_CHANNEL_19},
-    {GPIO_B2_Port, GPIO_B2_Pin, ADC_CHANNEL_3},
-    {GPIO_B3_Port, GPIO_B3_Pin, ADC_CHANNEL_7},
-    {GPIO_B4_Port, GPIO_B4_Pin, ADC_CHANNEL_4},
-    {GPIO_B5_Port, GPIO_B5_Pin, ADC_CHANNEL_8},
-    {GPIO_B6_Port, GPIO_B6_Pin, ADC_CHANNEL_9},
-    {GPIO_B7_Port, GPIO_B7_Pin, ADC_CHANNEL_5},
-    {GPIO_C0_Port, GPIO_C0_Pin, ADC_CHANNEL_0},
-    {GPIO_C1_Port, GPIO_C1_Pin, ADC_CHANNEL_1},
-    {GPIO_C2_Port, GPIO_C2_Pin, ADC_CHANNEL_14},
-    {GPIO_C3_Port, GPIO_C3_Pin, ADC_CHANNEL_15},
-    {GPIO_C4_Port, GPIO_C4_Pin, ADC_CHANNEL_10},
-    {GPIO_C5_Port, GPIO_C5_Pin, ADC_CHANNEL_11},
-    {GPIO_C6_Port, GPIO_C6_Pin, ADC_CHANNEL_12},
-    {GPIO_C7_Port, GPIO_C7_Pin, ADC_CHANNEL_13},
-};
 
 static IM_Handle allocate_registration(IM_RegistrationType type) {
     for (IM_Handle handle = 0; handle < IM_MAX_REGISTRATIONS; handle++) {
@@ -100,17 +75,6 @@ static bool has_reached(uint32_t now_ms, uint32_t target_ms) {
     return (int32_t) (now_ms - target_ms) >= 0;
 }
 
-static bool analogue_channel_get(const GPIO_PinDef *pin, uint32_t *channel) {
-    for (uint8_t index = 0; index < (sizeof(analogue_pin_map) / sizeof(analogue_pin_map[0])); index++) {
-        if ((analogue_pin_map[index].port == pin->port) && (analogue_pin_map[index].pin == pin->pin)) {
-            *channel = analogue_pin_map[index].channel;
-            return true;
-        }
-    }
-
-    return false;
-}
-
 static bool analogue_adc_init(void) {
     im.analogue.adc.Instance = ADC1;
     im.analogue.adc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
@@ -142,14 +106,10 @@ static bool analogue_adc_init(void) {
 }
 
 static bool analogue_conversion_start(IM_Handle handle, const IM_AnalogueInputConfig *config, uint8_t pin_index) {
-    uint32_t channel = 0;
+    const IM_AnaloguePinConfig *pin = &config->pins[pin_index];
     ADC_ChannelConfTypeDef channel_config = {0};
 
-    if (!analogue_channel_get(&config->pins[pin_index], &channel)) {
-        return false;
-    }
-
-    channel_config.Channel = channel;
+    channel_config.Channel = pin->adc_channel;
     channel_config.Rank = ADC_REGULAR_RANK_1;
     channel_config.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
     channel_config.SingleDiff = ADC_SINGLE_ENDED;
@@ -713,13 +673,7 @@ IM_Handle IM_RegisterAnalogue(const IM_AnalogueInputConfig *config) {
         }
 
         for (uint8_t pin = 0; pin < config->pin_count; pin++) {
-            uint32_t adc_channel = 0;
-            if (!analogue_channel_get(&config->pins[pin], &adc_channel)) {
-                im.registrations[handle].type = IM_REGISTRATION_UNUSED;
-                return IM_INVALID_HANDLE;
-            }
-
-            analogue_pin_configure(&config->pins[pin]);
+            analogue_pin_configure(&config->pins[pin].pin);
         }
     }
 

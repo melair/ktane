@@ -2,7 +2,7 @@
 #define MODE_FSM_H
 
 #include <stdbool.h>
-#include "sys/fsm.h"
+#include "fsm.h"
 
 #ifdef __cplusplus
 extern "C" {

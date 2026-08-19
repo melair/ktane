@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "protocol.h"
 #include "stm32h5xx_hal.h"
-#include "sys/fsm.h"
+#include "fsm.h"
 #include "sys/mcu_init.h"
 #include "sys/nvm.h"
 #include "sys/tick.h"

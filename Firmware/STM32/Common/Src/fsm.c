@@ -1,7 +1,10 @@
-#include "sys/fsm.h"
+#include "fsm.h"
 
 #include <string.h>
-#include "stm32h5xx_hal.h"
+
+// Every STM32 HAL family exposes this function with the same signature. A
+// local declaration keeps this common module independent of family headers.
+extern uint32_t HAL_GetTick(void);
 
 #ifndef FSM_SERVICE_LOOP_LIMIT
 #define FSM_SERVICE_LOOP_LIMIT 8

@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "sys/fsm.h"
+#include "fsm.h"
 #include "sys/i2c.h"
 
 #ifdef __cplusplus

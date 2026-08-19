@@ -108,6 +108,11 @@ typedef struct {
 } IM_AnalogueChannelState;
 
 typedef struct {
+    GPIO_PinDef pin;
+    uint32_t adc_channel;
+} IM_AnaloguePinConfig;
+
+typedef struct {
     IM_AnalogueChannelState *channels;
     uint32_t next_scan_ms;
     uint8_t active_pin;
@@ -115,7 +120,7 @@ typedef struct {
 } IM_AnalogueInputState;
 
 typedef struct {
-    const GPIO_PinDef *pins;
+    const IM_AnaloguePinConfig *pins;
     uint8_t pin_count;
     IM_EventQueue *queue;
     IM_AnalogueInputState *state;

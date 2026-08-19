@@ -5,7 +5,7 @@
 #include "nodes.h"
 #include "protocol.h"
 #include "sys/can.h"
-#include "sys/fsm.h"
+#include "fsm.h"
 #include "sys/mcu_init.h"
 #include "sys/nvm.h"
 #include "sys/rng.h"

@@ -40,7 +40,6 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rtc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/cbus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
@@ -140,7 +139,8 @@ target_link_directories(${CONTROL_BOARD_TARGET} PRIVATE
         # Add user defined library search paths here
 )
 
-target_link_libraries(${CONTROL_BOARD_TARGET}
+target_link_libraries(${CONTROL_BOARD_TARGET} PRIVATE
+        STM32_Common
         m
 )
 

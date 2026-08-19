@@ -1,5 +1,5 @@
 #include "sys/i2c.h"
-#include "sys/fsm.h"
+#include "fsm.h"
 #include "sys/gpio.h"
 #include "stm32h5xx_hal.h"
 #include "stm32h5xx_it.h"
