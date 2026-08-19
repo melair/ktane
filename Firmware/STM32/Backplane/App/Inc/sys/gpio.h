@@ -38,6 +38,11 @@ typedef struct {
 #define STATUS_LED_Pin GPIO_PIN_6
 #define STATUS_LED_GPIO_Port GPIOA
 
+#define I2C_SCL_Pin GPIO_PIN_6
+#define I2C_SCL_Port GPIOB
+#define I2C_SDA_Pin GPIO_PIN_7
+#define I2C_SDA_Port GPIOB
+
 #define FRONT_ILM_Pin GPIO_PIN_2
 #define FRONT_ILM_GPIO_Port GPIOB
 #define FRONT_MODULE_DETECT_Pin GPIO_PIN_8

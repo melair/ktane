@@ -1,6 +1,7 @@
 #ifndef I2C_H
 #define I2C_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -42,7 +43,7 @@ struct I2C_Transaction {
     I2C_Transaction *queue_next;
 };
 
-void I2C_Init(void);
+bool I2C_Init(void);
 
 void I2C_Service(void);
 

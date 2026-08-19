@@ -28,19 +28,18 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode_fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/nodes.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/protocol.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/status.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_load.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/sys_clock.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/tick.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2s.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/spi.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/spi_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/can.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rtc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/cbus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/nvm.c
@@ -140,8 +139,7 @@ target_link_directories(${CONTROL_BOARD_TARGET} PRIVATE
 )
 
 target_link_libraries(${CONTROL_BOARD_TARGET} PRIVATE
-        STM32_Common
-        STM32_InputManager_STM32H5
+        STM32_Common_STM32H5
         m
 )
 

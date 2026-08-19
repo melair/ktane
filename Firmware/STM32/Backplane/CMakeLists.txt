@@ -22,6 +22,7 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
 )
 
@@ -101,7 +102,7 @@ target_link_directories(${BACKPLANE_TARGET} PRIVATE
 )
 
 target_link_libraries(${BACKPLANE_TARGET} PRIVATE
-        STM32_InputManager_STM32G0
+        STM32_Common_STM32G0
         m
 )
 

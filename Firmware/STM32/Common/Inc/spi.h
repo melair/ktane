@@ -1,7 +1,8 @@
 #ifndef SPI_H
 #define SPI_H
+
 #include <stdbool.h>
-#include "stm32h562xx.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,9 +39,9 @@ struct SPI_Transaction {
     SPI_Baud baud;
     SPI_Operation operation;
 
-    GPIO_TypeDef *cs_port;
+    void *cs_port;
     uint32_t cs_pin;
-    bool cs_hold; // Hold pin if chained transaction uses the same pin.
+    bool cs_hold;
 
     bool lsb_first;
     bool cke;
@@ -59,7 +60,7 @@ struct SPI_Transaction {
     SPI_Transaction *queue_next;
 };
 
-void SPI_Init(void);
+bool SPI_Init(void);
 
 void SPI_Service(void);
 

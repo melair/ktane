@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "fsm.h"
-#include "sys/i2c.h"
+#include "i2c.h"
 
 #ifdef __cplusplus
 extern "C" {

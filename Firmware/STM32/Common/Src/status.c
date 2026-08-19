@@ -1,20 +1,13 @@
 #include "status.h"
 
-#include <stdbool.h>
-#include <stdint.h>
-
-#include "mode.h"
-#include "stm32h5xx_hal.h"
-#include "sys/gpio.h"
 #include "input_manager.h"
 
-#define HEARTBEAT_HALF_PERIOD_MS 250u
-#define MENU_ENTER_HOLD_MS       1000u
-#define MENU_CONFIRM_HOLD_MS     2000u
-#define MENU_IDLE_TIMEOUT_MS     10000u
-#define MENU_FLASH_HALF_PERIOD_MS 250u
-#define MENU_FLASH_GAP_MS        500u
-#define MENU_OPTION_COUNT        3u
+#define HEARTBEAT_HALF_PERIOD_MS 500U
+#define MENU_ENTER_HOLD_MS 1000U
+#define MENU_CONFIRM_HOLD_MS 2000U
+#define MENU_IDLE_TIMEOUT_MS 10000U
+#define MENU_FLASH_HALF_PERIOD_MS 250U
+#define MENU_FLASH_GAP_MS 1000U
 
 typedef enum {
     STATUS_HEARTBEAT,
@@ -23,9 +16,13 @@ typedef enum {
 
 typedef struct {
     Status_State state;
+    GPIO_PinDef led_pin;
+    GPIO_PinDef button_pin;
+    Status_SelectionCallback selection_callback;
     uint32_t next_led_change_ms;
     uint32_t last_activity_ms;
-    uint8_t option;
+    uint8_t max_menu_value;
+    uint8_t selected_value;
     uint8_t flashes_completed;
     bool led_on;
 } Status;
@@ -37,55 +34,47 @@ static IM_DigitalInputConfig button_input_config = {0};
 static IM_Handle button_handle = IM_INVALID_HANDLE;
 static Status status = {0};
 
-static bool time_reached(const uint32_t now_ms, const uint32_t target_ms) {
+static bool time_reached(uint32_t now_ms, uint32_t target_ms) {
     return (int32_t) (now_ms - target_ms) >= 0;
 }
 
-static bool time_elapsed(const uint32_t now_ms, const uint32_t since_ms, const uint32_t duration_ms) {
+static bool time_elapsed(uint32_t now_ms, uint32_t since_ms, uint32_t duration_ms) {
     return (uint32_t) (now_ms - since_ms) >= duration_ms;
 }
 
-static void led_set(const bool on) {
+static void led_set(bool on) {
     status.led_on = on;
-    HAL_GPIO_WritePin(STATUS_Port, STATUS_Pin, on ? GPIO_PIN_RESET : GPIO_PIN_SET);
+    HAL_GPIO_WritePin(status.led_pin.port, status.led_pin.pin, on ? GPIO_PIN_RESET : GPIO_PIN_SET);
 }
 
-static void heartbeat_enter(const uint32_t now_ms) {
+static void heartbeat_enter(uint32_t now_ms) {
     status.state = STATUS_HEARTBEAT;
     led_set(false);
     status.next_led_change_ms = now_ms + HEARTBEAT_HALF_PERIOD_MS;
 }
 
-static void menu_enter(const uint32_t now_ms) {
+static void menu_enter(uint32_t now_ms) {
     status.state = STATUS_MENU;
     status.last_activity_ms = now_ms;
-    status.option = 1;
+    status.selected_value = 1U;
     status.flashes_completed = 0;
     led_set(false);
     status.next_led_change_ms = now_ms;
 }
 
-static void selected_mode_set(const uint32_t now_ms) {
-    static const uint8_t modes[MENU_OPTION_COUNT] = {
-        MODE_NONE,
-        MODE_SUPPORT_CHASSIS,
-        MODE_SUPPORT_TIMER,
-    };
-
-    Mode_Set(modes[status.option - 1u]);
-
-    /* Mode_Set resets the MCU after a successful write. */
+static void selected_value_publish(uint32_t now_ms) {
+    status.selection_callback(status.selected_value);
     heartbeat_enter(now_ms);
 }
 
-static void heartbeat_service(const uint32_t now_ms) {
+static void heartbeat_service(uint32_t now_ms) {
     if (time_reached(now_ms, status.next_led_change_ms)) {
         led_set(!status.led_on);
         status.next_led_change_ms = now_ms + HEARTBEAT_HALF_PERIOD_MS;
     }
 }
 
-static void menu_led_service(const uint32_t now_ms) {
+static void menu_led_service(uint32_t now_ms) {
     if (!time_reached(now_ms, status.next_led_change_ms)) {
         return;
     }
@@ -99,7 +88,7 @@ static void menu_led_service(const uint32_t now_ms) {
     led_set(false);
     status.flashes_completed++;
 
-    if (status.flashes_completed >= status.option) {
+    if (status.flashes_completed >= status.selected_value) {
         status.flashes_completed = 0;
         status.next_led_change_ms = now_ms + MENU_FLASH_GAP_MS;
     } else {
@@ -119,32 +108,40 @@ static void menu_event_handle(const IM_Event *event) {
     }
 
     if (event->duration_ms >= MENU_CONFIRM_HOLD_MS) {
-        selected_mode_set(event->timestamp_ms);
+        selected_value_publish(event->timestamp_ms);
         return;
     }
 
     if (event->duration_ms < MENU_ENTER_HOLD_MS) {
-        status.option = (status.option % MENU_OPTION_COUNT) + 1u;
+        status.selected_value = (status.selected_value % status.max_menu_value) + 1U;
         status.flashes_completed = 0;
         led_set(false);
         status.next_led_change_ms = event->timestamp_ms;
     }
 }
 
-void Status_Init(void) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+bool Status_Init(GPIO_PinDef led_pin, GPIO_PinDef button_pin, bool button_active_high, uint8_t max_menu_value,
+                 Status_SelectionCallback selection_callback) {
+    if ((led_pin.port == NULL) || (led_pin.pin == 0U) ||
+        (button_pin.port == NULL) || (button_pin.pin == 0U) ||
+        (max_menu_value == 0U) || (selection_callback == NULL)) {
+        return false;
+    }
 
-    /* The open-drain status LED is active low. */
-    HAL_GPIO_WritePin(STATUS_Port, STATUS_Pin, GPIO_PIN_SET);
+    status = (Status) {
+        .led_pin = led_pin,
+        .button_pin = button_pin,
+        .selection_callback = selection_callback,
+        .max_menu_value = max_menu_value,
+    };
 
-    GPIO_InitStruct.Pin = STATUS_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(STATUS_Port, &GPIO_InitStruct);
-
+    button_queue = (IM_EventQueue) {0};
+    button_channel_state[0] = (IM_DigitalChannelState) {0};
+    button_input_state = (IM_DigitalInputState) {
+        .channels = button_channel_state,
+    };
     button_input_config = (IM_DigitalInputConfig) {
-        .rows = &GPIO_Button_Pin,
+        .rows = &status.button_pin,
         .row_count = 1,
         .queue = &button_queue,
         .event_mask = IM_EVENT_DOWN | IM_EVENT_UP,
@@ -152,15 +149,27 @@ void Status_Init(void) {
         .scan_period_ms = 10,
         .debounce_ms = 30,
         .enable_internal_pullups = false,
-        .active_high = true,
+        .active_high = button_active_high,
     };
 
-    button_input_state = (IM_DigitalInputState) {
-        .channels = button_channel_state,
-    };
+    GPIO_InitTypeDef gpio_init = {0};
+
+    /* The open-drain status LED is active low. */
+    HAL_GPIO_WritePin(status.led_pin.port, status.led_pin.pin, GPIO_PIN_SET);
+
+    gpio_init.Pin = status.led_pin.pin;
+    gpio_init.Mode = GPIO_MODE_OUTPUT_OD;
+    gpio_init.Pull = GPIO_NOPULL;
+    gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(status.led_pin.port, &gpio_init);
 
     button_handle = IM_RegisterDigital(&button_input_config);
+    if (button_handle == IM_INVALID_HANDLE) {
+        return false;
+    }
+
     heartbeat_enter(HAL_GetTick());
+    return true;
 }
 
 void Status_Service(void) {

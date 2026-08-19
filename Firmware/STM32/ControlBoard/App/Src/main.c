@@ -9,17 +9,34 @@
 #include "sys/can.h"
 #include "sys/cbus.h"
 #include "sys/gpio.h"
-#include "sys/i2c.h"
+#include "i2c.h"
 #include "input_manager.h"
 #include "sys/mcu_init.h"
 #include "sys/mcu_load.h"
 #include "sys/nvm.h"
 #include "sys/rng.h"
 #include "sys/rtc.h"
-#include "sys/spi.h"
+#include "spi.h"
 #include "sys/sys_clock.h"
 #include "status.h"
 #include "sys/tick.h"
+#include "stm32h5xx_it.h"
+
+static const uint8_t status_menu_modes[] = {
+    MODE_NONE,
+    MODE_SUPPORT_CHASSIS,
+    MODE_SUPPORT_TIMER,
+};
+
+static void status_menu_selection(uint8_t value) {
+    const uint8_t menu_value_count = sizeof(status_menu_modes) / sizeof(status_menu_modes[0]);
+
+    if ((value == 0U) || (value > menu_value_count)) {
+        return;
+    }
+
+    Mode_Set(status_menu_modes[value - 1U]);
+}
 
 /**
   * @brief  The application entry point.
@@ -57,15 +74,25 @@ int main(void) {
 
     /* Initialize common controlboard processes and peripherals. */
     IM_Init();
-    I2C_Init();
-    SPI_Init();
+    if (!I2C_Init()) {
+        Error_Handler();
+    }
+    if (!SPI_Init()) {
+        Error_Handler();
+    }
     CAN_Init();
     Protocol_Init();
     ARGB_Init();
     CBUS_Init();
 
     /* Base service init. */
-    Status_Init();
+    if (!Status_Init((GPIO_PinDef) {STATUS_Port, STATUS_Pin},
+                     (GPIO_PinDef) {BUTTON_Port, BUTTON_Pin},
+                     true,
+                     sizeof(status_menu_modes) / sizeof(status_menu_modes[0]),
+                     status_menu_selection)) {
+        Error_Handler();
+    }
 
     /* Initialize MCU load timing. */
     MCU_Load_Init();
