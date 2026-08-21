@@ -2,6 +2,7 @@
 
 #include "i2c.h"
 #include "input_manager.h"
+#include "power.h"
 #include "status.h"
 #include "sys/gpio.h"
 #include "sys/mcu_init.h"
@@ -32,6 +33,9 @@ int main(void) {
     if (!I2C_Init()) {
         Error_Handler();
     }
+    if (!Power_Init()) {
+        Error_Handler();
+    }
 
     /* Base service init. */
     if (!Status_Init((GPIO_PinDef) {STATUS_LED_GPIO_Port, STATUS_LED_Pin},
@@ -50,6 +54,8 @@ int main(void) {
         Status_Service();
         /* Service I2C. */
         I2C_Service();
+        /* Service front and rear module power. */
+        Power_Service();
 
         __WFI();
     }
