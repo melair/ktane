@@ -22,7 +22,7 @@ void Power_Service(void);
  * Request a new current limit for an active power channel.
  *
  * @param channel Channel to update.
- * @param current_deciamps Current limit in 0.1 A units, from 0 to 20.
+ * @param current_deciamps Current limit in 0.1 A units, from 0 to 21.
  * @return true if the request was accepted; false if it was invalid or the
  *         channel was inactive.
  */

@@ -12,7 +12,8 @@
 #define POWER_INIT_DELAY_MS 10U
 #define POWER_ENABLE_DELAY_MS 500U
 #define POWER_I2C_RETRY_DELAY_MS 100U
-#define POWER_CURRENT_SCAN_INTERVAL_MS 10U
+#define POWER_CURRENT_SCAN_INTERVAL_MS 100U
+#define POWER_CURRENT_AVERAGE_SAMPLE_COUNT 10U
 
 #define POWER_ADC_REFERENCE_VOLTAGE_V 3.3f
 #define POWER_ADC_MAX_VALUE 4095.0f
@@ -26,7 +27,7 @@
 
 #define POWER_POT_UNLOCK_COMMAND 0x1c02
 #define POWER_POT_WRITE_RDAC_COMMAND 0x0400
-#define POWER_DEFAULT_CURRENT_DECIAMPS 2U
+#define POWER_DEFAULT_CURRENT_DECIAMPS 10U
 
 typedef enum {
     POWER_FSM_STATE_INIT = 0,
@@ -57,6 +58,10 @@ typedef struct {
     uint8_t writing_current_limit;
     bool output_active;
     float current_draw_a;
+    float current_draw_samples_a[POWER_CURRENT_AVERAGE_SAMPLE_COUNT];
+    float current_draw_sum_a;
+    uint8_t current_draw_sample_index;
+    uint8_t current_draw_sample_count;
     IM_EventQueue current_event_queue;
     IM_AnalogueChannelState current_channel;
     IM_AnalogueInputState current_input_state;
@@ -196,7 +201,22 @@ static void power_current_service(Power_Channel *channel) {
 
     while (IM_EventQueue_Read(&channel->current_event_queue, &event)) {
         if ((event.event == IM_EVENT_ANALOGUE) && (event.channel == 0U)) {
-            channel->current_draw_a = power_current_from_adc(channel, event.value);
+            const float current_draw_a = power_current_from_adc(channel, event.value);
+
+            if (channel->current_draw_sample_count == POWER_CURRENT_AVERAGE_SAMPLE_COUNT) {
+                channel->current_draw_sum_a -=
+                    channel->current_draw_samples_a[channel->current_draw_sample_index];
+            } else {
+                channel->current_draw_sample_count++;
+            }
+
+            channel->current_draw_samples_a[channel->current_draw_sample_index] = current_draw_a;
+            channel->current_draw_sum_a += current_draw_a;
+            channel->current_draw_sample_index =
+                (uint8_t) ((channel->current_draw_sample_index + 1U) %
+                           POWER_CURRENT_AVERAGE_SAMPLE_COUNT);
+            channel->current_draw_a =
+                channel->current_draw_sum_a / (float) channel->current_draw_sample_count;
         }
     }
 }
@@ -269,6 +289,9 @@ static void power_fsm_active_enter(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
     channel->current_draw_a = 0.0f;
+    channel->current_draw_sum_a = 0.0f;
+    channel->current_draw_sample_index = 0U;
+    channel->current_draw_sample_count = 0U;
     IM_EventQueue_Clear(&channel->current_event_queue);
     power_efuse_enable(channel, true);
 }

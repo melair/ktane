@@ -25,6 +25,9 @@ int main(void) {
     /* Initialize base MCU peripherals */
     GPIO_Init();
 
+    /* Disable the UCPD1 dead-battery pull-downs on PA8 and PA9. */
+    HAL_SYSCFG_StrobeDBattpinsConfig(SYSCFG_UCPD1_STROBE);
+
     /* Enable DMA peripherals. DMA1 for all functions. */
     __HAL_RCC_DMA1_CLK_ENABLE();
 
