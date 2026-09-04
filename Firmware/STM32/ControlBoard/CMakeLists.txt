@@ -22,6 +22,7 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/chassis_bus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/indicator.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
@@ -38,7 +39,6 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rtc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/cbus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c

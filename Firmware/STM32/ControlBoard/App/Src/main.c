@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "chassis_bus.h"
 #include "game.h"
 #include "indicator.h"
 #include "mode.h"
@@ -7,7 +8,6 @@
 #include "protocol.h"
 #include "sys/argb.h"
 #include "sys/can.h"
-#include "sys/cbus.h"
 #include "sys/gpio.h"
 #include "i2c.h"
 #include "input_manager.h"
@@ -83,7 +83,9 @@ int main(void) {
     CAN_Init();
     Protocol_Init();
     ARGB_Init();
-    CBUS_Init();
+    if (!ChassisBus_Init()) {
+        Error_Handler();
+    }
 
     /* Base service init. */
     if (!Status_Init((GPIO_PinDef) {STATUS_Port, STATUS_Pin},
@@ -131,8 +133,8 @@ int main(void) {
         Nodes_Service();
         /* Service protocol. */
         Protocol_Service();
-        /* Service CBUS. */
-        CBUS_Service(NULL);
+        /* Service the chassis bus. */
+        ChassisBus_Service();
 
         /* Service the game. */
         Game_Service();

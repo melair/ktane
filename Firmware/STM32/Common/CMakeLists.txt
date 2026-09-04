@@ -3,6 +3,8 @@ add_library(STM32_Common INTERFACE)
 # INTERFACE sources are compiled separately by each consuming firmware target,
 # so they inherit that board's MCU-specific compiler options.
 target_sources(STM32_Common INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/cobs.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/cobs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fsm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/input_manager.c
@@ -16,6 +18,9 @@ target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/spi_platform.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/status.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/status.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/uart.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/uart.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/uart_platform.h
 )
 
 target_include_directories(STM32_Common INTERFACE
@@ -36,6 +41,7 @@ add_library(STM32_Common_STM32G0 INTERFACE)
 target_sources(STM32_Common_STM32G0 INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/input_manager_platform_stm32g0.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c_platform_stm32g0.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/spi_platform_stm32g0.c
 )
 target_link_libraries(STM32_Common_STM32G0 INTERFACE
         STM32_Common

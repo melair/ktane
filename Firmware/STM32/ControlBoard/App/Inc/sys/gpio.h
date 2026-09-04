@@ -62,10 +62,10 @@ typedef struct {
 #define USB_DP_Pin GPIO_PIN_12
 #define USB_DP_Port GPIOA
 
-#define CBUS_RX_Pin GPIO_PIN_5
-#define CBUS_RX_Port GPIOB
-#define CBUS_TX_Pin GPIO_PIN_6
-#define CBUS_TX_Port GPIOB
+#define CHASSIS_BUS_RX_Pin GPIO_PIN_5
+#define CHASSIS_BUS_RX_Port GPIOB
+#define CHASSIS_BUS_TX_Pin GPIO_PIN_6
+#define CHASSIS_BUS_TX_Port GPIOB
 
 #define GPIO_A7_Pin GPIO_PIN_8
 #define GPIO_A7_Port GPIOE
