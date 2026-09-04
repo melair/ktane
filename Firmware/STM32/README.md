@@ -5,7 +5,7 @@ The BOS is based on the STM32 ecosystem, specifically targetting H5, G0 and WB0.
 ## Building with CMake
 
 Open this `STM32` directory as the CMake project in CLion. The root project exposes
-the `Backplane` and `ControlBoard` executable targets in both the `Debug` and
+the `Backplane`, `ControlBoard`, and `Edgework` executable targets in both the `Debug` and
 `Release` CMake profiles.
 
 The same combinations are available from the command line as build presets:
@@ -14,10 +14,12 @@ The same combinations are available from the command line as build presets:
 cmake --preset Debug
 cmake --build --preset Backplane-Debug
 cmake --build --preset ControlBoard-Debug
+cmake --build --preset Edgework-Debug
 
 cmake --preset Release
 cmake --build --preset Backplane-Release
 cmake --build --preset ControlBoard-Release
+cmake --build --preset Edgework-Release
 ```
 
 Build products are written below `build/Debug` and `build/Release`, separated by

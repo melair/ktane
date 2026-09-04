@@ -53,6 +53,20 @@
             "targets": [
                 "ControlBoard"
             ]
+        },
+        {
+            "name": "Edgework-Debug",
+            "configurePreset": "Debug",
+            "targets": [
+                "Edgework"
+            ]
+        },
+        {
+            "name": "Edgework-Release",
+            "configurePreset": "Release",
+            "targets": [
+                "Edgework"
+            ]
         }
     ]
 }

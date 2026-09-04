@@ -1,0 +1,22 @@
+/**
+  ******************************************************************************
+  * @file           : mcu_init.h
+  * @brief          : MCU initialization function declarations.
+  ******************************************************************************
+  */
+#ifndef MCU_INIT_H
+#define MCU_INIT_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void SystemClock_Init(void);
+
+void GPIO_Init(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* MCU_INIT_H */
