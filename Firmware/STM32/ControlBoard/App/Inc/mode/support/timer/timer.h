@@ -2,7 +2,7 @@
 #define TIMER_H
 
 #include "mode_fsm.h"
-#include "sys/argb.h"
+#include "argb.h"
 #include "input_manager.h"
 #include "spi.h"
 

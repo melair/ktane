@@ -1,5 +1,6 @@
 #include "main.h"
 
+#include "argb.h"
 #include "i2c.h"
 #include "input_manager.h"
 #include "sys/gpio.h"
@@ -30,6 +31,9 @@ int main(void) {
     if (!I2C_Init()) {
         Error_Handler();
     }
+    if (!ARGB_Init()) {
+        Error_Handler();
+    }
 
     /* Infinite loop */
     while (1) {
@@ -37,6 +41,8 @@ int main(void) {
         IM_Service();
         /* Service I2C. */
         I2C_Service();
+        /* Service ARGB strips with pending changes. */
+        ARGB_Service();
         __WFI();
     }
 }

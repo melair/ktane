@@ -22,6 +22,7 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
 )
@@ -55,6 +56,8 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_pwr_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_rcc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_rcc_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_tim.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_tim_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_uart.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_uart_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_ll_adc.c
@@ -103,6 +106,7 @@ target_link_directories(${EDGEWORK_TARGET} PRIVATE
 
 target_link_libraries(${EDGEWORK_TARGET} PRIVATE
         STM32_Common_STM32G0
+        STM32_Common_ARGB_STM32G0
         m
 )
 

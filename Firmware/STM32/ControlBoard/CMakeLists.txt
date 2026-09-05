@@ -38,7 +38,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/can.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rtc.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
@@ -140,6 +140,7 @@ target_link_directories(${CONTROL_BOARD_TARGET} PRIVATE
 
 target_link_libraries(${CONTROL_BOARD_TARGET} PRIVATE
         STM32_Common_STM32H5
+        STM32_Common_ARGB_STM32H5
         m
 )
 

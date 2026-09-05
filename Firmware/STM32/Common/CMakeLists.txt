@@ -46,3 +46,29 @@ target_sources(STM32_Common_STM32G0 INTERFACE
 target_link_libraries(STM32_Common_STM32G0 INTERFACE
         STM32_Common
 )
+
+add_library(STM32_Common_ARGB INTERFACE)
+target_sources(STM32_Common_ARGB INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/argb.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/argb.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/argb_platform.h
+)
+target_link_libraries(STM32_Common_ARGB INTERFACE
+        STM32_Common
+)
+
+add_library(STM32_Common_ARGB_STM32H5 INTERFACE)
+target_sources(STM32_Common_ARGB_STM32H5 INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/argb_platform_stm32h5.c
+)
+target_link_libraries(STM32_Common_ARGB_STM32H5 INTERFACE
+        STM32_Common_ARGB
+)
+
+add_library(STM32_Common_ARGB_STM32G0 INTERFACE)
+target_sources(STM32_Common_ARGB_STM32G0 INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/argb_platform_stm32g0.c
+)
+target_link_libraries(STM32_Common_ARGB_STM32G0 INTERFACE
+        STM32_Common_ARGB
+)

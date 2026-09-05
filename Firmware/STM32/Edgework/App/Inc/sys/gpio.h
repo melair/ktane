@@ -29,6 +29,9 @@ typedef struct {
 #define GPIO11_Pin GPIO_PIN_1
 #define GPIO11_Port GPIOB
 
+#define ARGB_Pin GPIO4_Pin
+#define ARGB_Port GPIO4_Port
+
 #define SPI_SCK_Pin GPIO6_Pin
 #define SPI_SCK_Port GPIO6_Port
 #define SPI_MISO_Pin GPIO7_Pin

@@ -6,7 +6,7 @@
 #include "mode.h"
 #include "nodes.h"
 #include "protocol.h"
-#include "sys/argb.h"
+#include "argb.h"
 #include "sys/can.h"
 #include "sys/gpio.h"
 #include "i2c.h"
@@ -82,7 +82,9 @@ int main(void) {
     }
     CAN_Init();
     Protocol_Init();
-    ARGB_Init();
+    if (!ARGB_Init()) {
+        Error_Handler();
+    }
     if (!ChassisBus_Init()) {
         Error_Handler();
     }

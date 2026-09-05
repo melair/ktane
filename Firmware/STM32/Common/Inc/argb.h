@@ -1,5 +1,6 @@
 #ifndef ARGB_H
 #define ARGB_H
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -20,7 +21,7 @@ typedef struct ARGB_Strip {
     struct ARGB_Strip *next;
 } ARGB_Strip;
 
-void ARGB_Init(void);
+bool ARGB_Init(void);
 
 void ARGB_Set(ARGB_Strip *strip, uint8_t idx, uint8_t r, uint8_t g, uint8_t b);
 
@@ -32,23 +33,23 @@ void ARGB_Add_Strip(ARGB_Strip *strip);
 
 void ARGB_Service(void);
 
-#define BITS_PER_COLOUR 8
-#define COLOURS_PER_LED 3
+#define BITS_PER_COLOUR 8U
+#define COLOURS_PER_LED 3U
 #define BITS_PER_LED (BITS_PER_COLOUR * COLOURS_PER_LED)
-#define LEDS_IN_TRANSPORT_BUFFER 2
+#define LEDS_IN_TRANSPORT_BUFFER 2U
 
-#define ARGB_BRIGHTNESS_MAX 0xff
+#define ARGB_BRIGHTNESS_MAX UINT8_MAX
 
-#define COLOUR_RED 0x00
-#define COLOUR_GREEN 0x01
-#define COLOUR_BLUE 0x02
+#define COLOUR_RED 0x00U
+#define COLOUR_GREEN 0x01U
+#define COLOUR_BLUE 0x02U
 
-/* Define colour order definitions for WS2812 and alternatives, reverse order due to them being shifted right. */
-#define COLOUR_ORDER_RGB ((COLOUR_BLUE << 4) | (COLOUR_GREEN << 2) | COLOUR_RED)
-#define COLOUR_ORDER_GRB ((COLOUR_BLUE << 4) | (COLOUR_RED << 2) | COLOUR_GREEN)
+/* Colour components are shifted out in the order encoded from least to most significant. */
+#define COLOUR_ORDER_RGB ((COLOUR_BLUE << 4U) | (COLOUR_GREEN << 2U) | COLOUR_RED)
+#define COLOUR_ORDER_GRB ((COLOUR_BLUE << 4U) | (COLOUR_RED << 2U) | COLOUR_GREEN)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //ARGB_H
+#endif // ARGB_H
