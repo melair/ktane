@@ -46,6 +46,7 @@ void Mode_Init(void) {
             break;
         case MODE_SUPPORT_CHASSIS:
             mode.definition = &chassis_mode;
+            mode.chassis_location = NODE_CHASSIS_LOCATION_CHASSIS;
             break;
         case MODE_SUPPORT_TIMER:
             mode.definition = &timer_mode;
