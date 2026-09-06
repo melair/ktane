@@ -3,6 +3,7 @@ add_library(STM32_Common INTERFACE)
 # INTERFACE sources are compiled separately by each consuming firmware target,
 # so they inherit that board's MCU-specific compiler options.
 target_sources(STM32_Common INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/chassis_bus/protocol.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/cobs/cobs.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/cobs/cobs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework_bus/protocol.h

@@ -10,7 +10,7 @@
  */
 #define EDGEWORK_BUS_PROTOCOL_PACKETS(X)                         \
     X(EDGEWORK_BUS_INQUIRY,         0x00U, inquiry)              \
-    X(EDGEWORK_BUS_ANNOUNCEMENT,    0x01U, announcement)         \
+    X(EDGEWORK_BUS_STATUS,          0x01U, status)               \
     X(EDGEWORK_BUS_CHANGE,          0x02U, change)               \
     X(EDGEWORK_BUS_IDENTIFY,        0x03U, identify)             \
     X(EDGEWORK_BUS_SET_MODE,        0xf0U, set_mode)             \
@@ -72,6 +72,10 @@ typedef struct {
     struct {
         uint8_t address;
         uint8_t opcode;
+
+        struct {
+            unsigned eor :1;
+        } flags;
     } header;
 
     union {
@@ -87,7 +91,7 @@ typedef struct {
                 unsigned ready :1;
                 unsigned identifying :1;
             } flags;
-        } announcement;
+        } status;
 
         struct {
             uint8_t active;
