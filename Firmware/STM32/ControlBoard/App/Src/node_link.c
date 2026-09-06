@@ -1,6 +1,7 @@
 #include "node_link.h"
 
 #include "cobs/cobs.h"
+#include "node_link/router.h"
 #include "sys/gpio.h"
 #include "uart/uart.h"
 #include "uart/uart_platform.h"
@@ -11,6 +12,9 @@ static UART_State node_link_uart;
 static UART_HandleTypeDef node_link_uart_handle;
 static COBS_State node_link_cobs;
 static uint8_t node_link_uart_tx_buffer[NODE_LINK_TX_FRAME_COUNT * COBS_FRAME_MAX_SIZE];
+
+/* Handlers for packets received from the chassis link belong here. */
+static const NodeLink_Router node_link_router = {0};
 
 static bool node_link_uart_configure_clock(void) {
     __HAL_RCC_UART5_CONFIG(RCC_UART5CLKSOURCE_PLL2Q);
@@ -39,8 +43,12 @@ static void node_link_uart_receive(const uint8_t *data, size_t length) {
     COBS_Service(&node_link_cobs, data, length);
 }
 
+static void node_link_packet_receive(const uint8_t *data, const size_t length) {
+    (void) NodeLinkRouter_Dispatch(&node_link_router, data, length);
+}
+
 bool NodeLink_Init(void) {
-    COBS_Init(&node_link_cobs, NULL);
+    COBS_Init(&node_link_cobs, node_link_packet_receive);
     return UART_Init(&node_link_uart, &node_link_uart_hardware,
                      node_link_uart_tx_buffer, sizeof(node_link_uart_tx_buffer));
 }

@@ -4,9 +4,13 @@ add_library(STM32_Common INTERFACE)
 # so they inherit that board's MCU-specific compiler options.
 target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/chassis_bus/protocol.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/chassis_bus/router.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/chassis_bus/router.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/cobs/cobs.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/cobs/cobs.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework_bus/protocol.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/edgework_bus/router.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework_bus/router.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/fsm/fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fsm/fsm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/input_manager/input_manager.c
@@ -16,6 +20,8 @@ target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/i2c/i2c.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/i2c/i2c_platform.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/node_link/protocol.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/node_link/router.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/node_link/router.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/nvm/nvm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/nvm/nvm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/nvm/nvm_internal.h

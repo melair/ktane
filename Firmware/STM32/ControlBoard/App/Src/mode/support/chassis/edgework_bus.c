@@ -1,6 +1,7 @@
 #include "mode/support/chassis/edgework_bus.h"
 
 #include "cobs/cobs.h"
+#include "edgework_bus/router.h"
 #include "sys/gpio.h"
 #include "uart/uart.h"
 #include "uart/uart_platform.h"
@@ -11,6 +12,9 @@ static UART_State edgework_bus_uart;
 static UART_HandleTypeDef edgework_bus_uart_handle;
 static COBS_State edgework_bus_cobs;
 static uint8_t edgework_bus_uart_tx_buffer[EDGEWORK_BUS_TX_FRAME_COUNT * COBS_FRAME_MAX_SIZE];
+
+/* Handlers for packets received by the control board belong here. */
+static const EdgeworkBus_Router edgework_bus_router = {0};
 
 static bool edgework_bus_uart_configure_clock(void) {
     __HAL_RCC_USART3_CONFIG(RCC_USART3CLKSOURCE_PCLK1);
@@ -42,8 +46,12 @@ static void edgework_bus_uart_receive(const uint8_t *data, size_t length) {
     COBS_Service(&edgework_bus_cobs, data, length);
 }
 
+static void edgework_bus_packet_receive(const uint8_t *data, const size_t length) {
+    (void) EdgeworkBusRouter_Dispatch(&edgework_bus_router, data, length);
+}
+
 bool EdgeworkBus_Init(void) {
-    COBS_Init(&edgework_bus_cobs, NULL);
+    COBS_Init(&edgework_bus_cobs, edgework_bus_packet_receive);
     return UART_Init(&edgework_bus_uart, &edgework_bus_uart_hardware,
                      edgework_bus_uart_tx_buffer, sizeof(edgework_bus_uart_tx_buffer));
 }

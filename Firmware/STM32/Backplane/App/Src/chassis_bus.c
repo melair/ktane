@@ -1,5 +1,6 @@
 #include "chassis_bus.h"
 
+#include "chassis_bus/router.h"
 #include "cobs/cobs.h"
 #include "sys/gpio.h"
 #include "uart/uart.h"
@@ -11,6 +12,9 @@ static UART_State chassis_bus_uart;
 static UART_HandleTypeDef chassis_bus_uart_handle;
 static COBS_State chassis_bus_cobs;
 static uint8_t chassis_bus_uart_tx_buffer[CHASSIS_BUS_TX_FRAME_COUNT * COBS_FRAME_MAX_SIZE];
+
+/* Handlers for packets received by a backplane belong here. */
+static const ChassisBus_Router chassis_bus_router = {0};
 
 static bool chassis_bus_uart_configure_clock(void) {
     /* USART3 is clocked directly from PCLK1 on the STM32G070. */
@@ -42,8 +46,12 @@ static void chassis_bus_uart_receive(const uint8_t *data, size_t length) {
     COBS_Service(&chassis_bus_cobs, data, length);
 }
 
+static void chassis_bus_packet_receive(const uint8_t *data, const size_t length) {
+    (void) ChassisBusRouter_Dispatch(&chassis_bus_router, data, length);
+}
+
 bool ChassisBus_Init(void) {
-    COBS_Init(&chassis_bus_cobs, NULL);
+    COBS_Init(&chassis_bus_cobs, chassis_bus_packet_receive);
     return UART_Init(&chassis_bus_uart, &chassis_bus_uart_hardware,
                      chassis_bus_uart_tx_buffer, sizeof(chassis_bus_uart_tx_buffer));
 }
