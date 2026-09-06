@@ -13,6 +13,7 @@
 
 typedef struct {
     uint8_t mode;
+    uint8_t chassis_location;
     FSM fsm;
     Mode_Definition *definition;
     bool service_enabled;
@@ -20,6 +21,7 @@ typedef struct {
 
 static mode_t mode = {
     .mode = MODE_NONE,
+    .chassis_location = NODE_CHASSIS_LOCATION_UNKNOWN,
     .definition = NULL,
     .service_enabled = false,
 };
@@ -27,8 +29,6 @@ static mode_t mode = {
 Mode_Data mode_data = {0};
 
 void Mode_Init(void) {
-    mode.mode = MODE_NONE;
-
     const NVM_Query query = {
         .type = UINT8,
         .id = MODE_CFG(MODE_NONE, MODE_CONFIG_ACTIVE_MODE),
@@ -72,7 +72,7 @@ void Mode_Service(void) {
         announcement.node.announce.uptime = HAL_GetTick();
         announcement.node.announce.mode = mode.mode;
         announcement.node.announce.state = mode.fsm.current_id;
-        announcement.node.announce.flags.chassis_location = NODE_CHASSIS_LOCATION_UNKNOWN;
+        announcement.node.announce.flags.chassis_location = mode.chassis_location;
         Protocol_Send(MODULE_ANNOUNCE, &announcement);
     }
 }

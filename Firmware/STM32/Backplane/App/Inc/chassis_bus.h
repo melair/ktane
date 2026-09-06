@@ -11,8 +11,10 @@ bool ChassisBus_Init(void);
 
 void ChassisBus_Service(void);
 
+void ChassisBus_IRQHandler(void);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif //CHASSIS_BUS_H
+#endif // CHASSIS_BUS_H

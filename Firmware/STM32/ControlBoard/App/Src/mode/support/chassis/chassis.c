@@ -1,8 +1,10 @@
 #include "mode/support/chassis/chassis.h"
 #include "mode/support/chassis/dac.h"
+#include "mode/support/chassis/edgework_bus.h"
 #include "mode.h"
 #include "mode_fsm.h"
 #include "sys/i2s.h"
+#include "stm32h5xx_it.h"
 
 static Chassis_Data *const chassis = &mode_data.mode.chassis;
 
@@ -11,6 +13,9 @@ static void chassis_fsm_init_enter(FSM *fsm) {
     chassis->audio.buffer_size = I2S_AUDIO_BUFFER_SAMPLE_COUNT;
     I2S_Init(&chassis->audio);
     DAC_Init();
+    if (!EdgeworkBus_Init()) {
+        Error_Handler();
+    }
     Mode_SetServiceEnabled(true);
 }
 
@@ -25,6 +30,7 @@ static void chassis_fsm_init_service(FSM *fsm) {
 static void chassis_always_service(void) {
     I2S_Service(&chassis->audio);
     DAC_Service();
+    EdgeworkBus_Service();
 }
 
 static Callbacks chassis_state_callbacks[MODE_FSM_STATE_COUNT] = {

@@ -13,24 +13,27 @@ static COBS_State chassis_bus_cobs;
 static uint8_t chassis_bus_uart_tx_buffer[CHASSIS_BUS_TX_FRAME_COUNT * COBS_FRAME_MAX_SIZE];
 
 static bool chassis_bus_uart_configure_clock(void) {
-    __HAL_RCC_UART5_CONFIG(RCC_UART5CLKSOURCE_PLL2Q);
+    /* USART3 is clocked directly from PCLK1 on the STM32G070. */
     return true;
 }
 
 static void chassis_bus_uart_enable_peripheral_clock(void) {
-    __HAL_RCC_UART5_CLK_ENABLE();
+    __HAL_RCC_USART3_CLK_ENABLE();
 }
 
 static const UART_Hardware chassis_bus_uart_hardware = {
-    .uart_instance = UART5,
+    .uart_instance = USART3,
     .uart_handle = &chassis_bus_uart_handle,
     .baud_rate = 115200U,
-    .rx = {CHASSIS_BUS_RX_Port, CHASSIS_BUS_RX_Pin},
-    .rx_alternate = GPIO_AF14_UART5,
-    .tx = {CHASSIS_BUS_TX_Port, CHASSIS_BUS_TX_Pin},
-    .tx_alternate = GPIO_AF14_UART5,
-    .irq = UART5_IRQn,
-    .irq_priority = 5U,
+    .rx = {BUS_RX_GPIO_Port, BUS_RX_Pin},
+    .rx_alternate = GPIO_AF4_USART3,
+    .tx = {BUS_TX_GPIO_Port, BUS_TX_Pin},
+    .tx_alternate = GPIO_AF4_USART3,
+    .driver_enable = {BUS_DE_GPIO_Port, BUS_DE_Pin},
+    .driver_enable_alternate = GPIO_AF4_USART3,
+    .driver_enable_active_low = false,
+    .irq = USART3_4_IRQn,
+    .irq_priority = 1U,
     .configure_clock = chassis_bus_uart_configure_clock,
     .enable_peripheral_clock = chassis_bus_uart_enable_peripheral_clock,
 };
@@ -49,6 +52,6 @@ void ChassisBus_Service(void) {
     UART_Service(&chassis_bus_uart, chassis_bus_uart_receive);
 }
 
-void UART5_IRQHandler(void) {
+void ChassisBus_IRQHandler(void) {
     UART_IRQHandler(&chassis_bus_uart);
 }

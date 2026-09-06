@@ -1,7 +1,9 @@
 #include "main.h"
 
+#include "chassis_bus.h"
 #include "i2c.h"
 #include "input_manager.h"
+#include "module_link.h"
 #include "power.h"
 #include "status.h"
 #include "sys/gpio.h"
@@ -36,6 +38,12 @@ int main(void) {
     if (!I2C_Init()) {
         Error_Handler();
     }
+    if (!ChassisBus_Init()) {
+        Error_Handler();
+    }
+    if (!ModuleLink_Init()) {
+        Error_Handler();
+    }
     if (!Power_Init()) {
         Error_Handler();
     }
@@ -57,6 +65,10 @@ int main(void) {
         Status_Service();
         /* Service I2C. */
         I2C_Service();
+        /* Service the chassis bus. */
+        ChassisBus_Service();
+        /* Service the front and rear module links. */
+        ModuleLink_Service();
         /* Service front and rear module power. */
         Power_Service();
 

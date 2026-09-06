@@ -22,7 +22,7 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/chassis_bus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/chassis_link.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/indicator.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
@@ -46,6 +46,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/simon/simon.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/dac.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework_bus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/timer/timer.c
 )
 

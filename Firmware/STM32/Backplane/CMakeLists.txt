@@ -22,9 +22,12 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/chassis_bus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/module_link.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/power.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/uart_interrupts.c
 )
 
 set(MCU_SUPPORT_SOURCES

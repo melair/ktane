@@ -1,6 +1,6 @@
 #include "main.h"
 
-#include "chassis_bus.h"
+#include "chassis_link.h"
 #include "game.h"
 #include "indicator.h"
 #include "mode.h"
@@ -85,7 +85,7 @@ int main(void) {
     if (!ARGB_Init()) {
         Error_Handler();
     }
-    if (!ChassisBus_Init()) {
+    if (!ChassisLink_Init()) {
         Error_Handler();
     }
 
@@ -135,8 +135,8 @@ int main(void) {
         Nodes_Service();
         /* Service protocol. */
         Protocol_Service();
-        /* Service the chassis bus. */
-        ChassisBus_Service();
+        /* Service the chassis link. */
+        ChassisLink_Service();
 
         /* Service the game. */
         Game_Service();

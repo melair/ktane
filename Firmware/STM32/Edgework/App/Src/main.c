@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "argb.h"
+#include "edgework_bus.h"
 #include "i2c.h"
 #include "input_manager.h"
 #include "sys/gpio.h"
@@ -31,7 +32,7 @@ int main(void) {
     if (!I2C_Init()) {
         Error_Handler();
     }
-    if (!ARGB_Init()) {
+    if (!EdgeworkBus_Init()) {
         Error_Handler();
     }
 
@@ -41,8 +42,8 @@ int main(void) {
         IM_Service();
         /* Service I2C. */
         I2C_Service();
-        /* Service ARGB strips with pending changes. */
-        ARGB_Service();
+        /* Service the edgework bus. */
+        EdgeworkBus_Service();
         __WFI();
     }
 }
