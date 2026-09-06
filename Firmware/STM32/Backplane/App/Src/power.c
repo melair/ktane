@@ -1,8 +1,8 @@
 #include "power.h"
 
-#include "fsm.h"
-#include "i2c.h"
-#include "input_manager.h"
+#include "fsm/fsm.h"
+#include "i2c/i2c.h"
+#include "input_manager/input_manager.h"
 #include "sys/gpio.h"
 
 #include <stddef.h>
@@ -27,13 +27,13 @@
 
 #define POWER_POT_UNLOCK_COMMAND 0x1c02
 #define POWER_POT_WRITE_RDAC_COMMAND 0x0400
-#define POWER_DEFAULT_CURRENT_DECIAMPS 10U
+#define POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS 2U
 
 typedef enum {
     POWER_FSM_STATE_INIT = 0,
     POWER_FSM_STATE_UNLOCK_POT,
     POWER_FSM_STATE_IDLE,
-    POWER_FSM_STATE_SET_CURRENT,
+    POWER_FSM_STATE_SET_CURRENT_LIMIT,
     POWER_FSM_STATE_ACTIVE,
     POWER_FSM_STATE_TRIP,
     POWER_FSM_STATE_SHUTDOWN,
@@ -49,26 +49,34 @@ typedef struct {
 } Power_ChannelConfig;
 
 typedef struct {
+    uint8_t applied_deciamps;
+    uint8_t requested_deciamps;
+    uint8_t writing_deciamps;
+} Power_CurrentLimit;
+
+typedef struct {
+    float average_a;
+    float samples_a[POWER_CURRENT_AVERAGE_SAMPLE_COUNT];
+    float sum_a;
+    uint8_t sample_index;
+    uint8_t sample_count;
+} Power_Current;
+
+typedef struct {
     FSM fsm;
     const Power_ChannelConfig *config;
     I2C_Transaction transaction;
     uint8_t tx_data[2];
-    uint8_t current_limit;
-    uint8_t requested_current_limit;
-    uint8_t writing_current_limit;
+    Power_CurrentLimit current_limit;
     bool output_active;
-    float current_draw_a;
-    float current_draw_samples_a[POWER_CURRENT_AVERAGE_SAMPLE_COUNT];
-    float current_draw_sum_a;
-    uint8_t current_draw_sample_index;
-    uint8_t current_draw_sample_count;
+    Power_Current current;
     IM_EventQueue current_event_queue;
     IM_AnalogueChannelState current_channel;
     IM_AnalogueInputState current_input_state;
     IM_AnalogueInputConfig current_input;
 } Power_Channel;
 
-static const uint16_t power_i2c_ilim_values[] = {
+static const uint16_t power_current_limit_pot_values[] = {
     761U, /* 0.0 A (minimum supported: 0.126 A) */
     761U, /* 0.1 A (minimum supported: 0.126 A) */
     446U, /* 0.2 A */
@@ -92,9 +100,10 @@ static const uint16_t power_i2c_ilim_values[] = {
     3U,   /* 2.0 A (1.977 A nominal, within RILM specification) */
 };
 
-_Static_assert(POWER_DEFAULT_CURRENT_DECIAMPS <
-               (sizeof(power_i2c_ilim_values) / sizeof(power_i2c_ilim_values[0])),
-               "Default power current is outside the potentiometer lookup table");
+_Static_assert(POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS <
+               (sizeof(power_current_limit_pot_values) /
+                sizeof(power_current_limit_pot_values[0])),
+               "Default current limit is outside the potentiometer lookup table");
 
 static const Power_ChannelConfig power_channel_configs[POWER_CHANNEL_COUNT] = {
     {
@@ -124,7 +133,7 @@ static Power_Channel power_channels[POWER_CHANNEL_COUNT] = {0};
 static void power_fsm_init_enter(FSM *fsm);
 static void power_fsm_unlock_pot_enter(FSM *fsm);
 static void power_fsm_idle_service(FSM *fsm);
-static void power_fsm_set_current_enter(FSM *fsm);
+static void power_fsm_set_current_limit_enter(FSM *fsm);
 static void power_fsm_active_enter(FSM *fsm);
 static void power_fsm_active_service(FSM *fsm);
 static void power_fsm_trip_enter(FSM *fsm);
@@ -143,17 +152,17 @@ static const FSM_State power_fsm_states[POWER_FSM_STATE_COUNT] = {
     },
     [POWER_FSM_STATE_IDLE] = {
         .service = power_fsm_idle_service,
-        .next_mask = FSM_NEXT(POWER_FSM_STATE_SET_CURRENT),
+        .next_mask = FSM_NEXT(POWER_FSM_STATE_SET_CURRENT_LIMIT),
     },
-    [POWER_FSM_STATE_SET_CURRENT] = {
-        .enter = power_fsm_set_current_enter,
+    [POWER_FSM_STATE_SET_CURRENT_LIMIT] = {
+        .enter = power_fsm_set_current_limit_enter,
         .next_mask = FSM_NEXT(POWER_FSM_STATE_ACTIVE) |
                      FSM_NEXT(POWER_FSM_STATE_SHUTDOWN),
     },
     [POWER_FSM_STATE_ACTIVE] = {
         .enter = power_fsm_active_enter,
         .service = power_fsm_active_service,
-        .next_mask = FSM_NEXT(POWER_FSM_STATE_SET_CURRENT) |
+        .next_mask = FSM_NEXT(POWER_FSM_STATE_SET_CURRENT_LIMIT) |
                      FSM_NEXT(POWER_FSM_STATE_TRIP) |
                      FSM_NEXT(POWER_FSM_STATE_SHUTDOWN),
     },
@@ -186,7 +195,8 @@ static void power_efuse_enable(Power_Channel *channel, const bool enabled) {
 }
 
 static float power_current_from_adc(const Power_Channel *channel, const uint16_t adc_value) {
-    const uint16_t pot_value = power_i2c_ilim_values[channel->current_limit];
+    const uint16_t pot_value =
+        power_current_limit_pot_values[channel->current_limit.applied_deciamps];
     const float ilm_resistance_ohms = POWER_ILM_SERIES_RESISTANCE_OHMS +
                                       ((float) pot_value * POWER_POT_RESISTANCE_OHMS /
                                        POWER_POT_POSITION_COUNT);
@@ -201,22 +211,22 @@ static void power_current_service(Power_Channel *channel) {
 
     while (IM_EventQueue_Read(&channel->current_event_queue, &event)) {
         if ((event.event == IM_EVENT_ANALOGUE) && (event.channel == 0U)) {
-            const float current_draw_a = power_current_from_adc(channel, event.value);
+            const float current_a = power_current_from_adc(channel, event.value);
 
-            if (channel->current_draw_sample_count == POWER_CURRENT_AVERAGE_SAMPLE_COUNT) {
-                channel->current_draw_sum_a -=
-                    channel->current_draw_samples_a[channel->current_draw_sample_index];
+            if (channel->current.sample_count == POWER_CURRENT_AVERAGE_SAMPLE_COUNT) {
+                channel->current.sum_a -=
+                    channel->current.samples_a[channel->current.sample_index];
             } else {
-                channel->current_draw_sample_count++;
+                channel->current.sample_count++;
             }
 
-            channel->current_draw_samples_a[channel->current_draw_sample_index] = current_draw_a;
-            channel->current_draw_sum_a += current_draw_a;
-            channel->current_draw_sample_index =
-                (uint8_t) ((channel->current_draw_sample_index + 1U) %
+            channel->current.samples_a[channel->current.sample_index] = current_a;
+            channel->current.sum_a += current_a;
+            channel->current.sample_index =
+                (uint8_t) ((channel->current.sample_index + 1U) %
                            POWER_CURRENT_AVERAGE_SAMPLE_COUNT);
-            channel->current_draw_a =
-                channel->current_draw_sum_a / (float) channel->current_draw_sample_count;
+            channel->current.average_a =
+                channel->current.sum_a / (float) channel->current.sample_count;
         }
     }
 }
@@ -237,7 +247,7 @@ static I2C_Transaction *power_i2c_complete(I2C_Transaction *transaction) {
         if (channel->fsm.current_id == POWER_FSM_STATE_UNLOCK_POT) {
             FSM_TransitionIn(&channel->fsm, POWER_FSM_STATE_UNLOCK_POT,
                              POWER_I2C_RETRY_DELAY_MS);
-        } else if (channel->fsm.current_id == POWER_FSM_STATE_SET_CURRENT) {
+        } else if (channel->fsm.current_id == POWER_FSM_STATE_SET_CURRENT_LIMIT) {
             FSM_Transition(&channel->fsm, POWER_FSM_STATE_SHUTDOWN);
         }
 
@@ -246,8 +256,8 @@ static I2C_Transaction *power_i2c_complete(I2C_Transaction *transaction) {
 
     if (channel->fsm.current_id == POWER_FSM_STATE_UNLOCK_POT) {
         FSM_Transition(&channel->fsm, POWER_FSM_STATE_IDLE);
-    } else if (channel->fsm.current_id == POWER_FSM_STATE_SET_CURRENT) {
-        channel->current_limit = channel->writing_current_limit;
+    } else if (channel->fsm.current_id == POWER_FSM_STATE_SET_CURRENT_LIMIT) {
+        channel->current_limit.applied_deciamps = channel->current_limit.writing_deciamps;
         FSM_Transition(&channel->fsm,
                        power_module_present(channel)
                            ? POWER_FSM_STATE_ACTIVE
@@ -270,17 +280,18 @@ static void power_fsm_idle_service(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
     if (power_module_present(channel)) {
-        channel->requested_current_limit = POWER_DEFAULT_CURRENT_DECIAMPS;
-        FSM_TransitionIn(fsm, POWER_FSM_STATE_SET_CURRENT, POWER_ENABLE_DELAY_MS);
+        channel->current_limit.requested_deciamps = POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS;
+        FSM_TransitionIn(fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT, POWER_ENABLE_DELAY_MS);
     }
 }
 
-static void power_fsm_set_current_enter(FSM *fsm) {
+static void power_fsm_set_current_limit_enter(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
-    channel->writing_current_limit = channel->requested_current_limit;
+    channel->current_limit.writing_deciamps = channel->current_limit.requested_deciamps;
     const uint16_t value = POWER_POT_WRITE_RDAC_COMMAND |
-                           power_i2c_ilim_values[channel->writing_current_limit];
+                           power_current_limit_pot_values[
+                               channel->current_limit.writing_deciamps];
 
     power_queue_pot_write(channel, value);
 }
@@ -288,10 +299,10 @@ static void power_fsm_set_current_enter(FSM *fsm) {
 static void power_fsm_active_enter(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
-    channel->current_draw_a = 0.0f;
-    channel->current_draw_sum_a = 0.0f;
-    channel->current_draw_sample_index = 0U;
-    channel->current_draw_sample_count = 0U;
+    channel->current.average_a = 0.0f;
+    channel->current.sum_a = 0.0f;
+    channel->current.sample_index = 0U;
+    channel->current.sample_count = 0U;
     IM_EventQueue_Clear(&channel->current_event_queue);
     power_efuse_enable(channel, true);
 }
@@ -305,8 +316,9 @@ static void power_fsm_active_service(FSM *fsm) {
         FSM_Transition(fsm, POWER_FSM_STATE_TRIP);
     } else if (!power_module_present(channel)) {
         FSM_Transition(fsm, POWER_FSM_STATE_SHUTDOWN);
-    } else if (channel->requested_current_limit != channel->current_limit) {
-        FSM_Transition(fsm, POWER_FSM_STATE_SET_CURRENT);
+    } else if (channel->current_limit.requested_deciamps !=
+               channel->current_limit.applied_deciamps) {
+        FSM_Transition(fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT);
     }
 }
 
@@ -386,9 +398,53 @@ void Power_Service(void) {
     }
 }
 
-bool Power_SetCurrent(const Power_ChannelId channel_id, const uint8_t current_deciamps) {
+bool Power_IsModuleDetected(const Power_ChannelId channel_id) {
+    return ((unsigned int) channel_id < POWER_CHANNEL_COUNT) &&
+           power_module_present(&power_channels[channel_id]);
+}
+
+bool Power_IsActive(const Power_ChannelId channel_id) {
+    return ((unsigned int) channel_id < POWER_CHANNEL_COUNT) &&
+           power_channels[channel_id].output_active;
+}
+
+bool Power_IsTripped(const Power_ChannelId channel_id) {
+    return ((unsigned int) channel_id < POWER_CHANNEL_COUNT) &&
+           (power_channels[channel_id].fsm.current_id == POWER_FSM_STATE_TRIP);
+}
+
+uint16_t Power_GetCurrent(const Power_ChannelId channel_id) {
     if (((unsigned int) channel_id >= POWER_CHANNEL_COUNT) ||
-        (current_deciamps >= (sizeof(power_i2c_ilim_values) / sizeof(power_i2c_ilim_values[0])))) {
+        !power_channels[channel_id].output_active) {
+        return 0U;
+    }
+
+    const float averaged_current_ma =
+        power_channels[channel_id].current.average_a * 1000.0f;
+    if (!(averaged_current_ma > 0.0f)) {
+        return 0U;
+    }
+    if (averaged_current_ma >= (float) UINT16_MAX) {
+        return UINT16_MAX;
+    }
+
+    return (uint16_t) (averaged_current_ma + 0.5f);
+}
+
+uint8_t Power_GetCurrentLimit(const Power_ChannelId channel_id) {
+    if ((unsigned int) channel_id >= POWER_CHANNEL_COUNT) {
+        return 0U;
+    }
+
+    return power_channels[channel_id].current_limit.applied_deciamps;
+}
+
+bool Power_SetCurrentLimit(const Power_ChannelId channel_id,
+                           const uint8_t current_limit_deciamps) {
+    if (((unsigned int) channel_id >= POWER_CHANNEL_COUNT) ||
+        (current_limit_deciamps >=
+         (sizeof(power_current_limit_pot_values) /
+          sizeof(power_current_limit_pot_values[0])))) {
         return false;
     }
 
@@ -397,6 +453,6 @@ bool Power_SetCurrent(const Power_ChannelId channel_id, const uint8_t current_de
         return false;
     }
 
-    channel->requested_current_limit = current_deciamps;
+    channel->current_limit.requested_deciamps = current_limit_deciamps;
     return true;
 }

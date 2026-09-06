@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "fsm.h"
-#include "i2c.h"
+#include "fsm/fsm.h"
+#include "i2c/i2c.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -23,6 +23,7 @@ set(CMSIS_INCLUDE_DIRS
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/edgework_bus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c

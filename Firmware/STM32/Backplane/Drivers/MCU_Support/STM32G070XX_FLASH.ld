@@ -56,8 +56,13 @@ ENTRY(Reset_Handler)
 MEMORY
 {
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 36K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 128K
+FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 124K
+NVM (r)        : ORIGIN = 0x0801F000, LENGTH = 4K
 }
+
+__nvm_start__ = ORIGIN(NVM);
+__nvm_end__ = ORIGIN(NVM) + LENGTH(NVM);
+ASSERT(ORIGIN(FLASH) + LENGTH(FLASH) <= ORIGIN(NVM), "FLASH overlaps NVM")
 
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */

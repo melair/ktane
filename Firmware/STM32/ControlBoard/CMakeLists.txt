@@ -22,7 +22,7 @@ set(CMSIS_INCLUDE_DIRS
 
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/chassis_link.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/node_link.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/indicator.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
@@ -42,7 +42,6 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/gpio.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/nvm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/simon/simon.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/dac.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c

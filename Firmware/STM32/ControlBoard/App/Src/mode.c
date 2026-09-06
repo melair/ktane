@@ -2,9 +2,9 @@
 #include <stdint.h>
 #include "protocol.h"
 #include "stm32h5xx_hal.h"
-#include "fsm.h"
+#include "fsm/fsm.h"
 #include "sys/mcu_init.h"
-#include "sys/nvm.h"
+#include "nvm/nvm.h"
 #include "sys/tick.h"
 #include "mode_fsm.h"
 #include "mode/puzzle/simon/simon.h"

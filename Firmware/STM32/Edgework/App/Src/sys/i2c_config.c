@@ -1,4 +1,4 @@
-#include "i2c_platform.h"
+#include "i2c/i2c_platform.h"
 
 static I2C_HandleTypeDef i2c_handle;
 static DMA_HandleTypeDef i2c_dma_handle;

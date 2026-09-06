@@ -1,9 +1,9 @@
 #include "chassis_bus.h"
 
-#include "cobs.h"
+#include "cobs/cobs.h"
 #include "sys/gpio.h"
-#include "uart.h"
-#include "uart_platform.h"
+#include "uart/uart.h"
+#include "uart/uart_platform.h"
 
 #define CHASSIS_BUS_TX_FRAME_COUNT 4U
 

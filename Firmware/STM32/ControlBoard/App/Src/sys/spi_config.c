@@ -1,4 +1,4 @@
-#include "spi_platform.h"
+#include "spi/spi_platform.h"
 
 static SPI_HandleTypeDef spi_handle;
 static DMA_HandleTypeDef spi_dma_handle;

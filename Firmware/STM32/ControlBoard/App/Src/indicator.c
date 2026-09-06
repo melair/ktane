@@ -1,5 +1,5 @@
 #include "indicator.h"
-#include "argb.h"
+#include "argb/argb.h"
 #include "stm32h5xx_hal.h"
 
 typedef struct {

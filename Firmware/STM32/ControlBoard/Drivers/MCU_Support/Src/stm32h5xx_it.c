@@ -1,5 +1,15 @@
 #include "main.h"
 #include "stm32h5xx_it.h"
+#include "nvm/nvm_internal.h"
+
+/**
+  * @brief This function handles a non-maskable interrupt.
+  */
+void NMI_Handler(void) {
+    if (!NVM_HandleNMI()) {
+        Error_Handler();
+    }
+}
 
 /**
   * @brief This function handles Hard fault interrupt.

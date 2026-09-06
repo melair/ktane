@@ -1,11 +1,13 @@
 #include "main.h"
 
-#include "argb.h"
+#include "argb/argb.h"
 #include "edgework_bus.h"
-#include "i2c.h"
-#include "input_manager.h"
+#include "i2c/i2c.h"
+#include "input_manager/input_manager.h"
+#include "mode.h"
 #include "sys/gpio.h"
 #include "sys/mcu_init.h"
+#include "nvm/nvm.h"
 
 /**
   * @brief  The application entry point.
@@ -17,6 +19,14 @@ int main(void) {
 
     /* Configure the system clock */
     SystemClock_Init();
+
+    /* Initialize the flash-backed non-volatile journal. */
+    NVM_Init();
+
+    /* Load the configured edgework mode before initializing peripherals. */
+    if (!Mode_Init()) {
+        Error_Handler();
+    }
 
     /* Initialize base MCU peripherals */
     GPIO_Init();

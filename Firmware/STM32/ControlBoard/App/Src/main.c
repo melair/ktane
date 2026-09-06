@@ -1,24 +1,24 @@
 #include "main.h"
 
-#include "chassis_link.h"
+#include "node_link.h"
 #include "game.h"
 #include "indicator.h"
 #include "mode.h"
 #include "nodes.h"
 #include "protocol.h"
-#include "argb.h"
+#include "argb/argb.h"
 #include "sys/can.h"
 #include "sys/gpio.h"
-#include "i2c.h"
-#include "input_manager.h"
+#include "i2c/i2c.h"
+#include "input_manager/input_manager.h"
 #include "sys/mcu_init.h"
 #include "sys/mcu_load.h"
-#include "sys/nvm.h"
+#include "nvm/nvm.h"
 #include "sys/rng.h"
 #include "sys/rtc.h"
-#include "spi.h"
+#include "spi/spi.h"
 #include "sys/sys_clock.h"
-#include "status.h"
+#include "status/status.h"
 #include "sys/tick.h"
 #include "stm32h5xx_it.h"
 
@@ -85,7 +85,7 @@ int main(void) {
     if (!ARGB_Init()) {
         Error_Handler();
     }
-    if (!ChassisLink_Init()) {
+    if (!NodeLink_Init()) {
         Error_Handler();
     }
 
@@ -136,7 +136,7 @@ int main(void) {
         /* Service protocol. */
         Protocol_Service();
         /* Service the chassis link. */
-        ChassisLink_Service();
+        NodeLink_Service();
 
         /* Service the game. */
         Game_Service();

@@ -2,9 +2,9 @@
 #define TIMER_H
 
 #include "mode_fsm.h"
-#include "argb.h"
-#include "input_manager.h"
-#include "spi.h"
+#include "argb/argb.h"
+#include "input_manager/input_manager.h"
+#include "spi/spi.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -4,7 +4,7 @@
 #include "sys/gpio.h"
 #include "sys/input_manager_config.h"
 #include "sys/rng.h"
-#include "spi.h"
+#include "spi/spi.h"
 
 #define TIMER_ROTARY_COUNTS_PER_DETENT 4
 #define TIMER_LEDS_PER_DIGIT 11
