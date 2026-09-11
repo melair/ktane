@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "edgework_bus/protocol.h"
+#include "edgework/bus/protocol.h"
 
 #ifdef __cplusplus
 extern "C" {

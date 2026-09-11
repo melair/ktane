@@ -8,9 +8,10 @@ target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/chassis_bus/router.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/cobs/cobs.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/cobs/cobs.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework_bus/protocol.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/Src/edgework_bus/router.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework_bus/router.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework/data.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework/bus/protocol.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/edgework/bus/router.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework/bus/router.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/fsm/fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fsm/fsm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/input_manager/input_manager.c

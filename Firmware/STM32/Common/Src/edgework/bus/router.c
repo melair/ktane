@@ -1,4 +1,4 @@
-#include "edgework_bus/router.h"
+#include "edgework/bus/router.h"
 
 bool EdgeworkBusRouter_Dispatch(const EdgeworkBus_Router *router,
                                 const uint8_t *data, const size_t length) {

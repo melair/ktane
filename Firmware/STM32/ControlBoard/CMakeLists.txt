@@ -45,7 +45,8 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/simon/simon.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/dac.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework_bus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework/bus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework/manager.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/timer/timer.c
 )
 

@@ -24,6 +24,13 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/edgework_bus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/serial/serial.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/indicator/indicator.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/battery/battery.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/ports/ports.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/twofa/twofa.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/controller/controller.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/slot.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c

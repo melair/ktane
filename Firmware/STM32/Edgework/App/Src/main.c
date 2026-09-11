@@ -5,6 +5,7 @@
 #include "i2c/i2c.h"
 #include "input_manager/input_manager.h"
 #include "mode.h"
+#include "slot.h"
 #include "sys/gpio.h"
 #include "sys/mcu_init.h"
 #include "nvm/nvm.h"
@@ -42,6 +43,7 @@ int main(void) {
     if (!I2C_Init()) {
         Error_Handler();
     }
+    Slot_Init();
     if (!EdgeworkBus_Init()) {
         Error_Handler();
     }
@@ -52,8 +54,13 @@ int main(void) {
         IM_Service();
         /* Service I2C. */
         I2C_Service();
+        /* Service the slot EEPROM state machine. */
+        Slot_Service();
+        /* Service the edgework mode state machine. */
+        Mode_Service();
         /* Service the edgework bus. */
         EdgeworkBus_Service();
+        /* Wait for next interrupt. */
         __WFI();
     }
 }
