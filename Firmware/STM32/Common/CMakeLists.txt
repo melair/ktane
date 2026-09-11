@@ -12,6 +12,8 @@ target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework/bus/protocol.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/edgework/bus/router.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework/bus/router.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/epaper/epaper.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/epaper/epaper.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/fsm/fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fsm/fsm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/input_manager/input_manager.c

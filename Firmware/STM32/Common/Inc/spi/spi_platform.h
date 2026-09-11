@@ -42,7 +42,7 @@ typedef struct {
     void (*spi_irq)(void);
 } SPI_Platform;
 
-extern const SPI_Hardware SPI_HARDWARE;
+extern SPI_Hardware SPI_HARDWARE;
 extern const SPI_Platform SPI_PLATFORM;
 
 void SPI_Platform_NotifyTransferComplete(void);

@@ -300,6 +300,84 @@ void SPI_Queue(SPI_Transaction *tx) {
     }
 }
 
+static SPI_Transaction *spi_sequence_callback(SPI_Transaction *tx) {
+    SPI_Sequence *sequence = tx->callback_data;
+
+    if ((sequence == NULL) || (tx->state != SPI_STATE_COMPLETE)) {
+        if ((sequence != NULL) && (sequence->complete != NULL)) {
+            sequence->complete(sequence->context, false);
+        }
+        return NULL;
+    }
+
+    sequence->step_index++;
+    if (sequence->step_index >= sequence->step_count) {
+        if (sequence->complete != NULL) {
+            sequence->complete(sequence->context, true);
+        }
+        return NULL;
+    }
+
+    const SPI_SequenceStep *step = &sequence->steps[sequence->step_index];
+    if ((step->data == NULL) || (step->size == 0U)) {
+        if (sequence->complete != NULL) {
+            sequence->complete(sequence->context, false);
+        }
+        return NULL;
+    }
+
+    if (step->prepare != NULL) {
+        step->prepare(sequence->context);
+    }
+
+    tx->tx_data = (void *) step->data;
+    tx->tx_size = step->size;
+    return tx;
+}
+
+bool SPI_Sequence_Init(SPI_Sequence *sequence, const SPI_Transaction *template_transaction,
+                       const SPI_SequenceStep *steps, const uint16_t step_count,
+                       void *context, void (*complete)(void *context, bool success)) {
+    if ((sequence == NULL) || (template_transaction == NULL) || (steps == NULL) ||
+        (step_count == 0U)) {
+        return false;
+    }
+
+    sequence->transaction = *template_transaction;
+    sequence->transaction.operation = SPI_OPERATION_WRITE;
+    sequence->transaction.cs_hold = true;
+    sequence->transaction.callback = spi_sequence_callback;
+    sequence->transaction.callback_data = sequence;
+    sequence->transaction.queue_next = NULL;
+    sequence->steps = steps;
+    sequence->step_count = step_count;
+    sequence->step_index = 0U;
+    sequence->context = context;
+    sequence->complete = complete;
+    return true;
+}
+
+SPI_Transaction *SPI_Sequence_Start(SPI_Sequence *sequence) {
+    if ((sequence == NULL) || (sequence->steps == NULL) || (sequence->step_count == 0U)) {
+        return NULL;
+    }
+
+    sequence->step_index = 0U;
+    const SPI_SequenceStep *step = &sequence->steps[0];
+    if ((step->data == NULL) || (step->size == 0U)) {
+        return NULL;
+    }
+
+    if (step->prepare != NULL) {
+        step->prepare(sequence->context);
+    }
+
+    sequence->transaction.tx_data = (void *) step->data;
+    sequence->transaction.tx_size = step->size;
+    sequence->transaction.state = SPI_STATE_IDLE;
+    return &sequence->transaction;
+}
+
 void SPI_Platform_NotifyTransferComplete(void) {
     spi.transfer_complete = true;
 }

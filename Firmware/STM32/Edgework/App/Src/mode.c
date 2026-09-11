@@ -19,7 +19,7 @@ typedef struct {
 } Mode_Runtime;
 
 static Mode_Runtime mode = {
-    .active = MODE_UNKNOWN,
+    .active = MODE_SERIAL,
     .definition = NULL,
 };
 

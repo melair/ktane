@@ -17,7 +17,6 @@ static bool hardware_valid(const SPI_Hardware *hardware) {
            (hardware->spi_instance != NULL) &&
            (hardware->spi_handle != NULL) &&
            (hardware->sck.port != NULL) &&
-           (hardware->miso.port != NULL) &&
            (hardware->mosi.port != NULL) &&
            (hardware->kernel_clock_hz != 0U) &&
            (hardware->dma_instance != NULL) &&
@@ -52,7 +51,9 @@ static bool init(const SPI_Hardware *hardware) {
 
     hardware->enable_peripheral_clock();
     gpio_configure(&hardware->sck, hardware->sck_alternate);
-    gpio_configure(&hardware->miso, hardware->miso_alternate);
+    if (hardware->miso.port != NULL) {
+        gpio_configure(&hardware->miso, hardware->miso_alternate);
+    }
     gpio_configure(&hardware->mosi, hardware->mosi_alternate);
 
     HAL_NVIC_SetPriority((IRQn_Type) hardware->dma_irq, 0U, 0U);
@@ -257,7 +258,8 @@ static bool start_write(void *data, uint16_t size, uint8_t bits) {
 }
 
 static bool start_read(void *data, uint16_t size, uint8_t bits) {
-    return set_direction(SPI_DIRECTION_2LINES_RXONLY) &&
+    return (spi_hardware->miso.port != NULL) &&
+           set_direction(SPI_DIRECTION_2LINES_RXONLY) &&
            dma_configure(true, bits) &&
            (HAL_SPI_Receive_DMA(spi_handle(), data, size) == HAL_OK);
 }

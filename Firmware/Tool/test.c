@@ -1,42 +1,10 @@
-#ifndef EDGEWORK_MODE_SERIAL_H
-#define EDGEWORK_MODE_SERIAL_H
-
-#include <stdbool.h>
 #include <stdint.h>
 
-#include "epaper/epaper.h"
-#include "stm32g0xx_hal.h"
+const uint16_t serial_label_width = 148;
+const uint16_t serial_label_height = 24;
+const uint16_t serial_label_bytes_per_row = 19;
 
-typedef struct Mode_Definition Mode_Definition;
-
-/* The panel's SSD1680 RAM is natively portrait; rotate drawing if needed. */
-#define SERIAL_EPAPER_WIDTH  128U
-#define SERIAL_EPAPER_HEIGHT 296U
-#define SERIAL_EPAPER_FRAMEBUFFER_SIZE \
-    ((((SERIAL_EPAPER_WIDTH + 7U) / 8U) * SERIAL_EPAPER_HEIGHT))
-
-typedef struct {
-    bool startup_refresh_started;
-
-    struct {
-        SPI_HandleTypeDef handle;
-        DMA_HandleTypeDef dma_handle;
-    } spi;
-
-    struct {
-        Epaper display;
-        uint8_t black[SERIAL_EPAPER_FRAMEBUFFER_SIZE];
-        uint8_t red[SERIAL_EPAPER_FRAMEBUFFER_SIZE];
-    } epaper;
-} Serial_Data;
-
-extern Mode_Definition serial_mode;
-
-static const uint16_t serial_label_width = 148;
-static const uint16_t serial_label_height = 24;
-static const uint16_t serial_label_bytes_per_row = 19;
-
-static const uint8_t serial_label_bitmap[] = {
+const uint8_t serial_label_bitmap[] = {
 	0x07, 0xfe, 0x00, 0xff, 0xff, 0xc1, 0xff, 0xf8, 0x00, 0xe0, 0x00, 0xe0, 0x00, 0xe0, 0x00, 0x00, 0x00, 0xc0, 0xc0,
 	0x1f, 0xff, 0x80, 0xff, 0xff, 0xc1, 0xff, 0xfe, 0x00, 0xe0, 0x01, 0xf0, 0x00, 0xe0, 0x00, 0x00, 0x00, 0xc0, 0xc0,
 	0x3e, 0x0f, 0xc0, 0xff, 0xff, 0xc1, 0xff, 0xff, 0x00, 0xe0, 0x01, 0xf0, 0x00, 0xe0, 0x00, 0x00, 0x00, 0xc0, 0x80,
@@ -62,6 +30,3 @@ static const uint8_t serial_label_bitmap[] = {
 	0x1f, 0xff, 0x00, 0xff, 0xff, 0xc1, 0xc0, 0x01, 0xc0, 0xe1, 0xc0, 0x00, 0x70, 0xff, 0xfe, 0x00, 0x18, 0x18, 0x00,
 	0x03, 0xfc, 0x00, 0xff, 0xff, 0xc1, 0xc0, 0x01, 0xe0, 0xe3, 0x80, 0x00, 0x78, 0xff, 0xfe, 0x00, 0x18, 0x18, 0x00,
 };
-
-
-#endif // EDGEWORK_MODE_SERIAL_H

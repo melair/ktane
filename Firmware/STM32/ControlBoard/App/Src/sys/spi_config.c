@@ -12,7 +12,7 @@ static void enable_peripheral_clock(void) {
     __HAL_RCC_SPI4_CLK_ENABLE();
 }
 
-const SPI_Hardware SPI_HARDWARE = {
+SPI_Hardware SPI_HARDWARE = {
     .spi_instance = SPI4,
     .spi_handle = &spi_handle,
     .sck = {SPI_SCK_Port, SPI_SCK_Pin},

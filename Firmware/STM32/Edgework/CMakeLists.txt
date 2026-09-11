@@ -34,6 +34,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/spi_config.c
 )
 
 set(MCU_SUPPORT_SOURCES
@@ -65,6 +66,8 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_pwr_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_rcc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_rcc_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_spi.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_spi_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_tim.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_tim_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32g0xx_hal_uart.c

@@ -33,6 +33,13 @@ typedef enum {
 } SPI_State;
 
 typedef struct SPI_Transaction SPI_Transaction;
+typedef struct SPI_Sequence SPI_Sequence;
+
+typedef struct {
+    const void *data;
+    uint16_t size;
+    void (*prepare)(void *context);
+} SPI_SequenceStep;
 
 struct SPI_Transaction {
     uint8_t bits;
@@ -60,11 +67,30 @@ struct SPI_Transaction {
     SPI_Transaction *queue_next;
 };
 
+struct SPI_Sequence {
+    SPI_Transaction transaction;
+    const SPI_SequenceStep *steps;
+    uint16_t step_count;
+    uint16_t step_index;
+    void *context;
+    void (*complete)(void *context, bool success);
+};
+
 bool SPI_Init(void);
 
 void SPI_Service(void);
 
 void SPI_Queue(SPI_Transaction *tx);
+
+/*
+ * Configure one reusable transaction to send an ordered array of writes.
+ * Each step's prepare hook runs immediately before its transfer begins.
+ */
+bool SPI_Sequence_Init(SPI_Sequence *sequence, const SPI_Transaction *template_transaction,
+                       const SPI_SequenceStep *steps, uint16_t step_count,
+                       void *context, void (*complete)(void *context, bool success));
+
+SPI_Transaction *SPI_Sequence_Start(SPI_Sequence *sequence);
 
 #ifdef __cplusplus
 }
