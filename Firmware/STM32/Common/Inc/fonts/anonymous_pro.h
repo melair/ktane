@@ -1,7 +1,7 @@
 #ifndef STM32FIRMWARE_ANONYMOUS_PRO_H
 #define STM32FIRMWARE_ANONYMOUS_PRO_H
 
-#include "glyph.h"
+#include "font.h"
 
 #include <stdint.h>
 
@@ -530,6 +530,16 @@ const uint8_t anonymous_pro_bitmap[] = {
 	0xff, 0xff, 0xe0, 0xff, 0xff, 0xff, 0xe0, 0xff, 0xff, 0xff, 0xe0, 0x07,
 	0xe0, 0xf8, 0x00, 0x07, 0xe0, 0xf8, 0x00, 0x07, 0xe0, 0xf8, 0x00, 0x07,
 	0xe0, 0xf8, 0x00, 0x07, 0xe0, 0xf8, 0x00,
+};
+
+static const font_t anonymous_pro_font = {
+    .glyphs = anonymous_pro_glyphs,
+    .glyph_count = anonymous_pro_glyph_count,
+    .character_map = anonymous_pro_ascii_map,
+    .character_map_count = sizeof(anonymous_pro_ascii_map) / sizeof(anonymous_pro_ascii_map[0]),
+    .bitmap = anonymous_pro_bitmap,
+    .line_height = anonymous_pro_line_height,
+    .ascent = anonymous_pro_ascent,
 };
 
 #endif //STM32FIRMWARE_ANONYMOUS_PRO_H

@@ -28,7 +28,7 @@ static bool edgework_bus_send(const EdgeworkBus_Packet *packet, const size_t len
 }
 
 static void edgework_bus_inquiry_receive(const EdgeworkBus_Message *message) {
-    if ((message->address != Slot_Get()) || !Mode_Ready()) {
+    if (message->address != Slot_Get()) {
         return;
     }
 
@@ -37,7 +37,7 @@ static void edgework_bus_inquiry_receive(const EdgeworkBus_Message *message) {
     response.header.opcode = EDGEWORK_BUS_STATUS;
     response.status.mode = Mode_Get();
     response.status.data = Mode_State();
-    response.status.flags.ready = Mode_Ready();
+    response.status.state = Mode_FSMState();
 
     (void) edgework_bus_send(&response, SIZE_EDGEWORK_BUS_STATUS);
 }

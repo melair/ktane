@@ -21,87 +21,13 @@
 
 static Serial_Data *const serial = &mode_data.mode.serial;
 
-static const glyph_t *serial_glyph(const uint8_t character) {
-    if (character >= (sizeof(anonymous_pro_ascii_map) / sizeof(anonymous_pro_ascii_map[0]))) {
-        return NULL;
+static bool serial_value_is_blank(const edgework_state_t *state) {
+    if (state == NULL) {
+        return true;
     }
 
-    const int16_t index = anonymous_pro_ascii_map[character];
-    if ((index < 0) || ((uint16_t) index >= anonymous_pro_glyph_count)) {
-        return NULL;
-    }
-
-    return &anonymous_pro_glyphs[index];
-}
-
-static bool serial_text_bounds(const uint8_t *text, uint16_t length,
-                               int32_t *left, int32_t *right) {
-    if ((text == NULL) || (left == NULL) || (right == NULL)) {
-        return false;
-    }
-
-    bool has_glyph = false;
-    int32_t cursor_x = 0;
-    for (uint16_t index = 0U; index < length; index++) {
-        const glyph_t *glyph = serial_glyph(text[index]);
-        if (glyph != NULL) {
-            const int32_t glyph_left = cursor_x + glyph->x_offset;
-            const int32_t glyph_right = glyph_left + glyph->width;
-            if (!has_glyph || (glyph_left < *left)) {
-                *left = glyph_left;
-            }
-            if (!has_glyph || (glyph_right > *right)) {
-                *right = glyph_right;
-            }
-            has_glyph = true;
-            cursor_x += glyph->x_advance;
-        }
-    }
-
-    return has_glyph;
-}
-
-static void serial_draw_text(Epaper *display, const uint8_t *text, uint16_t length,
-                             uint16_t region_y, uint16_t region_height) {
-    if ((display == NULL) || (text == NULL) || (region_height < anonymous_pro_line_height)) {
-        return;
-    }
-
-    int32_t text_left;
-    int32_t text_right;
-    if (!serial_text_bounds(text, length, &text_left, &text_right)) {
-        return;
-    }
-
-    const int32_t cursor_start = ((int32_t) Epaper_Width(display) -
-                                  (text_right - text_left)) / 2 - text_left;
-    const int32_t baseline = region_y +
-                             ((region_height - anonymous_pro_line_height) / 2U) +
-                             anonymous_pro_ascent;
-    int32_t cursor_x = cursor_start;
-
-    for (uint16_t index = 0U; index < length; index++) {
-        const glyph_t *glyph = serial_glyph(text[index]);
-        if (glyph == NULL) {
-            continue;
-        }
-
-        const int32_t glyph_x = cursor_x + glyph->x_offset;
-        const int32_t glyph_y = baseline + glyph->y_offset;
-        if ((glyph_x >= 0) && (glyph_y >= 0)) {
-            Epaper_CopySprite(display, (uint16_t) glyph_x, (uint16_t) glyph_y,
-                              &anonymous_pro_bitmap[glyph->data_offset], glyph->width,
-                              glyph->height, EPAPER_COLOUR_BLACK,
-                              EPAPER_SPRITE_COMPOSITE_OR);
-        }
-
-        cursor_x += glyph->x_advance;
-    }
-}
-
-static bool serial_value_is_blank(void) {
-    for (uint16_t index = 0U; index < sizeof(mode_data.desired_state.serial.value); index++) {
-        if (mode_data.desired_state.serial.value[index] != ' ') {
+    for (uint16_t index = 0U; index < sizeof(state->serial.value); index++) {
+        if (state->serial.value[index] != ' ') {
             return false;
         }
     }
@@ -147,8 +73,11 @@ static void serial_display_enter(FSM *fsm) {
     (void) fsm;
 
     Epaper *display = &serial->epaper.display;
+    serial->display_refresh_started = false;
+    serial->displayed_state = mode_data.desired_state;
+    const edgework_state_t *const displayed_state = &serial->displayed_state;
 
-    if (mode_data.desired_state.identify != 0U) {
+    if (displayed_state->identify != 0U) {
         const uint8_t slot = Slot_Get();
         const uint8_t identify_text[] = {
             'I', 'D', '#', ' ',
@@ -158,11 +87,14 @@ static void serial_display_enter(FSM *fsm) {
 
         Epaper_Fill(display, 0U, 0U, Epaper_Width(display), Epaper_Height(display),
                     EPAPER_COLOUR_WHITE);
-        serial_draw_text(display, identify_text, sizeof(identify_text), 0U,
-                         Epaper_Height(display));
-    } else if (!serial_value_is_blank()) {
+        Epaper_Text(display, identify_text, sizeof(identify_text), &anonymous_pro_font,
+                    (Epaper_Window) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
+                    EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE,
+                    EPAPER_COLOUR_BLACK);
+    } else if (!serial_value_is_blank(displayed_state)) {
         const uint16_t red_banner = 50U;
 
+        Epaper_Fill(display, 0, 0, Epaper_Width(display), Epaper_Height(display), EPAPER_COLOUR_WHITE);
         Epaper_Fill(display, 0U, 0U, Epaper_Width(display), red_banner, EPAPER_COLOUR_RED);
 
         if ((serial_label_width <= Epaper_Width(display)) &&
@@ -174,19 +106,30 @@ static void serial_display_enter(FSM *fsm) {
                               EPAPER_SPRITE_COMPOSITE_OR);
         }
 
-        serial_draw_text(display, mode_data.desired_state.serial.value,
-                         sizeof(mode_data.desired_state.serial.value), red_banner,
-                         Epaper_Height(display) - red_banner);
+        Epaper_Text(display, displayed_state->serial.value,
+                    sizeof(displayed_state->serial.value), &anonymous_pro_font,
+                    (Epaper_Window) {0U, red_banner, Epaper_Width(display),
+                                     Epaper_Height(display) - red_banner},
+                    EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE,
+                    EPAPER_COLOUR_BLACK);
     } else {
         Epaper_Fill(display, 0U, 0U, Epaper_Width(display), Epaper_Height(display), EPAPER_COLOUR_WHITE);
     }
 
-    Epaper_Refresh(display);
+    serial->display_refresh_started = Epaper_Refresh(display);
 }
 
 static void serial_display_service(FSM *fsm) {
-    if (Epaper_IsReady(&serial->epaper.display)) {
-        mode_data.current_state = mode_data.desired_state;
+    Epaper *const display = &serial->epaper.display;
+    if (!serial->display_refresh_started) {
+        if (Epaper_IsReady(display)) {
+            serial->display_refresh_started = Epaper_Refresh(display);
+        }
+        return;
+    }
+
+    if (Epaper_IsReady(display)) {
+        mode_data.current_state = serial->displayed_state;
         (void) FSM_Transition(fsm, EDGEWORK_MODE_STATE_IDLE);
     }
 }
@@ -252,4 +195,5 @@ static Mode_Callbacks serial_state_callbacks[EDGEWORK_MODE_STATE_COUNT] = {
 Mode_Definition serial_mode = {
     .state_callbacks = serial_state_callbacks,
     .always_service = NULL,
+    .display_acknowledges_state = true,
 };

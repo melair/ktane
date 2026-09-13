@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/melair/ktane/Firmware/Tool/cmd/edgework"
 	"github.com/melair/ktane/Firmware/Tool/cmd/font"
 	"github.com/spf13/cobra"
 )
@@ -18,6 +19,7 @@ func newRootCommand() *cobra.Command {
 	}
 
 	rootCmd.AddCommand(font.NewCommand())
+	rootCmd.AddCommand(edgework.NewCommand())
 
 	return rootCmd
 }

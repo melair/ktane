@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "edgework/data.h"
 #include "epaper/epaper.h"
 #include "stm32g0xx_hal.h"
 
@@ -17,6 +18,8 @@ typedef struct Mode_Definition Mode_Definition;
 
 typedef struct {
     bool startup_refresh_started;
+    bool display_refresh_started;
+    edgework_state_t displayed_state;
 
     struct {
         SPI_HandleTypeDef handle;

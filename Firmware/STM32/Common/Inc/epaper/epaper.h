@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "fonts/font.h"
 #include "fsm/fsm.h"
 #include "spi/spi.h"
 #include "sys/gpio.h"
@@ -31,6 +32,20 @@ typedef enum {
     EPAPER_ROTATION_180,
     EPAPER_ROTATION_270,
 } Epaper_Rotation;
+
+typedef enum {
+    EPAPER_TEXT_ALIGN_LEFT = 0,
+    EPAPER_TEXT_ALIGN_CENTRE,
+    EPAPER_TEXT_ALIGN_RIGHT,
+} Epaper_TextHorizontalAlign;
+
+typedef enum {
+    EPAPER_TEXT_ALIGN_TOP = 0,
+    EPAPER_TEXT_ALIGN_MIDDLE,
+    EPAPER_TEXT_ALIGN_BOTTOM,
+    /* Centre the font ascent (the main body), excluding its descent. */
+    EPAPER_TEXT_ALIGN_MIDDLE_BODY,
+} Epaper_TextVerticalAlign;
 
 /* A visible rectangle in the native, unrotated panel coordinate system. */
 typedef struct {
@@ -96,6 +111,10 @@ void Epaper_DrawTestCard(Epaper *epaper);
 void Epaper_CopySprite(Epaper *epaper, uint16_t x, uint16_t y, const uint8_t *sprite,
                        uint16_t width, uint16_t height, Epaper_Colour colour,
                        Epaper_SpriteComposite composite);
+
+void Epaper_Text(Epaper *epaper, const uint8_t *text, uint16_t length, const font_t *font,
+                 Epaper_Window bounds, Epaper_TextHorizontalAlign horizontal_align,
+                 Epaper_TextVerticalAlign vertical_align, Epaper_Colour colour);
 
 #ifdef __cplusplus
 }

@@ -44,14 +44,10 @@ typedef struct {
         struct {
             uint8_t mode;
             edgework_state_t data;
-
-            struct {
-                unsigned ready :1;
-            } flags;
+            uint8_t state;
         } status;
 
         struct {
-            uint8_t active;
             edgework_state_t data;
         } display;
 

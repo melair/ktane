@@ -16,10 +16,10 @@ extern "C" {
 typedef struct {
     uint32_t last_ms;
     uint8_t mode;
+    uint8_t state;
 
     struct {
         unsigned active :1;
-        unsigned ready :1;
         unsigned identifying :1;
     } flags;
 } Edgework_SlotData;

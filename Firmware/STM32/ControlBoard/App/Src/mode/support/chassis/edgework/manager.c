@@ -31,9 +31,9 @@ void Edgework_StatusReceive(const EdgeworkBus_Message *message) {
 
     Edgework_SlotData *const slot = &edgework->slots[message->address];
     slot->mode = message->packet->status.mode;
+    slot->state = message->packet->status.state;
     slot->last_ms = HAL_GetTick();
     slot->flags.active = true;
-    slot->flags.ready = message->packet->status.flags.ready;
     slot->flags.identifying = message->packet->status.data.identify;
 }
 

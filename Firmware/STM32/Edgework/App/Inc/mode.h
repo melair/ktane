@@ -35,6 +35,8 @@ typedef struct {
 typedef struct Mode_Definition {
     Mode_Callbacks *state_callbacks;
     void (*always_service)(void);
+    /* True when the mode acknowledges DISPLAY after asynchronous work completes. */
+    bool display_acknowledges_state;
 } Mode_Definition;
 
 #define MODE_SERIAL      0x00U
@@ -76,6 +78,8 @@ void Mode_Service(void);
 EdgeworkMode Mode_Get(void);
 
 bool Mode_Ready(void);
+
+uint8_t Mode_FSMState(void);
 
 edgework_state_t Mode_State(void);
 

@@ -19,19 +19,22 @@ typedef struct {
 } Mode_Runtime;
 
 static Mode_Runtime mode = {
-    .active = MODE_SERIAL,
+    .active = MODE_UNKNOWN,
     .definition = NULL,
 };
 
 Mode_Data mode_data = {0};
 
 static void mode_fsm_enter(FSM *fsm) {
+    const Mode_Definition *definition = fsm->context;
+
     if (fsm->current_id == EDGEWORK_MODE_STATE_DISPLAY) {
-        mode_data.current_state = mode_data.desired_state;
         mode_data.dirty = false;
+        if ((definition == NULL) || !definition->display_acknowledges_state) {
+            mode_data.current_state = mode_data.desired_state;
+        }
     }
 
-    const Mode_Definition *definition = fsm->context;
     const Mode_Callbacks *callbacks =
         definition != NULL ? definition->state_callbacks : NULL;
 
@@ -169,6 +172,10 @@ EdgeworkMode Mode_Get(void) {
 bool Mode_Ready(void) {
     return (mode.fsm.current_id >= EDGEWORK_MODE_STATE_IDLE) &&
            (mode.fsm.current_id < EDGEWORK_MODE_STATE_COUNT);
+}
+
+uint8_t Mode_FSMState(void) {
+    return (uint8_t) mode.fsm.current_id;
 }
 
 edgework_state_t Mode_State(void) {
