@@ -21,20 +21,6 @@
 
 static Serial_Data *const serial = &mode_data.mode.serial;
 
-static bool serial_value_is_blank(const edgework_state_t *state) {
-    if (state == NULL) {
-        return true;
-    }
-
-    for (uint16_t index = 0U; index < sizeof(state->serial.value); index++) {
-        if (state->serial.value[index] != ' ') {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 static uint8_t serial_hex_digit(uint8_t value) {
     value &= 0x0fU;
     return value < 10U ? (uint8_t) ('0' + value) : (uint8_t) ('A' + value - 10U);
@@ -91,7 +77,7 @@ static void serial_display_enter(FSM *fsm) {
                     (Epaper_Window) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
                     EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE,
                     EPAPER_COLOUR_BLACK);
-    } else if (!serial_value_is_blank(displayed_state)) {
+    } else {
         const uint16_t red_banner = 50U;
 
         Epaper_Fill(display, 0, 0, Epaper_Width(display), Epaper_Height(display), EPAPER_COLOUR_WHITE);
@@ -112,11 +98,33 @@ static void serial_display_enter(FSM *fsm) {
                                      Epaper_Height(display) - red_banner},
                     EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE,
                     EPAPER_COLOUR_BLACK);
-    } else {
-        Epaper_Fill(display, 0U, 0U, Epaper_Width(display), Epaper_Height(display), EPAPER_COLOUR_WHITE);
     }
 
     serial->display_refresh_started = Epaper_Refresh(display);
+}
+
+static void serial_clear_enter(FSM *fsm) {
+    (void) fsm;
+
+    Epaper *const display = &serial->epaper.display;
+    serial->display_refresh_started = false;
+    Epaper_Fill(display, 0U, 0U, Epaper_Width(display), Epaper_Height(display),
+                EPAPER_COLOUR_WHITE);
+    serial->display_refresh_started = Epaper_Refresh(display);
+}
+
+static void serial_clear_service(FSM *fsm) {
+    Epaper *const display = &serial->epaper.display;
+    if (!serial->display_refresh_started) {
+        if (Epaper_IsReady(display)) {
+            serial->display_refresh_started = Epaper_Refresh(display);
+        }
+        return;
+    }
+
+    if (Epaper_IsReady(display)) {
+        (void) FSM_Transition(fsm, EDGEWORK_MODE_STATE_IDLE);
+    }
 }
 
 static void serial_display_service(FSM *fsm) {
@@ -185,6 +193,10 @@ static Mode_Callbacks serial_state_callbacks[EDGEWORK_MODE_STATE_COUNT] = {
     [EDGEWORK_MODE_STATE_STARTUP] = {
         .enter = serial_startup_enter,
         .service = serial_startup_service,
+    },
+    [EDGEWORK_MODE_STATE_CLEAR] = {
+        .enter = serial_clear_enter,
+        .service = serial_clear_service,
     },
     [EDGEWORK_MODE_STATE_DISPLAY] = {
         .enter = serial_display_enter,

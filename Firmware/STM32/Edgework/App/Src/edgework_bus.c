@@ -50,6 +50,14 @@ static void edgework_bus_display_receive(const EdgeworkBus_Message *message) {
     (void) Mode_Display(message->packet->display.data);
 }
 
+static void edgework_bus_clear_receive(const EdgeworkBus_Message *message) {
+    if (message->address != Slot_Get()) {
+        return;
+    }
+
+    (void) Mode_Clear();
+}
+
 static void edgework_bus_set_mode_receive(const EdgeworkBus_Message *message) {
     if (message->address != Slot_Get()) {
         return;
@@ -69,6 +77,7 @@ static void edgework_bus_set_slot_address_receive(const EdgeworkBus_Message *mes
 static const EdgeworkBus_Router edgework_bus_router = {
     .inquiry = edgework_bus_inquiry_receive,
     .display = edgework_bus_display_receive,
+    .clear = edgework_bus_clear_receive,
     .set_mode = edgework_bus_set_mode_receive,
     .set_slot_address = edgework_bus_set_slot_address_receive,
 };

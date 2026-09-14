@@ -48,7 +48,7 @@ static void mode_fsm_enter(FSM *fsm) {
             (void) FSM_Transition(fsm, EDGEWORK_MODE_STATE_STARTUP);
             break;
         case EDGEWORK_MODE_STATE_STARTUP:
-        case EDGEWORK_MODE_STATE_BLANK:
+        case EDGEWORK_MODE_STATE_CLEAR:
         case EDGEWORK_MODE_STATE_DISPLAY:
             (void) FSM_Transition(fsm, EDGEWORK_MODE_STATE_IDLE);
             break;
@@ -101,10 +101,10 @@ static const FSM_State mode_fsm_states[EDGEWORK_MODE_STATE_COUNT] = {
         .enter = mode_fsm_enter,
         .service = mode_fsm_service,
         .exit = mode_fsm_exit,
-        .next_mask = FSM_NEXT(EDGEWORK_MODE_STATE_BLANK) |
+        .next_mask = FSM_NEXT(EDGEWORK_MODE_STATE_CLEAR) |
                      FSM_NEXT(EDGEWORK_MODE_STATE_DISPLAY),
     },
-    [EDGEWORK_MODE_STATE_BLANK] = {
+    [EDGEWORK_MODE_STATE_CLEAR] = {
         .enter = mode_fsm_enter,
         .service = mode_fsm_service,
         .exit = mode_fsm_exit,
@@ -198,8 +198,15 @@ bool Mode_Set(const EdgeworkMode new_mode) {
     return true;
 }
 
-bool Mode_Blank(void) {
-    return FSM_Transition(&mode.fsm, EDGEWORK_MODE_STATE_BLANK);
+bool Mode_Clear(void) {
+    if (mode.fsm.current_id != EDGEWORK_MODE_STATE_IDLE) {
+        return false;
+    }
+
+    mode_data.desired_state = (edgework_state_t) {0};
+    mode_data.current_state = (edgework_state_t) {0};
+    mode_data.dirty = false;
+    return FSM_Transition(&mode.fsm, EDGEWORK_MODE_STATE_CLEAR);
 }
 
 bool Mode_Display(const edgework_state_t state) {

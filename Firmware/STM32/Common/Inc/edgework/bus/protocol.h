@@ -14,6 +14,7 @@
     X(EDGEWORK_BUS_INQUIRY,         0x00U, inquiry)              \
     X(EDGEWORK_BUS_STATUS,          0x01U, status)               \
     X(EDGEWORK_BUS_DISPLAY,         0x02U, display)              \
+    X(EDGEWORK_BUS_CLEAR,           0x03U, clear)                \
     X(EDGEWORK_BUS_SET_MODE,        0xf0U, set_mode)             \
     X(EDGEWORK_BUS_SET_SLOT_ADDRESS, 0xf1U, set_slot_address)
 
@@ -50,6 +51,9 @@ typedef struct {
         struct {
             edgework_state_t data;
         } display;
+
+        struct {
+        } clear;
 
         struct {
             uint8_t new_mode;

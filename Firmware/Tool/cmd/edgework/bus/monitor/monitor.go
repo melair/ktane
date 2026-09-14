@@ -319,7 +319,7 @@ func parsePacket(data []byte) (edgeworkPacket, error) {
 
 func minimumPacketSize(opcode uint8) (int, bool) {
 	switch opcode {
-	case 0x00:
+	case 0x00, 0x03:
 		return 3, true
 	case 0x01:
 		return 14, true
@@ -340,6 +340,8 @@ func opcodeName(opcode uint8) string {
 		return "status"
 	case 0x02:
 		return "display"
+	case 0x03:
+		return "clear"
 	case 0xf0:
 		return "set_mode"
 	case 0xf1:
@@ -368,6 +370,7 @@ func formatPacket(packet edgeworkPacket) string {
 		fields = append(fields,
 			fmt.Sprintf("data={%s}", formatEdgeworkState(packet.payload[:9])),
 		)
+	case 0x03:
 	case 0xf0:
 		fields = append(fields, fmt.Sprintf("new_mode=%s", modeName(packet.payload[0])))
 	case 0xf1:
@@ -402,7 +405,7 @@ func formatModeState(mode uint8, data []byte) string {
 	case 0x03:
 		return fmt.Sprintf("ports=[%s]", formatPorts(data[0]))
 	case 0x04:
-		return fmt.Sprintf("2fa=%q 2fa_icons=[%s] 2fa_require_button=%t 2fa_active_display=%t",
+		return fmt.Sprintf("2fa=%q 2fa_icons=[%s] 2fa_active_display=%t 2fa_flashing=%t",
 			printableASCII(data[:6]),
 			formatTwoFAIcons(data[6]),
 			data[7]&0x01 != 0,
@@ -422,7 +425,7 @@ func modeStateName(state uint8) string {
 	case 0x02:
 		return "idle(0x02)"
 	case 0x03:
-		return "blank(0x03)"
+		return "clear(0x03)"
 	case 0x04:
 		return "display(0x04)"
 	default:
@@ -464,8 +467,8 @@ func formatEdgeworkState(data []byte) string {
 		fmt.Sprintf("ports=[%s]", formatPorts(data[0])),
 		fmt.Sprintf("2fa=%q", printableASCII(data[:6])),
 		fmt.Sprintf("2fa_icons=[%s]", formatTwoFAIcons(data[6])),
-		fmt.Sprintf("2fa_require_button=%t", data[7]&0x01 != 0),
-		fmt.Sprintf("2fa_active_display=%t", data[7]&0x02 != 0),
+		fmt.Sprintf("2fa_active_display=%t", data[7]&0x01 != 0),
+		fmt.Sprintf("2fa_flashing=%t", data[7]&0x02 != 0),
 		fmt.Sprintf("identify=%t", data[8]&0x01 != 0),
 	}
 
@@ -567,7 +570,7 @@ func promptPacket(ctx context.Context, input <-chan string, lines <-chan monitor
 	var packetType string
 	var opcode uint8
 	for {
-		line, ok, err := promptLine(ctx, input, lines, readErrors, out, buffered, "packet type [inquiry,status,display,set_mode,set_slot_address,raw]: ")
+		line, ok, err := promptLine(ctx, input, lines, readErrors, out, buffered, "packet type [inquiry,status,display,clear,set_mode,set_slot_address,raw]: ")
 		if err != nil || !ok {
 			return nil, ok, err
 		}
@@ -620,6 +623,7 @@ func promptPacket(ctx context.Context, input <-chan string, lines <-chan monitor
 	packet := []byte{address, opcode, boolByte(eor)}
 	switch opcode {
 	case 0x00:
+	case 0x03:
 	case 0x01:
 		mode, ok, err := promptByte(ctx, input, lines, readErrors, out, buffered, "mode: ")
 		if err != nil || !ok {
@@ -769,7 +773,7 @@ func promptModeState(ctx context.Context, input <-chan string, lines <-chan moni
 			return uint8(parsed), true, nil
 		}
 
-		fmt.Fprintf(out, "parse state %q: use init, startup, idle, blank, display, or a byte value\n", value)
+		fmt.Fprintf(out, "parse state %q: use init, startup, idle, clear, display, or a byte value\n", value)
 	}
 }
 
@@ -838,17 +842,17 @@ func promptStateForMode(ctx context.Context, input <-chan string, lines <-chan m
 		if err != nil || !ok {
 			return nil, ok, err
 		}
-		requireButton, ok, err := promptBool(ctx, input, lines, readErrors, out, buffered, "require_button [y/N]: ", false)
+		activeDisplay, ok, err := promptBool(ctx, input, lines, readErrors, out, buffered, "active_display [y/N]: ", false)
 		if err != nil || !ok {
 			return nil, ok, err
 		}
-		activeDisplay, ok, err := promptBool(ctx, input, lines, readErrors, out, buffered, "active_display [y/N]: ", false)
+		flashing, ok, err := promptBool(ctx, input, lines, readErrors, out, buffered, "flashing [y/N]: ", false)
 		if err != nil || !ok {
 			return nil, ok, err
 		}
 		copy(state[:6], value)
 		state[6] = icons
-		state[7] = boolByte(requireButton) | (boolByte(activeDisplay) << 1)
+		state[7] = boolByte(activeDisplay) | (boolByte(flashing) << 1)
 	default:
 		fmt.Fprintf(out, "no structured prompts for %s; falling back to raw state\n", modeName(mode))
 		return promptState(ctx, input, lines, readErrors, out, buffered)
@@ -972,7 +976,7 @@ func modeStateValue(value string) (uint8, bool) {
 		return 0x01, true
 	case "idle":
 		return 0x02, true
-	case "blank":
+	case "clear":
 		return 0x03, true
 	case "display":
 		return 0x04, true
@@ -989,6 +993,8 @@ func opcodeValue(value string) (uint8, error) {
 		return 0x01, nil
 	case "display":
 		return 0x02, nil
+	case "clear":
+		return 0x03, nil
 	case "set_mode", "set-mode", "mode":
 		return 0xf0, nil
 	case "set_slot_address", "set-slot-address", "slot":

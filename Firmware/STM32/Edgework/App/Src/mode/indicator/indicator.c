@@ -132,6 +132,31 @@ static void indicator_display_service(FSM *fsm) {
     }
 }
 
+static void indicator_clear_enter(FSM *fsm) {
+    (void) fsm;
+
+    Epaper *const display = &indicator->epaper.display;
+    indicator->display_refresh_started = false;
+    indicator_set_led(false);
+    Epaper_Fill(display, 0U, 0U, Epaper_Width(display), Epaper_Height(display),
+                EPAPER_COLOUR_BLACK);
+    indicator->display_refresh_started = Epaper_Refresh(display);
+}
+
+static void indicator_clear_service(FSM *fsm) {
+    Epaper *const display = &indicator->epaper.display;
+    if (!indicator->display_refresh_started) {
+        if (Epaper_IsReady(display)) {
+            indicator->display_refresh_started = Epaper_Refresh(display);
+        }
+        return;
+    }
+
+    if (Epaper_IsReady(display)) {
+        (void) FSM_Transition(fsm, EDGEWORK_MODE_STATE_IDLE);
+    }
+}
+
 static void indicator_init_enter(FSM *fsm) {
     HAL_GPIO_WritePin(GPIO11_Port, GPIO11_Pin, GPIO_PIN_RESET);
     GPIO_InitTypeDef led_gpio_init = {
@@ -196,6 +221,10 @@ static Mode_Callbacks indicator_state_callbacks[EDGEWORK_MODE_STATE_COUNT] = {
     [EDGEWORK_MODE_STATE_STARTUP] = {
         .enter = indicator_startup_enter,
         .service = indicator_startup_service,
+    },
+    [EDGEWORK_MODE_STATE_CLEAR] = {
+        .enter = indicator_clear_enter,
+        .service = indicator_clear_service,
     },
     [EDGEWORK_MODE_STATE_DISPLAY] = {
         .enter = indicator_display_enter,

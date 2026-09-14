@@ -20,7 +20,7 @@ typedef enum {
     EDGEWORK_MODE_STATE_INIT = 0,
     EDGEWORK_MODE_STATE_STARTUP,
     EDGEWORK_MODE_STATE_IDLE,
-    EDGEWORK_MODE_STATE_BLANK,
+    EDGEWORK_MODE_STATE_CLEAR,
     EDGEWORK_MODE_STATE_DISPLAY,
     EDGEWORK_MODE_STATE_COUNT,
 } EdgeworkMode_State;
@@ -85,7 +85,7 @@ edgework_state_t Mode_State(void);
 
 bool Mode_Set(EdgeworkMode mode);
 
-bool Mode_Blank(void);
+bool Mode_Clear(void);
 
 bool Mode_Display(edgework_state_t state);
 

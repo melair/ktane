@@ -78,6 +78,77 @@ func TestFormatStatusPacket(t *testing.T) {
 	}
 }
 
+func TestFormatTwoFAIncludesFlashing(t *testing.T) {
+	packet, err := parsePacket([]byte{
+		0x03, 0x01, 0x00,
+		0x04,
+		'A', 'B', '1', '2', '3', '4',
+		0x21, 0x03, 0x00,
+		0x04,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	line := formatPacket(packet)
+	for _, want := range []string{
+		`2fa="AB1234"`,
+		"2fa_icons=[t1,dot]",
+		"2fa_active_display=true",
+		"2fa_flashing=true",
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("formatted line %q does not contain %q", line, want)
+		}
+	}
+	if strings.Contains(line, "2fa_require_button=") {
+		t.Fatalf("formatted line %q contains removed require_button field", line)
+	}
+}
+
+func TestPromptClearPacket(t *testing.T) {
+	input := make(chan string, 8)
+	lines := make(chan monitorLine)
+	readErrors := make(chan error)
+	var out bytes.Buffer
+
+	for _, value := range []string{
+		"clear",
+		"0x03",
+		"y",
+	} {
+		input <- value
+	}
+
+	packet, ok, err := promptPacket(context.Background(), input, lines, readErrors, &out, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Fatal("prompt cancelled")
+	}
+
+	want := []byte{0x03, 0x03, 0x01}
+	if string(packet) != string(want) {
+		t.Fatalf("packet %v, want %v", packet, want)
+	}
+
+	parsed, err := parsePacket(packet)
+	if err != nil {
+		t.Fatal(err)
+	}
+	line := formatPacket(parsed)
+	for _, want := range []string{
+		"type=clear",
+		"address=0x03",
+		"eor=true",
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("formatted line %q does not contain %q", line, want)
+		}
+	}
+}
+
 func TestParseHexBytes(t *testing.T) {
 	got, err := parseHexBytes("01:02 03-04_05")
 	if err != nil {
@@ -85,6 +156,49 @@ func TestParseHexBytes(t *testing.T) {
 	}
 	if string(got) != string([]byte{1, 2, 3, 4, 5}) {
 		t.Fatalf("got %v, want [1 2 3 4 5]", got)
+	}
+}
+
+func TestPromptDisplayPacketBuildsTwoFAStateWithFlashing(t *testing.T) {
+	input := make(chan string, 32)
+	lines := make(chan monitorLine)
+	readErrors := make(chan error)
+	var out bytes.Buffer
+
+	for _, value := range []string{
+		"display",
+		"0x03",
+		"",
+		"2fa",
+		"ABC123",
+		"y", // icon t1
+		"",  // icon t2
+		"",  // icon t3
+		"",  // icon t4
+		"",  // icon col1
+		"y", // icon dot
+		"y", // active display
+		"y", // flashing
+		"",
+	} {
+		input <- value
+	}
+
+	packet, ok, err := promptPacket(context.Background(), input, lines, readErrors, &out, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Fatal("prompt cancelled")
+	}
+
+	want := []byte{
+		0x03, 0x02, 0x00,
+		'A', 'B', 'C', '1', '2', '3',
+		0x21, 0x03, 0x00,
+	}
+	if string(packet) != string(want) {
+		t.Fatalf("packet %v, want %v", packet, want)
 	}
 }
 

@@ -47,8 +47,8 @@ typedef struct {
             } icons;
 
             struct {
-                unsigned require_button :1;
                 unsigned active_display :1;
+                unsigned flashing :1;
             } flags;
         } twofa;
     };
