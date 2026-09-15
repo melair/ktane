@@ -7,9 +7,13 @@
 #define SLOT_EEPROM_I2C_ADDRESS   0x50U
 #define SLOT_EEPROM_ADDRESS       0x00U
 #define SLOT_EEPROM_WRITE_TIME_MS 5U
+#define SLOT_INITIAL_READ_DELAY_MS 500U
+#define SLOT_READ_RETRY_DELAY_MS   250U
 
 typedef enum {
-    SLOT_FSM_STATE_READ = 0,
+    SLOT_FSM_STATE_INITIAL_READ_DELAY = 0,
+    SLOT_FSM_STATE_READ,
+    SLOT_FSM_STATE_RETRY_READ_DELAY,
     SLOT_FSM_STATE_IDLE,
     SLOT_FSM_STATE_WRITE,
     SLOT_FSM_STATE_RESET,
@@ -29,14 +33,27 @@ static Slot_State slot = {
 
 static void slot_fsm_read_enter(FSM *fsm);
 
+static void slot_fsm_initial_read_delay_enter(FSM *fsm);
+
+static void slot_fsm_retry_read_delay_enter(FSM *fsm);
+
 static void slot_fsm_write_enter(FSM *fsm);
 
 static void slot_fsm_reset_enter(FSM *fsm);
 
 static const FSM_State slot_fsm_states[SLOT_FSM_STATE_COUNT] = {
+    [SLOT_FSM_STATE_INITIAL_READ_DELAY] = {
+        .enter = slot_fsm_initial_read_delay_enter,
+        .next_mask = FSM_NEXT(SLOT_FSM_STATE_READ),
+    },
     [SLOT_FSM_STATE_READ] = {
         .enter = slot_fsm_read_enter,
-        .next_mask = FSM_NEXT(SLOT_FSM_STATE_IDLE),
+        .next_mask = FSM_NEXT(SLOT_FSM_STATE_IDLE) |
+                     FSM_NEXT(SLOT_FSM_STATE_RETRY_READ_DELAY),
+    },
+    [SLOT_FSM_STATE_RETRY_READ_DELAY] = {
+        .enter = slot_fsm_retry_read_delay_enter,
+        .next_mask = FSM_NEXT(SLOT_FSM_STATE_READ),
     },
     [SLOT_FSM_STATE_IDLE] = {
         .next_mask = FSM_NEXT(SLOT_FSM_STATE_WRITE),
@@ -53,7 +70,10 @@ static const FSM_State slot_fsm_states[SLOT_FSM_STATE_COUNT] = {
 
 static I2C_Transaction *slot_i2c_complete(I2C_Transaction *transaction) {
     if (transaction->status != I2C_STATUS_SUCCESS) {
-        (void) FSM_Transition(&slot.fsm, SLOT_FSM_STATE_IDLE);
+        const Slot_FSM_State next_state = slot.fsm.current_id == SLOT_FSM_STATE_READ
+                                              ? SLOT_FSM_STATE_RETRY_READ_DELAY
+                                              : SLOT_FSM_STATE_IDLE;
+        (void) FSM_Transition(&slot.fsm, next_state);
         return NULL;
     }
 
@@ -65,6 +85,14 @@ static I2C_Transaction *slot_i2c_complete(I2C_Transaction *transaction) {
     }
 
     return NULL;
+}
+
+static void slot_fsm_initial_read_delay_enter(FSM *fsm) {
+    (void) FSM_TransitionIn(fsm, SLOT_FSM_STATE_READ, SLOT_INITIAL_READ_DELAY_MS);
+}
+
+static void slot_fsm_retry_read_delay_enter(FSM *fsm) {
+    (void) FSM_TransitionIn(fsm, SLOT_FSM_STATE_READ, SLOT_READ_RETRY_DELAY_MS);
 }
 
 static void slot_fsm_read_enter(FSM *fsm) {
@@ -104,7 +132,7 @@ static void slot_fsm_reset_enter(FSM *fsm) {
 void Slot_Init(void) {
     slot.value = SLOT_UNKNOWN;
     slot.tx_data[0] = SLOT_EEPROM_ADDRESS;
-    (void) FSM_Init(&slot.fsm, slot_fsm_states, SLOT_FSM_STATE_READ, &slot);
+    (void) FSM_Init(&slot.fsm, slot_fsm_states, SLOT_FSM_STATE_INITIAL_READ_DELAY, &slot);
 }
 
 void Slot_Service(void) {

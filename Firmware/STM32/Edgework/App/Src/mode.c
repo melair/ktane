@@ -205,12 +205,19 @@ bool Mode_Clear(void) {
 
     mode_data.desired_state = (edgework_state_t) {0};
     mode_data.current_state = (edgework_state_t) {0};
+    if (mode.active == MODE_BATTERY) {
+        mode_data.desired_state.batteries.count = mode_data.mode.battery.count;
+        mode_data.current_state.batteries.count = mode_data.mode.battery.count;
+    }
     mode_data.dirty = false;
     return FSM_Transition(&mode.fsm, EDGEWORK_MODE_STATE_CLEAR);
 }
 
 bool Mode_Display(const edgework_state_t state) {
     mode_data.desired_state = state;
+    if (mode.active == MODE_BATTERY) {
+        mode_data.desired_state.batteries.count = mode_data.mode.battery.count;
+    }
     mode_data.dirty = true;
     return true;
 }

@@ -11,9 +11,10 @@ extern "C" {
 #define SLOT_UNKNOWN 0xffU
 
 /**
- * Queue the boot-time read of the slot position from the external EEPROM.
+ * Start the boot-time read of the slot position from the external EEPROM.
  *
- * I2C_Init() must be called first. Until the transaction completes,
+ * I2C_Init() must be called first. The first read is queued after 500 ms;
+ * failed reads are retried every 250 ms. Until a read completes successfully,
  * Slot_Get() returns SLOT_UNKNOWN.
  */
 void Slot_Init(void);
