@@ -318,7 +318,7 @@ static void twofa_init_enter(FSM *fsm) {
         .state = &twofa->button_input_state,
         .scan_period_ms = 10U,
         .debounce_ms = 30U,
-        .enable_internal_pullups = true,
+        .pull = IM_DIGITAL_INPUT_PULL_UP,
         .active_high = false,
     };
 

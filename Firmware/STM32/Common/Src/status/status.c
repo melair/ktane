@@ -148,7 +148,7 @@ bool Status_Init(GPIO_PinDef led_pin, GPIO_PinDef button_pin, bool button_active
         .state = &button_input_state,
         .scan_period_ms = 10,
         .debounce_ms = 30,
-        .enable_internal_pullups = false,
+        .pull = IM_DIGITAL_INPUT_PULL_NONE,
         .active_high = button_active_high,
     };
 

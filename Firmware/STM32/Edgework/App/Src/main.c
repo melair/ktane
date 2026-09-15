@@ -24,13 +24,16 @@ int main(void) {
     /* Initialize the flash-backed non-volatile journal. */
     NVM_Init();
 
-    /* Load the configured edgework mode before initializing peripherals. */
+    /* Initialize base MCU peripherals */
+    GPIO_Init();
+
+    /* Initialize common input handling before modes register their inputs. */
+    IM_Init();
+
+    /* Load the configured edgework mode after its dependencies are initialized. */
     if (!Mode_Init()) {
         Error_Handler();
     }
-
-    /* Initialize base MCU peripherals */
-    GPIO_Init();
 
     /* Disable the UCPD1 dead-battery pull-downs on PA8 and PA9. */
     HAL_SYSCFG_StrobeDBattpinsConfig(SYSCFG_UCPD1_STROBE);
@@ -39,7 +42,6 @@ int main(void) {
     __HAL_RCC_DMA1_CLK_ENABLE();
 
     /* Initialize common edgework processes and peripherals. */
-    IM_Init();
     if (!I2C_Init()) {
         Error_Handler();
     }

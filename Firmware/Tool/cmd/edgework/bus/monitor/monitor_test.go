@@ -202,6 +202,65 @@ func TestPromptDisplayPacketBuildsTwoFAStateWithFlashing(t *testing.T) {
 	}
 }
 
+func TestFormatControllerIncludesPowered(t *testing.T) {
+	packet, err := parsePacket([]byte{
+		0x03, 0x01, 0x00,
+		0xfe,
+		0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00,
+		0x04,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	line := formatPacket(packet)
+	for _, want := range []string{
+		"mode=controller(0xfe)",
+		"state=display(0x04)",
+		"controller_powered=true",
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("formatted line %q does not contain %q", line, want)
+		}
+	}
+}
+
+func TestPromptDisplayPacketBuildsControllerState(t *testing.T) {
+	input := make(chan string, 16)
+	lines := make(chan monitorLine)
+	readErrors := make(chan error)
+	var out bytes.Buffer
+
+	for _, value := range []string{
+		"display",
+		"0x03",
+		"",
+		"controller",
+		"y",
+		"",
+	} {
+		input <- value
+	}
+
+	packet, ok, err := promptPacket(context.Background(), input, lines, readErrors, &out, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Fatal("prompt cancelled")
+	}
+
+	want := []byte{
+		0x03, 0x02, 0x00,
+		0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00,
+	}
+	if string(packet) != string(want) {
+		t.Fatalf("packet %v, want %v", packet, want)
+	}
+}
+
 func TestPromptDisplayPacketBuildsStateFromModePrompts(t *testing.T) {
 	input := make(chan string, 16)
 	lines := make(chan monitorLine)

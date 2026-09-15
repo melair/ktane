@@ -181,7 +181,7 @@ static void timer_init_enter(FSM *fsm) {
         .state = &timer->rotary_button_state,
         .scan_period_ms = 10,
         .debounce_ms = 30,
-        .enable_internal_pullups = true,
+        .pull = IM_DIGITAL_INPUT_PULL_UP,
         .active_high = false,
     };
 

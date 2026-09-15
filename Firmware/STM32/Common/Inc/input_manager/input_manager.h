@@ -25,6 +25,12 @@ typedef enum {
     IM_EVENT_ANALOGUE = 1u << 4,
 } IM_EventType;
 
+typedef enum {
+    IM_DIGITAL_INPUT_PULL_NONE,
+    IM_DIGITAL_INPUT_PULL_UP,
+    IM_DIGITAL_INPUT_PULL_DOWN,
+} IM_DigitalInputPull;
+
 typedef struct {
     IM_Handle handle;
     uint8_t channel;
@@ -74,7 +80,7 @@ typedef struct {
     uint16_t debounce_ms;
     uint16_t held_event_interval_ms;
 
-    bool enable_internal_pullups;
+    IM_DigitalInputPull pull;
     bool active_high;
 } IM_DigitalInputConfig;
 

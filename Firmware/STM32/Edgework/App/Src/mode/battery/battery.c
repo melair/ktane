@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #define BATTERY_IDENTIFY_PULSE_MS 200U
-#define BATTERY_IDENTIFY_GAP_MS   100U
+#define BATTERY_IDENTIFY_GAP_MS   200U
 #define BATTERY_IDENTIFY_RESTART_GAP_MS 1000U
 
 static Battery_Data *const battery = &mode_data.mode.battery;

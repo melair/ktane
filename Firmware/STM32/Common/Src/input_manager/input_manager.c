@@ -349,12 +349,24 @@ static void digital_channel_update(IM_Handle handle, const IM_DigitalInputConfig
     }
 }
 
-static void digital_input_pin_configure(const GPIO_PinDef *pin, bool enable_internal_pullup) {
+static uint32_t digital_input_pull_to_gpio(const IM_DigitalInputPull pull) {
+    switch (pull) {
+        case IM_DIGITAL_INPUT_PULL_UP:
+            return GPIO_PULLUP;
+        case IM_DIGITAL_INPUT_PULL_DOWN:
+            return GPIO_PULLDOWN;
+        case IM_DIGITAL_INPUT_PULL_NONE:
+        default:
+            return GPIO_NOPULL;
+    }
+}
+
+static void digital_input_pin_configure(const GPIO_PinDef *pin, const IM_DigitalInputPull pull) {
     GPIO_InitTypeDef gpio_init = {0};
 
     gpio_init.Pin = pin->pin;
     gpio_init.Mode = GPIO_MODE_INPUT;
-    gpio_init.Pull = enable_internal_pullup ? GPIO_PULLUP : GPIO_NOPULL;
+    gpio_init.Pull = digital_input_pull_to_gpio(pull);
     gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
 
     HAL_GPIO_Init(pin->port, &gpio_init);
@@ -521,7 +533,7 @@ IM_Handle IM_RegisterDigital(const IM_DigitalInputConfig *config) {
         }
 
         for (uint8_t row = 0; row < config->row_count; row++) {
-            digital_input_pin_configure(&config->rows[row], config->enable_internal_pullups);
+            digital_input_pin_configure(&config->rows[row], config->pull);
         }
 
         for (uint8_t col = 0; col < config->col_count; col++) {

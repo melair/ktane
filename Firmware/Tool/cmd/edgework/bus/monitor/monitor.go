@@ -411,6 +411,8 @@ func formatModeState(mode uint8, data []byte) string {
 			data[7]&0x01 != 0,
 			data[7]&0x02 != 0,
 		)
+	case 0xfe:
+		return fmt.Sprintf("controller_powered=%t", data[0]&0x01 != 0)
 	default:
 		return fmt.Sprintf("state=%s", hex.EncodeToString(data))
 	}
@@ -469,6 +471,7 @@ func formatEdgeworkState(data []byte) string {
 		fmt.Sprintf("2fa_icons=[%s]", formatTwoFAIcons(data[6])),
 		fmt.Sprintf("2fa_active_display=%t", data[7]&0x01 != 0),
 		fmt.Sprintf("2fa_flashing=%t", data[7]&0x02 != 0),
+		fmt.Sprintf("controller_powered=%t", data[0]&0x01 != 0),
 		fmt.Sprintf("identify=%t", data[8]&0x01 != 0),
 	}
 
@@ -853,6 +856,12 @@ func promptStateForMode(ctx context.Context, input <-chan string, lines <-chan m
 		copy(state[:6], value)
 		state[6] = icons
 		state[7] = boolByte(activeDisplay) | (boolByte(flashing) << 1)
+	case 0xfe:
+		powered, ok, err := promptBool(ctx, input, lines, readErrors, out, buffered, "powered [y/N]: ", false)
+		if err != nil || !ok {
+			return nil, ok, err
+		}
+		state[0] = boolByte(powered)
 	default:
 		fmt.Fprintf(out, "no structured prompts for %s; falling back to raw state\n", modeName(mode))
 		return promptState(ctx, input, lines, readErrors, out, buffered)

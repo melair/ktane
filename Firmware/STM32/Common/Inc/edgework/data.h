@@ -51,6 +51,12 @@ typedef struct {
                 unsigned flashing :1;
             } flags;
         } twofa;
+
+        struct {
+            struct {
+                unsigned powered :1;
+            } flags;
+        } controller;
     };
 
     unsigned identify :1;
