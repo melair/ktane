@@ -4,6 +4,7 @@ go 1.27.0
 
 require (
 	github.com/spf13/cobra v1.10.2
+	gitlab.com/gomidi/midi/v2 v2.3.24
 	go.bug.st/serial v1.8.0
 	golang.org/x/image v0.46.0
 )
