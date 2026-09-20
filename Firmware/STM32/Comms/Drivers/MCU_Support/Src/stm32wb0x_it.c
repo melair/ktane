@@ -63,6 +63,7 @@
 /* USER CODE BEGIN EV */
 
 extern TIM_HandleTypeDef htim2;
+extern PKA_HandleTypeDef hpka;
 
 /* USER CODE END EV */
 
@@ -145,6 +146,14 @@ void SysTick_Handler(void)
 void LPUART1_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&hlpuart1);
+}
+
+/**
+  * @brief Complete BLE Secure Connections public-key and DHKey operations.
+  */
+void PKA_IRQHandler(void)
+{
+  HAL_PKA_IRQHandler(&hpka);
 }
 
 /******************************************************************************/

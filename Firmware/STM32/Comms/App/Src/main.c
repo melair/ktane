@@ -167,14 +167,8 @@ int main(void)
   /* Init code for STM32_BLE */
   MX_APPE_Init(NULL);
 
-  /* Temporary: erase persisted bonds on boot while exercising the reset path. */
-  if (APP_BLE_ClearPairingInformation() != BLE_STATUS_SUCCESS)
-  {
-    Error_Handler();
-  }
-
-  /* Temporary: keep the current first-boot pairing behaviour during bring-up. */
-  APP_BLE_SetPairingMode(1U);
+  /* Start locked; only peers in the bonded-device accept list may connect. */
+  APP_BLE_SetPairingMode(0U);
 
   /* Start connectable BLE advertising once the GAP/GATT database is ready. */
   APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_START_FAST);

@@ -141,6 +141,7 @@ typedef struct
 
 #define MAX_PERIPHERAL_CONNECTIONS (3U)
 #define KTANE_AD_TYPE_APPEARANCE   (0x19U)
+#define KTANE_ADV_FLAGS_INDEX     (2U)
 
 /* USER CODE END PD */
 /* Private macro -------------------------------------------------------------*/
@@ -154,6 +155,8 @@ static uint16_t peripheral_connection_handles[MAX_PERIPHERAL_CONNECTIONS];
 static uint8_t peripheral_connection_count;
 /* Pairing is locked by default; the application explicitly opens it when needed. */
 static uint8_t pairing_mode_enabled = 0U;
+/* Advertising may remain active while other peers are connected. */
+static APP_BLE_ConnStatus_t advertising_status = APP_BLE_IDLE;
 
 static BleApplicationContext_t bleAppContext;
 
@@ -193,6 +196,7 @@ static void gap_cmd_resp_wait(void);
 static void gap_cmd_resp_release(void);
 static uint8_t track_peripheral_connection(uint16_t connection_handle);
 static uint8_t untrack_peripheral_connection(uint16_t connection_handle);
+static tBleStatus refresh_bonded_device_lists(void);
 
 /* USER CODE BEGIN PFP */
 
@@ -421,23 +425,12 @@ void BLE_Init(void)
   else
   {
     APP_DBG_MSG("  Success: aci_gap_set_security_requirements command\n");
+    APP_DBG_MSG("  Security: IO=%u, bonding=%u, MITM=%u, SC=%u, key size=%u..%u\n",
+                CFG_IO_CAPABILITY, CFG_BONDING_MODE, CFG_MITM_PROTECTION,
+                CFG_SC_SUPPORT, CFG_ENCRYPTION_KEY_SIZE_MIN, CFG_ENCRYPTION_KEY_SIZE_MAX);
   }
 
-  /**
-   * Initialize Filter Accept List
-   */
-  if (bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode)
-  {
-    ret = aci_gap_configure_filter_accept_and_resolving_list(0x01);
-    if (ret != BLE_STATUS_SUCCESS)
-    {
-      APP_DBG_MSG("  Fail   : aci_gap_configure_filter_accept_and_resolving_list command, result: 0x%02X\n", ret);
-    }
-    else
-    {
-      APP_DBG_MSG("  Success: aci_gap_configure_filter_accept_and_resolving_list command\n");
-    }
-  }
+  /* Bonded peers and their IRKs are loaded before each advertising start. */
   APP_DBG_MSG("==>> End BLE_Init function\n");
 
 }
@@ -751,6 +744,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           APP_DBG_MSG(">>== ACI_GAP_PASSKEY_REQ_VSEVT_CODE\n");
 
           aci_gap_passkey_req_event_rp0 *p_passkey_req = (aci_gap_passkey_req_event_rp0 *)p_blecore_evt->data;
+          APP_DBG_MSG("     - Connection Handle: 0x%04X\n", p_passkey_req->Connection_Handle);
           ret = aci_gap_passkey_resp(p_passkey_req->Connection_Handle, CFG_FIXED_PIN);
           if (ret != BLE_STATUS_SUCCESS)
           {
@@ -777,11 +771,31 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
                         "     - Status: 0x%02X\n     - Reason: 0x%02X\n",
                         p_pairing_complete->Connection_Handle,
                         p_pairing_complete->Status, p_pairing_complete->Reason);
+            if ((p_pairing_complete->Status == SM_PAIRING_FAILED) &&
+                (p_pairing_complete->Reason == AUTH_REQ_CANNOT_BE_MET))
+            {
+              APP_DBG_MSG("     - Authentication requirements cannot be met; check peer/local "
+                          "IO capabilities, MITM and Secure Connections negotiation\n");
+            }
           }
           else
           {
+            uint8_t security_mode;
+            uint8_t security_level;
+
             APP_DBG_MSG("     - Connection Handle: 0x%04X\n     - Pairing Success\n",
                         p_pairing_complete->Connection_Handle);
+            ret = aci_gap_get_security_level(p_pairing_complete->Connection_Handle,
+                                             &security_mode, &security_level);
+            if (ret == BLE_STATUS_SUCCESS)
+            {
+              APP_DBG_MSG("     - Security Mode: %u\n     - Security Level: %u\n",
+                          security_mode, security_level);
+            }
+            else
+            {
+              APP_DBG_MSG("     - aci_gap_get_security_level failed: 0x%02X\n", ret);
+            }
           }
           APP_DBG_MSG("\n");
 
@@ -892,6 +906,7 @@ static void connection_complete_event(uint8_t Status,
   else
   {
     /* Connection as server */
+    advertising_status = APP_BLE_IDLE; /* Legacy advertising stops on connection. */
     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
     if (track_peripheral_connection(Connection_Handle) == 0U)
     {
@@ -962,14 +977,18 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
 
 void APP_BLE_SetPairingMode(uint8_t enabled)
 {
-  APP_BLE_ConnStatus_t advertising_status = bleAppContext.Device_Connection_Status;
+  APP_BLE_ConnStatus_t previous_advertising_status = advertising_status;
 
   pairing_mode_enabled = (enabled != 0U) ? 1U : 0U;
 
   if ((advertising_status == APP_BLE_ADV_FAST) || (advertising_status == APP_BLE_ADV_LP))
   {
     APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_STOP);
-    APP_BLE_Procedure_Gap_Peripheral((advertising_status == APP_BLE_ADV_FAST) ?
+    if (advertising_status != APP_BLE_IDLE)
+    {
+      return;
+    }
+    APP_BLE_Procedure_Gap_Peripheral((previous_advertising_status == APP_BLE_ADV_FAST) ?
                                      PROC_GAP_PERIPH_ADVERTISE_START_FAST :
                                      PROC_GAP_PERIPH_ADVERTISE_START_LP);
   }
@@ -977,7 +996,7 @@ void APP_BLE_SetPairingMode(uint8_t enabled)
 
 tBleStatus APP_BLE_ClearPairingInformation(void)
 {
-  APP_BLE_ConnStatus_t advertising_status = bleAppContext.Device_Connection_Status;
+  APP_BLE_ConnStatus_t previous_advertising_status = advertising_status;
   tBleStatus status;
 
   /* Connected peers retain their authenticated link after a database erase. */
@@ -990,23 +1009,68 @@ tBleStatus APP_BLE_ClearPairingInformation(void)
   if ((advertising_status == APP_BLE_ADV_FAST) || (advertising_status == APP_BLE_ADV_LP))
   {
     APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_STOP);
+    if (advertising_status != APP_BLE_IDLE)
+    {
+      return BLE_STATUS_BUSY;
+    }
   }
 
   status = aci_gap_clear_security_db();
   if (status == BLE_STATUS_SUCCESS)
   {
     /* The security database command does not clear these controller lists. */
-    status = aci_gap_configure_filter_accept_and_resolving_list(0x03U);
+    status = refresh_bonded_device_lists();
   }
 
-  if ((advertising_status == APP_BLE_ADV_FAST) || (advertising_status == APP_BLE_ADV_LP))
+  if ((previous_advertising_status == APP_BLE_ADV_FAST) ||
+      (previous_advertising_status == APP_BLE_ADV_LP))
   {
-    APP_BLE_Procedure_Gap_Peripheral((advertising_status == APP_BLE_ADV_FAST) ?
+    APP_BLE_Procedure_Gap_Peripheral((previous_advertising_status == APP_BLE_ADV_FAST) ?
                                      PROC_GAP_PERIPH_ADVERTISE_START_FAST :
                                      PROC_GAP_PERIPH_ADVERTISE_START_LP);
   }
 
   return status;
+}
+
+/* Call only while advertising is stopped. The resolving list maps a peer's
+ * private address to the bonded identity used by the filter accept list. */
+static tBleStatus refresh_bonded_device_lists(void)
+{
+  tBleStatus status = hci_le_set_address_resolution_enable(DISABLE);
+  if (status != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("Disable address resolution failed: 0x%02X\n", status);
+    return status;
+  }
+
+  status = aci_gap_configure_filter_accept_and_resolving_list(0x03U);
+  if (status != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("Load bonded accept/resolving lists failed: 0x%02X\n", status);
+    return status;
+  }
+
+  status = hci_le_set_address_resolution_enable(ENABLE);
+  if (status != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("Enable address resolution failed: 0x%02X\n", status);
+    return status;
+  }
+
+  APP_DBG_MSG("Bonded accept/resolving lists loaded; peer address resolution enabled\n");
+  Bonded_Device_Entry_t first_bond;
+  uint8_t bond_count = 0U;
+  status = aci_gap_get_bonded_devices(0U, 1U, &bond_count, &first_bond);
+  if (status != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("Read stored bonds failed: 0x%02X\n", status);
+  }
+  else if (bond_count == 0U)
+  {
+    APP_DBG_MSG("No stored bonds: locked advertising cannot accept any peers\n");
+  }
+  return BLE_STATUS_SUCCESS;
 }
 
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId)
@@ -1185,11 +1249,20 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
 
       Advertising_Set_Parameters_t Advertising_Set_Parameters = {0};
 
+      /* Include bonds created since boot before switching to a filtered policy.
+       * Do not enable advertising if list loading or address resolution fails. */
+      status = refresh_bonded_device_lists();
+      if (status != BLE_STATUS_SUCCESS)
+      {
+        return;
+      }
+
       /* Start Fast or Low Power Advertising */
 
       /* Set advertising configuration for legacy advertising */
       status = aci_gap_set_advertising_configuration(0,
-                                                     GAP_MODE_GENERAL_DISCOVERABLE,
+                                                     pairing_mode_enabled ? GAP_MODE_GENERAL_DISCOVERABLE :
+                                                                            GAP_MODE_NON_DISCOVERABLE,
                                                      ADV_TYPE,
                                                      paramA,
                                                      paramB,
@@ -1207,17 +1280,22 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       if (status != BLE_STATUS_SUCCESS)
       {
         APP_DBG_MSG("==>> aci_gap_set_advertising_configuration - fail, result: 0x%02X\n", status);
+        return;
       }
       else
       {
-        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
         APP_DBG_MSG("==>> Success: aci_gap_set_advertising_configuration\n");
       }
 
+      /* Discoverable modes require an unfiltered policy. Keep the Flags AD
+       * field consistent with non-discoverable, accept-list-only locked mode. */
+      a_AdvData[KTANE_ADV_FLAGS_INDEX] = FLAG_BIT_BR_EDR_NOT_SUPPORTED |
+        (pairing_mode_enabled ? FLAG_BIT_LE_GENERAL_DISCOVERABLE_MODE : 0U);
       status = aci_gap_set_advertising_data(0, ADV_COMPLETE_DATA, sizeof(a_AdvData), (uint8_t*) a_AdvData);
       if (status != BLE_STATUS_SUCCESS)
       {
         APP_DBG_MSG("==>> aci_gap_set_advertising_data Failed, result: 0x%02X\n", status);
+        return;
       }
       else
       {
@@ -1229,6 +1307,7 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       if (status != BLE_STATUS_SUCCESS)
       {
         APP_DBG_MSG("==>> aci_gap_set_scan_response_data Failed, result: 0x%02X\n", status);
+        return;
       }
       else
       {
@@ -1244,6 +1323,8 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       else
       {
         APP_DBG_MSG("==>> Success: aci_gap_set_advertising_enable\n");
+        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
+        advertising_status = (APP_BLE_ConnStatus_t)paramC;
       }
       break;
     }
@@ -1258,6 +1339,7 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       {
         bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
         APP_DBG_MSG("==>> Disable advertising - Success\n");
+        advertising_status = APP_BLE_IDLE;
       }
       break;
     }/* PROC_GAP_PERIPH_ADVERTISE_STOP */

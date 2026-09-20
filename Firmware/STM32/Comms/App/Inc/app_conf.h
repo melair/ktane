@@ -67,7 +67,7 @@
 #define CFG_BONDING_MODE                    (1)
 #define CFG_FIXED_PIN                       (111111)
 #define CFG_ENCRYPTION_KEY_SIZE_MAX         (16)
-#define CFG_ENCRYPTION_KEY_SIZE_MIN         (16)
+#define CFG_ENCRYPTION_KEY_SIZE_MIN         (8)
 
 /**
  * Define IO capabilities
@@ -84,8 +84,8 @@
 /**
  * Define Secure Connections Support
  */
-/* Use legacy authenticated passkey pairing; Secure Connections are disabled. */
-#define CFG_SC_SUPPORT                      GAP_SC_NOT_SUPPORTED
+/* Negotiate Secure Connections when supported, retaining legacy passkey pairing. */
+#define CFG_SC_SUPPORT                      GAP_SC_OPTIONAL
 
 /**
  * Define Keypress Notification Support
@@ -336,8 +336,9 @@
  * BLE Stack modularity options
  ******************************************************************************/
 #define CFG_BLE_CONTROLLER_SCAN_ENABLED                   (0U)
-#define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (0U)
-#define CFG_BLE_SECURE_CONNECTIONS_ENABLED                (0U)
+/* Resolve bonded peers' private addresses even while our own address is public. */
+#define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (1U)
+#define CFG_BLE_SECURE_CONNECTIONS_ENABLED                (1U)
 #define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (0U)
 #define CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED           (0U)
 #define CFG_BLE_CONTROLLER_EXT_ADV_SCAN_ENABLED           (0U)

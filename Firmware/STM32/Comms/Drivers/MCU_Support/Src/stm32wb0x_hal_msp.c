@@ -246,6 +246,9 @@ void HAL_PKA_MspInit(PKA_HandleTypeDef* hpka)
     /* USER CODE END PKA_MspInit 0 */
     /* Peripheral clock enable */
     __HAL_RCC_PKA_CLK_ENABLE();
+    /* Secure Connections key generation advances from the PKA completion IRQ. */
+    HAL_NVIC_SetPriority(PKA_IRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(PKA_IRQn);
     /* USER CODE BEGIN PKA_MspInit 1 */
 
     /* USER CODE END PKA_MspInit 1 */
@@ -269,6 +272,7 @@ void HAL_PKA_MspDeInit(PKA_HandleTypeDef* hpka)
     /* USER CODE END PKA_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_PKA_CLK_DISABLE();
+    HAL_NVIC_DisableIRQ(PKA_IRQn);
     /* USER CODE BEGIN PKA_MspDeInit 1 */
 
     /* USER CODE END PKA_MspDeInit 1 */
