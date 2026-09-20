@@ -67,6 +67,20 @@
             "targets": [
                 "Edgework"
             ]
+        },
+        {
+            "name": "Comms-Debug",
+            "configurePreset": "Debug",
+            "targets": [
+                "Comms"
+            ]
+        },
+        {
+            "name": "Comms-Release",
+            "configurePreset": "Release",
+            "targets": [
+                "Comms"
+            ]
         }
     ]
 }

@@ -25,3 +25,15 @@
 [submodule "Firmware/STM32/Edgework/Drivers/HAL"]
 	path = Firmware/STM32/Edgework/Drivers/HAL
 	url = https://github.com/STMicroelectronics/stm32g0xx-hal-driver
+[submodule "Firmware/STM32/Comms/Drivers/CMSIS_Core"]
+	path = Firmware/STM32/Comms/Drivers/CMSIS_Core
+	url = https://github.com/STMicroelectronics/cmsis-core.git
+[submodule "Firmware/STM32/Comms/Drivers/CMSIS_Device"]
+	path = Firmware/STM32/Comms/Drivers/CMSIS_Device
+	url = https://github.com/STMicroelectronics/cmsis-device-wb0.git
+[submodule "Firmware/STM32/Comms/Drivers/HAL"]
+	path = Firmware/STM32/Comms/Drivers/HAL
+	url = https://github.com/STMicroelectronics/stm32wb0x-hal-driver
+[submodule "Firmware/STM32/Comms/Drivers/BLE_Stack"]
+	path = Firmware/STM32/Comms/Drivers/BLE_Stack
+	url = https://github.com/STMicroelectronics/STM32CubeWB0

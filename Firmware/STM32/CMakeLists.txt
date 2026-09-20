@@ -28,6 +28,7 @@ add_subdirectory(Common)
 add_subdirectory(Backplane)
 add_subdirectory(ControlBoard)
 add_subdirectory(Edgework)
+add_subdirectory(Comms)
 
 if ((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))
     message(FATAL_ERROR "Firmware requires C11 or higher")
