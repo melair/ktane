@@ -28,6 +28,7 @@ static control_response_t control_responses[KTANE_GATT_MAX_RESPONSE_CLIENTS];
 
 static uint8_t battery_level;
 static uint8_t game_state;
+static uint8_t game_mode;
 static uint8_t game_timer[sizeof(uint32_t)];
 static uint8_t game_strikes[2];
 
@@ -40,6 +41,11 @@ static ble_gatt_val_buffer_def_t game_state_buffer = {
   .val_len = sizeof(game_state),
   .buffer_len = sizeof(game_state),
   .buffer_p = &game_state,
+};
+static ble_gatt_val_buffer_def_t game_mode_buffer = {
+  .val_len = sizeof(game_mode),
+  .buffer_len = sizeof(game_mode),
+  .buffer_p = &game_mode,
 };
 static ble_gatt_val_buffer_def_t game_timer_buffer = {
   .val_len = sizeof(game_timer),
@@ -56,6 +62,12 @@ BLE_GATT_SRV_CCCD_DECLARE(control_response, CFG_BLE_NUM_RADIO_TASKS,
                           BLE_GATT_SRV_PERM_AUTHEN_WRITE,
                           BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
 BLE_GATT_SRV_CCCD_DECLARE(game_state, CFG_BLE_NUM_RADIO_TASKS,
+                          BLE_GATT_SRV_PERM_AUTHEN_WRITE,
+                          BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
+BLE_GATT_SRV_CCCD_DECLARE(game_event_stream, CFG_BLE_NUM_RADIO_TASKS,
+                          BLE_GATT_SRV_PERM_AUTHEN_WRITE,
+                          BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
+BLE_GATT_SRV_CCCD_DECLARE(game_mode, CFG_BLE_NUM_RADIO_TASKS,
                           BLE_GATT_SRV_PERM_AUTHEN_WRITE,
                           BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
 BLE_GATT_SRV_CCCD_DECLARE(game_timer, CFG_BLE_NUM_RADIO_TASKS,
@@ -104,12 +116,28 @@ static const ble_gatt_srv_def_t control_service = {
 
 static const ble_gatt_chr_def_t game_chars[] = {
   {
+    .properties = BLE_GATT_SRV_CHAR_PROP_INDICATE,
+    .permissions = BLE_GATT_SRV_PERM_AUTHEN_READ,
+    .min_key_size = BLE_GATT_SRV_MIN_ENCRY_KEY_SIZE,
+    .uuid = BLE_UUID_INIT_128(KTANE_GAME_EVENT_STREAM_UUID_128),
+    .descrs = { .descrs_p = &BLE_GATT_SRV_CCCD_DEF_NAME(game_event_stream), .descr_count = 1U },
+    .val_buffer_p = NULL,
+  },
+  {
     .properties = BLE_GATT_SRV_CHAR_PROP_READ | BLE_GATT_SRV_CHAR_PROP_NOTIFY,
     .permissions = BLE_GATT_SRV_PERM_AUTHEN_READ,
     .min_key_size = BLE_GATT_SRV_MIN_ENCRY_KEY_SIZE,
     .uuid = BLE_UUID_INIT_128(KTANE_GAME_STATE_UUID_128),
     .descrs = { .descrs_p = &BLE_GATT_SRV_CCCD_DEF_NAME(game_state), .descr_count = 1U },
     .val_buffer_p = &game_state_buffer,
+  },
+  {
+    .properties = BLE_GATT_SRV_CHAR_PROP_READ | BLE_GATT_SRV_CHAR_PROP_NOTIFY,
+    .permissions = BLE_GATT_SRV_PERM_AUTHEN_READ,
+    .min_key_size = BLE_GATT_SRV_MIN_ENCRY_KEY_SIZE,
+    .uuid = BLE_UUID_INIT_128(KTANE_GAME_MODE_UUID_128),
+    .descrs = { .descrs_p = &BLE_GATT_SRV_CCCD_DEF_NAME(game_mode), .descr_count = 1U },
+    .val_buffer_p = &game_mode_buffer,
   },
   {
     .properties = BLE_GATT_SRV_CHAR_PROP_READ | BLE_GATT_SRV_CHAR_PROP_NOTIFY,

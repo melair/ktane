@@ -125,11 +125,11 @@
  * (BLE_STACK_NUM_GATT_MANDATORY_ATTRIBUTES value on STM32_BLE middleware, ble_stack.h header file).
  */
 /*
- * Information (1), Control (6), Game (10), and Battery (4) services require
- * 21 application attributes.  Keep three spare records for future protocol
+ * Information (1), Control (6), Game (16), and Battery (4) services require
+ * 27 application attributes.  Keep three spare records for future protocol
  * additions.
  */
-#define CFG_BLE_NUM_GATT_ATTRIBUTES                     (24)
+#define CFG_BLE_NUM_GATT_ATTRIBUTES                     (30)
 
 /**
  * Maximum number of concurrent Client's Procedures. This value must be less

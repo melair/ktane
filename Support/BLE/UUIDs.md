@@ -32,15 +32,24 @@ Command responses are read from this characteristic, which additionally has indi
 
 ### Game Service - `0x0020`
 
-#### State - `0x0000` (Read/Notify)
+#### Event Stream - `0x0100` (Indicator)
+
+Encoded events regarding the current game state.
+
+#### Game State - `0x0200` (Read/Notify)
 
 uint8_t representing the current state of the game.
 
-#### Timer - `0x0010` (Read/Notify)
+#### Game Mode - `0x0201` (Read/Notify)
+
+uint8_t representing the current mode of the game.
+
+#### Timer - `0x0210` (Read/Notify)
 
 uint32_t representing the time on the clock in ms.
 
-#### Strikes - `0x0011` (Read/Notify)
+#### Strikes - `0x0220` (Read/Notify)
 
 uint8_t representing the the number of strikes occured.
 uint8_t representing the number of strikes possible.
+
