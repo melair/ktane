@@ -121,6 +121,17 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
  */
 void APP_BLE_SetPairingMode(uint8_t enabled);
 /**
+ * Register or update one of four device-specific pairing PINs in RAM.
+ * MAC uses stack byte order: AA:BB:CC:DD:EE:FF is {FF, EE, DD, CC, BB, AA}.
+ * PIN range is 0..999999 (displayed with six digits, including leading zeros).
+ * Returns BLE_STATUS_INVALID_PARAMS for NULL/all-FF MAC or an invalid PIN,
+ * or BLE_STATUS_INSUFFICIENT_RESOURCES if all four entries are occupied.
+ * Entries are cleared on each pairing-mode transition, but not same-mode calls.
+ * Enable pairing before populating the table. Call from the BLE application
+ * context, serialized with BLE event handling and APP_BLE_SetPairingMode.
+ */
+tBleStatus APP_BLE_SetPairingPin(const uint8_t mac[6], uint32_t pin);
+/**
  * Erase all bonded-peer records and clear the controller accept/resolving lists.
  *
  * Returns BLE_STATUS_BUSY if any BLE link remains connected.

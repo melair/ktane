@@ -168,7 +168,7 @@ int main(void)
   MX_APPE_Init(NULL);
 
   /* Start locked; only peers in the bonded-device accept list may connect. */
-  APP_BLE_SetPairingMode(0U);
+  APP_BLE_SetPairingMode(1U);
 
   /* Start connectable BLE advertising once the GAP/GATT database is ready. */
   APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_START_FAST);

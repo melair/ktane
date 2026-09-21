@@ -151,7 +151,23 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 
 NO_INIT(uint32_t dyn_alloc_a[BLE_DYN_ALLOC_SIZE>>2]);
-static uint16_t peripheral_connection_handles[MAX_PERIPHERAL_CONNECTIONS];
+static struct
+{
+  uint16_t handle;
+  uint8_t mac[6];
+} peripheral_connections[MAX_PERIPHERAL_CONNECTIONS];
+
+#define PAIRING_PIN_CAPACITY (4U)
+#define EMPTY_PAIRING_MAC {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}
+static const uint8_t empty_pairing_mac[6] = EMPTY_PAIRING_MAC;
+static struct
+{
+  uint8_t mac[6];
+  uint32_t pin;
+} pairing_pins[PAIRING_PIN_CAPACITY] = {
+  {EMPTY_PAIRING_MAC, 0U}, {EMPTY_PAIRING_MAC, 0U},
+  {EMPTY_PAIRING_MAC, 0U}, {EMPTY_PAIRING_MAC, 0U},
+};
 static uint8_t peripheral_connection_count;
 /* Pairing is locked by default; the application explicitly opens it when needed. */
 static uint8_t pairing_mode_enabled = 0U;
@@ -194,8 +210,9 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Supervision_Timeout);
 static void gap_cmd_resp_wait(void);
 static void gap_cmd_resp_release(void);
-static uint8_t track_peripheral_connection(uint16_t connection_handle);
+static uint8_t track_peripheral_connection(uint16_t connection_handle, const uint8_t mac[6]);
 static uint8_t untrack_peripheral_connection(uint16_t connection_handle);
+static tBleStatus select_pairing_pin(uint16_t connection_handle, uint32_t *pin);
 static tBleStatus refresh_bonded_device_lists(void);
 
 /* USER CODE BEGIN PFP */
@@ -586,7 +603,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
       if (untrack_peripheral_connection(p_disconnection_complete_event->Connection_Handle) != 0U)
       {
         bleAppContext.BleApplicationContext_legacy.connectionHandle =
-          (peripheral_connection_count == 0U) ? 0xFFFF : peripheral_connection_handles[0];
+          (peripheral_connection_count == 0U) ? 0xFFFF : peripheral_connections[0].handle;
         bleAppContext.Device_Connection_Status =
           (peripheral_connection_count == 0U) ? APP_BLE_IDLE : APP_BLE_CONNECTED_SERVER;
         APP_DBG_MSG(">>== HCI_DISCONNECTION_COMPLETE_EVT_CODE\n");
@@ -745,7 +762,19 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
           aci_gap_passkey_req_event_rp0 *p_passkey_req = (aci_gap_passkey_req_event_rp0 *)p_blecore_evt->data;
           APP_DBG_MSG("     - Connection Handle: 0x%04X\n", p_passkey_req->Connection_Handle);
-          ret = aci_gap_passkey_resp(p_passkey_req->Connection_Handle, CFG_FIXED_PIN);
+          uint32_t pin;
+          ret = select_pairing_pin(p_passkey_req->Connection_Handle, &pin);
+          if (ret != BLE_STATUS_SUCCESS)
+          {
+            APP_DBG_MSG("Pairing PIN selection failed: 0x%02X\n", ret);
+            ret = aci_gap_terminate(p_passkey_req->Connection_Handle, BLE_ERROR_TERMINATED_REMOTE_USER);
+            if (ret != BLE_STATUS_SUCCESS)
+            {
+              APP_DBG_MSG("Pairing connection termination failed: 0x%02X\n", ret);
+            }
+            break;
+          }
+          ret = aci_gap_passkey_resp(p_passkey_req->Connection_Handle, pin);
           if (ret != BLE_STATUS_SUCCESS)
           {
             APP_DBG_MSG("==>> aci_gap_passkey_resp : Fail, reason: 0x%02X\n", ret);
@@ -908,7 +937,7 @@ static void connection_complete_event(uint8_t Status,
     /* Connection as server */
     advertising_status = APP_BLE_IDLE; /* Legacy advertising stops on connection. */
     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
-    if (track_peripheral_connection(Connection_Handle) == 0U)
+    if (track_peripheral_connection(Connection_Handle, Peer_Address) == 0U)
     {
       APP_DBG_MSG("Peripheral connection limit reached; advertising will remain disabled\n");
     }
@@ -927,14 +956,15 @@ static void connection_complete_event(uint8_t Status,
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
 }/* end hci_le_connection_complete_event() */
 
-static uint8_t track_peripheral_connection(uint16_t connection_handle)
+static uint8_t track_peripheral_connection(uint16_t connection_handle, const uint8_t mac[6])
 {
   uint8_t index;
 
   for (index = 0U; index < peripheral_connection_count; index++)
   {
-    if (peripheral_connection_handles[index] == connection_handle)
+    if (peripheral_connections[index].handle == connection_handle)
     {
+      memcpy(peripheral_connections[index].mac, mac, 6U);
       return 1U;
     }
   }
@@ -944,7 +974,9 @@ static uint8_t track_peripheral_connection(uint16_t connection_handle)
     return 0U;
   }
 
-  peripheral_connection_handles[peripheral_connection_count++] = connection_handle;
+  peripheral_connections[peripheral_connection_count].handle = connection_handle;
+  memcpy(peripheral_connections[peripheral_connection_count].mac, mac, 6U);
+  peripheral_connection_count++;
   return 1U;
 }
 
@@ -954,11 +986,12 @@ static uint8_t untrack_peripheral_connection(uint16_t connection_handle)
 
   for (index = 0U; index < peripheral_connection_count; index++)
   {
-    if (peripheral_connection_handles[index] == connection_handle)
+    if (peripheral_connections[index].handle == connection_handle)
     {
       peripheral_connection_count--;
-      peripheral_connection_handles[index] = peripheral_connection_handles[peripheral_connection_count];
-      peripheral_connection_handles[peripheral_connection_count] = 0U;
+      peripheral_connections[index] = peripheral_connections[peripheral_connection_count];
+      memset(&peripheral_connections[peripheral_connection_count], 0,
+             sizeof(peripheral_connections[0]));
       return 1U;
     }
   }
@@ -975,10 +1008,105 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
   return bleAppContext.Device_Connection_Status;
 }
 
+tBleStatus APP_BLE_SetPairingPin(const uint8_t mac[6], uint32_t pin)
+{
+  uint8_t available = PAIRING_PIN_CAPACITY;
+
+  if ((mac == NULL) || (pin > 999999U) ||
+      (memcmp(mac, empty_pairing_mac, 6U) == 0))
+  {
+    return BLE_STATUS_INVALID_PARAMS;
+  }
+
+  for (uint8_t index = 0U; index < PAIRING_PIN_CAPACITY; index++)
+  {
+    if (memcmp(pairing_pins[index].mac, mac, 6U) == 0)
+    {
+      pairing_pins[index].pin = pin;
+      return BLE_STATUS_SUCCESS;
+    }
+    if ((available == PAIRING_PIN_CAPACITY) &&
+        (memcmp(pairing_pins[index].mac, empty_pairing_mac, 6U) == 0))
+    {
+      available = index;
+    }
+  }
+
+  if (available == PAIRING_PIN_CAPACITY)
+  {
+    return BLE_STATUS_INSUFFICIENT_RESOURCES;
+  }
+  memcpy(pairing_pins[available].mac, mac, 6U);
+  pairing_pins[available].pin = pin;
+  return BLE_STATUS_SUCCESS;
+}
+
+static tBleStatus select_pairing_pin(uint16_t connection_handle, uint32_t *pin)
+{
+  const uint8_t *mac = NULL;
+  uint8_t configured = 0U;
+
+  for (uint8_t index = 0U; index < peripheral_connection_count; index++)
+  {
+    if (peripheral_connections[index].handle == connection_handle)
+    {
+      mac = peripheral_connections[index].mac;
+      break;
+    }
+  }
+  if (mac == NULL)
+  {
+    return BLE_STATUS_UNKNOWN_CONNECTION_ID;
+  }
+
+  for (uint8_t index = 0U; index < PAIRING_PIN_CAPACITY; index++)
+  {
+    if ((memcmp(pairing_pins[index].mac, empty_pairing_mac, 6U) != 0) &&
+        (memcmp(pairing_pins[index].mac, mac, 6U) == 0))
+    {
+      *pin = pairing_pins[index].pin;
+      configured = 1U;
+      break;
+    }
+  }
+
+  if (configured == 0U)
+  {
+    uint8_t random_bytes[8];
+    uint32_t random_value;
+    do
+    {
+      tBleStatus status = hci_le_rand(random_bytes);
+      if (status != BLE_STATUS_SUCCESS)
+      {
+        return status;
+      }
+      memcpy(&random_value, random_bytes, sizeof(random_value));
+      /* Reject the partial top interval before reducing to six decimal digits. */
+    } while (random_value >= 4294000000UL);
+    *pin = random_value % 1000000U;
+    /* TODO: Forward this PIN, peer MAC and connection handle for display. */
+  }
+
+  APP_DBG_MSG("Pairing PIN %06lu (%s), peer %02X:%02X:%02X:%02X:%02X:%02X, handle 0x%04X\n",
+              (unsigned long)*pin, configured ? "configured" : "random",
+              mac[5], mac[4], mac[3], mac[2], mac[1], mac[0], connection_handle);
+  return BLE_STATUS_SUCCESS;
+}
+
 void APP_BLE_SetPairingMode(uint8_t enabled)
 {
   APP_BLE_ConnStatus_t previous_advertising_status = advertising_status;
 
+  enabled = (enabled != 0U) ? 1U : 0U;
+  if (pairing_mode_enabled != enabled)
+  {
+    for (uint8_t index = 0U; index < PAIRING_PIN_CAPACITY; index++)
+    {
+      memcpy(pairing_pins[index].mac, empty_pairing_mac, 6U);
+      pairing_pins[index].pin = 0U;
+    }
+  }
   pairing_mode_enabled = (enabled != 0U) ? 1U : 0U;
 
   if ((advertising_status == APP_BLE_ADV_FAST) || (advertising_status == APP_BLE_ADV_LP))
