@@ -94,8 +94,8 @@
 /**
  * Appearance of device set into BLE GAP
  */
-#define KTANE_GAP_APPEARANCE_PORTABLE_HANDHELD_CONSOLE (0x0A82U)
-#define CFG_GAP_APPEARANCE                  (KTANE_GAP_APPEARANCE_PORTABLE_HANDHELD_CONSOLE)
+#define KTANE_GAP_APPEARANCE_GAMEPAD        (0x03C4)
+#define CFG_GAP_APPEARANCE                  (KTANE_GAP_APPEARANCE_GAMEPAD)
 
 /* USER CODE BEGIN Generic_Parameters */
 
@@ -487,17 +487,6 @@ typedef enum
   /* USER CODE END CFG_SEQ_Prio_Id_t */
   CFG_SEQ_PRIO_NBR
 } CFG_SEQ_Prio_Id_t;
-
-/**
- * This is a bit mapping over 32bits listing all events id supported in the application
- */
-typedef enum
-{
-  CFG_IDLEEVT_PROC_GAP_COMPLETE,
-  /* USER CODE BEGIN CFG_IdleEvt_Id_t */
-
-  /* USER CODE END CFG_IdleEvt_Id_t */
-} CFG_IdleEvt_Id_t;
 
 /* USER CODE BEGIN Defines */
 

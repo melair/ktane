@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app_ble.h"
+#include "app_conf.h"
 
 /* USER CODE END Includes */
 
@@ -166,6 +167,11 @@ int main(void)
 
   /* Init code for STM32_BLE */
   MX_APPE_Init(NULL);
+
+  /* Erase stored pairing information on every startup, before advertising. */
+  tBleStatus clear_pairing_status = APP_BLE_ClearPairingInformation();
+  APP_DBG_MSG("Clear pairing information: 0x%02X\n", clear_pairing_status);
+  UNUSED(clear_pairing_status);
 
   /* Start locked; only peers in the bonded-device accept list may connect. */
   APP_BLE_SetPairingMode(1U);

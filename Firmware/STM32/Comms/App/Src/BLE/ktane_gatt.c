@@ -5,9 +5,10 @@
 #include "ble.h"
 #include "ble_evt.h"
 #include "ktane_gatt.h"
+#include "app_ble.h"
 
 #define CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET      (1U)
-#define KTANE_GATT_MAX_RESPONSE_CLIENTS            (3U)
+#define KTANE_GATT_MAX_RESPONSE_CLIENTS            APP_BLE_MAX_CONNECTIONS
 #define KTANE_GATT_INVALID_CONNECTION_HANDLE        (0xFFFFU)
 
 typedef struct

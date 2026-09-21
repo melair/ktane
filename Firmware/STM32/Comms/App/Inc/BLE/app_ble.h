@@ -38,26 +38,26 @@ extern "C" {
 
 typedef enum
 {
-  APP_BLE_IDLE,
-  APP_BLE_LP_CONNECTING,
-  APP_BLE_CONNECTED_SERVER,
-  APP_BLE_CONNECTED_CLIENT,
+  APP_BLE_ADV_STOPPED,
   APP_BLE_ADV_FAST,
   APP_BLE_ADV_LP,
-/* USER CODE BEGIN ConnStatus_t */
-
-/* USER CODE END ConnStatus_t */
-} APP_BLE_ConnStatus_t;
+} APP_BLE_AdvertisingStatus_t;
 
 typedef enum
 {
-  PROC_GAP_GEN_PHY_TOGGLE,
-  PROC_GAP_GEN_CONN_TERMINATE,
-  PROC_GATT_EXCHANGE_CONFIG,
-  /* USER CODE BEGIN ProcGapGeneralId_t*/
+  APP_BLE_CONNECTED,
+  APP_BLE_DISCONNECTING,
+} APP_BLE_ConnectionStatus_t;
 
-  /* USER CODE END ProcGapGeneralId_t */
-}ProcGapGeneralId_t;
+#define APP_BLE_MAX_CONNECTIONS (4U)
+
+typedef struct
+{
+  uint16_t handle;
+  uint8_t mac[6]; /* Bluetooth stack byte order, least-significant byte first. */
+  uint8_t address_type;
+  APP_BLE_ConnectionStatus_t status;
+} APP_BLE_Connection_t;
 
 typedef enum
 {
@@ -65,8 +65,6 @@ typedef enum
   PROC_GAP_PERIPH_ADVERTISE_START_FAST,
   PROC_GAP_PERIPH_ADVERTISE_STOP,
   PROC_GAP_PERIPH_ADVERTISE_DATA_UPDATE,
-  PROC_GAP_PERIPH_CONN_PARAM_UPDATE,
-  PROC_GAP_PERIPH_CONN_TERMINATE,
 
   PROC_GAP_PERIPH_SET_BROADCAST_MODE,
   /* USER CODE BEGIN ProcGapPeripheralId_t */
@@ -112,7 +110,22 @@ typedef enum
 void ModulesInit(void);
 void BLE_Init(void);
 void APP_BLE_Init(void);
-APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
+/* Call these APIs from the BLE application context, serialized with events.
+ * Queries copy records; enumeration indices may change on disconnection.
+ * NULL outputs/invalid indices return INVALID_PARAMS; unknown handles return
+ * UNKNOWN_CONNECTION_ID. Disconnected peers have no record.
+ */
+uint8_t APP_BLE_GetConnectionCount(void);
+tBleStatus APP_BLE_GetConnection(uint16_t handle, APP_BLE_Connection_t *out);
+tBleStatus APP_BLE_GetConnectionByIndex(uint8_t index, APP_BLE_Connection_t *out);
+APP_BLE_AdvertisingStatus_t APP_BLE_GetAdvertisingStatus(void);
+/* Success means the stack accepted the request, not asynchronous completion.
+ * Unknown handles return UNKNOWN_CONNECTION_ID; disconnecting peers return BUSY.
+ */
+tBleStatus APP_BLE_Disconnect(uint16_t handle);
+tBleStatus APP_BLE_TogglePhy(uint16_t handle);
+tBleStatus APP_BLE_ExchangeMtu(uint16_t handle);
+tBleStatus APP_BLE_RequestConnectionParameterUpdate(uint16_t handle);
 /**
  * Enable or disable pairing with previously unknown BLE clients.
  *
@@ -137,7 +150,6 @@ tBleStatus APP_BLE_SetPairingPin(const uint8_t mac[6], uint32_t pin);
  * Returns BLE_STATUS_BUSY if any BLE link remains connected.
  */
 tBleStatus APP_BLE_ClearPairingInformation(void);
-void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId);
 
 /* USER CODE BEGIN EF */
