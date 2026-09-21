@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    app_entry.h
@@ -16,7 +15,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef APP_ENTRY_H
@@ -29,39 +27,21 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "app_conf.h"
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
-
-/* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 
-/* USER CODE BEGIN EC */
-
-/* USER CODE END EC */
-
 /* Exported variables --------------------------------------------------------*/
-/* USER CODE BEGIN EV */
-
-/* USER CODE END EV */
 
 /* Exported macros ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
 
 /* Exported functions ---------------------------------------------*/
 void MX_APPE_Config(void);
+
 uint32_t MX_APPE_Init(void *p_param);
+
 void MX_APPE_Process(void);
-
-/* USER CODE BEGIN EF */
-
-/* USER CODE END EF */
 
 #ifdef __cplusplus
 } /* extern "C" */

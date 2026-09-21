@@ -120,7 +120,7 @@
 #if !defined(CFG_HW_SMPS)
 #define CFG_HW_SMPS SMPS_OFF
 #endif
-                                             
+
 #if !defined(CFG_HW_SMPS_BOM)
 #define CFG_HW_SMPS_BOM SMPS_BOM3 /*!< SMPS Inductor 10uH */
 #endif
@@ -144,7 +144,7 @@
 /** @addtogroup STM32WB0x_System_Private_Variables
   * @{
   */
-  /* The SystemCoreClock variable is updated in three ways:
+/* The SystemCoreClock variable is updated in three ways:
       1) by calling CMSIS function SystemCoreClockUpdate()
       2) by calling HAL API function HAL_RCC_GetHCLKFreq()
       3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency
@@ -152,19 +152,25 @@
                is no need to call the 2 first functions listed above, since SystemCoreClock
                variable is updated automatically.
   */
-  uint32_t SystemCoreClock = 16000000U; /* The HSI (64MHz) is used as system clock source after startup from reset, configured at 16 MHz. */
+uint32_t SystemCoreClock = 16000000U;
+/* The HSI (64MHz) is used as system clock source after startup from reset, configured at 16 MHz. */
 
-  /* The RAM_VR variable is a mirroring in RAM of some registers information.
+/* The RAM_VR variable is a mirroring in RAM of some registers information.
      It is a sort of virtual register in RAM.
   */
 #if defined ( __ICCARM__ )
-  #pragma location=".ram_vr"
+#pragma location=".ram_vr"
   __root __no_init RAM_VR_TypeDef RAM_VR;
 #else
 #if defined ( __ARMCC_VERSION )
-  __attribute__((section(".bss" ".ram_vr")))
+__attribute__ ((section(".bss" ".ram_vr")))
 #elif defined (  __GNUC__  )
-  __attribute__((section(".ram_vr")))
+__attribute__ ((section
+(
+".ram_vr"
+)
+)
+)
 #endif
   RAM_VR_TypeDef RAM_VR __attribute__((used));
 #endif
@@ -192,114 +198,111 @@ void CPUcontextRestore(void);
   * @retval None
   */
 
-void SystemInit(void)
-{
-  uint32_t mainRegulator, smpsOutVoltage, hsiCalib;
+void SystemInit(void) {
+    uint32_t mainRegulator, smpsOutVoltage, hsiCalib;
 #if defined(STM32WB06) || defined(STM32WB07)
-  uint32_t lsiLpmu;
+    uint32_t lsiLpmu;
 #else
-  uint32_t lsiBw;
+    uint32_t lsiBw;
 #endif
-  uint8_t i;
-  
-  /* If the reset reason is a wakeup from power save restore the context */
-  if ((RCC->CSR == 0) && ((PWR->SR1 != 0)||(PWR->SR3 != 0))) {
-    RAM_VR.WakeupFromSleepFlag = 1; /* A wakeup from power save occurred */
-    CPUcontextRestore();            /* Restore the context */
-    /* if the context restore worked properly, we should never return here */
-    while(1) { 
-      NVIC_SystemReset(); 
-    }
-  }
+    uint8_t i;
 
-  /* Configure the Vector Table location */
+    /* If the reset reason is a wakeup from power save restore the context */
+    if ((RCC->CSR == 0) && ((PWR->SR1 != 0) || (PWR->SR3 != 0))) {
+        RAM_VR.WakeupFromSleepFlag = 1; /* A wakeup from power save occurred */
+        CPUcontextRestore(); /* Restore the context */
+        /* if the context restore worked properly, we should never return here */
+        while (1) {
+            NVIC_SystemReset();
+        }
+    }
+
+    /* Configure the Vector Table location */
 #if defined(USER_VECT_TAB_ADDRESS)
-  SCB->VTOR = VECT_TAB_BASE_ADDRESS | VECT_TAB_OFFSET; /* Vector Table Relocation */
+    SCB->VTOR = VECT_TAB_BASE_ADDRESS | VECT_TAB_OFFSET; /* Vector Table Relocation */
 #else
-  SCB->VTOR = (uint32_t) (__vector_table);
+    SCB->VTOR = (uint32_t)(__vector_table);
 #endif /* USER_VECT_TAB_ADDRESS */
 
-  /* Store in RAM the AppBase information */
-  RAM_VR.AppBase = (uint32_t) SCB->VTOR;
+    /* Store in RAM the AppBase information */
+    RAM_VR.AppBase = (uint32_t) SCB->VTOR;
 
-  /* Enable all the RAM banks in retention during power save */
+    /* Enable all the RAM banks in retention during power save */
 #if defined(PWR_CR2_RAMRET1)
-  SET_BIT(PWR->CR2, PWR_CR2_RAMRET1);
+    SET_BIT(PWR->CR2, PWR_CR2_RAMRET1);
 #endif /* PWR_CR2_RAMRET1 */
-  
+
 #if defined(PWR_CR2_RAMRET2)
-  SET_BIT(PWR->CR2, PWR_CR2_RAMRET2);
+    SET_BIT(PWR->CR2, PWR_CR2_RAMRET2);
 #endif /* PWR_CR2_RAMRET2 */
-  
+
 #if defined(PWR_CR2_RAMRET3)
-  SET_BIT(PWR->CR2, PWR_CR2_RAMRET3);
+    SET_BIT(PWR->CR2, PWR_CR2_RAMRET3);
 #endif /* PWR_CR2_RAMRET3 */
 
-  /* Disable the GPIO retention in power save configuration */
+    /* Disable the GPIO retention in power save configuration */
 #if defined(PWR_CR2_GPIORET)
-  CLEAR_BIT(PWR->CR2, PWR_CR2_GPIORET);
+    CLEAR_BIT(PWR->CR2, PWR_CR2_GPIORET);
 #endif /* PWR_CR2_GPIORET */
-   
-  /* SMPS setup */
-  if ((CFG_HW_SMPS == SMPS_ON) || (CFG_HW_SMPS == SMPS_BYPAPSS))
-  {
-    while(READ_BIT(PWR->SR2, PWR_SR2_SMPSRDY) != PWR_SR2_SMPSRDY); // Wait until SMPS is ready
-    MODIFY_REG(PWR->CR5, PWR_CR5_SMPSBOMSEL, (CFG_HW_SMPS_BOM<<PWR_CR5_SMPSBOMSEL_Pos)); // Configure the SMPS BOM
-  }
-  if ((CFG_HW_SMPS == SMPS_ON) || (CFG_HW_SMPS == SMPS_OFF))
-  {
-    MODIFY_REG(PWR->CR5, PWR_CR5_NOSMPS, (CFG_HW_SMPS<<PWR_CR5_NOSMPS_Pos)); // SMPS ON/OFF Configuration
-  }
-  else
-  {
-    MODIFY_REG(PWR->CR5, PWR_CR5_SMPSFBYP, (1<<PWR_CR5_SMPSFBYP_Pos)); // SMPS BYPASS Configuration
-  }
-  MODIFY_REG(PWR->CR5, PWR_CR5_SMPSLPOPEN, (CFG_HW_SMPS_LOW_POWER<<PWR_CR5_SMPSLPOPEN_Pos)); // SMPS configuration during power save
-  
-  /* If Trimming values from engineering in flash locations are not present load default values */
-  if (*(volatile uint32_t*)VALIDITY_LOCATION != VALIDITY_TAG)
-  {
+
+    /* SMPS setup */
+    if ((CFG_HW_SMPS == SMPS_ON) || (CFG_HW_SMPS == SMPS_BYPAPSS)) {
+        while (READ_BIT(PWR->SR2, PWR_SR2_SMPSRDY) != PWR_SR2_SMPSRDY); // Wait until SMPS is ready
+        MODIFY_REG(PWR->CR5, PWR_CR5_SMPSBOMSEL, (CFG_HW_SMPS_BOM << PWR_CR5_SMPSBOMSEL_Pos)); // Configure the SMPS BOM
+    }
+    if ((CFG_HW_SMPS == SMPS_ON) || (CFG_HW_SMPS == SMPS_OFF)) {
+        MODIFY_REG(PWR->CR5, PWR_CR5_NOSMPS, (CFG_HW_SMPS << PWR_CR5_NOSMPS_Pos)); // SMPS ON/OFF Configuration
+    } else {
+        MODIFY_REG(PWR->CR5, PWR_CR5_SMPSFBYP, (1 << PWR_CR5_SMPSFBYP_Pos)); // SMPS BYPASS Configuration
+    }
+    MODIFY_REG(PWR->CR5, PWR_CR5_SMPSLPOPEN, (CFG_HW_SMPS_LOW_POWER << PWR_CR5_SMPSLPOPEN_Pos));
+    // SMPS configuration during power save
+
+    /* If Trimming values from engineering in flash locations are not present load default values */
+    if (*(volatile uint32_t *) VALIDITY_LOCATION != VALIDITY_TAG) {
 #if defined(STM32WB06) || defined(STM32WB07)
-    hsiCalib       = 0x1E;
-    mainRegulator  = 0x08;
-    smpsOutVoltage = 0x03;
-    lsiLpmu        = 0x08;
+        hsiCalib = 0x1E;
+        mainRegulator = 0x08;
+        smpsOutVoltage = 0x03;
+        lsiLpmu = 0x08;
 
-    /* Set Low Speed Internal oscillator LPMU trimming value. */
-    MODIFY_REG(PWR->ENGTRIM, PWR_ENGTRIM_TRIM_LSI_LPMU, ((lsiLpmu << PWR_ENGTRIM_TRIM_LSI_LPMU_Pos) & PWR_ENGTRIM_TRIM_LSI_LPMU));
-    SET_BIT(PWR->ENGTRIM, PWR_ENGTRIM_TRIMLSILPMUEN);
+        /* Set Low Speed Internal oscillator LPMU trimming value. */
+        MODIFY_REG(PWR->ENGTRIM, PWR_ENGTRIM_TRIM_LSI_LPMU,
+                   ((lsiLpmu << PWR_ENGTRIM_TRIM_LSI_LPMU_Pos) & PWR_ENGTRIM_TRIM_LSI_LPMU));
+        SET_BIT(PWR->ENGTRIM, PWR_ENGTRIM_TRIMLSILPMUEN);
 #else
-    hsiCalib       = 0x1F;
-    lsiBw          = 8;
-    mainRegulator  = 0x0A;
-    smpsOutVoltage = 0x03;
+        hsiCalib = 0x1F;
+        lsiBw = 8;
+        mainRegulator = 0x0A;
+        smpsOutVoltage = 0x03;
 
-    /* Low speed internal RC trimming value set by software */
-    MODIFY_REG(RCC->CSSWCR, RCC_CSSWCR_LSISWBW, lsiBw << RCC_CSSWCR_LSISWBW_Pos);
-    SET_BIT(RCC->CSSWCR, RCC_CSSWCR_LSISWTRIMEN);
+        /* Low speed internal RC trimming value set by software */
+        MODIFY_REG(RCC->CSSWCR, RCC_CSSWCR_LSISWBW, lsiBw << RCC_CSSWCR_LSISWBW_Pos);
+        SET_BIT(RCC->CSSWCR, RCC_CSSWCR_LSISWTRIMEN);
 #endif
-    
-    /* Set HSI Calibration Trimming value */
-    MODIFY_REG(RCC->CSSWCR, RCC_CSSWCR_HSITRIMSW, hsiCalib << RCC_CSSWCR_HSITRIMSW_Pos);
-    SET_BIT(RCC->CSSWCR, RCC_CSSWCR_HSISWTRIMEN);
-              
-    /* Set Main Regulator voltage Trimming value */ 
-    MODIFY_REG(PWR->ENGTRIM, PWR_ENGTRIM_TRIM_MR, ((mainRegulator << PWR_ENGTRIM_TRIM_MR_Pos) & PWR_ENGTRIM_TRIM_MR));
-    SET_BIT(PWR->ENGTRIM, PWR_ENGTRIM_TRIMMREN);
 
-    /* Set SMPS output voltage Trimming value */
-    MODIFY_REG(PWR->ENGTRIM, PWR_ENGTRIM_SMPS_TRIM, ((smpsOutVoltage << PWR_ENGTRIM_SMPS_TRIM_Pos) & PWR_ENGTRIM_SMPS_TRIM));
-    SET_BIT(PWR->ENGTRIM, PWR_ENGTRIM_SMPSTRIMEN);    
-  }
+        /* Set HSI Calibration Trimming value */
+        MODIFY_REG(RCC->CSSWCR, RCC_CSSWCR_HSITRIMSW, hsiCalib << RCC_CSSWCR_HSITRIMSW_Pos);
+        SET_BIT(RCC->CSSWCR, RCC_CSSWCR_HSISWTRIMEN);
 
-  /* Set all the interrupt with low priprity */
-  for (i=0; i<32; i++)
-  {
-    NVIC_SetPriority((IRQn_Type)i, IRQ_LOW_PRIORITY);
-  }
-  
-  /* Enable all the irqs */
-  __enable_irq();
+        /* Set Main Regulator voltage Trimming value */
+        MODIFY_REG(PWR->ENGTRIM, PWR_ENGTRIM_TRIM_MR,
+                   ((mainRegulator << PWR_ENGTRIM_TRIM_MR_Pos) & PWR_ENGTRIM_TRIM_MR));
+        SET_BIT(PWR->ENGTRIM, PWR_ENGTRIM_TRIMMREN);
+
+        /* Set SMPS output voltage Trimming value */
+        MODIFY_REG(PWR->ENGTRIM, PWR_ENGTRIM_SMPS_TRIM,
+                   ((smpsOutVoltage << PWR_ENGTRIM_SMPS_TRIM_Pos) & PWR_ENGTRIM_SMPS_TRIM));
+        SET_BIT(PWR->ENGTRIM, PWR_ENGTRIM_SMPSTRIMEN);
+    }
+
+    /* Set all the interrupt with low priprity */
+    for (i = 0; i < 32; i++) {
+        NVIC_SetPriority((IRQn_Type) i, IRQ_LOW_PRIORITY);
+    }
+
+    /* Enable all the irqs */
+    __enable_irq();
 }
 
 /**
@@ -315,40 +318,35 @@ void SystemInit(void)
   * @param  None
   * @retval None
   */
-void SystemCoreClockUpdate(void)
-{
-  uint8_t directHSE_enabled;
-  uint8_t divPrescaler;
+void SystemCoreClockUpdate(void) {
+    uint8_t directHSE_enabled;
+    uint8_t divPrescaler;
 
-  /* Get SYSCLK source HSE or HSI+PLL64MHz */
-  directHSE_enabled = (RCC->CFGR & RCC_CFGR_HSESEL) >> RCC_CFGR_HSESEL_Pos;
+    /* Get SYSCLK source HSE or HSI+PLL64MHz */
+    directHSE_enabled = (RCC->CFGR & RCC_CFGR_HSESEL) >> RCC_CFGR_HSESEL_Pos;
 
 #if defined(STM32WB06) || defined(STM32WB07)
-  /* Get the clock divider */
+    /* Get the clock divider */
     divPrescaler = (RCC->CFGR & RCC_CFGR_CLKSYSDIV) >> RCC_CFGR_CLKSYSDIV_Pos;
 #else
-  /* Get the clock divider */
-  divPrescaler = (RCC->CFGR & RCC_CFGR_CLKSYSDIV_STATUS) >> RCC_CFGR_CLKSYSDIV_STATUS_Pos;
+    /* Get the clock divider */
+    divPrescaler = (RCC->CFGR & RCC_CFGR_CLKSYSDIV_STATUS) >> RCC_CFGR_CLKSYSDIV_STATUS_Pos;
 #endif
 
-  if (directHSE_enabled)
-  {
-    SystemCoreClock = HSE_VALUE >> (divPrescaler - 1U);
-  }
-  else
-  {
-    SystemCoreClock = HSI_VALUE >> divPrescaler;
-  }  
+    if (directHSE_enabled) {
+        SystemCoreClock = HSE_VALUE >> (divPrescaler - 1U);
+    } else {
+        SystemCoreClock = HSI_VALUE >> divPrescaler;
+    }
 }
 
 /**
-  * @brief  Restores the saved CPU state before to enter in power save 
-  *         by popping it from the stack 
+  * @brief  Restores the saved CPU state before to enter in power save
+  *         by popping it from the stack
   * @param  None
   * @retval None
   */
-__WEAK void CPUcontextRestore(void)
-{
+__WEAK void CPUcontextRestore(void) {
 }
 
 /**

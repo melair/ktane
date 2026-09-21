@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    app_conf.h
@@ -16,7 +15,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef APP_CONF_H
@@ -24,9 +22,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32wb0x.h"
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
 
 /**
  * Define to 1 if LSE is used, otherwise set it to 0.
@@ -97,16 +92,8 @@
 #define KTANE_GAP_APPEARANCE_GAMEPAD        (0x03C4)
 #define CFG_GAP_APPEARANCE                  (KTANE_GAP_APPEARANCE_GAMEPAD)
 
-/* USER CODE BEGIN Generic_Parameters */
-
-/* USER CODE END Generic_Parameters */
-
 /**< specific parameters */
 /*****************************************************/
-
-/* USER CODE BEGIN Specific_Parameters */
-
-/* USER CODE END Specific_Parameters */
 
 /******************************************************************************
  * BLE Stack initialization parameters
@@ -327,10 +314,6 @@
                                                         CFG_BLE_ISR1_FIFO_SIZE,\
                                                         CFG_BLE_USER_FIFO_SIZE))
 
-/* USER CODE BEGIN BLE_Stack */
-
-/* USER CODE END BLE_Stack */
-
 /******************************************************************************
  * BLE Stack modularity options
  ******************************************************************************/
@@ -379,29 +362,18 @@
  * Low Power configuration
  */
 #if (CFG_FULL_LOW_POWER == 1)
-  #undef CFG_LPM_SUPPORTED
-  #define CFG_LPM_SUPPORTED      (1)
+#undef CFG_LPM_SUPPORTED
+#define CFG_LPM_SUPPORTED      (1)
 #endif /* CFG_FULL_LOW_POWER */
-
-/* USER CODE BEGIN Low_Power 0 */
-
-/* USER CODE END Low_Power 0 */
 
 /**
  * Supported requester to the MCU Low Power Manager - can be increased up  to 32
  * It list a bit mapping of all user of the Low Power Manager
  */
-typedef enum
-{
-  CFG_LPM_APP,
-  /* USER CODE BEGIN CFG_LPM_Id_t */
+typedef enum {
+ CFG_LPM_APP,
 
-  /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
-
-/* USER CODE BEGIN Low_Power 1 */
-
-/* USER CODE END Low_Power 1 */
 
 /*****************************************************************************
  * Traces
@@ -447,10 +419,6 @@ typedef enum
 #define APP_DBG_MSG(...)
 #endif
 
-/* USER CODE BEGIN Traces */
-
-/* USER CODE END Traces */
-
 /******************************************************************************
  * Sequencer
  ******************************************************************************/
@@ -459,37 +427,23 @@ typedef enum
  * These are the lists of task id registered to the sequencer
  * Each task id shall be in the range [0:31]
  */
-typedef enum
-{
-  CFG_TASK_BLE_STACK,
-  CFG_TASK_VTIMER,
-  CFG_TASK_NVM,
-  /* USER CODE BEGIN CFG_Task_Id_t */
+typedef enum {
+ CFG_TASK_BLE_STACK,
+ CFG_TASK_VTIMER,
+ CFG_TASK_NVM,
 
-  /* USER CODE END CFG_Task_Id_t */
-  CFG_TASK_NBR,  /**< Shall be LAST in the list */
+ CFG_TASK_NBR, /**< Shall be LAST in the list */
 } CFG_Task_Id_t;
-
-/* USER CODE BEGIN DEFINE_TASK */
-
-/* USER CODE END DEFINE_TASK */
 
 /**
  * This is the list of priority required by the application
  * Each Id shall be in the range 0..31
  */
-typedef enum
-{
-  CFG_SEQ_PRIO_0,
-  CFG_SEQ_PRIO_1,
-  /* USER CODE BEGIN CFG_SEQ_Prio_Id_t */
+typedef enum {
+ CFG_SEQ_PRIO_0,
+ CFG_SEQ_PRIO_1,
 
-  /* USER CODE END CFG_SEQ_Prio_Id_t */
-  CFG_SEQ_PRIO_NBR
+ CFG_SEQ_PRIO_NBR
 } CFG_SEQ_Prio_Id_t;
-
-/* USER CODE BEGIN Defines */
-
-/* USER CODE END Defines */
 
 #endif /*APP_CONF_H */

@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    utilities_conf.h
@@ -16,7 +15,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef UTILITIES_CONF_H
@@ -24,6 +22,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -35,14 +34,7 @@ extern "C" {
 /* definition of NULL */
 #include "app_common.h"
 
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
 /* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
-
-/* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 
@@ -58,13 +50,7 @@ extern "C" {
 
 #define T_REG_OFF  0     /*!< Log without bitmask */
 
-/* USER CODE BEGIN EC */
-
-/* USER CODE END EC */
 /* External variables --------------------------------------------------------*/
-/* USER CODE BEGIN EV */
-
-/* USER CODE END EV */
 
 /* Exported macros -----------------------------------------------------------*/
 /**
@@ -137,22 +123,21 @@ extern "C" {
 #define UTIL_ADV_TRACE_UNCHUNK_MODE                                                      /*!< not used */
 #define UTIL_ADV_TRACE_DEBUG(...)                                                        /*!< not used */
 #define UTIL_ADV_TRACE_INIT_CRITICAL_SECTION( )    UTILS_INIT_CRITICAL_SECTION()         /*!< init the critical section in trace feature */
+
 #define UTIL_ADV_TRACE_ENTER_CRITICAL_SECTION( )   UTILS_ENTER_CRITICAL_SECTION()        /*!< enter the critical section in trace feature */
+
 #define UTIL_ADV_TRACE_EXIT_CRITICAL_SECTION( )    UTILS_EXIT_CRITICAL_SECTION()         /*!< exit the critical section in trace feature */
+
 #define UTIL_ADV_TRACE_TMP_BUF_SIZE                (256U)                                /*!< default trace buffer size */
+
 #define UTIL_ADV_TRACE_TMP_MAX_TIMESTMAP_SIZE      (15U)                                 /*!< default trace timestamp size */
+
 #define UTIL_ADV_TRACE_FIFO_SIZE                   (4096U)                               /*!< default trace fifo size */
 #define UTIL_ADV_TRACE_MEMSET8( dest, value, size) UTIL_MEM_set_8((dest),(value),(size)) /*!< memset utilities interface to trace feature */
+
 #define UTIL_ADV_TRACE_VSNPRINTF(...)              vsnprintf(__VA_ARGS__)      /*!< vsnprintf utilities interface to trace feature */
 
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
-
 /* Exported functions prototypes ---------------------------------------------*/
-/* USER CODE BEGIN EFP */
-
-/* USER CODE END EFP */
 
 #ifdef __cplusplus
 }

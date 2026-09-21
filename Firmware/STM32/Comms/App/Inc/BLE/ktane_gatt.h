@@ -42,6 +42,7 @@
 #define KTANE_GATT_CONTROL_RESPONSE_MAX_LEN (CFG_BLE_ATT_MTU_MAX - 3U)
 
 void KTANE_GATT_Init(void);
+
 void KTANE_GATT_OnDisconnected(uint16_t connection_handle);
 
 /* Called for each command request. Applications may override this weak hook. */
@@ -51,7 +52,7 @@ void KTANE_GATT_OnCommandRequest(uint16_t connection_handle,
 
 /* Store and indicate a response to one client. */
 tBleStatus KTANE_GATT_SendControlResponse(uint16_t connection_handle,
-                                           const uint8_t *response,
-                                           uint16_t response_length);
+                                          const uint8_t *response,
+                                          uint16_t response_length);
 
 #endif /* KTANE_GATT_H */

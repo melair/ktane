@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    ble_conf.h
@@ -16,7 +15,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef BLE_CONF_H
@@ -34,9 +32,5 @@
  * One application GATT module owns all KTANE services.
  */
 #define BLE_CFG_MAX_NBR_GATT_EVT_HANDLERS                       (1)
-
-/* USER CODE BEGIN ble_conf_1 */
-
-/* USER CODE END ble_conf_1 */
 
 #endif /*BLE_CONF_H */

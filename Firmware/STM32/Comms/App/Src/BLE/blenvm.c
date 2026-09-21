@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    blenvm.c
@@ -17,7 +16,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -100,20 +98,18 @@ static NVMDB_HandleType sec_gatt_db_h, device_id_db_h, *curr_handle_p;
 
 /* Implementation of the function needed by NVM manager to safely execute Flash
  * operations while radio is active. */
-uint8_t NVMDB_TimeCheck(int32_t time)
-{
-  uint32_t current_time, next_radio_activity_time;
+uint8_t NVMDB_TimeCheck(int32_t time) {
+    uint32_t current_time, next_radio_activity_time;
 
-  current_time = HAL_RADIO_TIMER_GetCurrentSysTime();
+    current_time = HAL_RADIO_TIMER_GetCurrentSysTime();
 
-  if(BLE_STACK_ReadNextRadioActivity(&next_radio_activity_time) == LL_IDLE)
-    return TRUE;
+    if (BLE_STACK_ReadNextRadioActivity(&next_radio_activity_time) == LL_IDLE)
+        return TRUE;
 
-  if((int32_t)(next_radio_activity_time - current_time) > time)
-    return TRUE;
+    if ((int32_t)(next_radio_activity_time - current_time) > time)
+        return TRUE;
 
-  return FALSE;
-
+    return FALSE;
 }
 
 /**
@@ -124,135 +120,107 @@ uint8_t NVMDB_TimeCheck(int32_t time)
  * @{
  */
 
-void BLENVM_Init(void)
-{
-  NVMDB_Init();
+void BLENVM_Init(void) {
+    NVMDB_Init();
 
-  NVMDB_HandleInit(SEC_GATT_BD, &sec_gatt_db_h);
-  NVMDB_HandleInit(DEVICE_ID_DB, &device_id_db_h);
-  curr_handle_p = &sec_gatt_db_h;
+    NVMDB_HandleInit(SEC_GATT_BD, &sec_gatt_db_h);
+    NVMDB_HandleInit(DEVICE_ID_DB, &device_id_db_h);
+    curr_handle_p = &sec_gatt_db_h;
 }
 
 BLEPLAT_NvmStatusTypeDef BLEPLAT_NvmAdd(BLEPLAT_NvmRecordTypeDef Type,
-                                        const uint8_t* pData,
+                                        const uint8_t *pData,
                                         uint16_t Size,
-                                        const uint8_t* pExtraData,
-                                        uint16_t ExtraSize)
-{
-  NVMDB_status_t ret;
+                                        const uint8_t *pExtraData,
+                                        uint16_t ExtraSize) {
+    NVMDB_status_t ret;
 
-  if(Type == BLEPLAT_NVM_REC_DEVICE_ID)
-  {
-    curr_handle_p = &device_id_db_h;
-  }
-  else
-  {
-    curr_handle_p = &sec_gatt_db_h;
-  }
+    if (Type == BLEPLAT_NVM_REC_DEVICE_ID) {
+        curr_handle_p = &device_id_db_h;
+    } else {
+        curr_handle_p = &sec_gatt_db_h;
+    }
 
-  DEBUG_GPIO2_HIGH();
+    DEBUG_GPIO2_HIGH();
 
-  ret = NVMDB_AppendRecord(curr_handle_p, Type, Size, pData, ExtraSize, pExtraData);
+    ret = NVMDB_AppendRecord(curr_handle_p, Type, Size, pData, ExtraSize, pExtraData);
 
-  DEBUG_GPIO2_LOW();
+    DEBUG_GPIO2_LOW();
 
-  if(ret == NVMDB_STATUS_OK)
-  {
-    return BLEPLAT_OK;
-  }
+    if (ret == NVMDB_STATUS_OK) {
+        return BLEPLAT_OK;
+    }
 
-  if(ret == NVMDB_STATUS_FULL_DB)
-  {
-    return BLEPLAT_FULL;
-  }
+    if (ret == NVMDB_STATUS_FULL_DB) {
+        return BLEPLAT_FULL;
+    }
 
-  return BLEPLAT_BUSY;
+    return BLEPLAT_BUSY;
 }
 
 BLEPLAT_NvmStatusTypeDef BLEPLAT_NvmGet(BLEPLAT_NvmSeekModeTypeDef Mode,
                                         BLEPLAT_NvmRecordTypeDef Type,
                                         uint16_t Offset,
-                                        uint8_t* pData,
-                                        uint16_t Size)
-{
-  NVMDB_RecordSizeType size_out;
-  NVMDB_status_t ret;
-  NVMDB_IdType db_id;
+                                        uint8_t *pData,
+                                        uint16_t Size) {
+    NVMDB_RecordSizeType size_out;
+    NVMDB_status_t ret;
+    NVMDB_IdType db_id;
 
-  if(Type == BLEPLAT_NVM_REC_DEVICE_ID)
-  {
-    curr_handle_p = &device_id_db_h;
-    db_id = 1;
-  }
-  else
-  {
-    curr_handle_p = &sec_gatt_db_h;
-    db_id = 0;
-  }
-
-  if(Mode == BLEPLAT_NVM_CURRENT)
-  {
-    ret = NVMDB_ReadCurrentRecord(curr_handle_p, Offset, pData, Size, &size_out);
-  }
-  else
-  {
-    if(Mode == BLEPLAT_NVM_FIRST)
-    {
-      NVMDB_HandleInit(db_id, curr_handle_p);
+    if (Type == BLEPLAT_NVM_REC_DEVICE_ID) {
+        curr_handle_p = &device_id_db_h;
+        db_id = 1;
+    } else {
+        curr_handle_p = &sec_gatt_db_h;
+        db_id = 0;
     }
-    ret = NVMDB_ReadNextRecord(curr_handle_p, Type, Offset, pData, Size, &size_out);
-  }
 
-  if(ret == NVMDB_STATUS_OK)
-  {
-    return BLEPLAT_OK;
-  }
+    if (Mode == BLEPLAT_NVM_CURRENT) {
+        ret = NVMDB_ReadCurrentRecord(curr_handle_p, Offset, pData, Size, &size_out);
+    } else {
+        if (Mode == BLEPLAT_NVM_FIRST) {
+            NVMDB_HandleInit(db_id, curr_handle_p);
+        }
+        ret = NVMDB_ReadNextRecord(curr_handle_p, Type, Offset, pData, Size, &size_out);
+    }
 
-  if(ret == NVMDB_STATUS_END_OF_DB)
-  {
-    return BLEPLAT_EOF;
-  }
+    if (ret == NVMDB_STATUS_OK) {
+        return BLEPLAT_OK;
+    }
 
-  return BLEPLAT_BUSY;
+    if (ret == NVMDB_STATUS_END_OF_DB) {
+        return BLEPLAT_EOF;
+    }
+
+    return BLEPLAT_BUSY;
 }
 
-int BLEPLAT_NvmCompare(uint16_t Offset, const uint8_t* pData, uint16_t Size)
-{
-  int ret;
+int BLEPLAT_NvmCompare(uint16_t Offset, const uint8_t *pData, uint16_t Size) {
+    int ret;
 
-  ret = NVMDB_CompareCurrentRecord(curr_handle_p, Offset, pData, Size);
+    ret = NVMDB_CompareCurrentRecord(curr_handle_p, Offset, pData, Size);
 
-  if(ret == 0)
-  {
-    return BLEPLAT_OK;
-  }
-  else if(ret < 0)
-  {
-    return Size;
-  }
-  else
-  {
-    return BLEPLAT_EOF;
-  }
+    if (ret == 0) {
+        return BLEPLAT_OK;
+    } else if (ret < 0) {
+        return Size;
+    } else {
+        return BLEPLAT_EOF;
+    }
 }
 
-void BLEPLAT_NvmDiscard(BLEPLAT_NvmSeekModeTypeDef Mode)
-{
-  DEBUG_GPIO2_HIGH();
-  if(Mode == BLEPLAT_NVM_CURRENT)
-  {
-    if(curr_handle_p == &device_id_db_h) // Do not allow to erase device ID data.
-    {
-      return;
-    }
-    NVMDB_DeleteRecord(curr_handle_p);
-  }
-  else if(Mode == BLEPLAT_NVM_ALL)
-  {
+void BLEPLAT_NvmDiscard(BLEPLAT_NvmSeekModeTypeDef Mode) {
+    DEBUG_GPIO2_HIGH();
+    if (Mode == BLEPLAT_NVM_CURRENT) {
+        if (curr_handle_p == &device_id_db_h) // Do not allow to erase device ID data.
+        {
+            return;
+        }
+        NVMDB_DeleteRecord(curr_handle_p);
+    } else if (Mode == BLEPLAT_NVM_ALL) {
+        NVMDB_Erase(SEC_GATT_BD);
 
-    NVMDB_Erase(SEC_GATT_BD);
-
-    /* Implementation that does not cause an immediate flash erase.
+        /* Implementation that does not cause an immediate flash erase.
        NVMDB_HandleInit(SEC_GATT_BD, &sec_gatt_db_h);
 
        while(1)
@@ -266,8 +234,8 @@ void BLEPLAT_NvmDiscard(BLEPLAT_NvmSeekModeTypeDef Mode)
        else
         return;
        }*/
-  }
-  DEBUG_GPIO2_LOW();
+    }
+    DEBUG_GPIO2_LOW();
 }
 
 /**
