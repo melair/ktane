@@ -35,7 +35,6 @@ extern "C" {
 #define HAL_MODULE_ENABLED
 /*#define HAL_ADC_MODULE_ENABLED   */
 /*#define HAL_CRC_MODULE_ENABLED   */
-#define HAL_I2C_MODULE_ENABLED
 /*#define HAL_I2S_MODULE_ENABLED   */
 /*#define HAL_IRDA_MODULE_ENABLED   */
 /*#define HAL_IWDG_MODULE_ENABLED   */
@@ -46,7 +45,6 @@ extern "C" {
 #define HAL_RTC_MODULE_ENABLED
 /*#define HAL_SMARTCARD_MODULE_ENABLED   */
 /*#define HAL_SMBUS_MODULE_ENABLED   */
-#define HAL_SPI_MODULE_ENABLED
 #define HAL_TIM_MODULE_ENABLED
 #define HAL_UART_MODULE_ENABLED
 /*#define HAL_USART_MODULE_ENABLED   */
@@ -58,14 +56,12 @@ extern "C" {
 #define HAL_RCC_MODULE_ENABLED
 
 #define USE_HAL_ADC_REGISTER_CALLBACKS       0u
-#define USE_HAL_I2C_REGISTER_CALLBACKS       0u
 #define USE_HAL_IRDA_REGISTER_CALLBACKS      0u
 #define USE_HAL_PKA_REGISTER_CALLBACKS       0u
 #define USE_HAL_RNG_REGISTER_CALLBACKS       0u
 #define USE_HAL_RTC_REGISTER_CALLBACKS       0u
 #define USE_HAL_SMARTCARD_REGISTER_CALLBACKS 0u
 #define USE_HAL_SMBUS_REGISTER_CALLBACKS     0u
-#define USE_HAL_SPI_REGISTER_CALLBACKS       0u
 #define USE_HAL_TIM_REGISTER_CALLBACKS       0u
 #define USE_HAL_UART_REGISTER_CALLBACKS      0u
 #define USE_HAL_USART_REGISTER_CALLBACKS     0u
@@ -144,15 +140,6 @@ extern "C" {
   */
 /* #define USE_FULL_ASSERT    1U */
 
-/* ################## SPI peripheral configuration ########################## */
-
-/* CRC FEATURE: Use to activate CRC feature inside HAL SPI Driver
- * Activated: CRC code is present inside driver
- * Deactivated: CRC code cleaned from driver
- */
-
-#define USE_SPI_CRC                   0U
-
 /* ################ HSE Capacitor tuning configuration ###################### */
 /**
   * @brief Default value of the HSE capacitor tuning.
@@ -209,10 +196,6 @@ extern "C" {
 #include "stm32wb0x_hal_gpio.h"
 #endif /* HAL_GPIO_MODULE_ENABLED */
 
-#ifdef HAL_I2C_MODULE_ENABLED
-#include "stm32wb0x_hal_i2c.h"
-#endif /* HAL_I2C_MODULE_ENABLED */
-
 #ifdef HAL_I2S_MODULE_ENABLED
 #include "stm32wb0x_hal_i2s.h"
 #endif /* HAL_I2S_MODULE_ENABLED */
@@ -260,10 +243,6 @@ extern "C" {
 #ifdef HAL_SMBUS_MODULE_ENABLED
 #include "stm32wb0x_hal_smbus.h"
 #endif /* HAL_SMBUS_MODULE_ENABLED */
-
-#ifdef HAL_SPI_MODULE_ENABLED
-#include "stm32wb0x_hal_spi.h"
-#endif /* HAL_SPI_MODULE_ENABLED */
 
 #ifdef HAL_TIM_MODULE_ENABLED
 #include "stm32wb0x_hal_tim.h"

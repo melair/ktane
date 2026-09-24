@@ -35,8 +35,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-I2C_HandleTypeDef hi2c1;
-
 UART_HandleTypeDef hlpuart1;
 
 PKA_HandleTypeDef hpka;
@@ -44,8 +42,6 @@ PKA_HandleTypeDef hpka;
 RNG_HandleTypeDef hrng;
 
 RTC_HandleTypeDef hrtc;
-
-SPI_HandleTypeDef hspi3;
 
 TIM_HandleTypeDef htim2;
 
@@ -76,15 +72,11 @@ void PeriphCommonClock_Config(void);
 
 static void MX_GPIO_Init(void);
 
-static void MX_I2C1_Init(void);
-
 static void MX_LPUART1_UART_Init(void);
 
 static void MX_RADIO_Init(void);
 
 static void MX_RADIO_TIMER_Init(void);
-
-static void MX_SPI3_Init(void);
 
 static void MX_TIM2_Init(void);
 
@@ -117,11 +109,9 @@ int main(void) {
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_I2C1_Init();
   MX_LPUART1_UART_Init();
   MX_RADIO_Init();
   MX_RADIO_TIMER_Init();
-  MX_SPI3_Init();
   MX_TIM2_Init();
   MX_RNG_Init();
   MX_PKA_Init();
@@ -202,40 +192,6 @@ void PeriphCommonClock_Config(void) {
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
     Error_Handler();
   }
-}
-
-/**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void) {
-
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x00303D5B;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK) {
-    Error_Handler();
-  }
-
-  /** Configure Analogue filter
-  */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK) {
-    Error_Handler();
-  }
-
-  /** Configure Digital filter
-  */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK) {
-    Error_Handler();
-  }
-
 }
 
 /**
@@ -385,33 +341,6 @@ static void MX_RTC_Init(void) {
   sDate.Year = 0x0;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK) {
-    Error_Handler();
-  }
-
-}
-
-/**
-  * @brief SPI3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI3_Init(void) {
-
-  /* SPI3 parameter configuration*/
-  hspi3.Instance = SPI3;
-  hspi3.Init.Mode = SPI_MODE_SLAVE;
-  hspi3.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi3.Init.DataSize = SPI_DATASIZE_4BIT;
-  hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi3.Init.NSS = SPI_NSS_HARD_INPUT;
-  hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi3.Init.CRCPolynomial = 7;
-  hspi3.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi3.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
-  if (HAL_SPI_Init(&hspi3) != HAL_OK) {
     Error_Handler();
   }
 

@@ -42,61 +42,6 @@ void HAL_MspInit(void) {
 }
 
 /**
-  * @brief I2C MSP Initialization
-  * This function configures the hardware resources used in this example
-  * @param hi2c: I2C handle pointer
-  * @retval None
-  */
-void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    if (hi2c->Instance == I2C1) {
-
-        __HAL_RCC_GPIOA_CLK_ENABLE();
-        /**I2C1 GPIO Configuration
-    PA1     ------> I2C1_SDA
-    PA0     ------> I2C1_SCL
-    */
-        GPIO_InitStruct.Pin = GPIO_PIN_1 | GPIO_PIN_0;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-        GPIO_InitStruct.Alternate = GPIO_AF0_I2C1;
-        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-        HAL_PWREx_DisableGPIOPullUp(PWR_GPIO_A, PWR_GPIO_BIT_1 | PWR_GPIO_BIT_0);
-
-        HAL_PWREx_DisableGPIOPullDown(PWR_GPIO_A, PWR_GPIO_BIT_1 | PWR_GPIO_BIT_0);
-
-        /* Peripheral clock enable */
-        __HAL_RCC_I2C1_CLK_ENABLE();
-
-    }
-}
-
-/**
-  * @brief I2C MSP De-Initialization
-  * This function freeze the hardware resources used in this example
-  * @param hi2c: I2C handle pointer
-  * @retval None
-  */
-void HAL_I2C_MspDeInit(I2C_HandleTypeDef *hi2c) {
-    if (hi2c->Instance == I2C1) {
-
-        /* Peripheral clock disable */
-        __HAL_RCC_I2C1_CLK_DISABLE();
-
-        /**I2C1 GPIO Configuration
-    PA1     ------> I2C1_SDA
-    PA0     ------> I2C1_SCL
-    */
-        HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1);
-
-        HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
-
-    }
-}
-
-/**
   * @brief UART MSP Initialization
   * This function configures the hardware resources used in this example
   * @param huart: UART handle pointer
@@ -326,77 +271,6 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef *hrtc) {
 
         /* Peripheral clock disable */
         __HAL_RCC_RTC_CLK_DISABLE();
-
-    }
-}
-
-/**
-  * @brief SPI MSP Initialization
-  * This function configures the hardware resources used in this example
-  * @param hspi: SPI handle pointer
-  * @retval None
-  */
-void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    if (hspi->Instance == SPI3) {
-
-        /* Peripheral clock enable */
-        __HAL_RCC_SPI3_CLK_ENABLE();
-
-        __HAL_RCC_GPIOB_CLK_ENABLE();
-        __HAL_RCC_GPIOA_CLK_ENABLE();
-        /**SPI3 GPIO Configuration
-    PB3     ------> SPI3_SCK
-    PA8     ------> SPI3_MISO
-    PA9     ------> SPI3_NSS
-    PA11     ------> SPI3_MOSI
-    */
-        GPIO_InitStruct.Pin = GPIO_PIN_3;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-        GPIO_InitStruct.Alternate = GPIO_AF4_SPI3;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-        GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_11;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-        GPIO_InitStruct.Alternate = GPIO_AF3_SPI3;
-        HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-        HAL_PWREx_DisableGPIOPullUp(PWR_GPIO_B, PWR_GPIO_BIT_3);
-
-        HAL_PWREx_DisableGPIOPullUp(PWR_GPIO_A, PWR_GPIO_BIT_8 | PWR_GPIO_BIT_9 | PWR_GPIO_BIT_11);
-
-        HAL_PWREx_DisableGPIOPullDown(PWR_GPIO_B, PWR_GPIO_BIT_3);
-
-        HAL_PWREx_DisableGPIOPullDown(PWR_GPIO_A, PWR_GPIO_BIT_8 | PWR_GPIO_BIT_9 | PWR_GPIO_BIT_11);
-
-    }
-}
-
-/**
-  * @brief SPI MSP De-Initialization
-  * This function freeze the hardware resources used in this example
-  * @param hspi: SPI handle pointer
-  * @retval None
-  */
-void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi) {
-    if (hspi->Instance == SPI3) {
-
-        /* Peripheral clock disable */
-        __HAL_RCC_SPI3_CLK_DISABLE();
-
-        /**SPI3 GPIO Configuration
-    PB3     ------> SPI3_SCK
-    PA8     ------> SPI3_MISO
-    PA9     ------> SPI3_NSS
-    PA11     ------> SPI3_MOSI
-    */
-        HAL_GPIO_DeInit(GPIOB, GPIO_PIN_3);
-
-        HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_11);
 
     }
 }

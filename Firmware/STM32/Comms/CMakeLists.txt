@@ -41,10 +41,10 @@ set(COMMS_MCU_SUPPORT_SOURCES
 set(COMMS_HAL_SOURCES
         stm32wb0x_hal_rcc.c stm32wb0x_hal_rcc_ex.c stm32wb0x_hal_flash.c stm32wb0x_hal_flash_ex.c
         stm32wb0x_hal_gpio.c stm32wb0x_hal_dma.c stm32wb0x_hal_pwr.c stm32wb0x_hal_pwr_ex.c
-        stm32wb0x_hal_cortex.c stm32wb0x_hal.c stm32wb0x_hal_i2c.c stm32wb0x_hal_i2c_ex.c
+        stm32wb0x_hal_cortex.c stm32wb0x_hal.c
         stm32wb0x_hal_uart.c stm32wb0x_hal_uart_ex.c stm32wb0x_hal_pka.c stm32wb0x_hal_radio.c
         stm32wb0x_hal_radio_timer.c stm32wb0x_hal_rng.c stm32wb0x_hal_rtc.c stm32wb0x_hal_rtc_ex.c
-        stm32wb0x_hal_spi.c stm32wb0x_hal_spi_ex.c stm32wb0x_hal_tim.c stm32wb0x_hal_tim_ex.c
+        stm32wb0x_hal_tim.c stm32wb0x_hal_tim_ex.c
 )
 list(TRANSFORM COMMS_HAL_SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/")
 set(COMMS_BLE_SOURCES
