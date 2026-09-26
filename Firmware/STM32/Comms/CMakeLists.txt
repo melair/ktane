@@ -29,6 +29,9 @@ set(COMMS_INCLUDE_DIRS
 list(TRANSFORM COMMS_INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 set(COMMS_APP_SOURCES
+        App/Src/sys/mcu_init.c
+        App/Src/sys/hse_calibration.c
+        App/Src/sys/rtc.c
         App/Src/main.c App/Src/app_entry.c App/Src/Debug/usart_if.c
         App/Src/BLE/blenvm.c App/Src/BLE/bleplat.c App/Src/BLE/bleplat_cntr.c
         App/Src/BLE/app_ble.c App/Src/BLE/ktane_gatt.c

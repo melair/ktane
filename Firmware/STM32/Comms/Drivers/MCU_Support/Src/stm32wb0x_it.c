@@ -23,7 +23,6 @@
 #include "stm32wb0x_ll_usart.h"
 /* External variables --------------------------------------------------------*/
 
-extern TIM_HandleTypeDef htim2;
 extern PKA_HandleTypeDef hpka;
 
 /******************************************************************************/
@@ -118,11 +117,4 @@ void RADIO_TXRX_SEQ_IRQHandler(void) {
   */
 void RADIO_RRM_IRQHandler(void) {
     HAL_RADIO_RRM_IRQHandler();
-}
-
-/**
-  * @brief This function handles TIM2 global interrupt.
-  */
-void TIM2_IRQHandler(void) {
-    HAL_TIM_IRQHandler(&htim2);
 }
