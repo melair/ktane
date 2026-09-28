@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 #include "display/epaper/epaper.h"
+#include "input_manager/input_manager.h"
 #include "mode_fsm.h"
+#include "mode/puzzle/whosonfirst/touch.h"
 #include "mode/puzzle/whosonfirst/vfd.h"
 
 #ifdef __cplusplus
@@ -22,6 +24,8 @@ typedef struct {
     bool startup_test_card_started;
     bool epaper_initialized;
     bool epaper_clear_pending;
+    Touch touch;
+    IM_EventQueue touch_queue;
     struct {
         Epaper display;
         uint8_t black[WHOSONFIRST_EPAPER_FRAMEBUFFER_SIZE];

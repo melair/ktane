@@ -66,12 +66,22 @@ static void whosonfirst_init_enter(FSM *fsm) {
     };
     whosonfirst->epaper_initialized = Epaper_Init(&whosonfirst->epaper.display, &epaper_config);
 
+    IM_EventQueue_Clear(&whosonfirst->touch_queue);
+    const Touch_Config touch_config = {
+        .reset = {TOUCH_RESET_Port, TOUCH_RESET_Pin},
+        .interrupt = {TOUCH_INT_Port, TOUCH_INT_Pin},
+        .address = TOUCH_I2C_ADDRESS,
+        .queue = &whosonfirst->touch_queue,
+    };
+    (void) Touch_Init(&whosonfirst->touch, &touch_config);
+
     Mode_SetServiceEnabled(true);
     FSM_Transition(fsm, MODE_FSM_STATE_STARTUP);
 }
 
 static void whosonfirst_always_service(void) {
     VFD_Service(&whosonfirst->vfd);
+    Touch_Service(&whosonfirst->touch);
     if (!whosonfirst->epaper_initialized) {
         return;
     }
@@ -81,15 +91,15 @@ static void whosonfirst_always_service(void) {
     if (whosonfirst->epaper_clear_pending && Epaper_IsReady(&whosonfirst->epaper.display)) {
         Epaper *const display = &whosonfirst->epaper.display;
         Epaper_Fill(display, 0U, 0U, Epaper_Width(display), Epaper_Height(display),
-                    EPAPER_COLOUR_WHITE);
+                    EPAPER_COLOUR_BLACK);
         whosonfirst->epaper_clear_pending = !Epaper_Refresh(display);
     }
 }
 
 static void whosonfirst_startup_enter(FSM *fsm) {
     (void) fsm;
-    (void) VFD_SetCharacters(&whosonfirst->vfd, "Initing!");
-    whosonfirst->startup_message_until_ms = HAL_GetTick() + 30000U;
+    (void) VFD_SetCharacters(&whosonfirst->vfd, "Booting!");
+    whosonfirst->startup_message_until_ms = HAL_GetTick() + 3000U;
     whosonfirst->startup_test_card_started = false;
     whosonfirst->epaper_clear_pending = false;
 }

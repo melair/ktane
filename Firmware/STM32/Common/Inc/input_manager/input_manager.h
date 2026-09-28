@@ -23,6 +23,7 @@ typedef enum {
     IM_EVENT_UP = 1u << 2,
     IM_EVENT_ROTARY_DELTA = 1u << 3,
     IM_EVENT_ANALOGUE = 1u << 4,
+    IM_EVENT_TOUCH = 1u << 5,
 } IM_EventType;
 
 typedef enum {
@@ -39,6 +40,8 @@ typedef struct {
     uint32_t duration_ms;
     int16_t delta;
     uint16_t value;
+    uint16_t x;
+    uint16_t y;
 } IM_Event;
 
 typedef struct {
@@ -134,6 +137,8 @@ void IM_Init(void);
 void IM_Service(void);
 
 bool IM_EventQueue_Read(IM_EventQueue *queue, IM_Event *event);
+
+bool IM_EventQueue_Write(IM_EventQueue *queue, const IM_Event *event);
 
 void IM_EventQueue_Clear(IM_EventQueue *queue);
 

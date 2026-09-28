@@ -47,14 +47,14 @@ static IM_Handle allocate_registration(IM_RegistrationType type) {
     return IM_INVALID_HANDLE;
 }
 
-static void queue_event(IM_EventQueue *queue, const IM_Event *event) {
-    if (queue == NULL) {
-        return;
+bool IM_EventQueue_Write(IM_EventQueue *queue, const IM_Event *event) {
+    if (queue == NULL || event == NULL) {
+        return false;
     }
 
     if (queue->count >= IM_QUEUE_SIZE) {
         queue->dropped++;
-        return;
+        return false;
     }
 
     queue->events[queue->write] = *event;
@@ -65,6 +65,7 @@ static void queue_event(IM_EventQueue *queue, const IM_Event *event) {
     }
 
     queue->count++;
+    return true;
 }
 
 static bool has_elapsed(uint32_t now_ms, uint32_t then_ms, uint32_t interval_ms) {
@@ -101,7 +102,7 @@ static void analogue_value_publish(IM_Handle handle, const IM_AnalogueInputConfi
         .value = value,
     };
 
-    queue_event(config->queue, &event);
+    (void) IM_EventQueue_Write(config->queue, &event);
 }
 
 static void analogue_scan_complete(const IM_AnalogueInputConfig *config, uint32_t now_ms) {
@@ -237,7 +238,7 @@ static void rotary_delta_publish(const IM_RotaryEncoderConfig *config, int16_t d
         .value = 0,
     };
 
-    queue_event(config->queue, &event);
+    (void) IM_EventQueue_Write(config->queue, &event);
 }
 
 static void rotary_service(const IM_RotaryEncoderConfig *config, uint32_t now_ms) {
@@ -296,7 +297,7 @@ static void digital_event_publish(IM_Handle handle, const IM_DigitalInputConfig 
         .value = 0,
     };
 
-    queue_event(config->queue, &event);
+    (void) IM_EventQueue_Write(config->queue, &event);
 }
 
 static void digital_channel_update(IM_Handle handle, const IM_DigitalInputConfig *config,
