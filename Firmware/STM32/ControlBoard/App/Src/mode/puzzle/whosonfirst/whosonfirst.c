@@ -26,7 +26,13 @@
 #define TOUCH_INT_Port GPIO_C6_Port
 #define TOUCH_I2C_ADDRESS 0x38U
 
+#define WHOSONFIRST_STARTUP_BLINK_HALF_PERIOD_MS 250U
+
 static WhosOnFirst_Data *const whosonfirst = &mode_data.mode.whosonfirst;
+
+static bool whosonfirst_startup_blink_is_on(uint32_t now_ms) {
+    return ((now_ms / WHOSONFIRST_STARTUP_BLINK_HALF_PERIOD_MS) & 1U) == 0U;
+}
 
 static void whosonfirst_init_enter(FSM *fsm) {
     const VFD_Config vfd_config = {
@@ -98,13 +104,21 @@ static void whosonfirst_always_service(void) {
 
 static void whosonfirst_startup_enter(FSM *fsm) {
     (void) fsm;
-    (void) VFD_SetCharacters(&whosonfirst->vfd, "Booting!");
-    whosonfirst->startup_message_until_ms = HAL_GetTick() + 3000U;
+    const uint32_t now_ms = HAL_GetTick();
+    whosonfirst->startup_blink_on = !whosonfirst_startup_blink_is_on(now_ms);
+    whosonfirst->startup_message_until_ms = now_ms + 3000U;
     whosonfirst->startup_test_card_started = false;
     whosonfirst->epaper_clear_pending = false;
 }
 
 static void whosonfirst_startup_service(FSM *fsm) {
+    const uint32_t now_ms = HAL_GetTick();
+    const bool blink_on = whosonfirst_startup_blink_is_on(now_ms);
+    if (blink_on != whosonfirst->startup_blink_on) {
+        whosonfirst->startup_blink_on = blink_on;
+        (void) VFD_SetCharacters(&whosonfirst->vfd, blink_on ? "Booting!" : "        ");
+    }
+
     Epaper *const display = &whosonfirst->epaper.display;
     if (whosonfirst->epaper_initialized && !whosonfirst->startup_test_card_started &&
         Epaper_IsReady(display)) {
@@ -112,7 +126,7 @@ static void whosonfirst_startup_service(FSM *fsm) {
         whosonfirst->startup_test_card_started = Epaper_Refresh(display);
     }
 
-    if ((int32_t) (HAL_GetTick() - whosonfirst->startup_message_until_ms) >= 0) {
+    if ((int32_t) (now_ms - whosonfirst->startup_message_until_ms) >= 0) {
         (void) VFD_SetCharacters(&whosonfirst->vfd, "        ");
         FSM_Transition(fsm, MODE_FSM_STATE_IDLE);
     }

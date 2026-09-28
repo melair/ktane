@@ -21,6 +21,7 @@ extern "C" {
 typedef struct {
     VFD vfd;
     uint32_t startup_message_until_ms;
+    bool startup_blink_on;
     bool startup_test_card_started;
     bool epaper_initialized;
     bool epaper_clear_pending;
