@@ -6,6 +6,8 @@
 #include "node_link/protocol.h"
 #include "mode_fsm.h"
 #include "mode/puzzle/simon/simon.h"
+#include "mode/puzzle/cardscan/cardscan.h"
+#include "mode/puzzle/underground/underground.h"
 #include "mode/support/chassis/chassis.h"
 #include "mode/support/timer/timer.h"
 
@@ -37,6 +39,8 @@ extern "C" {
 
 /* Puzzle Modules */
 #define MODE_PUZZLE_SIMON       (MODE_TYPE_PUZZLE | 0x00)
+#define MODE_PUZZLE_CARDSCAN    (MODE_TYPE_PUZZLE | 0x01)
+#define MODE_PUZZLE_UNDERGROUND (MODE_TYPE_PUZZLE | 0x02)
 
 /* Needy Modules */
 
@@ -44,6 +48,8 @@ extern "C" {
 typedef struct {
     union {
         Simon_Data simon;
+        CardScan_Data cardscan;
+        Underground_Data underground;
         Chassis_Data chassis;
         Timer_Data timer;
     } mode;

@@ -116,7 +116,7 @@ int main(void) {
     /* Infinite loop */
     while (1) {
         /* Update periodic tick flags for this service pass. */
-        Tick_Service_Start();
+                Tick_Service_Start();
 
         /* Start accounting time. */
         MCU_Load_Begin();

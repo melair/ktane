@@ -1,6 +1,7 @@
 #include "mode/indicator/indicator.h"
 
 #include "fonts/ostrich_sans.h"
+#include "fonts/render.h"
 #include "mode.h"
 #include "main.h"
 #include "slot.h"
@@ -8,6 +9,10 @@
 #include "sys/spi_config.h"
 
 #include <stddef.h>
+
+static void indicator_set_pixel(void *context, uint16_t x, uint16_t y, uint8_t colour) {
+    Epaper_SetPixel((Epaper *) context, x, y, colour);
+}
 
 #define INDICATOR_TEXT_LENGTH 3U
 #define INDICATOR_TEXT_COUNT  11U
@@ -103,15 +108,15 @@ static void indicator_display_enter(FSM *fsm) {
             indicator_hex_digit(slot),
         };
 
-        Epaper_Text(display, identify_text, sizeof(identify_text), &ostrich_sans_font,
-                    (Epaper_Window) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
-                    EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE_BODY, EPAPER_COLOUR_WHITE);
+        Font_Text(indicator_set_pixel, display, identify_text, sizeof(identify_text), &ostrich_sans_font,
+                    (Font_Bounds) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
+                    FONT_ALIGN_CENTRE, FONT_ALIGN_MIDDLE_BODY, EPAPER_COLOUR_WHITE);
     } else if ((displayed_state->indicator.indicator > 0U) &&
         (displayed_state->indicator.indicator <= INDICATOR_TEXT_COUNT)) {
-        Epaper_Text(display, indicator_text[displayed_state->indicator.indicator - 1U],
+        Font_Text(indicator_set_pixel, display, indicator_text[displayed_state->indicator.indicator - 1U],
                     INDICATOR_TEXT_LENGTH, &ostrich_sans_font,
-                    (Epaper_Window) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
-                    EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE_BODY, EPAPER_COLOUR_WHITE);
+                    (Font_Bounds) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
+                    FONT_ALIGN_CENTRE, FONT_ALIGN_MIDDLE_BODY, EPAPER_COLOUR_WHITE);
     }
 
     indicator->display_refresh_started = Epaper_Refresh(display);

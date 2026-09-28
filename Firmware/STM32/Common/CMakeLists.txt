@@ -12,9 +12,13 @@ target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework/bus/protocol.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/edgework/bus/router.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/edgework/bus/router.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/Src/epaper/epaper.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/epaper/epaper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/display/epaper/epaper.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/display/epaper/epaper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/display/ssd1322/ssd1322.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/display/ssd1322/ssd1322.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fonts/font.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fonts/render.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/fonts/render.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fonts/glyph.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/fsm/fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fsm/fsm.h
@@ -30,6 +34,9 @@ target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/nvm/nvm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/nvm/nvm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/nvm/nvm_internal.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/pwm/pwm.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/pwm/pwm.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/pwm/pwm_platform.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/spi/spi.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/spi/spi.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/spi/spi_platform.h
@@ -49,6 +56,7 @@ target_sources(STM32_Common_STM32H5 INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/input_manager/input_manager_platform_stm32h5.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c/i2c_platform_stm32h5.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/nvm/nvm_platform_stm32h5.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/pwm/pwm_platform_stm32h5.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/spi/spi_platform_stm32h5.c
 )
 target_link_libraries(STM32_Common_STM32H5 INTERFACE

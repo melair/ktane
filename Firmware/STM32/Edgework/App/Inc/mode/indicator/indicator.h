@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "edgework/data.h"
-#include "epaper/epaper.h"
+#include "display/epaper/epaper.h"
 #include "stm32g0xx_hal.h"
 
 typedef struct Mode_Definition Mode_Definition;

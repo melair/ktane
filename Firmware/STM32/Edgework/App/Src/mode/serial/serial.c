@@ -1,6 +1,7 @@
 #include "mode/serial/serial.h"
 
 #include "fonts/anonymous_pro.h"
+#include "fonts/render.h"
 #include "mode.h"
 #include "main.h"
 #include "slot.h"
@@ -9,6 +10,10 @@
 
 #include <stddef.h>
 #include <string.h>
+
+static void serial_set_pixel(void *context, uint16_t x, uint16_t y, uint8_t colour) {
+    Epaper_SetPixel((Epaper *) context, x, y, colour);
+}
 
 #define EPAPER_BUSY_Pin GPIO9_Pin
 #define EPAPER_BUSY_Port GPIO9_Port
@@ -73,9 +78,9 @@ static void serial_display_enter(FSM *fsm) {
 
         Epaper_Fill(display, 0U, 0U, Epaper_Width(display), Epaper_Height(display),
                     EPAPER_COLOUR_WHITE);
-        Epaper_Text(display, identify_text, sizeof(identify_text), &anonymous_pro_font,
-                    (Epaper_Window) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
-                    EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE,
+        Font_Text(serial_set_pixel, display, identify_text, sizeof(identify_text), &anonymous_pro_font,
+                    (Font_Bounds) {0U, 0U, Epaper_Width(display), Epaper_Height(display)},
+                    FONT_ALIGN_CENTRE, FONT_ALIGN_MIDDLE,
                     EPAPER_COLOUR_BLACK);
     } else {
         const uint16_t red_banner = 50U;
@@ -92,11 +97,11 @@ static void serial_display_enter(FSM *fsm) {
                               EPAPER_SPRITE_COMPOSITE_OR);
         }
 
-        Epaper_Text(display, displayed_state->serial.value,
+        Font_Text(serial_set_pixel, display, displayed_state->serial.value,
                     sizeof(displayed_state->serial.value), &anonymous_pro_font,
-                    (Epaper_Window) {0U, red_banner, Epaper_Width(display),
+                    (Font_Bounds) {0U, red_banner, Epaper_Width(display),
                                      Epaper_Height(display) - red_banner},
-                    EPAPER_TEXT_ALIGN_CENTRE, EPAPER_TEXT_ALIGN_MIDDLE,
+                    FONT_ALIGN_CENTRE, FONT_ALIGN_MIDDLE,
                     EPAPER_COLOUR_BLACK);
     }
 

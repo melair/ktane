@@ -8,6 +8,8 @@
 #include "sys/tick.h"
 #include "mode_fsm.h"
 #include "mode/puzzle/simon/simon.h"
+#include "mode/puzzle/cardscan/cardscan.h"
+#include "mode/puzzle/underground/underground.h"
 #include "mode/support/chassis/chassis.h"
 #include "mode/support/timer/timer.h"
 
@@ -43,6 +45,12 @@ void Mode_Init(void) {
     switch (mode.mode) {
         case MODE_PUZZLE_SIMON:
             mode.definition = &simon_mode;
+            break;
+        case MODE_PUZZLE_CARDSCAN:
+            mode.definition = &cardscan_mode;
+            break;
+        case MODE_PUZZLE_UNDERGROUND:
+            mode.definition = &underground_mode;
             break;
         case MODE_SUPPORT_CHASSIS:
             mode.definition = &chassis_mode;

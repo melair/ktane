@@ -32,7 +32,7 @@ static void gpio_configure(const GPIO_PinDef *pin, uint32_t alternate) {
     gpio_init.Pin = pin->pin;
     gpio_init.Mode = GPIO_MODE_AF_PP;
     gpio_init.Pull = GPIO_NOPULL;
-    gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
+    gpio_init.Speed = GPIO_SPEED_FREQ_HIGH;
     gpio_init.Alternate = alternate;
     HAL_GPIO_Init(pin->port, &gpio_init);
 }
@@ -78,7 +78,9 @@ static bool init(const SPI_Hardware *hardware) {
     hspi->Init.MasterSSIdleness = SPI_MASTER_SS_IDLENESS_00CYCLE;
     hspi->Init.MasterInterDataIdleness = SPI_MASTER_INTERDATA_IDLENESS_00CYCLE;
     hspi->Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
-    hspi->Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_DISABLE;
+    /* HAL disables SPI after each DMA transfer. Sequences may still hold CS
+     * low, so retain the clock/data pin states between their transfers. */
+    hspi->Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_ENABLE;
     hspi->Init.IOSwap = SPI_IO_SWAP_DISABLE;
     hspi->Init.ReadyMasterManagement = SPI_RDY_MASTER_MANAGEMENT_INTERNALLY;
     hspi->Init.ReadyPolarity = SPI_RDY_POLARITY_HIGH;
@@ -169,6 +171,13 @@ static bool configure(uint8_t bits, SPI_Baud baud, bool lsb_first, bool cke, boo
     }
 
     SPI_HandleTypeDef *hspi = spi_handle();
+    if (hspi->Init.DataSize == configured_data_size &&
+        hspi->Init.CLKPolarity == (ckp ? SPI_POLARITY_HIGH : SPI_POLARITY_LOW) &&
+        hspi->Init.CLKPhase == (cke ? SPI_PHASE_2EDGE : SPI_PHASE_1EDGE) &&
+        hspi->Init.BaudRatePrescaler == configured_prescaler &&
+        hspi->Init.FirstBit == (lsb_first ? SPI_FIRSTBIT_LSB : SPI_FIRSTBIT_MSB)) {
+        return true;
+    }
     hspi->Init.DataSize = configured_data_size;
     hspi->Init.CLKPolarity = ckp ? SPI_POLARITY_HIGH : SPI_POLARITY_LOW;
     hspi->Init.CLKPhase = cke ? SPI_PHASE_2EDGE : SPI_PHASE_1EDGE;
