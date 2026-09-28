@@ -2,6 +2,7 @@
 #define SIMON_H
 
 #include "input_manager/input_manager.h"
+#include "lamp/lamp.h"
 #include "mode_fsm.h"
 
 #ifdef __cplusplus
@@ -9,6 +10,7 @@ extern "C" {
 #endif
 
 typedef struct {
+    Lamp lamps[4];
     uint8_t startup_lamp_index;
     uint8_t startup_loop_count;
     bool startup_lamp_on;

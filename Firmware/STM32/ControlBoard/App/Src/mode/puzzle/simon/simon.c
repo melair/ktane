@@ -24,10 +24,9 @@
 #define SIMON_RED_LAMP_Pin GPIO_C3_Pin
 #define SIMON_RED_LAMP_Port GPIO_C3_Port
 
-#define SIMON_STARTUP_PULSE_MS 500U
+#define SIMON_STARTUP_PULSE_MS 400U
 #define SIMON_STARTUP_GAP_MS 100U
 #define SIMON_STARTUP_LOOP_COUNT 3U
-#define SIMON_LAMP_ON_DUTY_PERCENT 100U
 #define SIMON_ATTRACT_LAMP_DURATION_MS 1000U
 
 static Simon_Data *const simon = &mode_data.mode.simon;
@@ -45,7 +44,21 @@ static const GPIO_PinDef simon_lamp_pins[] = {
 };
 
 static void simon_lamp_set(const uint8_t lamp_index, const bool enabled) {
-    PWM_SetDuty(&simon_lamp_pins[lamp_index], enabled ? SIMON_LAMP_ON_DUTY_PERCENT : 0U);
+    Lamp_Set(&simon->lamps[lamp_index], enabled);
+}
+
+static void simon_lamps_service(void) {
+    for (uint8_t lamp_index = 0U;
+         lamp_index < sizeof(simon_lamp_pins) / sizeof(simon_lamp_pins[0]);
+         lamp_index++) {
+        Lamp_Service(&simon->lamps[lamp_index]);
+
+        /* Lamp brightness is 0..255; PWM_SetDuty accepts a percentage. */
+        const uint8_t brightness = Lamp_GetPWM(&simon->lamps[lamp_index]);
+        const uint8_t duty_percent =
+            (uint8_t) (((uint32_t) brightness * 100U + UINT8_MAX / 2U) / UINT8_MAX);
+        PWM_SetDuty(&simon_lamp_pins[lamp_index], duty_percent);
+    }
 }
 
 static void simon_lamps_off(void) {
@@ -63,8 +76,10 @@ static void simon_init_enter(FSM *fsm) {
         if (!PWM_Setup(&simon_lamp_pins[lamp_index])) {
             Error_Handler();
         }
+        Lamp_Init(&simon->lamps[lamp_index]);
     }
     simon_lamps_off();
+    simon_lamps_service();
 
     simon->button_queue = (IM_EventQueue){0};
     simon->button_input_state = (IM_DigitalInputState){
@@ -82,8 +97,13 @@ static void simon_init_enter(FSM *fsm) {
         .active_high = false,
     };
     simon->button_handle = IM_RegisterDigital(&simon->button_input_config);
+    Mode_SetServiceEnabled(true);
 
     FSM_Transition(fsm, MODE_FSM_STATE_STARTUP);
+}
+
+static void simon_always_service(void) {
+    simon_lamps_service();
 }
 
 static void simon_startup_enter(FSM *fsm) {
@@ -191,5 +211,5 @@ static Callbacks simon_state_callbacks[MODE_FSM_STATE_COUNT] = {
 
 Mode_Definition simon_mode = {
     .state_callbacks = simon_state_callbacks,
-    .always_service = NULL,
+    .always_service = simon_always_service,
 };

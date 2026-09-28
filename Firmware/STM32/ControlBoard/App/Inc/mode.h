@@ -8,6 +8,7 @@
 #include "mode/puzzle/simon/simon.h"
 #include "mode/puzzle/cardscan/cardscan.h"
 #include "mode/puzzle/underground/underground.h"
+#include "mode/puzzle/whosonfirst/whosonfirst.h"
 #include "mode/support/chassis/chassis.h"
 #include "mode/support/timer/timer.h"
 
@@ -41,6 +42,7 @@ extern "C" {
 #define MODE_PUZZLE_SIMON       (MODE_TYPE_PUZZLE | 0x00)
 #define MODE_PUZZLE_CARDSCAN    (MODE_TYPE_PUZZLE | 0x01)
 #define MODE_PUZZLE_UNDERGROUND (MODE_TYPE_PUZZLE | 0x02)
+#define MODE_PUZZLE_WHOSONFIRST (MODE_TYPE_PUZZLE | 0x03)
 
 /* Needy Modules */
 
@@ -50,6 +52,7 @@ typedef struct {
         Simon_Data simon;
         CardScan_Data cardscan;
         Underground_Data underground;
+        WhosOnFirst_Data whosonfirst;
         Chassis_Data chassis;
         Timer_Data timer;
     } mode;

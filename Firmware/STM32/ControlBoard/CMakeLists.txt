@@ -46,6 +46,8 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/cardscan/cardscan.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/cardscan/pn532.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/underground/underground.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/whosonfirst/whosonfirst.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/whosonfirst/vfd.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/dac.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework/bus.c

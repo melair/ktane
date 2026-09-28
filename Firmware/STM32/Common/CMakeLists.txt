@@ -28,6 +28,8 @@ target_sources(STM32_Common INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/i2c/i2c.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/i2c/i2c.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/i2c/i2c_platform.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/lamp/lamp.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/lamp/lamp.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/node_link/protocol.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/node_link/router.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/node_link/router.h

@@ -10,6 +10,7 @@
 #include "mode/puzzle/simon/simon.h"
 #include "mode/puzzle/cardscan/cardscan.h"
 #include "mode/puzzle/underground/underground.h"
+#include "mode/puzzle/whosonfirst/whosonfirst.h"
 #include "mode/support/chassis/chassis.h"
 #include "mode/support/timer/timer.h"
 
@@ -39,6 +40,8 @@ void Mode_Init(void) {
 
     NVM_Read(&query, 1);
 
+    mode.mode = MODE_PUZZLE_WHOSONFIRST;
+
     mode.definition = NULL;
     mode.service_enabled = false;
 
@@ -51,6 +54,9 @@ void Mode_Init(void) {
             break;
         case MODE_PUZZLE_UNDERGROUND:
             mode.definition = &underground_mode;
+            break;
+        case MODE_PUZZLE_WHOSONFIRST:
+            mode.definition = &whosonfirst_mode;
             break;
         case MODE_SUPPORT_CHASSIS:
             mode.definition = &chassis_mode;

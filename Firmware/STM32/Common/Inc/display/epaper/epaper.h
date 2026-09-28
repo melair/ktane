@@ -40,6 +40,11 @@ typedef struct {
     uint16_t height;
 } Epaper_Window;
 
+typedef enum {
+    EPAPER_CONTROLLER_SSD1680 = 0,
+    EPAPER_CONTROLLER_SSD1683,
+} Epaper_Controller;
+
 typedef struct {
     /* Native controller canvas dimensions. */
     uint16_t width;
@@ -48,6 +53,7 @@ typedef struct {
     Epaper_Window window;
     uint8_t *black_framebuffer;
     uint8_t *red_framebuffer;
+    Epaper_Controller controller;
 
     SPI_Baud baud;
     void *cs_port;

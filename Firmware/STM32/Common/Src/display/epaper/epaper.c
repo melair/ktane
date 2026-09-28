@@ -214,10 +214,17 @@ static void epaper_configure_send_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
     const uint16_t height = epaper->config.height - 1U;
     static const uint8_t data_entry_mode = 0x03U;
-    static const uint8_t border_waveform = 0x05U;
-    static const uint8_t update_control_1[] = {0x00U, 0x80U};
+    static const uint8_t ssd1680_border_waveform = 0x05U;
+    static const uint8_t ssd1680_update_control_1[] = {0x00U, 0x80U};
+    static const uint8_t ssd1683_border_waveform = 0x01U;
+    static const uint8_t ssd1683_update_control_1[] = {0x40U, 0x00U};
     static const uint8_t temperature_sensor = 0x80U;
     static const uint8_t update_control_2 = 0xB1U;
+    const bool is_ssd1683 = epaper->config.controller == EPAPER_CONTROLLER_SSD1683;
+    const uint8_t *const border_waveform =
+        is_ssd1683 ? &ssd1683_border_waveform : &ssd1680_border_waveform;
+    const uint8_t *const update_control_1 =
+        is_ssd1683 ? ssd1683_update_control_1 : ssd1680_update_control_1;
 
     epaper->driver_output_data[0] = (uint8_t) height;
     epaper->driver_output_data[1] = (uint8_t) (height >> 8U);
@@ -249,8 +256,8 @@ static void epaper_configure_send_enter(FSM *fsm) {
         .prepare = dc_command,
     };
     epaper->steps[5U] = (SPI_SequenceStep) {
-        .data = &border_waveform,
-        .size = 1U,
+        .data = border_waveform,
+        .size = sizeof(ssd1680_border_waveform),
         .prepare = dc_data,
     };
     epaper->steps[6U] = (SPI_SequenceStep) {
@@ -260,7 +267,7 @@ static void epaper_configure_send_enter(FSM *fsm) {
     };
     epaper->steps[7U] = (SPI_SequenceStep) {
         .data = update_control_1,
-        .size = sizeof(update_control_1),
+        .size = sizeof(ssd1680_update_control_1),
         .prepare = dc_data,
     };
     epaper->steps[8U] = (SPI_SequenceStep) {
@@ -446,7 +453,8 @@ bool Epaper_Init(Epaper *epaper, const Epaper_Config *config) {
         (config->cs_port == NULL) || (config->cs_pin == 0U) ||
         (config->dc.port == NULL) || (config->dc.pin == 0U) ||
         (config->reset.port == NULL) || (config->reset.pin == 0U) ||
-        (config->busy.port == NULL) || (config->busy.pin == 0U)) {
+        (config->busy.port == NULL) || (config->busy.pin == 0U) ||
+        (config->controller > EPAPER_CONTROLLER_SSD1683)) {
         return false;
     }
 
