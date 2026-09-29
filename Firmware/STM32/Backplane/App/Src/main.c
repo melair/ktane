@@ -1,7 +1,7 @@
 #include "main.h"
 
 #include "backplane.h"
-#include "chassis_bus.h"
+#include "backplane_bus.h"
 #include "i2c/i2c.h"
 #include "input_manager/input_manager.h"
 #include "node_link.h"
@@ -70,7 +70,7 @@ int main(void) {
     if (!I2C_Init()) {
         Error_Handler();
     }
-    if (!ChassisBus_Init()) {
+    if (!BackplaneBus_Init()) {
         Error_Handler();
     }
     if (!NodeLink_Init()) {
@@ -97,8 +97,8 @@ int main(void) {
         Status_Service();
         /* Service I2C. */
         I2C_Service();
-        /* Service the chassis bus. */
-        ChassisBus_Service();
+        /* Service the backplane bus. */
+        BackplaneBus_Service();
         /* Service the front and rear node links. */
         NodeLink_Service();
         /* Service front and rear module power. */

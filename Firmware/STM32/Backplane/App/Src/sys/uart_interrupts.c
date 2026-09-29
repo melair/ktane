@@ -1,4 +1,4 @@
-#include "chassis_bus.h"
+#include "backplane_bus.h"
 #include "node_link.h"
 
 void USART1_IRQHandler(void) {
@@ -6,6 +6,6 @@ void USART1_IRQHandler(void) {
 }
 
 void USART3_4_IRQHandler(void) {
-    ChassisBus_IRQHandler();
+    BackplaneBus_IRQHandler();
     NodeLink_Rear_IRQHandler();
 }
