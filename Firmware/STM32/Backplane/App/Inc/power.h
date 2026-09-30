@@ -63,6 +63,21 @@ uint16_t Power_GetCurrent(Power_ChannelId channel);
 uint8_t Power_GetCurrentLimit(Power_ChannelId channel);
 
 /**
+ * Enable or disable a power channel.
+ *
+ * Enabling is available only at non-chassis locations while the channel is
+ * idle and a module is detected. The default current limit is written before
+ * output is enabled. Disabling cancels a pending activation or transitions an
+ * active or tripped channel to shutdown.
+ *
+ * @param channel Channel to control.
+ * @param enabled true to request power on; false to request power off.
+ * @return true if the request was accepted; false for an invalid channel or
+ *         an enable request that cannot start from the current state.
+ */
+bool Power_SetEnabled(Power_ChannelId channel, bool enabled);
+
+/**
  * Request a new current limit for an active power channel.
  *
  * @param channel Channel to update.

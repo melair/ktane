@@ -2,6 +2,8 @@
 #define NODE_LINK_H
 
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,6 +12,8 @@ extern "C" {
 bool NodeLink_Init(void);
 
 void NodeLink_Service(void);
+
+bool NodeLink_ForwardBackplanePacket(const uint8_t *data, size_t length);
 
 void NodeLink_Front_IRQHandler(void);
 

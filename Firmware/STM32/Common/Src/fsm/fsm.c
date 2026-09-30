@@ -99,3 +99,15 @@ bool FSM_TransitionIn(FSM *fsm, const FSM_StateId new_state_id, const uint32_t d
     fsm->transition_at = HAL_GetTick() + delay_ms;
     return true;
 }
+
+bool FSM_CancelTransition(FSM *fsm) {
+    if ((fsm == NULL) || !fsm->transition_pending ||
+        (fsm->current_id == FSM_INVALID_STATE)) {
+        return false;
+    }
+
+    fsm->transition_id = FSM_INVALID_STATE;
+    fsm->transition_pending = false;
+    fsm->transition_at = 0U;
+    return true;
+}

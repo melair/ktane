@@ -47,4 +47,11 @@ bool FSM_Transition(FSM *fsm, FSM_StateId new_state_id);
 
 bool FSM_TransitionIn(FSM *fsm, FSM_StateId new_state_id, uint32_t delay_ms);
 
+/**
+ * Cancel a transition that has been scheduled but not yet entered.
+ *
+ * @return true if a pending transition was cancelled; false otherwise.
+ */
+bool FSM_CancelTransition(FSM *fsm);
+
 #endif //FSM_H

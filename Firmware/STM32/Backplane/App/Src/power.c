@@ -1,5 +1,6 @@
 #include "power.h"
 
+#include "backplane.h"
 #include "fsm/fsm.h"
 #include "i2c/i2c.h"
 #include "input_manager/input_manager.h"
@@ -10,7 +11,7 @@
 #include <string.h>
 
 #define POWER_INIT_DELAY_MS 10U
-#define POWER_ENABLE_DELAY_MS 500U
+#define POWER_CHASSIS_ENABLE_DELAY_MS 250U
 #define POWER_I2C_RETRY_DELAY_MS 100U
 #define POWER_CURRENT_SCAN_INTERVAL_MS 100U
 #define POWER_CURRENT_AVERAGE_SAMPLE_COUNT 10U
@@ -133,6 +134,7 @@ static Power_Channel power_channels[POWER_CHANNEL_COUNT] = {0};
 static void power_fsm_init_enter(FSM *fsm);
 static void power_fsm_unlock_pot_enter(FSM *fsm);
 static void power_fsm_idle_service(FSM *fsm);
+static void power_fsm_idle_exit(FSM *fsm);
 static void power_fsm_set_current_limit_enter(FSM *fsm);
 static void power_fsm_active_enter(FSM *fsm);
 static void power_fsm_active_service(FSM *fsm);
@@ -152,6 +154,7 @@ static const FSM_State power_fsm_states[POWER_FSM_STATE_COUNT] = {
     },
     [POWER_FSM_STATE_IDLE] = {
         .service = power_fsm_idle_service,
+        .exit = power_fsm_idle_exit,
         .next_mask = FSM_NEXT(POWER_FSM_STATE_SET_CURRENT_LIMIT),
     },
     [POWER_FSM_STATE_SET_CURRENT_LIMIT] = {
@@ -259,9 +262,8 @@ static I2C_Transaction *power_i2c_complete(I2C_Transaction *transaction) {
     } else if (channel->fsm.current_id == POWER_FSM_STATE_SET_CURRENT_LIMIT) {
         channel->current_limit.applied_deciamps = channel->current_limit.writing_deciamps;
         FSM_Transition(&channel->fsm,
-                       power_module_present(channel)
-                           ? POWER_FSM_STATE_ACTIVE
-                           : POWER_FSM_STATE_SHUTDOWN);
+                       power_module_present(channel) ? POWER_FSM_STATE_ACTIVE
+                                                      : POWER_FSM_STATE_SHUTDOWN);
     }
 
     return NULL;
@@ -279,10 +281,17 @@ static void power_fsm_unlock_pot_enter(FSM *fsm) {
 static void power_fsm_idle_service(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
-    if (power_module_present(channel)) {
-        channel->current_limit.requested_deciamps = POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS;
-        FSM_TransitionIn(fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT, POWER_ENABLE_DELAY_MS);
+    if ((Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS) &&
+        power_module_present(channel)) {
+        FSM_TransitionIn(fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT,
+                         POWER_CHASSIS_ENABLE_DELAY_MS);
     }
+}
+
+static void power_fsm_idle_exit(FSM *fsm) {
+    Power_Channel *channel = fsm->context;
+
+    channel->current_limit.requested_deciamps = POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS;
 }
 
 static void power_fsm_set_current_limit_enter(FSM *fsm) {
@@ -437,6 +446,42 @@ uint8_t Power_GetCurrentLimit(const Power_ChannelId channel_id) {
     }
 
     return power_channels[channel_id].current_limit.applied_deciamps;
+}
+
+bool Power_SetEnabled(const Power_ChannelId channel_id, const bool enabled) {
+    if ((unsigned int) channel_id >= POWER_CHANNEL_COUNT) {
+        return false;
+    }
+
+    Power_Channel *channel = &power_channels[channel_id];
+
+    if (enabled) {
+        if ((Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS) ||
+            !power_module_present(channel) ||
+            (channel->fsm.current_id != POWER_FSM_STATE_IDLE) ||
+            channel->fsm.transition_pending) {
+            return false;
+        }
+
+        return FSM_Transition(&channel->fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT);
+    }
+
+    switch (channel->fsm.current_id) {
+        case POWER_FSM_STATE_IDLE:
+            (void) FSM_CancelTransition(&channel->fsm);
+            break;
+
+        case POWER_FSM_STATE_SET_CURRENT_LIMIT:
+        case POWER_FSM_STATE_ACTIVE:
+        case POWER_FSM_STATE_TRIP:
+            (void) FSM_CancelTransition(&channel->fsm);
+            return FSM_Transition(&channel->fsm, POWER_FSM_STATE_SHUTDOWN);
+
+        default:
+            break;
+    }
+
+    return true;
 }
 
 bool Power_SetCurrentLimit(const Power_ChannelId channel_id,

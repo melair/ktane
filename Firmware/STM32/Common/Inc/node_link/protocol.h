@@ -9,7 +9,8 @@
  * minimum wire size for each packet.
  */
 #define NODE_LINK_PROTOCOL_PACKETS(X) \
-    X(NODE_LINK_ANNOUNCEMENT, 0x00U, announcement)
+    X(NODE_LINK_ANNOUNCEMENT, 0x00U, announcement) \
+    X(NODE_LINK_BACKPLANE_BUS, 0xF0U, backplane_bus)
 
 #define NODE_CHASSIS_LOCATION_SLOT_0  0x00U
 #define NODE_CHASSIS_LOCATION_SLOT_1  0x01U
@@ -46,6 +47,10 @@ typedef struct {
             uint8_t chassis_location;
             uint8_t current_limit_deciamps;
         } announcement;
+
+        struct {
+            uint8_t data;
+        } backplane_bus;
     };
 } NodeLink_Packet;
 

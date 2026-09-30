@@ -11,7 +11,8 @@
 #define BACKPLANE_BUS_PROTOCOL_PACKETS(X)             \
     X(BACKPLANE_BUS_INQUIRY, 0x00U, inquiry)          \
     X(BACKPLANE_BUS_STATUS,  0x01U, status)           \
-    X(BACKPLANE_BUS_CONTROL, 0x02U, control)
+    X(BACKPLANE_BUS_SET_ENABLED, 0x02U, set_enabled)  \
+    X(BACKPLANE_BUS_SET_CURRENT_LIMIT, 0x03U, set_current_limit)
 
 #define BACKPLANE_BUS_PROTOCOL_DECLARE_OPCODE(opcode, value, member) opcode = value,
 
@@ -41,9 +42,7 @@ typedef struct {
         struct {
             struct {
                 unsigned _front_rear :1;
-
-                unsigned disabled :1;
-                unsigned output_enabled :1;
+                unsigned enabled :1;
                 unsigned tripped :1;
                 unsigned module_detected :1;
             } flags;
@@ -55,11 +54,17 @@ typedef struct {
         struct {
             struct {
                 unsigned _front_rear :1;
-                unsigned disable :1;
+                unsigned enabled :1;
+            } flags;
+        } set_enabled;
+
+        struct {
+            struct {
+                unsigned _front_rear :1;
             } flags;
 
-            uint8_t current_limit_deciamps;
-        } control;
+            uint8_t deciamps;
+        } set_current_limit;
     };
 } BackplaneBus_Packet;
 

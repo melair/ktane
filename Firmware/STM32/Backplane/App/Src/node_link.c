@@ -1,8 +1,13 @@
 #include "node_link.h"
 
+#include <string.h>
+
 #include "backplane.h"
+#include "backplane_bus.h"
+#include "backplane_bus/protocol.h"
 #include "cobs/cobs.h"
 #include "node_link/protocol.h"
+#include "node_link/router.h"
 #include "power.h"
 #include "sys/gpio.h"
 #include "uart/uart.h"
@@ -14,6 +19,14 @@
 _Static_assert(SIZE_NODE_LINK_ANNOUNCEMENT <= COBS_PACKET_MAX_SIZE,
                "Node link announcement exceeds the maximum COBS packet size");
 
+#define NODE_LINK_ASSERT_BACKPLANE_BUS_PACKET_FITS(opcode, value, member) \
+    _Static_assert(SIZE_##opcode <= (COBS_PACKET_MAX_SIZE - NODE_LINK_SIZE_HEADER), \
+                   #opcode " exceeds the node link encapsulation capacity");
+
+BACKPLANE_BUS_PROTOCOL_PACKETS(NODE_LINK_ASSERT_BACKPLANE_BUS_PACKET_FITS)
+
+#undef NODE_LINK_ASSERT_BACKPLANE_BUS_PACKET_FITS
+
 typedef struct {
     UART_State uart;
     UART_HandleTypeDef uart_handle;
@@ -24,6 +37,17 @@ typedef struct {
 static NodeLink_State front_node_link;
 static NodeLink_State rear_node_link;
 static uint32_t next_announcement_ms;
+
+static void front_node_link_backplane_bus_receive(const NodeLink_Message *message);
+static void rear_node_link_backplane_bus_receive(const NodeLink_Message *message);
+
+static const NodeLink_Router front_node_link_router = {
+    .backplane_bus = front_node_link_backplane_bus_receive,
+};
+
+static const NodeLink_Router rear_node_link_router = {
+    .backplane_bus = rear_node_link_backplane_bus_receive,
+};
 
 static bool time_reached(const uint32_t now_ms, const uint32_t target_ms) {
     return (int32_t) (now_ms - target_ms) >= 0;
@@ -75,8 +99,9 @@ static const UART_Hardware rear_node_link_uart_hardware = {
     .enable_peripheral_clock = rear_node_link_uart_enable_peripheral_clock,
 };
 
-static bool node_link_init(NodeLink_State *node_link, const UART_Hardware *hardware) {
-    COBS_Init(&node_link->cobs, NULL);
+static bool node_link_init(NodeLink_State *node_link, const UART_Hardware *hardware,
+                           COBS_PacketHandler packet_receive) {
+    COBS_Init(&node_link->cobs, packet_receive);
     return UART_Init(&node_link->uart, hardware,
                      node_link->uart_tx_buffer, sizeof(node_link->uart_tx_buffer));
 }
@@ -112,6 +137,58 @@ static void node_link_send_announcement(NodeLink_State *node_link,
     }
 }
 
+static bool node_link_send_backplane_packet(NodeLink_State *node_link,
+                                             const uint8_t *data, const size_t length) {
+    if ((data == NULL) || (length > (COBS_PACKET_MAX_SIZE - NODE_LINK_SIZE_HEADER))) {
+        return false;
+    }
+
+    uint8_t packet[COBS_PACKET_MAX_SIZE];
+    packet[0] = NODE_LINK_BACKPLANE_BUS;
+    memcpy(&packet[NODE_LINK_SIZE_HEADER], data, length);
+
+    uint8_t frame[COBS_FRAME_MAX_SIZE];
+    size_t frame_length;
+    if (!COBS_Encode(packet, length + NODE_LINK_SIZE_HEADER,
+                     frame, sizeof(frame), &frame_length)) {
+        return false;
+    }
+
+    return UART_Queue(&node_link->uart, frame, frame_length);
+}
+
+static void front_node_link_backplane_bus_receive(const NodeLink_Message *message) {
+    if (Backplane_GetLocation() != BACKPLANE_LOCATION_CHASSIS) {
+        return;
+    }
+
+    const uint8_t *const data = (const uint8_t *) message->packet + NODE_LINK_SIZE_HEADER;
+    const size_t length = message->length - NODE_LINK_SIZE_HEADER;
+    BackplaneBus_ProcessPacket(data, length);
+    (void) BackplaneBus_SendPhysical(data, length);
+    (void) node_link_send_backplane_packet(&rear_node_link, data, length);
+}
+
+static void rear_node_link_backplane_bus_receive(const NodeLink_Message *message) {
+    if (Backplane_GetLocation() != BACKPLANE_LOCATION_CHASSIS) {
+        return;
+    }
+
+    const uint8_t *const data = (const uint8_t *) message->packet + NODE_LINK_SIZE_HEADER;
+    const size_t length = message->length - NODE_LINK_SIZE_HEADER;
+    BackplaneBus_ProcessPacket(data, length);
+    (void) BackplaneBus_SendPhysical(data, length);
+    (void) node_link_send_backplane_packet(&front_node_link, data, length);
+}
+
+static void front_node_link_packet_receive(const uint8_t *data, const size_t length) {
+    (void) NodeLinkRouter_Dispatch(&front_node_link_router, data, length);
+}
+
+static void rear_node_link_packet_receive(const uint8_t *data, const size_t length) {
+    (void) NodeLinkRouter_Dispatch(&rear_node_link_router, data, length);
+}
+
 static void front_node_link_uart_receive(const uint8_t *data, size_t length) {
     COBS_Service(&front_node_link.cobs, data, length);
 }
@@ -121,8 +198,10 @@ static void rear_node_link_uart_receive(const uint8_t *data, size_t length) {
 }
 
 bool NodeLink_Init(void) {
-    if (!node_link_init(&front_node_link, &front_node_link_uart_hardware) ||
-        !node_link_init(&rear_node_link, &rear_node_link_uart_hardware)) {
+    if (!node_link_init(&front_node_link, &front_node_link_uart_hardware,
+                        front_node_link_packet_receive) ||
+        !node_link_init(&rear_node_link, &rear_node_link_uart_hardware,
+                        rear_node_link_packet_receive)) {
         return false;
     }
 
@@ -140,6 +219,16 @@ void NodeLink_Service(void) {
         node_link_send_announcement(&front_node_link, POWER_CHANNEL_FRONT);
         node_link_send_announcement(&rear_node_link, POWER_CHANNEL_REAR);
     }
+}
+
+bool NodeLink_ForwardBackplanePacket(const uint8_t *data, const size_t length) {
+    if (Backplane_GetLocation() != BACKPLANE_LOCATION_CHASSIS) {
+        return false;
+    }
+
+    const bool front_queued = node_link_send_backplane_packet(&front_node_link, data, length);
+    const bool rear_queued = node_link_send_backplane_packet(&rear_node_link, data, length);
+    return front_queued && rear_queued;
 }
 
 void NodeLink_Front_IRQHandler(void) {
