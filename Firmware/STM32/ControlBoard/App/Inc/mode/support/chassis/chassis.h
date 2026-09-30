@@ -5,6 +5,7 @@
 #include "mode/support/chassis/dac.h"
 #include "mode/support/chassis/edgework/bus.h"
 #include "mode/support/chassis/edgework/manager.h"
+#include "mode/support/chassis/backplane/manager.h"
 #include "sys/i2s.h"
 
 #ifdef __cplusplus
@@ -15,6 +16,7 @@ typedef struct {
     DAC_Data dac;
     Bus_Data bus;
     Edgework_Data edgework;
+    Backplane_Data backplane;
     AudioData audio;
     int16_t audio_buffer[I2S_AUDIO_BUFFER_SAMPLE_COUNT];
 } Chassis_Data;

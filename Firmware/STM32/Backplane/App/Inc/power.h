@@ -19,6 +19,16 @@ bool Power_Init(void);
 void Power_Service(void);
 
 /**
+ * Select whether module detection can automatically enable power channels.
+ *
+ * Changing this setting does not alter an active or in-progress channel.
+ *
+ * @param locally_managed true to enable automatic module-detect power-up;
+ *        false to require explicit Power_SetEnabled requests.
+ */
+void Power_SetLocallyManaged(bool locally_managed);
+
+/**
  * Check whether a module is connected to a power channel.
  *
  * @param channel Channel to check.
@@ -65,8 +75,8 @@ uint8_t Power_GetCurrentLimit(Power_ChannelId channel);
 /**
  * Enable or disable a power channel.
  *
- * Enabling is available only at non-chassis locations while the channel is
- * idle and a module is detected. The default current limit is written before
+ * Enabling is available only while power is remotely managed, the channel is
+ * idle, and a module is detected. The default current limit is written before
  * output is enabled. Disabling cancels a pending activation or transitions an
  * active or tripped channel to shutdown.
  *

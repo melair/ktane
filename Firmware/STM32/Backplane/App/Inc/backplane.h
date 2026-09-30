@@ -16,7 +16,7 @@ typedef uint8_t BackplaneLocation;
 #define BACKPLANE_LOCATION_3       0x03U
 #define BACKPLANE_LOCATION_4       0x04U
 #define BACKPLANE_LOCATION_5       0x05U
-#define BACKPLANE_LOCATION_CHASSIS 0xfeU
+#define BACKPLANE_LOCATION_CHASSIS 0x06U
 #define BACKPLANE_LOCATION_UNKNOWN 0xffU
 
 bool Backplane_Init(void);

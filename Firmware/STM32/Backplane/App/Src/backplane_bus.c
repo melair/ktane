@@ -11,16 +11,20 @@
 #include "uart/uart_platform.h"
 
 #define BACKPLANE_BUS_TX_FRAME_COUNT 4U
+#define BACKPLANE_BUS_REMOTE_MANAGEMENT_FALLBACK_MS 1000U
 
 static UART_State backplane_bus_uart;
 static UART_HandleTypeDef backplane_bus_uart_handle;
 static COBS_State backplane_bus_cobs;
 static uint8_t backplane_bus_uart_tx_buffer[BACKPLANE_BUS_TX_FRAME_COUNT * COBS_FRAME_MAX_SIZE];
+static uint32_t backplane_bus_remote_management_deadline_ms;
+static bool backplane_bus_inquiry_seen;
+static bool backplane_bus_local_management_enabled;
 
 static void backplane_bus_inquiry_receive(const BackplaneBus_Message *message);
 static void backplane_bus_set_enabled_receive(const BackplaneBus_Message *message);
 static void backplane_bus_set_current_limit_receive(const BackplaneBus_Message *message);
-static void backplane_bus_send_status(uint8_t address, Power_ChannelId channel,
+static void backplane_bus_send_status(Power_ChannelId channel,
                                       bool end_of_response);
 static bool BackplaneBus_Send(const uint8_t *data, size_t length);
 
@@ -30,6 +34,10 @@ static const BackplaneBus_Router backplane_bus_router = {
     .set_enabled = backplane_bus_set_enabled_receive,
     .set_current_limit = backplane_bus_set_current_limit_receive,
 };
+
+static bool backplane_bus_time_reached(const uint32_t now_ms, const uint32_t target_ms) {
+    return (int32_t) (now_ms - target_ms) >= 0;
+}
 
 static bool backplane_bus_uart_configure_clock(void) {
     /* USART3 is clocked directly from PCLK1 on the STM32G070. */
@@ -67,8 +75,13 @@ static void backplane_bus_packet_receive(const uint8_t *data, const size_t lengt
 }
 
 static void backplane_bus_inquiry_receive(const BackplaneBus_Message *message) {
-    backplane_bus_send_status(message->address, POWER_CHANNEL_FRONT, false);
-    backplane_bus_send_status(message->address, POWER_CHANNEL_REAR, true);
+    if (Backplane_GetLocation() != BACKPLANE_LOCATION_CHASSIS) {
+        backplane_bus_inquiry_seen = true;
+        Power_SetLocallyManaged(false);
+    }
+
+    backplane_bus_send_status(POWER_CHANNEL_FRONT, false);
+    backplane_bus_send_status(POWER_CHANNEL_REAR, true);
 }
 
 static void backplane_bus_set_enabled_receive(const BackplaneBus_Message *message) {
@@ -77,7 +90,7 @@ static void backplane_bus_set_enabled_receive(const BackplaneBus_Message *messag
                                         : POWER_CHANNEL_FRONT;
 
     (void) Power_SetEnabled(channel, message->packet->set_enabled.flags.enabled != 0U);
-    backplane_bus_send_status(message->address, channel, true);
+    backplane_bus_send_status(channel, true);
 }
 
 static void backplane_bus_set_current_limit_receive(const BackplaneBus_Message *message) {
@@ -86,15 +99,15 @@ static void backplane_bus_set_current_limit_receive(const BackplaneBus_Message *
                                         : POWER_CHANNEL_FRONT;
 
     (void) Power_SetCurrentLimit(channel, message->packet->set_current_limit.deciamps);
-    backplane_bus_send_status(message->address, channel, true);
+    backplane_bus_send_status(channel, true);
 }
 
-static void backplane_bus_send_status(const uint8_t address, const Power_ChannelId channel,
+static void backplane_bus_send_status(const Power_ChannelId channel,
                                       const bool end_of_response) {
     BackplaneBus_Packet response = {0};
     const bool enabled = Power_IsActive(channel);
 
-    response.header.address = address;
+    response.header.address = Backplane_GetLocation();
     response.header.opcode = BACKPLANE_BUS_STATUS;
     response.header.flags.eor = end_of_response;
     response.status.flags._front_rear = (unsigned int) channel;
@@ -108,17 +121,35 @@ static void backplane_bus_send_status(const uint8_t address, const Power_Channel
 }
 
 void BackplaneBus_ProcessPacket(const uint8_t *data, const size_t length) {
+    const BackplaneBus_Packet *const packet = (const BackplaneBus_Packet *) data;
+    if (packet->header.address != Backplane_GetLocation()) {
+        return;
+    }
+
     (void) BackplaneBusRouter_Dispatch(&backplane_bus_router, data, length);
 }
 
 bool BackplaneBus_Init(void) {
     COBS_Init(&backplane_bus_cobs, backplane_bus_packet_receive);
+    backplane_bus_inquiry_seen = false;
+    backplane_bus_local_management_enabled =
+        Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS;
+    backplane_bus_remote_management_deadline_ms =
+        HAL_GetTick() + BACKPLANE_BUS_REMOTE_MANAGEMENT_FALLBACK_MS;
+
     return UART_Init(&backplane_bus_uart, &backplane_bus_uart_hardware,
                      backplane_bus_uart_tx_buffer, sizeof(backplane_bus_uart_tx_buffer));
 }
 
 void BackplaneBus_Service(void) {
     UART_Service(&backplane_bus_uart, backplane_bus_uart_receive);
+
+    if ((Backplane_GetLocation() != BACKPLANE_LOCATION_CHASSIS) &&
+        !backplane_bus_inquiry_seen && !backplane_bus_local_management_enabled &&
+        backplane_bus_time_reached(HAL_GetTick(), backplane_bus_remote_management_deadline_ms)) {
+        backplane_bus_local_management_enabled = true;
+        Power_SetLocallyManaged(true);
+    }
 }
 
 bool BackplaneBus_SendPhysical(const uint8_t *data, const size_t length) {

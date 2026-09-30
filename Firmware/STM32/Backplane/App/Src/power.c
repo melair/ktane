@@ -130,6 +130,7 @@ static const Power_ChannelConfig power_channel_configs[POWER_CHANNEL_COUNT] = {
 };
 
 static Power_Channel power_channels[POWER_CHANNEL_COUNT] = {0};
+static bool power_locally_managed;
 
 static void power_fsm_init_enter(FSM *fsm);
 static void power_fsm_unlock_pot_enter(FSM *fsm);
@@ -281,10 +282,13 @@ static void power_fsm_unlock_pot_enter(FSM *fsm) {
 static void power_fsm_idle_service(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
-    if ((Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS) &&
-        power_module_present(channel)) {
-        FSM_TransitionIn(fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT,
-                         POWER_CHASSIS_ENABLE_DELAY_MS);
+    if (power_locally_managed && power_module_present(channel)) {
+        if (Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS) {
+            FSM_TransitionIn(fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT,
+                             POWER_CHASSIS_ENABLE_DELAY_MS);
+        } else {
+            FSM_Transition(fsm, POWER_FSM_STATE_SET_CURRENT_LIMIT);
+        }
     }
 }
 
@@ -368,6 +372,8 @@ static void power_channel_gpio_init(const Power_ChannelConfig *config) {
 }
 
 bool Power_Init(void) {
+    power_locally_managed = Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS;
+
     for (size_t i = 0; i < POWER_CHANNEL_COUNT; i++) {
         Power_Channel *channel = &power_channels[i];
         channel->config = &power_channel_configs[i];
@@ -405,6 +411,10 @@ void Power_Service(void) {
     for (size_t i = 0; i < POWER_CHANNEL_COUNT; i++) {
         FSM_Service(&power_channels[i].fsm);
     }
+}
+
+void Power_SetLocallyManaged(const bool locally_managed) {
+    power_locally_managed = locally_managed;
 }
 
 bool Power_IsModuleDetected(const Power_ChannelId channel_id) {
@@ -456,8 +466,7 @@ bool Power_SetEnabled(const Power_ChannelId channel_id, const bool enabled) {
     Power_Channel *channel = &power_channels[channel_id];
 
     if (enabled) {
-        if ((Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS) ||
-            !power_module_present(channel) ||
+        if (!power_module_present(channel) ||
             (channel->fsm.current_id != POWER_FSM_STATE_IDLE) ||
             channel->fsm.transition_pending) {
             return false;

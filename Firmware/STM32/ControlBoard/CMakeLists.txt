@@ -53,6 +53,8 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework/bus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework/manager.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/backplane/bus.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/backplane/manager.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/timer/timer.c
 )
 
