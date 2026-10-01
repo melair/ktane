@@ -1,6 +1,8 @@
 #ifndef BACKPLANE_BUS_PROTOCOL_H
 #define BACKPLANE_BUS_PROTOCOL_H
 
+#include "power/state.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -41,9 +43,8 @@ typedef struct {
 
         struct {
             struct {
-                unsigned _front_rear :1;
-                unsigned enabled :1;
-                unsigned tripped :1;
+                unsigned port :1;
+                unsigned power_state :2;
                 unsigned module_detected :1;
             } flags;
 
@@ -54,14 +55,14 @@ typedef struct {
 
         struct {
             struct {
-                unsigned _front_rear :1;
+                unsigned port :1;
                 unsigned enabled :1;
             } flags;
         } set_enabled;
 
         struct {
             struct {
-                unsigned _front_rear :1;
+                unsigned port :1;
             } flags;
 
             uint8_t deciamps;

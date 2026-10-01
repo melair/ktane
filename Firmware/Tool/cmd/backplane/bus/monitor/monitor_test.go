@@ -94,8 +94,8 @@ func TestFormatPacketTypes(t *testing.T) {
 			name: "front status",
 			raw:  []byte{0x03, 0x01, 0x01, 0x0e, 0x19, 0x34, 0x12, 0x78, 0x56},
 			want: []string{
-				"type=status", "address=0x03", "eor=true", "channel=front",
-				"enabled=true", "tripped=true", "module_detected=true",
+				"type=status", "address=0x03", "eor=true", "port=front",
+				"power_state=tripped(0x03)", "module_detected=true",
 				"current_limit_deciamps=25", "current_milliamps=4660",
 				"peak_current_milliamps=22136",
 			},
@@ -103,12 +103,12 @@ func TestFormatPacketTypes(t *testing.T) {
 		{
 			name: "rear set enabled",
 			raw:  []byte{0x04, 0x02, 0x00, 0x03},
-			want: []string{"type=set_enabled", "channel=rear", "enabled=true"},
+			want: []string{"type=set_enabled", "port=rear", "enabled=true"},
 		},
 		{
 			name: "rear set current limit",
 			raw:  []byte{0x05, 0x03, 0x00, 0x01, 0x2a},
-			want: []string{"type=set_current_limit", "channel=rear", "current_limit_deciamps=42"},
+			want: []string{"type=set_current_limit", "port=rear", "current_limit_deciamps=42"},
 		},
 	}
 
@@ -125,6 +125,24 @@ func TestFormatPacketTypes(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestPowerStateNames(t *testing.T) {
+	tests := []struct {
+		state uint8
+		want  string
+	}{
+		{state: 0x00, want: "idle(0x00)"},
+		{state: 0x01, want: "disabled(0x01)"},
+		{state: 0x02, want: "active(0x02)"},
+		{state: 0x03, want: "tripped(0x03)"},
+	}
+
+	for _, tt := range tests {
+		if got := powerStateName(tt.state); got != tt.want {
+			t.Errorf("powerStateName(0x%02x) = %q, want %q", tt.state, got, tt.want)
+		}
 	}
 }
 

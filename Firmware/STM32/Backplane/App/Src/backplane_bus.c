@@ -92,7 +92,7 @@ static void backplane_bus_inquiry_receive(const BackplaneBus_Message *message) {
 }
 
 static void backplane_bus_set_enabled_receive(const BackplaneBus_Message *message) {
-    const Power_ChannelId channel = message->packet->set_enabled.flags._front_rear
+    const Power_ChannelId channel = message->packet->set_enabled.flags.port
                                         ? POWER_CHANNEL_REAR
                                         : POWER_CHANNEL_FRONT;
 
@@ -101,7 +101,7 @@ static void backplane_bus_set_enabled_receive(const BackplaneBus_Message *messag
 }
 
 static void backplane_bus_set_current_limit_receive(const BackplaneBus_Message *message) {
-    const Power_ChannelId channel = message->packet->set_current_limit.flags._front_rear
+    const Power_ChannelId channel = message->packet->set_current_limit.flags.port
                                         ? POWER_CHANNEL_REAR
                                         : POWER_CHANNEL_FRONT;
 
@@ -112,14 +112,12 @@ static void backplane_bus_set_current_limit_receive(const BackplaneBus_Message *
 static void backplane_bus_send_status(const Power_ChannelId channel,
                                       const bool end_of_response) {
     BackplaneBus_Packet response = {0};
-    const bool enabled = Power_IsActive(channel);
 
     response.header.address = Backplane_GetLocation();
     response.header.opcode = BACKPLANE_BUS_STATUS;
     response.header.flags.eor = end_of_response;
-    response.status.flags._front_rear = (unsigned int) channel;
-    response.status.flags.enabled = enabled;
-    response.status.flags.tripped = Power_IsTripped(channel);
+    response.status.flags.port = (unsigned int) channel;
+    response.status.flags.power_state = (unsigned int) Power_GetState(channel);
     response.status.flags.module_detected = Power_IsModuleDetected(channel);
     response.status.current_limit_deciamps = Power_GetCurrentLimit(channel);
     response.status.current_milliamps = Power_GetCurrent(channel);

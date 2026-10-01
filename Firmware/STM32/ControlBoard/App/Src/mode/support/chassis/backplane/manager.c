@@ -28,7 +28,7 @@ void Backplane_SetPowerBudget(const uint32_t milliamps) {
     for (size_t index = 0U; index < BACKPLANE_CHASSIS_ADDRESS; ++index) {
         for (size_t channel = 0U; channel < BACKPLANE_PORT_COUNT; ++channel) {
             Backplane_PortData *const port = &backplane->backplanes[index].ports[channel];
-            if (port->power_state == BACKPLANE_POWER_WAITING) {
+            if (port->management_state == BACKPLANE_POWER_WAITING) {
                 port->next_power_retry_ms = now_ms;
             }
         }
@@ -45,37 +45,37 @@ bool Backplane_SetModuleEnabled(const uint8_t address, const Backplane_Port chan
     Backplane_PortData *const port = &backplane->backplanes[address].ports[channel];
     const uint32_t now_ms = HAL_GetTick();
     if (!enabled) {
-        switch (port->power_state) {
+        switch (port->management_state) {
             case BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED:
             case BACKPLANE_POWER_ADMIN_DISABLE_PENDING:
             case BACKPLANE_POWER_ADMIN_DISABLED:
                 return true;
             case BACKPLANE_POWER_SHED_PENDING:
-                port->power_state = BACKPLANE_POWER_ADMIN_DISABLE_PENDING;
+                port->management_state = BACKPLANE_POWER_ADMIN_DISABLE_PENDING;
                 break;
             default:
-                port->power_state = (port->flags.active ||
-                                     port->power_state == BACKPLANE_POWER_ENABLE_PENDING ||
-                                     port->power_state == BACKPLANE_POWER_SHED_REQUESTED)
+                port->management_state = (port->channel_state == POWER_STATE_ACTIVE ||
+                                         port->management_state == BACKPLANE_POWER_ENABLE_PENDING ||
+                                         port->management_state == BACKPLANE_POWER_SHED_REQUESTED)
                     ? BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED
                     : BACKPLANE_POWER_ADMIN_DISABLED;
                 port->next_power_retry_ms = now_ms;
                 break;
         }
     } else {
-        switch (port->power_state) {
+        switch (port->management_state) {
             case BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED:
                 /* Cancel an unsent disable unless an enable still needs draining. */
-                port->power_state = port->flags.active ? BACKPLANE_POWER_POWERED
+                port->management_state = port->channel_state == POWER_STATE_ACTIVE ? BACKPLANE_POWER_POWERED
                     : (port->allocated_milliamps > 0U ? BACKPLANE_POWER_SHED_REQUESTED
                        : BACKPLANE_POWER_WAITING);
                 break;
             case BACKPLANE_POWER_ADMIN_DISABLE_PENDING:
-                port->power_state = BACKPLANE_POWER_SHED_PENDING;
+                port->management_state = BACKPLANE_POWER_SHED_PENDING;
                 break;
             case BACKPLANE_POWER_ADMIN_DISABLED:
-                port->power_state = !port->flags.module_detected ? BACKPLANE_POWER_ABSENT
-                    : (port->flags.tripped ? BACKPLANE_POWER_TRIPPED : BACKPLANE_POWER_WAITING);
+                port->management_state = !port->flags.module_detected ? BACKPLANE_POWER_ABSENT
+                    : (port->channel_state == POWER_STATE_TRIPPED ? BACKPLANE_POWER_TRIPPED : BACKPLANE_POWER_WAITING);
                 break;
             default:
                 break;
@@ -91,28 +91,27 @@ void Backplane_StatusReceive(const BackplaneBus_Message *message) {
     }
 
     Backplane_StateData *const board = &backplane->backplanes[message->address];
-    const Backplane_Port channel = message->packet->status.flags._front_rear
+    const Backplane_Port channel = message->packet->status.flags.port
         ? BACKPLANE_PORT_REAR : BACKPLANE_PORT_FRONT;
     Backplane_PortData *const port = &board->ports[channel];
     const uint16_t previous_allocation = port->allocated_milliamps;
     port->flags.module_detected = message->packet->status.flags.module_detected;
-    port->flags.active = message->packet->status.flags.enabled;
-    port->flags.tripped = message->packet->status.flags.tripped;
+    port->channel_state = (Power_State) message->packet->status.flags.power_state;
     port->current_milliamps = message->packet->status.current_milliamps;
     port->peak_current_milliamps = message->packet->status.peak_current_milliamps;
     port->current_limit_deciamps = message->packet->status.current_limit_deciamps;
     board->last_ms = HAL_GetTick();
     board->flags.awake = true;
 
-    if (port->flags.active) {
+    if (port->channel_state == POWER_STATE_ACTIVE) {
         port->allocated_milliamps = (uint16_t) (port->current_limit_deciamps * 100U);
     }
     if (message->address == BACKPLANE_CHASSIS_ADDRESS) {
-        port->allocated_milliamps = port->flags.active ? port->allocated_milliamps : 0U;
-    } else switch (port->power_state) {
+        port->allocated_milliamps = port->channel_state == POWER_STATE_ACTIVE ? port->allocated_milliamps : 0U;
+    } else switch (port->management_state) {
         case BACKPLANE_POWER_ADMIN_DISABLED:
-            if (port->flags.active) {
-                port->power_state = BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED;
+            if (port->channel_state == POWER_STATE_ACTIVE) {
+                port->management_state = BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED;
                 port->next_power_retry_ms = board->last_ms;
             }
             break;
@@ -121,44 +120,44 @@ void Backplane_StatusReceive(const BackplaneBus_Message *message) {
             /* An off status may precede an in-flight enable; send disable first. */
             break;
         case BACKPLANE_POWER_ADMIN_DISABLE_PENDING:
-            if (!port->flags.active) {
+            if (port->channel_state != POWER_STATE_ACTIVE) {
                 port->allocated_milliamps = 0U;
-                port->power_state = BACKPLANE_POWER_ADMIN_DISABLED;
+                port->management_state = BACKPLANE_POWER_ADMIN_DISABLED;
             }
             break;
         case BACKPLANE_POWER_SHED_PENDING:
-            if (!port->flags.active) {
+            if (port->channel_state != POWER_STATE_ACTIVE) {
                 port->allocated_milliamps = 0U;
-                port->power_state = !port->flags.module_detected ? BACKPLANE_POWER_ABSENT
-                    : (port->flags.tripped ? BACKPLANE_POWER_TRIPPED : BACKPLANE_POWER_WAITING);
+                port->management_state = !port->flags.module_detected ? BACKPLANE_POWER_ABSENT
+                    : (port->channel_state == POWER_STATE_TRIPPED ? BACKPLANE_POWER_TRIPPED : BACKPLANE_POWER_WAITING);
                 port->next_power_retry_ms = board->last_ms + BACKPLANE_POWER_RETRY_MS;
             }
             break;
         case BACKPLANE_POWER_ENABLE_PENDING:
             if (!port->flags.module_detected) {
-                port->power_state = BACKPLANE_POWER_SHED_REQUESTED;
+                port->management_state = BACKPLANE_POWER_SHED_REQUESTED;
                 port->next_power_retry_ms = board->last_ms;
-            } else if (port->flags.active) {
-                port->power_state = BACKPLANE_POWER_POWERED;
-            } else if (port->flags.tripped) {
+            } else if (port->channel_state == POWER_STATE_ACTIVE) {
+                port->management_state = BACKPLANE_POWER_POWERED;
+            } else if (port->channel_state == POWER_STATE_TRIPPED) {
                 port->allocated_milliamps = 0U;
-                port->power_state = BACKPLANE_POWER_TRIPPED;
+                port->management_state = BACKPLANE_POWER_TRIPPED;
             }
             break;
         default:
-            if (!port->flags.active) {
+            if (port->channel_state != POWER_STATE_ACTIVE) {
                 port->allocated_milliamps = 0U;
             }
             if (!port->flags.module_detected) {
-                port->power_state = port->flags.active ? BACKPLANE_POWER_SHED_REQUESTED
+                port->management_state = port->channel_state == POWER_STATE_ACTIVE ? BACKPLANE_POWER_SHED_REQUESTED
                     : BACKPLANE_POWER_ABSENT;
                 port->next_power_retry_ms = board->last_ms;
-            } else if (port->flags.tripped || port->power_state == BACKPLANE_POWER_TRIPPED) {
-                port->power_state = BACKPLANE_POWER_TRIPPED;
-            } else if (port->flags.active) {
-                port->power_state = BACKPLANE_POWER_POWERED;
-            } else if (port->power_state != BACKPLANE_POWER_WAITING) {
-                port->power_state = BACKPLANE_POWER_WAITING;
+            } else if (port->channel_state == POWER_STATE_TRIPPED || port->management_state == BACKPLANE_POWER_TRIPPED) {
+                port->management_state = BACKPLANE_POWER_TRIPPED;
+            } else if (port->channel_state == POWER_STATE_ACTIVE) {
+                port->management_state = BACKPLANE_POWER_POWERED;
+            } else if (port->management_state != BACKPLANE_POWER_WAITING) {
+                port->management_state = BACKPLANE_POWER_WAITING;
                 port->next_power_retry_ms = board->last_ms;
             }
             break;
@@ -168,7 +167,7 @@ void Backplane_StatusReceive(const BackplaneBus_Message *message) {
         for (size_t index = 0U; index < BACKPLANE_CHASSIS_ADDRESS; ++index) {
             for (size_t other_channel = 0U; other_channel < BACKPLANE_PORT_COUNT; ++other_channel) {
                 Backplane_PortData *const waiting = &backplane->backplanes[index].ports[other_channel];
-                if (waiting->power_state == BACKPLANE_POWER_WAITING) {
+                if (waiting->management_state == BACKPLANE_POWER_WAITING) {
                     waiting->next_power_retry_ms = board->last_ms;
                 }
             }
@@ -201,7 +200,7 @@ bool Backplane_QueueCommand(const BackplaneBus_Packet *packet, const size_t leng
     }
     if (packet->header.opcode == BACKPLANE_BUS_SET_ENABLED) {
         return Backplane_SetModuleEnabled(packet->header.address,
-            packet->set_enabled.flags._front_rear ? BACKPLANE_PORT_REAR : BACKPLANE_PORT_FRONT,
+            packet->set_enabled.flags.port ? BACKPLANE_PORT_REAR : BACKPLANE_PORT_FRONT,
             packet->set_enabled.flags.enabled != 0U);
     }
     if (backplane->command_count >= BACKPLANE_COMMAND_QUEUE_SIZE) {
@@ -255,7 +254,7 @@ void Backplane_Service(void) {
         for (size_t channel = 0U; channel < BACKPLANE_PORT_COUNT; ++channel) {
             const Backplane_PortData *const port = &board->ports[channel];
             allocated_ma += port->allocated_milliamps;
-            switch (port->power_state) {
+            switch (port->management_state) {
                 case BACKPLANE_POWER_SHED_REQUESTED:
                 case BACKPLANE_POWER_SHED_PENDING:
                 case BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED:
@@ -274,7 +273,7 @@ void Backplane_Service(void) {
         for (size_t index = 0U; index < BACKPLANE_CHASSIS_ADDRESS; ++index) {
             for (size_t channel = 0U; channel < BACKPLANE_PORT_COUNT; ++channel) {
                 Backplane_PortData *const port = &backplane->backplanes[index].ports[channel];
-                switch (port->power_state) {
+                switch (port->management_state) {
                     case BACKPLANE_POWER_SHED_REQUESTED:
                     case BACKPLANE_POWER_SHED_PENDING:
                     case BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED:
@@ -293,7 +292,7 @@ void Backplane_Service(void) {
             break; /* Only protected chassis allocations remain. */
         }
         remaining_ma -= largest->allocated_milliamps;
-        largest->power_state = BACKPLANE_POWER_SHED_REQUESTED;
+        largest->management_state = BACKPLANE_POWER_SHED_REQUESTED;
         largest->next_power_retry_ms = now_ms;
     }
 
@@ -304,8 +303,8 @@ void Backplane_Service(void) {
         }
         for (size_t channel = 0U; channel < BACKPLANE_PORT_COUNT; ++channel) {
             Backplane_PortData *const port = &board->ports[channel];
-            if ((port->power_state != BACKPLANE_POWER_WAITING) ||
-                !port->flags.module_detected || port->flags.tripped ||
+            if ((port->management_state != BACKPLANE_POWER_WAITING) ||
+                !port->flags.module_detected || port->channel_state == POWER_STATE_TRIPPED ||
                 (int32_t) (now_ms - port->next_power_retry_ms) < 0) {
                 continue;
             }
@@ -313,7 +312,7 @@ void Backplane_Service(void) {
                 (backplane->power_budget_milliamps - allocated_ma >= BACKPLANE_STARTUP_ALLOCATION_MA)) {
                 port->allocated_milliamps = BACKPLANE_STARTUP_ALLOCATION_MA;
                 allocated_ma += BACKPLANE_STARTUP_ALLOCATION_MA;
-                port->power_state = BACKPLANE_POWER_ENABLE_PENDING;
+                port->management_state = BACKPLANE_POWER_ENABLE_PENDING;
             } else {
                 port->next_power_retry_ms = now_ms + BACKPLANE_POWER_RETRY_MS;
             }
@@ -344,7 +343,7 @@ void Backplane_Service(void) {
             for (size_t channel = 0U; channel < BACKPLANE_PORT_COUNT; ++channel) {
                 Backplane_PortData *const port = &board->ports[channel];
                 unsigned int priority;
-                switch (port->power_state) {
+                switch (port->management_state) {
                     case BACKPLANE_POWER_SHED_REQUESTED:
                     case BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED:
                         priority = 0U;
@@ -377,14 +376,14 @@ void Backplane_Service(void) {
             BackplaneBus_Packet packet = {0};
             packet.header.address = selected_address;
             packet.header.opcode = BACKPLANE_BUS_SET_ENABLED;
-            packet.set_enabled.flags._front_rear = selected_channel == BACKPLANE_PORT_REAR;
-            packet.set_enabled.flags.enabled = selected->power_state == BACKPLANE_POWER_ENABLE_PENDING;
+            packet.set_enabled.flags.port = selected_channel == BACKPLANE_PORT_REAR;
+            packet.set_enabled.flags.enabled = selected->management_state == BACKPLANE_POWER_ENABLE_PENDING;
             if (BackplaneBus_Send(&packet, SIZE_BACKPLANE_BUS_SET_ENABLED)) {
                 selected->next_power_retry_ms = now_ms + BACKPLANE_POWER_RETRY_MS;
-                if (selected->power_state == BACKPLANE_POWER_SHED_REQUESTED) {
-                    selected->power_state = BACKPLANE_POWER_SHED_PENDING;
-                } else if (selected->power_state == BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED) {
-                    selected->power_state = BACKPLANE_POWER_ADMIN_DISABLE_PENDING;
+                if (selected->management_state == BACKPLANE_POWER_SHED_REQUESTED) {
+                    selected->management_state = BACKPLANE_POWER_SHED_PENDING;
+                } else if (selected->management_state == BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED) {
+                    selected->management_state = BACKPLANE_POWER_ADMIN_DISABLE_PENDING;
                 }
                 backplane->next_send_ms = now_ms + BACKPLANE_POLL_INTERVAL_MS;
             }

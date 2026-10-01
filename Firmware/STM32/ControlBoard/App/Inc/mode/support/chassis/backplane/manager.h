@@ -35,14 +35,13 @@ typedef struct {
     uint16_t current_milliamps;
     uint16_t peak_current_milliamps;
     uint8_t current_limit_deciamps;
-    Backplane_PowerState power_state;
+    Power_State channel_state;
+    Backplane_PowerState management_state;
     /* Includes startup reservations and power awaiting confirmed shutdown. */
     uint16_t allocated_milliamps;
     uint32_t next_power_retry_ms;
     struct {
         unsigned module_detected :1;
-        unsigned active :1;
-        unsigned tripped :1;
     } flags;
 } Backplane_PortData;
 

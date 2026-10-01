@@ -1,6 +1,8 @@
 #ifndef POWER_H
 #define POWER_H
 
+#include "power/state.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -38,22 +40,17 @@ void Power_SetLocallyManaged(bool locally_managed);
 bool Power_IsModuleDetected(Power_ChannelId channel);
 
 /**
- * Check whether a power channel output is enabled.
+ * Get the observable status of a power channel.
+ *
+ * TRIPPED takes precedence over ACTIVE. Otherwise, module detection selects
+ * DISABLED (present) or IDLE (absent), including during initialization and
+ * initial current-limit programming. Live current-limit updates remain ACTIVE.
+ * DISABLED does not prevent automatic startup when locally managed.
  *
  * @param channel Channel to check.
- * @return true if the channel's eFuse output is enabled; false otherwise or
- *         if the channel is invalid.
+ * @return Channel status, or IDLE for an invalid channel.
  */
-bool Power_IsActive(Power_ChannelId channel);
-
-/**
- * Check whether a power channel is in the tripped state.
- *
- * @param channel Channel to check.
- * @return true if the channel is tripped; false otherwise or if the channel
- *         is invalid.
- */
-bool Power_IsTripped(Power_ChannelId channel);
+Power_State Power_GetState(Power_ChannelId channel);
 
 /**
  * Get the measured current draw for an active power channel.
@@ -87,10 +84,12 @@ uint8_t Power_GetCurrentLimit(Power_ChannelId channel);
 /**
  * Enable or disable a power channel.
  *
- * Enabling is available only while power is remotely managed, the channel is
- * idle, and a module is detected. The default current limit is written before
- * output is enabled. Disabling cancels a pending activation or transitions an
- * active or tripped channel to shutdown.
+ * Enabling is available in either management mode while the sequencing FSM is
+ * idle with no pending transition and a module is detected.
+ * The default current limit is written before output is enabled.
+ * Disabling cancels a pending activation or transitions an
+ * active or tripped channel to shutdown. Disabling does not persistently
+ * inhibit automatic startup when locally managed.
  *
  * @param channel Channel to control.
  * @param enabled true to request power on; false to request power off.

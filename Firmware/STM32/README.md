@@ -26,6 +26,17 @@ Build products are written below `build/Debug` and `build/Release`, separated by
 board. Each board keeps its own sources, HAL/CMSIS includes, MCU flags, and linker
 script; only the common `arm-none-eabi` compiler selection is centralised.
 
+## Backplane power status
+
+Channel status uses the shared `Power_State` enum: `IDLE` means output off with
+no module detected, `DISABLED` means output off with a module detected, `ACTIVE`
+means the eFuse output is commanded on, and `TRIPPED` means a fault is latched.
+`DISABLED` does not inhibit automatic startup in local management mode.
+
+Bus status carries this enum in the two bits previously used for `enabled` and
+`tripped`. The packet size is unchanged, but the encoding is incompatible with
+older firmware. Update Backplane and ControlBoard firmware together.
+
 ## STM32CubeMX
 
 **The original project was generated with STM32CubeMX, however it must never be updated with it again.**

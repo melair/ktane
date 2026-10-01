@@ -260,9 +260,8 @@ func formatPacket(packet backplanePacket) string {
 	case 0x01:
 		flags := packet.payload[0]
 		fields = append(fields,
-			fmt.Sprintf("channel=%s", channelName(flags)),
-			fmt.Sprintf("enabled=%t", flags&0x02 != 0),
-			fmt.Sprintf("tripped=%t", flags&0x04 != 0),
+			fmt.Sprintf("port=%s", portName(flags)),
+			fmt.Sprintf("power_state=%s", powerStateName((flags>>1)&0x03)),
 			fmt.Sprintf("module_detected=%t", flags&0x08 != 0),
 			fmt.Sprintf("current_limit_deciamps=%d", packet.payload[1]),
 			fmt.Sprintf("current_milliamps=%d", binary.LittleEndian.Uint16(packet.payload[2:4])),
@@ -271,12 +270,12 @@ func formatPacket(packet backplanePacket) string {
 	case 0x02:
 		flags := packet.payload[0]
 		fields = append(fields,
-			fmt.Sprintf("channel=%s", channelName(flags)),
+			fmt.Sprintf("port=%s", portName(flags)),
 			fmt.Sprintf("enabled=%t", flags&0x02 != 0),
 		)
 	case 0x03:
 		fields = append(fields,
-			fmt.Sprintf("channel=%s", channelName(packet.payload[0])),
+			fmt.Sprintf("port=%s", portName(packet.payload[0])),
 			fmt.Sprintf("current_limit_deciamps=%d", packet.payload[1]),
 		)
 	default:
@@ -288,9 +287,24 @@ func formatPacket(packet backplanePacket) string {
 	return strings.Join(fields, " ")
 }
 
-func channelName(flags uint8) string {
+func portName(flags uint8) string {
 	if flags&0x01 != 0 {
 		return "rear"
 	}
 	return "front"
+}
+
+func powerStateName(state uint8) string {
+	switch state {
+	case 0x00:
+		return "idle(0x00)"
+	case 0x01:
+		return "disabled(0x01)"
+	case 0x02:
+		return "active(0x02)"
+	case 0x03:
+		return "tripped(0x03)"
+	default:
+		return fmt.Sprintf("0x%02x", state)
+	}
 }

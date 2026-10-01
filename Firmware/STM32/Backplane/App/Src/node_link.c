@@ -172,9 +172,9 @@ static void front_node_link_backplane_bus_receive(const NodeLink_Message *messag
 
     const uint8_t *const data = (const uint8_t *) message->packet + NODE_LINK_SIZE_HEADER;
     const size_t length = message->length - NODE_LINK_SIZE_HEADER;
-    BackplaneBus_ProcessPacket(data, length);
     (void) BackplaneBus_SendPhysical(data, length);
     (void) node_link_send_backplane_packet(&rear_node_link, data, length);
+    BackplaneBus_ProcessPacket(data, length);
 }
 
 static void rear_node_link_backplane_bus_receive(const NodeLink_Message *message) {
@@ -184,9 +184,9 @@ static void rear_node_link_backplane_bus_receive(const NodeLink_Message *message
 
     const uint8_t *const data = (const uint8_t *) message->packet + NODE_LINK_SIZE_HEADER;
     const size_t length = message->length - NODE_LINK_SIZE_HEADER;
-    BackplaneBus_ProcessPacket(data, length);
     (void) BackplaneBus_SendPhysical(data, length);
     (void) node_link_send_backplane_packet(&front_node_link, data, length);
+    BackplaneBus_ProcessPacket(data, length);
 }
 
 static void front_node_link_packet_receive(const uint8_t *data, const size_t length) {

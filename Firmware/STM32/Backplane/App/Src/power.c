@@ -70,7 +70,7 @@ typedef struct {
     I2C_Transaction transaction;
     uint8_t tx_data[2];
     Power_CurrentLimit current_limit;
-    bool output_active;
+    bool output_enabled;
     Power_Current current;
     IM_EventQueue current_event_queue;
     IM_AnalogueChannelState current_channel;
@@ -193,7 +193,7 @@ static bool power_efuse_faulted(const Power_Channel *channel) {
 }
 
 static void power_efuse_enable(Power_Channel *channel, const bool enabled) {
-    channel->output_active = enabled;
+    channel->output_enabled = enabled;
     HAL_GPIO_WritePin(channel->config->efuse_enable.port,
                       channel->config->efuse_enable.pin,
                       enabled ? GPIO_PIN_RESET : GPIO_PIN_SET);
@@ -318,7 +318,7 @@ static void power_fsm_active_enter(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
     /* Current-limit updates re-enter ACTIVE without disabling the output. */
-    if (!channel->output_active) {
+    if (!channel->output_enabled) {
         channel->current.peak_a = 0.0f;
     }
     channel->current.average_a = 0.0f;
@@ -434,14 +434,20 @@ bool Power_IsModuleDetected(const Power_ChannelId channel_id) {
            power_module_present(&power_channels[channel_id]);
 }
 
-bool Power_IsActive(const Power_ChannelId channel_id) {
-    return ((unsigned int) channel_id < POWER_CHANNEL_COUNT) &&
-           power_channels[channel_id].output_active;
-}
+Power_State Power_GetState(const Power_ChannelId channel_id) {
+    if ((unsigned int) channel_id >= POWER_CHANNEL_COUNT) {
+        return POWER_STATE_IDLE;
+    }
 
-bool Power_IsTripped(const Power_ChannelId channel_id) {
-    return ((unsigned int) channel_id < POWER_CHANNEL_COUNT) &&
-           (power_channels[channel_id].fsm.current_id == POWER_FSM_STATE_TRIP);
+    const Power_Channel *channel = &power_channels[channel_id];
+    if (channel->fsm.current_id == POWER_FSM_STATE_TRIP) {
+        return POWER_STATE_TRIPPED;
+    }
+    if (channel->output_enabled) {
+        return POWER_STATE_ACTIVE;
+    }
+
+    return power_module_present(channel) ? POWER_STATE_DISABLED : POWER_STATE_IDLE;
 }
 
 static uint16_t power_current_to_milliamps(const float current_a) {
@@ -458,7 +464,7 @@ static uint16_t power_current_to_milliamps(const float current_a) {
 
 uint16_t Power_GetCurrent(const Power_ChannelId channel_id) {
     if (((unsigned int) channel_id >= POWER_CHANNEL_COUNT) ||
-        !power_channels[channel_id].output_active) {
+        !power_channels[channel_id].output_enabled) {
         return 0U;
     }
 
@@ -526,7 +532,7 @@ bool Power_SetCurrentLimit(const Power_ChannelId channel_id,
     }
 
     Power_Channel *channel = &power_channels[channel_id];
-    if (!channel->output_active) {
+    if (!channel->output_enabled) {
         return false;
     }
 
