@@ -28,6 +28,8 @@ struct UART_Hardware {
 
     bool (*configure_clock)(void);
     void (*enable_peripheral_clock)(void);
+    // Optional: reset the receiver's parser after buffered RX loss, in Service.
+    void (*rx_error_handler)(void);
 };
 
 #endif //UART_PLATFORM_H

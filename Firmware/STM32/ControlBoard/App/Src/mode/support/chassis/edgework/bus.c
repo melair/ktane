@@ -54,7 +54,7 @@ bool Bus_Init(void) {
 
     COBS_Init(&state->cobs, edgework_bus_packet_receive);
     return UART_Init(&state->uart, &hardware,
-                     state->uart_tx_buffer, sizeof(state->uart_tx_buffer));
+                     state->uart_tx_buffer, sizeof(state->uart_tx_buffer), NULL, 0U);
 }
 
 void Bus_Service(void) {

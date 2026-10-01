@@ -65,6 +65,18 @@ bool Power_IsTripped(Power_ChannelId channel);
 uint16_t Power_GetCurrent(Power_ChannelId channel);
 
 /**
+ * Get the highest individual current sample for the current enablement.
+ *
+ * The peak survives a trip and current-limit changes. It is cleared when
+ * shutdown executes and when a fresh enablement starts.
+ *
+ * @param channel Channel to read.
+ * @return Peak current draw in milliamps, or 0 for an invalid channel or
+ *         when no sample has been recorded since activation or shutdown.
+ */
+uint16_t Power_GetPeakCurrent(Power_ChannelId channel);
+
+/**
  * Get the applied current limit for a power channel.
  *
  * @param channel Channel to read.

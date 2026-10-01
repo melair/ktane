@@ -49,6 +49,7 @@ typedef struct {
 
             uint8_t current_limit_deciamps;
             uint16_t current_milliamps;
+            uint16_t peak_current_milliamps;
         } status;
 
         struct {

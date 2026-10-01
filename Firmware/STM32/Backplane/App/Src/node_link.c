@@ -36,6 +36,7 @@ typedef struct {
 
 static NodeLink_State front_node_link;
 static NodeLink_State rear_node_link;
+static uint8_t rear_node_link_rx_ring[UART_RX_RING_DEFAULT_CAPACITY];
 static uint32_t next_announcement_ms;
 
 static void front_node_link_backplane_bus_receive(const NodeLink_Message *message);
@@ -71,6 +72,10 @@ static void rear_node_link_uart_enable_peripheral_clock(void) {
     __HAL_RCC_USART4_CLK_ENABLE();
 }
 
+static void rear_node_link_uart_error(void) {
+    COBS_Init(&rear_node_link.cobs, rear_node_link.cobs.packet_handler);
+}
+
 static const UART_Hardware front_node_link_uart_hardware = {
     .uart_instance = USART1,
     .uart_handle = &front_node_link.uart_handle,
@@ -97,13 +102,16 @@ static const UART_Hardware rear_node_link_uart_hardware = {
     .irq_priority = 1U,
     .configure_clock = rear_node_link_uart_configure_clock,
     .enable_peripheral_clock = rear_node_link_uart_enable_peripheral_clock,
+    .rx_error_handler = rear_node_link_uart_error,
 };
 
 static bool node_link_init(NodeLink_State *node_link, const UART_Hardware *hardware,
-                           COBS_PacketHandler packet_receive) {
+                           COBS_PacketHandler packet_receive,
+                           uint8_t *rx_ring, size_t rx_capacity) {
     COBS_Init(&node_link->cobs, packet_receive);
     return UART_Init(&node_link->uart, hardware,
-                     node_link->uart_tx_buffer, sizeof(node_link->uart_tx_buffer));
+                     node_link->uart_tx_buffer, sizeof(node_link->uart_tx_buffer),
+                     rx_ring, rx_capacity);
 }
 
 static uint8_t node_link_chassis_location(const Power_ChannelId channel_id) {
@@ -199,9 +207,10 @@ static void rear_node_link_uart_receive(const uint8_t *data, size_t length) {
 
 bool NodeLink_Init(void) {
     if (!node_link_init(&front_node_link, &front_node_link_uart_hardware,
-                        front_node_link_packet_receive) ||
+                        front_node_link_packet_receive, NULL, 0U) ||
         !node_link_init(&rear_node_link, &rear_node_link_uart_hardware,
-                        rear_node_link_packet_receive)) {
+                        rear_node_link_packet_receive,
+                        rear_node_link_rx_ring, sizeof(rear_node_link_rx_ring))) {
         return false;
     }
 

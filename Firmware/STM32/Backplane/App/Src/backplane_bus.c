@@ -17,6 +17,7 @@ static UART_State backplane_bus_uart;
 static UART_HandleTypeDef backplane_bus_uart_handle;
 static COBS_State backplane_bus_cobs;
 static uint8_t backplane_bus_uart_tx_buffer[BACKPLANE_BUS_TX_FRAME_COUNT * COBS_FRAME_MAX_SIZE];
+static uint8_t backplane_bus_uart_rx_ring[UART_RX_RING_DEFAULT_CAPACITY];
 static uint32_t backplane_bus_remote_management_deadline_ms;
 static bool backplane_bus_inquiry_seen;
 static bool backplane_bus_local_management_enabled;
@@ -48,6 +49,10 @@ static void backplane_bus_uart_enable_peripheral_clock(void) {
     __HAL_RCC_USART3_CLK_ENABLE();
 }
 
+static void backplane_bus_uart_error(void) {
+    COBS_Init(&backplane_bus_cobs, backplane_bus_cobs.packet_handler);
+}
+
 static const UART_Hardware backplane_bus_uart_hardware = {
     .uart_instance = USART3,
     .uart_handle = &backplane_bus_uart_handle,
@@ -63,6 +68,7 @@ static const UART_Hardware backplane_bus_uart_hardware = {
     .irq_priority = 1U,
     .configure_clock = backplane_bus_uart_configure_clock,
     .enable_peripheral_clock = backplane_bus_uart_enable_peripheral_clock,
+    .rx_error_handler = backplane_bus_uart_error,
 };
 
 static void backplane_bus_uart_receive(const uint8_t *data, size_t length) {
@@ -70,6 +76,7 @@ static void backplane_bus_uart_receive(const uint8_t *data, size_t length) {
 }
 
 static void backplane_bus_packet_receive(const uint8_t *data, const size_t length) {
+
     (void) NodeLink_ForwardBackplanePacket(data, length);
     BackplaneBus_ProcessPacket(data, length);
 }
@@ -116,6 +123,7 @@ static void backplane_bus_send_status(const Power_ChannelId channel,
     response.status.flags.module_detected = Power_IsModuleDetected(channel);
     response.status.current_limit_deciamps = Power_GetCurrentLimit(channel);
     response.status.current_milliamps = Power_GetCurrent(channel);
+    response.status.peak_current_milliamps = Power_GetPeakCurrent(channel);
 
     (void) BackplaneBus_Send((const uint8_t *) &response, SIZE_BACKPLANE_BUS_STATUS);
 }
@@ -138,7 +146,8 @@ bool BackplaneBus_Init(void) {
         HAL_GetTick() + BACKPLANE_BUS_REMOTE_MANAGEMENT_FALLBACK_MS;
 
     return UART_Init(&backplane_bus_uart, &backplane_bus_uart_hardware,
-                     backplane_bus_uart_tx_buffer, sizeof(backplane_bus_uart_tx_buffer));
+                     backplane_bus_uart_tx_buffer, sizeof(backplane_bus_uart_tx_buffer),
+                     backplane_bus_uart_rx_ring, sizeof(backplane_bus_uart_rx_ring));
 }
 
 void BackplaneBus_Service(void) {

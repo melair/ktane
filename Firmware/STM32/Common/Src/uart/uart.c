@@ -83,9 +83,10 @@ static bool hardware_init(UART_State *uart, const UART_Hardware *hardware) {
                                                              0U, 0U);
 
     if ((init_status != HAL_OK) ||
-        (HAL_UARTEx_SetTxFifoThreshold(huart, UART_TXFIFO_THRESHOLD_1_2) != HAL_OK) ||
-        (HAL_UARTEx_SetRxFifoThreshold(huart, UART_RXFIFO_THRESHOLD_1_2) != HAL_OK) ||
-        (HAL_UARTEx_EnableFifoMode(huart) != HAL_OK)) {
+        ((uart->rx_state == UART_RX_FIFO) &&
+         ((HAL_UARTEx_SetTxFifoThreshold(huart, UART_TXFIFO_THRESHOLD_1_2) != HAL_OK) ||
+          (HAL_UARTEx_SetRxFifoThreshold(huart, UART_RXFIFO_THRESHOLD_1_2) != HAL_OK) ||
+          (HAL_UARTEx_EnableFifoMode(huart) != HAL_OK)))) {
         uart->platform_handle = NULL;
         return false;
     }
@@ -96,7 +97,11 @@ static bool hardware_init(UART_State *uart, const UART_Hardware *hardware) {
     __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_PEF | UART_CLEAR_FEF | UART_CLEAR_NEF | UART_CLEAR_OREF |
                                  UART_CLEAR_IDLEF);
     __HAL_UART_ENABLE_IT(huart, UART_IT_ERR);
-    __HAL_UART_ENABLE_IT(huart, UART_IT_RXFT);
+    if (uart->rx_state == UART_RX_FIFO) {
+        __HAL_UART_ENABLE_IT(huart, UART_IT_RXFT);
+    } else {
+        __HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
+    }
     __HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
     __HAL_UART_DISABLE_IT(huart, UART_IT_TXFNF);
     return true;
@@ -131,10 +136,11 @@ static void enable_rx_interrupts(UART_State *uart, bool enable) {
 }
 
 static void enable_tx_interrupt(UART_State *uart, bool enable) {
+    const uint32_t interrupt = uart->rx_state == UART_RX_FIFO ? UART_IT_TXFNF : UART_IT_TXE;
     if (enable) {
-        __HAL_UART_ENABLE_IT(uart_handle(uart), UART_IT_TXFNF);
+        __HAL_UART_ENABLE_IT(uart_handle(uart), interrupt);
     } else {
-        __HAL_UART_DISABLE_IT(uart_handle(uart), UART_IT_TXFNF);
+        __HAL_UART_DISABLE_IT(uart_handle(uart), interrupt);
     }
 }
 
@@ -172,14 +178,24 @@ static void fill_tx(UART_State *uart) {
 }
 
 bool UART_Init(UART_State *uart, const UART_Hardware *hardware,
-               uint8_t *tx_buffer, size_t tx_capacity) {
-    if ((uart == NULL) || (hardware == NULL) || (tx_buffer == NULL) || (tx_capacity == 0U)) {
+               uint8_t *tx_buffer, size_t tx_capacity,
+               uint8_t *rx_ring, size_t rx_capacity) {
+    if ((uart == NULL) || !hardware_valid(hardware) ||
+        (tx_buffer == NULL) || (tx_capacity == 0U)) {
+        return false;
+    }
+    const bool fifo = IS_UART_FIFO_INSTANCE(hardware->uart_instance);
+    if (!fifo && ((rx_ring == NULL) || (rx_capacity == 0U))) {
         return false;
     }
 
     memset(uart, 0, sizeof(*uart));
     uart->tx_buffer = tx_buffer;
     uart->tx_capacity = tx_capacity;
+    uart->rx_state = fifo ? UART_RX_FIFO : UART_RX_BUFFERED;
+    uart->rx_error_handler = hardware->rx_error_handler;
+    uart->rx_ring = rx_ring;
+    uart->rx_capacity = rx_capacity;
 
     return hardware_init(uart, hardware);
 }
@@ -189,8 +205,38 @@ void UART_Service(UART_State *uart, UART_RxHandler rx_handler) {
         return;
     }
 
-    if (uart->rx_pending || rx_ready(uart)) {
-        drain_rx(uart, rx_handler);
+    if (uart->rx_state == UART_RX_FIFO) {
+        if (uart->rx_pending || rx_ready(uart)) {
+            drain_rx(uart, rx_handler);
+        }
+    } else {
+        size_t length = 0U;
+        /* Only copying/resetting the ring is protected, never parser callbacks. */
+        const uint32_t primask = __get_PRIMASK();
+        __disable_irq();
+        const bool lost = uart->rx_state == UART_RX_BUFFERED_ERROR;
+        if (lost) {
+            uart->rx_head = 0U;
+            uart->rx_tail = 0U;
+            uart->rx_count = 0U;
+            uart->rx_state = UART_RX_BUFFERED;
+        } else {
+            while ((length < UART_RX_BUFFER_SIZE) && (length < uart->rx_count)) {
+                uart->rx_buffer[length++] = uart->rx_ring[uart->rx_tail];
+                if (++uart->rx_tail == uart->rx_capacity) {
+                    uart->rx_tail = 0U;
+                }
+            }
+            uart->rx_count -= length;
+        }
+        __set_PRIMASK(primask);
+        if (lost) {
+            if (uart->rx_error_handler != NULL) {
+                uart->rx_error_handler();
+            }
+        } else if ((length > 0U) && (rx_handler != NULL)) {
+            rx_handler(uart->rx_buffer, length);
+        }
     }
 
     if (uart->tx_pending || ((uart->tx_count > 0U) && tx_ready(uart))) {
@@ -225,16 +271,38 @@ void UART_IRQHandler(UART_State *uart) {
 
     if ((flags & (UART_FLAG_PE | UART_FLAG_FE | UART_FLAG_NE | UART_FLAG_ORE)) != 0U) {
         __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_PEF | UART_CLEAR_FEF | UART_CLEAR_NEF | UART_CLEAR_OREF);
-        uart->rx_pending = true;
+        if (uart->rx_state == UART_RX_FIFO) {
+            uart->rx_pending = true;
+        } else {
+            uart->rx_state = UART_RX_BUFFERED_ERROR;
+        }
     }
 
     if ((flags & UART_FLAG_IDLE) != 0U) {
         __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
-        uart->rx_pending = true;
-        enable_rx_interrupts(uart, false);
+        if (uart->rx_state == UART_RX_FIFO) {
+            uart->rx_pending = true;
+            enable_rx_interrupts(uart, false);
+        }
     }
 
-    if ((flags & UART_FLAG_RXFT) != 0U) {
+    if (uart->rx_state != UART_RX_FIFO) {
+        while (rx_ready(uart)) {
+            const uint8_t value = read_byte(uart);
+            if (uart->rx_state == UART_RX_BUFFERED_ERROR) {
+                continue;
+            }
+            if (uart->rx_count == uart->rx_capacity) {
+                uart->rx_state = UART_RX_BUFFERED_ERROR;
+                continue;
+            }
+            uart->rx_ring[uart->rx_head] = value;
+            if (++uart->rx_head == uart->rx_capacity) {
+                uart->rx_head = 0U;
+            }
+            uart->rx_count++;
+        }
+    } else if ((flags & UART_FLAG_RXFT) != 0U) {
         uart->rx_pending = true;
         enable_rx_interrupts(uart, false);
     }

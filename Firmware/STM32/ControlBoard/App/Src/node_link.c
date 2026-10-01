@@ -74,7 +74,7 @@ static void node_link_packet_receive(const uint8_t *data, const size_t length) {
 bool NodeLink_Init(void) {
     COBS_Init(&node_link_cobs, node_link_packet_receive);
     return UART_Init(&node_link_uart, &node_link_uart_hardware,
-                     node_link_uart_tx_buffer, sizeof(node_link_uart_tx_buffer));
+                     node_link_uart_tx_buffer, sizeof(node_link_uart_tx_buffer), NULL, 0U);
 }
 
 void NodeLink_Service(void) {

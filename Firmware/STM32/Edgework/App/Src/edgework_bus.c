@@ -119,7 +119,7 @@ static void edgework_bus_packet_receive(const uint8_t *data, const size_t length
 bool EdgeworkBus_Init(void) {
     COBS_Init(&edgework_bus_cobs, edgework_bus_packet_receive);
     return UART_Init(&edgework_bus_uart, &edgework_bus_uart_hardware,
-                     edgework_bus_uart_tx_buffer, sizeof(edgework_bus_uart_tx_buffer));
+                     edgework_bus_uart_tx_buffer, sizeof(edgework_bus_uart_tx_buffer), NULL, 0U);
 }
 
 void EdgeworkBus_Service(void) {

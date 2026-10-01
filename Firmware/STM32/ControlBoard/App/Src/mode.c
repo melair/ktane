@@ -40,8 +40,6 @@ void Mode_Init(void) {
 
     NVM_Read(&query, 1);
 
-    mode.mode = MODE_PUZZLE_WHOSONFIRST;
-
     mode.definition = NULL;
     mode.service_enabled = false;
 

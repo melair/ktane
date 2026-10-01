@@ -57,6 +57,7 @@ typedef struct {
 
 typedef struct {
     float average_a;
+    float peak_a;
     float samples_a[POWER_CURRENT_AVERAGE_SAMPLE_COUNT];
     float sum_a;
     uint8_t sample_index;
@@ -217,6 +218,10 @@ static void power_current_service(Power_Channel *channel) {
         if ((event.event == IM_EVENT_ANALOGUE) && (event.channel == 0U)) {
             const float current_a = power_current_from_adc(channel, event.value);
 
+            if (current_a > channel->current.peak_a) {
+                channel->current.peak_a = current_a;
+            }
+
             if (channel->current.sample_count == POWER_CURRENT_AVERAGE_SAMPLE_COUNT) {
                 channel->current.sum_a -=
                     channel->current.samples_a[channel->current.sample_index];
@@ -312,6 +317,10 @@ static void power_fsm_set_current_limit_enter(FSM *fsm) {
 static void power_fsm_active_enter(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
+    /* Current-limit updates re-enter ACTIVE without disabling the output. */
+    if (!channel->output_active) {
+        channel->current.peak_a = 0.0f;
+    }
     channel->current.average_a = 0.0f;
     channel->current.sum_a = 0.0f;
     channel->current.sample_index = 0U;
@@ -346,7 +355,10 @@ static void power_fsm_trip_service(FSM *fsm) {
 }
 
 static void power_fsm_shutdown_enter(FSM *fsm) {
-    power_efuse_enable(fsm->context, false);
+    Power_Channel *channel = fsm->context;
+
+    power_efuse_enable(channel, false);
+    channel->current.peak_a = 0.0f;
     FSM_Transition(fsm, POWER_FSM_STATE_IDLE);
 }
 
@@ -432,22 +444,33 @@ bool Power_IsTripped(const Power_ChannelId channel_id) {
            (power_channels[channel_id].fsm.current_id == POWER_FSM_STATE_TRIP);
 }
 
+static uint16_t power_current_to_milliamps(const float current_a) {
+    const float current_ma = current_a * 1000.0f;
+    if (!(current_ma > 0.0f)) {
+        return 0U;
+    }
+    if (current_ma >= (float) UINT16_MAX) {
+        return UINT16_MAX;
+    }
+
+    return (uint16_t) (current_ma + 0.5f);
+}
+
 uint16_t Power_GetCurrent(const Power_ChannelId channel_id) {
     if (((unsigned int) channel_id >= POWER_CHANNEL_COUNT) ||
         !power_channels[channel_id].output_active) {
         return 0U;
     }
 
-    const float averaged_current_ma =
-        power_channels[channel_id].current.average_a * 1000.0f;
-    if (!(averaged_current_ma > 0.0f)) {
+    return power_current_to_milliamps(power_channels[channel_id].current.average_a);
+}
+
+uint16_t Power_GetPeakCurrent(const Power_ChannelId channel_id) {
+    if ((unsigned int) channel_id >= POWER_CHANNEL_COUNT) {
         return 0U;
     }
-    if (averaged_current_ma >= (float) UINT16_MAX) {
-        return UINT16_MAX;
-    }
 
-    return (uint16_t) (averaged_current_ma + 0.5f);
+    return power_current_to_milliamps(power_channels[channel_id].current.peak_a);
 }
 
 uint8_t Power_GetCurrentLimit(const Power_ChannelId channel_id) {
