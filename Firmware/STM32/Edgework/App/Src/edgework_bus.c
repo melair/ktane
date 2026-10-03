@@ -35,6 +35,7 @@ static void edgework_bus_inquiry_receive(const EdgeworkBus_Message *message) {
     EdgeworkBus_Packet response = {0};
     response.header.address = message->address;
     response.header.opcode = EDGEWORK_BUS_STATUS;
+    response.header.flags.eor = true;
     response.status.mode = Mode_Get();
     response.status.data = Mode_State();
     response.status.state = Mode_FSMState();

@@ -9,6 +9,7 @@ extern "C" {
 
 #define BACKPLANE_COUNT 7U
 #define BACKPLANE_COMMAND_QUEUE_SIZE 16U
+#define BACKPLANE_INQUIRY_INTERVAL_MS 30U
 #define BACKPLANE_CHASSIS_ADDRESS 6U
 #define BACKPLANE_DEFAULT_POWER_BUDGET_MA 3000U
 
@@ -39,6 +40,7 @@ typedef struct {
     Backplane_PowerState management_state;
     /* Includes startup reservations and power awaiting confirmed shutdown. */
     uint16_t allocated_milliamps;
+    /* Power state machine retry deadline, advanced on successful enqueue. */
     uint32_t next_power_retry_ms;
     struct {
         unsigned module_detected :1;
@@ -66,6 +68,7 @@ typedef struct {
     uint8_t command_count;
     uint32_t next_send_ms;
     uint32_t next_inquiry_ms;
+    bool eor_received;
     uint32_t power_budget_milliamps;
     Backplane_Command command_queue[BACKPLANE_COMMAND_QUEUE_SIZE];
     Backplane_StateData backplanes[BACKPLANE_COUNT];

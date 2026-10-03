@@ -6,8 +6,7 @@
 
 #include <string.h>
 
-#define BACKPLANE_POLL_INTERVAL_MS 25U
-#define BACKPLANE_BUSY_INQUIRY_INTERVAL_MS 50U
+#define BACKPLANE_SEND_INTERVAL_MS 25U
 #define BACKPLANE_STATUS_TIMEOUT_MS 1500U
 #define BACKPLANE_POWER_RETRY_MS 250U
 #define BACKPLANE_STARTUP_ALLOCATION_MA 200U
@@ -88,6 +87,10 @@ bool Backplane_SetModuleEnabled(const uint8_t address, const Backplane_Port chan
 void Backplane_StatusReceive(const BackplaneBus_Message *message) {
     if (message->address >= BACKPLANE_COUNT) {
         return;
+    }
+
+    if (message->packet->header.flags.eor) {
+        backplane->eor_received = true;
     }
 
     Backplane_StateData *const board = &backplane->backplanes[message->address];
@@ -175,6 +178,20 @@ void Backplane_StatusReceive(const BackplaneBus_Message *message) {
     }
 }
 
+static bool backplane_queue_packet(const BackplaneBus_Packet *packet, const size_t length) {
+    if (backplane->command_count >= BACKPLANE_COMMAND_QUEUE_SIZE) {
+        return false;
+    }
+
+    Backplane_Command *const command = &backplane->command_queue[backplane->command_write];
+    memcpy(&command->packet, packet, length);
+    command->length = length;
+    backplane->command_write =
+        (uint8_t) ((backplane->command_write + 1U) % BACKPLANE_COMMAND_QUEUE_SIZE);
+    backplane->command_count++;
+    return true;
+}
+
 bool Backplane_QueueCommand(const BackplaneBus_Packet *packet, const size_t length) {
     if ((packet == NULL) || (length < BACKPLANE_BUS_SIZE_HEADER) ||
         (length > sizeof(*packet)) || (packet->header.address >= BACKPLANE_COUNT)) {
@@ -203,17 +220,7 @@ bool Backplane_QueueCommand(const BackplaneBus_Packet *packet, const size_t leng
             packet->set_enabled.flags.port ? BACKPLANE_PORT_REAR : BACKPLANE_PORT_FRONT,
             packet->set_enabled.flags.enabled != 0U);
     }
-    if (backplane->command_count >= BACKPLANE_COMMAND_QUEUE_SIZE) {
-        return false;
-    }
-
-    Backplane_Command *const command = &backplane->command_queue[backplane->command_write];
-    memcpy(&command->packet, packet, length);
-    command->length = length;
-    backplane->command_write =
-        (uint8_t) ((backplane->command_write + 1U) % BACKPLANE_COMMAND_QUEUE_SIZE);
-    backplane->command_count++;
-    return true;
+    return backplane_queue_packet(packet, length);
 }
 
 static bool backplane_send_queued_command(void) {
@@ -228,11 +235,11 @@ static bool backplane_send_queued_command(void) {
     return true;
 }
 
-static bool backplane_send_inquiry(void) {
+static bool backplane_queue_inquiry(void) {
     BackplaneBus_Packet packet = {0};
     packet.header.address = backplane->next_backplane;
     packet.header.opcode = BACKPLANE_BUS_INQUIRY;
-    if (!BackplaneBus_Send(&packet, SIZE_BACKPLANE_BUS_INQUIRY)) {
+    if (!backplane_queue_packet(&packet, SIZE_BACKPLANE_BUS_INQUIRY)) {
         return false;
     }
 
@@ -319,18 +326,13 @@ void Backplane_Service(void) {
         }
     }
 
-    if ((int32_t) (now_ms - backplane->next_send_ms) < 0) {
-        return;
+    if (((int32_t) (now_ms - backplane->next_inquiry_ms) >= 0) &&
+        backplane_queue_inquiry()) {
+        backplane->next_inquiry_ms = now_ms + BACKPLANE_INQUIRY_INTERVAL_MS;
     }
 
-    bool sent = false;
-    if ((int32_t) (now_ms - backplane->next_inquiry_ms) >= 0) {
-        sent = backplane_send_inquiry();
-        if (sent) {
-            backplane->next_inquiry_ms = now_ms + BACKPLANE_BUSY_INQUIRY_INTERVAL_MS;
-        }
-    } else {
-        /* Send new shutdowns largest first; oldest retries avoid starving ports. */
+    {
+        /* Queue new shutdowns largest first; oldest retries avoid starving ports. */
         Backplane_PortData *selected = NULL;
         uint8_t selected_address = 0U;
         size_t selected_channel = 0U;
@@ -378,27 +380,24 @@ void Backplane_Service(void) {
             packet.header.opcode = BACKPLANE_BUS_SET_ENABLED;
             packet.set_enabled.flags.port = selected_channel == BACKPLANE_PORT_REAR;
             packet.set_enabled.flags.enabled = selected->management_state == BACKPLANE_POWER_ENABLE_PENDING;
-            if (BackplaneBus_Send(&packet, SIZE_BACKPLANE_BUS_SET_ENABLED)) {
+            if (backplane_queue_packet(&packet, SIZE_BACKPLANE_BUS_SET_ENABLED)) {
                 selected->next_power_retry_ms = now_ms + BACKPLANE_POWER_RETRY_MS;
                 if (selected->management_state == BACKPLANE_POWER_SHED_REQUESTED) {
                     selected->management_state = BACKPLANE_POWER_SHED_PENDING;
                 } else if (selected->management_state == BACKPLANE_POWER_ADMIN_DISABLE_REQUESTED) {
                     selected->management_state = BACKPLANE_POWER_ADMIN_DISABLE_PENDING;
                 }
-                backplane->next_send_ms = now_ms + BACKPLANE_POLL_INTERVAL_MS;
-            }
-            return;
-        }
-        if (backplane->command_count > 0U) {
-            sent = backplane_send_queued_command();
-        } else {
-            sent = backplane_send_inquiry();
-            if (sent) {
-                backplane->next_inquiry_ms = now_ms + BACKPLANE_BUSY_INQUIRY_INTERVAL_MS;
             }
         }
     }
-    if (sent) {
-        backplane->next_send_ms = now_ms + BACKPLANE_POLL_INTERVAL_MS;
+
+    if (!backplane->eor_received &&
+        ((int32_t) (now_ms - backplane->next_send_ms) < 0)) {
+        return;
+    }
+
+    if ((backplane->command_count > 0U) && backplane_send_queued_command()) {
+        backplane->eor_received = false;
+        backplane->next_send_ms = now_ms + BACKPLANE_SEND_INTERVAL_MS;
     }
 }

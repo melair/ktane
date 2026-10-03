@@ -12,6 +12,7 @@ extern "C" {
 
 #define EDGEWORK_SLOT_COUNT 14U
 #define EDGEWORK_COMMAND_QUEUE_SIZE 16U
+#define EDGEWORK_INQUIRY_INTERVAL_MS 30U
 
 typedef struct {
     uint32_t last_ms;
@@ -35,6 +36,8 @@ typedef struct {
     uint8_t command_write;
     uint8_t command_count;
     uint32_t next_send_ms;
+    uint32_t next_inquiry_ms;
+    bool eor_received;
     Edgework_Command command_queue[EDGEWORK_COMMAND_QUEUE_SIZE];
     Edgework_SlotData slots[EDGEWORK_SLOT_COUNT];
 } Edgework_Data;

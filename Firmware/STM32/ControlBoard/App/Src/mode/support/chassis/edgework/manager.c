@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-#define EDGEWORK_POLL_INTERVAL_MS 25U
+#define EDGEWORK_SEND_INTERVAL_MS 25U
 #define EDGEWORK_STATUS_TIMEOUT_MS 1500U
 
 static Edgework_Data *const edgework = &mode_data.mode.chassis.edgework;
@@ -21,12 +21,18 @@ bool Edgework_Init(void) {
     edgework->command_write = 0U;
     edgework->command_count = 0U;
     edgework->next_send_ms = HAL_GetTick();
+    edgework->next_inquiry_ms = edgework->next_send_ms;
+    edgework->eor_received = false;
     return Bus_Init();
 }
 
 void Edgework_StatusReceive(const EdgeworkBus_Message *message) {
     if (message->address >= EDGEWORK_SLOT_COUNT) {
         return;
+    }
+
+    if (message->packet->header.flags.eor) {
+        edgework->eor_received = true;
     }
 
     Edgework_SlotData *const slot = &edgework->slots[message->address];
@@ -68,12 +74,12 @@ static bool edgework_send_queued_command(void) {
     return true;
 }
 
-static bool edgework_send_inquiry(void) {
+static bool edgework_queue_inquiry(void) {
     EdgeworkBus_Packet packet = {0};
     packet.header.address = edgework->next_slot;
     packet.header.opcode = EDGEWORK_BUS_INQUIRY;
 
-    if (!Bus_Send(&packet, SIZE_EDGEWORK_BUS_INQUIRY)) {
+    if (!Edgework_QueueCommand(&packet, SIZE_EDGEWORK_BUS_INQUIRY)) {
         return false;
     }
 
@@ -93,14 +99,17 @@ void Edgework_Service(void) {
         }
     }
 
-    if (!time_reached(now_ms, edgework->next_send_ms)) {
+    if (time_reached(now_ms, edgework->next_inquiry_ms) &&
+        edgework_queue_inquiry()) {
+        edgework->next_inquiry_ms = now_ms + EDGEWORK_INQUIRY_INTERVAL_MS;
+    }
+
+    if (!edgework->eor_received && !time_reached(now_ms, edgework->next_send_ms)) {
         return;
     }
 
-    const bool sent = (edgework->command_count > 0U)
-        ? edgework_send_queued_command()
-        : edgework_send_inquiry();
-    if (sent) {
-        edgework->next_send_ms = now_ms + EDGEWORK_POLL_INTERVAL_MS;
+    if ((edgework->command_count > 0U) && edgework_send_queued_command()) {
+        edgework->eor_received = false;
+        edgework->next_send_ms = now_ms + EDGEWORK_SEND_INTERVAL_MS;
     }
 }
