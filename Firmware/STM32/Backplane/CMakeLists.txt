@@ -21,6 +21,7 @@ set(CMSIS_INCLUDE_DIRS
 )
 
 set(APP_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/version.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/backplane.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/backplane_bus.c
@@ -107,11 +108,13 @@ target_link_directories(${BACKPLANE_TARGET} PRIVATE
 )
 
 target_link_libraries(${BACKPLANE_TARGET} PRIVATE
+        STM32_Firmware_Version
         STM32_Common_STM32G0
         m
 )
 
 set_target_properties(${BACKPLANE_TARGET}
         PROPERTIES
+        LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/STM32G070XX_FLASH.ld
         ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${BACKPLANE_TARGET}.map
 )

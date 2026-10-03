@@ -1,3 +1,19 @@
+# Shared version declarations and linker options, independent of drivers.
+# Each firmware supplies its own App/Src/version.c implementation.
+add_library(STM32_Firmware_Version INTERFACE)
+target_sources(STM32_Firmware_Version INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/version/version.h
+)
+target_include_directories(STM32_Firmware_Version INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc
+)
+target_link_options(STM32_Firmware_Version INTERFACE
+        -Wl,--enable-non-contiguous-regions
+        -Wl,--enable-non-contiguous-regions-warnings
+        # Repeated gap/main patterns intentionally trigger mapping warnings.
+        # Linker overflow catchers/assertions prevent discarded live sections.
+)
+
 add_library(STM32_Common INTERFACE)
 
 # INTERFACE sources are compiled separately by each consuming firmware target,

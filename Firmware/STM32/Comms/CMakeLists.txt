@@ -29,6 +29,7 @@ set(COMMS_INCLUDE_DIRS
 list(TRANSFORM COMMS_INCLUDE_DIRS PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 set(COMMS_APP_SOURCES
+        App/Src/version.c
         App/Src/sys/mcu_init.c
         App/Src/sys/hse_calibration.c
         App/Src/sys/rtc.c
@@ -101,5 +102,6 @@ target_link_options(${COMMS_TARGET} PRIVATE -mcpu=cortex-m0plus -mthumb
 target_link_directories(${COMMS_TARGET} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/BLE_Stack/Middlewares/ST/STM32_BLE/cryptolib
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/BLE_Stack/Middlewares/ST/STM32_BLE/stack/lib)
-target_link_libraries(${COMMS_TARGET} PRIVATE :libcrypto.a :stm32wb0x_ble_stack.a m)
+target_link_libraries(${COMMS_TARGET} PRIVATE STM32_Firmware_Version :libcrypto.a :stm32wb0x_ble_stack.a m)
 set_target_properties(${COMMS_TARGET} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${COMMS_TARGET}.map)
+set_property(TARGET ${COMMS_TARGET} PROPERTY LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/stm32wb09_flash.ld)

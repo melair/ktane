@@ -21,6 +21,7 @@ set(CMSIS_INCLUDE_DIRS
 )
 
 set(APP_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/version.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/node_link.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
@@ -148,6 +149,7 @@ target_link_directories(${CONTROL_BOARD_TARGET} PRIVATE
 )
 
 target_link_libraries(${CONTROL_BOARD_TARGET} PRIVATE
+        STM32_Firmware_Version
         STM32_Common_STM32H5
         STM32_Common_ARGB_STM32H5
         m
@@ -155,5 +157,6 @@ target_link_libraries(${CONTROL_BOARD_TARGET} PRIVATE
 
 set_target_properties(${CONTROL_BOARD_TARGET}
         PROPERTIES
+        LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/STM32H562xx_FLASH.ld
         ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${CONTROL_BOARD_TARGET}.map
 )

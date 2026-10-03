@@ -21,6 +21,7 @@ set(CMSIS_INCLUDE_DIRS
 )
 
 set(APP_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/version.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/edgework_bus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
@@ -117,6 +118,7 @@ target_link_directories(${EDGEWORK_TARGET} PRIVATE
 )
 
 target_link_libraries(${EDGEWORK_TARGET} PRIVATE
+        STM32_Firmware_Version
         STM32_Common_STM32G0
         STM32_Common_ARGB_STM32G0
         m
@@ -124,5 +126,6 @@ target_link_libraries(${EDGEWORK_TARGET} PRIVATE
 
 set_target_properties(${EDGEWORK_TARGET}
         PROPERTIES
+        LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/STM32G070XX_FLASH.ld
         ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${EDGEWORK_TARGET}.map
 )

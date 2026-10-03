@@ -52,11 +52,17 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
+/* Application addresses are relative to the vector-table base, not FLASH. */
+__application_base = 0x08000000;
+__application_flash_size = 124K;
+
 /* Specify the memory areas */
 MEMORY
 {
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 36K
-FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 124K
+  FLASH_PRE (rx)         : ORIGIN = __application_base, LENGTH = 0x300
+  FLASH_VERSION (r)      : ORIGIN = __application_base + 0x300, LENGTH = 0x80
+  FLASH (rx)             : ORIGIN = __application_base + 0x380, LENGTH = __application_flash_size - 0x380
 NVM (r)        : ORIGIN = 0x0801F000, LENGTH = 4K
 }
 
@@ -71,16 +77,61 @@ _sstack = _estack - _Min_Stack_Size;
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
+
+ASSERT(__application_flash_size >= 0x380, "Application flash too small")
+ASSERT(ORIGIN(FLASH_PRE) + LENGTH(FLASH_PRE) == ORIGIN(FLASH_VERSION), "Flash gap boundary")
+ASSERT(ORIGIN(FLASH_VERSION) + LENGTH(FLASH_VERSION) == ORIGIN(FLASH), "Main flash boundary")
+ASSERT(ORIGIN(FLASH) + LENGTH(FLASH) == __application_base + __application_flash_size,
+       "Application flash end changed")
+ASSERT(ORIGIN(FLASH) + LENGTH(FLASH) <= ORIGIN(NVM), "FLASH overlaps NVM")
+
 /* Define output sections */
 SECTIONS
 {
   /* The startup code goes first into FLASH */
-  .isr_vector :
+  .isr_vector __application_base :
   {
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >FLASH
+  } >FLASH_PRE
+
+  /* ld places whole ordinary input sections here when they fit; matching
+   * patterns in .text/.rodata below receive the remaining sections. */
+  .flash_gap :
+  {
+    *(.text .text*)
+  } >FLASH_PRE
+
+  /* A separate output lets constants try the space left after code spills. */
+  .flash_gap_rodata :
+  {
+    /* Mergeable strings can change size during ld relaxation and must have
+     * a single placement. Ordinary constants remain eligible for this gap. */
+    INPUT_SECTION_FLAGS (!SHF_MERGE) *(.rodata .rodata*)
+  } >FLASH_PRE
+
+  .firmware_version ORIGIN(FLASH_VERSION) (READONLY (TYPE = SHT_PROGBITS)) :
+  {
+    FILL(0xFFFFFFFF)
+    KEEP(*(.firmware_version .firmware_version.*))
+    __firmware_version_contents_end = .;
+    . = ORIGIN(FLASH_VERSION) + LENGTH(FLASH_VERSION);
+  } >FLASH_VERSION
+
+  ASSERT(ADDR(.isr_vector) == __application_base, "Vectors must start at application base")
+  ASSERT(SIZEOF(.isr_vector) <= 0x300, "Vectors exceed offset 0x300")
+  ASSERT(ADDR(.flash_gap) + SIZEOF(.flash_gap) <= __application_base + 0x300,
+         "Pre-descriptor sections exceed flash boundary")
+  ASSERT(ADDR(.flash_gap_rodata) + SIZEOF(.flash_gap_rodata) <= __application_base + 0x300,
+         "Pre-descriptor constants exceed flash boundary")
+  ASSERT(__firmware_version_contents_end - ADDR(.firmware_version) <= 0x80,
+         "Firmware descriptor contents exceed 128 bytes")
+  ASSERT(ADDR(.firmware_version) == __application_base + 0x300,
+         "Firmware descriptor must be at application offset 0x300")
+  ASSERT(firmware_version == ADDR(.firmware_version), "Firmware object must start descriptor")
+  ASSERT(SIZEOF(.firmware_version) == 0x80, "Firmware descriptor must reserve 128 bytes")
+  ASSERT(ADDR(.text) == __application_base + 0x380, "Main code must start at offset 0x380")
 
   /* The program code and other data goes into FLASH */
   .text :
@@ -244,12 +295,34 @@ SECTIONS
 
 
 
-  /* Remove information from the standard libraries */
-  /DISCARD/ :
+  /* Image length is the flash extent, not the sum of section sizes. Include
+   * internal gaps and the flash load copies of initialised RAM/TLS data. */
+  __application_image_end = MAX(ADDR(.fini_array) + SIZEOF(.fini_array),
+                               MAX(LOADADDR(.data) + SIZEOF(.data),
+                                   LOADADDR(.tdata) + SIZEOF(.tdata)));
+  __application_image_length = ABSOLUTE(__application_image_end - __application_base);
+  ASSERT(__application_image_length >= 0x380 &&
+         __application_image_length <= __application_flash_size, "Invalid image extent")
+
+  ASSERT(LOADADDR(.data) >= ORIGIN(FLASH), "Data load address precedes main flash")
+  ASSERT(LOADADDR(.tdata) + SIZEOF(.tdata) <= ORIGIN(FLASH) + LENGTH(FLASH),
+         "Initialized data exceeds application flash")
+
+  /* Final unbounded diagnostic match for live sections rejected by bounded
+   * regions. INFO keeps this sink out of load segments; any contents fail the
+   * assertion rather than disappearing under non-contiguous placement.
+   * Do not restore
+   * the Cube library /DISCARD/ rule: it could swallow overflowing live code. */
+  .flash_overflow 0 (INFO) :
   {
-    libc.a:* ( * )
-    libm.a:* ( * )
-    libgcc.a:* ( * )
+    *(.text .text* i.* .constdata)
+    INPUT_SECTION_FLAGS (!SHF_MERGE) *(.rodata .rodata*)
+    *(.glue_7 .glue_7t .eh_frame .init .fini)
+    *(.ARM.extab* .gnu.linkonce.armextab.* .ARM.exidx*)
+    *(.preinit_array* .init_array* .fini_array*)
+    *(.data .data* .RamFunc .RamFunc* .tdata .tdata.* .gnu.linkonce.td.*)
+    *(.isr_vector .intvec .firmware_version .firmware_version.*)
   }
+  ASSERT(SIZEOF(.flash_overflow) == 0, "Live sections overflow application flash")
 
 }
