@@ -1,4 +1,4 @@
-set(EDGEWORK_TARGET Edgework)
+set(EDGEWORK_TARGET EdgeworkApplication)
 
 add_executable(${EDGEWORK_TARGET})
 
@@ -47,7 +47,7 @@ set(MCU_SUPPORT_SOURCES
 )
 
 set(CMSIS_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS_Device/Source/Templates/gcc/startup_stm32g070xx.s
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Src/startup_stm32g070xx.s
 )
 
 set(HAL_SOURCES
@@ -129,3 +129,5 @@ set_target_properties(${EDGEWORK_TARGET}
         LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/STM32G070XX_FLASH.ld
         ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${EDGEWORK_TARGET}.map
 )
+
+stm32_firmware_assets(${EDGEWORK_TARGET} ${CMAKE_CURRENT_BINARY_DIR})

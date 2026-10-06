@@ -24,11 +24,23 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 # Remove the incorrect libob.a dependency if C++ is enabled in the future.
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
+set(BOOTLOADER_SIZE 8192 CACHE STRING "Reserved bootloader flash bytes")
+if(NOT BOOTLOADER_SIZE MATCHES "^[0-9]+$")
+    message(FATAL_ERROR "BOOTLOADER_SIZE must be an integer number of bytes")
+endif()
+math(EXPR BOOTLOADER_ALIGNMENT "${BOOTLOADER_SIZE} % 2048")
+if(BOOTLOADER_SIZE LESS 2048 OR BOOTLOADER_SIZE GREATER 118784 OR BOOTLOADER_ALIGNMENT)
+    message(FATAL_ERROR "BOOTLOADER_SIZE must be page aligned (2048 bytes), leaving application flash")
+endif()
+include(cmake/bootloader.cmake)
+include(cmake/firmware_assets.cmake)
+
 add_subdirectory(Common)
 add_subdirectory(Backplane)
 add_subdirectory(ControlBoard)
 add_subdirectory(Edgework)
 add_subdirectory(Comms)
+add_subdirectory(Bootloader)
 
 if ((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))
     message(FATAL_ERROR "Firmware requires C11 or higher")

@@ -1,4 +1,4 @@
-set(COMMS_TARGET Comms)
+set(COMMS_TARGET CommsApplication)
 add_executable(${COMMS_TARGET})
 
 set(COMMS_INCLUDE_DIRS
@@ -40,7 +40,7 @@ set(COMMS_APP_SOURCES
 set(COMMS_MCU_SUPPORT_SOURCES
         Drivers/MCU_Support/Src/stm32wb0x_it.c Drivers/MCU_Support/Src/stm32wb0x_hal_msp.c
         Drivers/MCU_Support/Src/sysmem.c Drivers/MCU_Support/Src/syscalls.c
-        Drivers/MCU_Support/Src/system_stm32wb0x.c Drivers/CMSIS_Device/Source/Templates/gcc/startup_stm32wb09.s
+        Drivers/MCU_Support/Src/system_stm32wb0x.c Drivers/MCU_Support/Src/startup_stm32wb09.s
 )
 set(COMMS_HAL_SOURCES
         stm32wb0x_hal_rcc.c stm32wb0x_hal_rcc_ex.c stm32wb0x_hal_flash.c stm32wb0x_hal_flash_ex.c
@@ -105,3 +105,5 @@ target_link_directories(${COMMS_TARGET} PRIVATE
 target_link_libraries(${COMMS_TARGET} PRIVATE STM32_Firmware_Version :libcrypto.a :stm32wb0x_ble_stack.a m)
 set_target_properties(${COMMS_TARGET} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${COMMS_TARGET}.map)
 set_property(TARGET ${COMMS_TARGET} PROPERTY LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/stm32wb09_flash.ld)
+
+stm32_firmware_assets(${COMMS_TARGET} ${CMAKE_CURRENT_BINARY_DIR})

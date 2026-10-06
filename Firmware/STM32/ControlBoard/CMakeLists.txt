@@ -1,4 +1,4 @@
-set(CONTROL_BOARD_TARGET ControlBoard)
+set(CONTROL_BOARD_TARGET ControlBoardFirmware)
 
 add_executable(${CONTROL_BOARD_TARGET})
 
@@ -67,7 +67,7 @@ set(MCU_SUPPORT_SOURCES
 )
 
 set(CMSIS_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/CMSIS_Device/Source/Templates/gcc/startup_stm32h562xx.s
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/Src/startup_stm32h562xx.s
 )
 
 set(HAL_SOURCES
@@ -160,3 +160,5 @@ set_target_properties(${CONTROL_BOARD_TARGET}
         LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/MCU_Support/STM32H562xx_FLASH.ld
         ADDITIONAL_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/${CONTROL_BOARD_TARGET}.map
 )
+
+stm32_firmware_assets(${CONTROL_BOARD_TARGET} ${CMAKE_CURRENT_BINARY_DIR})

@@ -6,7 +6,7 @@ const version_t firmware_version
         .crc32 = VERSION_UNCALCULATED_CRC32,
         .platform = BOARD_PLATFORM,
         .hardware = BOARD_HARDWARE,
-        .type = VERSION_TYPE_APPLICATION,
+        .type = VERSION_TYPE_BOOTLOADER,
         .debug_build = VERSION_DEBUG_BUILD,
         .version = 1,
         .image_length = (uint32_t)(uintptr_t)__application_image_length,

@@ -38,7 +38,7 @@ typedef enum {
 /* Enum values are stored as bytes to keep the on-flash layout independent of
  * enum width. Packed multi-byte fields should be accessed through this type,
  * rather than taking their addresses as naturally aligned integer pointers.
- * The linker independently reserves 128 bytes and fills the unused tail FF.
+ * The descriptor follows the vector table at the board family's fixed offset.
  * STM32 stores all multi-byte fields in little-endian byte order.
  */
 typedef struct __attribute__((packed)) {
@@ -48,16 +48,24 @@ typedef struct __attribute__((packed)) {
     uint8_t hardware;         /* Letter in high nibble; number in low nibble. */
     uint8_t type;             /* version_application_t */
     uint8_t debug_build;      /* 0 = Release, 1 = Debug */
-    uint16_t version;
     uint32_t image_length;        /* Flash image bytes, including header, gaps
                                   * and initialised RAM data; excludes NVM. */
+    uint16_t version;
 } version_t;
 
 _Static_assert(sizeof(version_t) == 18, "Firmware descriptor layout must be packed");
 _Static_assert(offsetof(version_t, magic) == 0, "Firmware magic must be first");
 _Static_assert(offsetof(version_t, crc32) == 4, "Firmware CRC must follow magic");
-_Static_assert(offsetof(version_t, version) == 12, "Firmware version offset changed");
-_Static_assert(offsetof(version_t, image_length) == 14, "Image length field moved");
+_Static_assert(offsetof(version_t, version) == 16, "Firmware version offset changed");
+_Static_assert(offsetof(version_t, image_length) == 12, "Image length field moved");
+
+#if defined(STM32H562xx)
+#define VERSION_DESCRIPTOR_OFFSET 0x300u
+#else
+#define VERSION_DESCRIPTOR_OFFSET 0x100u
+#endif
+#define VERSION_HEADER_SIZE (VERSION_DESCRIPTOR_OFFSET + sizeof(version_t))
+#define VERSION_CODE_OFFSET (VERSION_DESCRIPTOR_OFFSET + 0x20u)
 
 /* Absolute linker symbol: its address encodes a value, not storage to read.
  * This populates the descriptor at link time, without runtime initialisation.

@@ -1,58 +1,83 @@
 # KTANE Bomb Operating System
 
-The BOS is based on the STM32 ecosystem, specifically targetting H5, G0 and WB0. These are all kept together so that they may share common headers and code.
+## Build and upload
 
-## Building with CMake
+Open this directory in CLion. Select a `<Board>Firmware` run configuration and
+the `Debug` or `Release` CMake profile. Run/Debug builds and uploads the ELF.
 
-Open this `STM32` directory as the CMake project in CLion. The root project exposes
-the `Backplane`, `ControlBoard`, and `Edgework` executable targets in both the `Debug` and
-`Release` CMake profiles.
+| Board | Firmware target | ST-LINK debug profile |
+| --- | --- | --- |
+| Backplane | `BackplaneFirmware` | `ST-LINK (STM32G0)` |
+| Edgework | `EdgeworkFirmware` | `ST-LINK (STM32G0)` |
+| ControlBoard | `ControlBoardFirmware` | `ST-LINK (STM32H5)` |
+| Comms | `CommsFirmware` | `ST-LINK (STM32WB09)` |
 
-The same combinations are available from the command line as build presets:
+If profiles are missing, reload CMake and enable them under Settings → Build,
+Execution, Deployment → CMake. Configure CubeCLT server/programmer paths under
+Debugger → Debug Profiles; the MCU profiles serve both build configurations.
+
+From the command line:
 
 ```shell
 cmake --preset Debug
-cmake --build --preset Backplane-Debug
-cmake --build --preset ControlBoard-Debug
-cmake --build --preset Edgework-Debug
-
-cmake --preset Release
-cmake --build --preset Backplane-Release
-cmake --build --preset ControlBoard-Release
-cmake --build --preset Edgework-Release
+cmake --build build/Debug --target BackplaneFirmware
 ```
 
-Build products are written below `build/Debug` and `build/Release`, separated by
-board. Each board keeps its own sources, HAL/CMSIS includes, MCU flags, and linker
-script; only the common `arm-none-eabi` compiler selection is centralised.
+Substitute another target from the table or use `Release` in both commands.
+Outputs are in `build/<configuration>/<Board>/`:
 
-## Backplane power status
+- Backplane, Edgework and Comms: `<Board>Firmware.elf`, `<Board>Combined.hex`
+  and `<Board>Combined.bin` contain the bootloader and application.
+- Their `<Board>Application` targets produce application-only `.elf`, `.hex`
+  and `.bin` files; these require a compatible bootloader already installed.
+- `<Board>Bootloader` targets build standalone ELFs. Firmware builds also emit
+  bootloader `.hex` and unpadded `.bin` files.
+- ControlBoard has no separate bootloader; its outputs are
+  `ControlBoardFirmware.elf`, `.hex`, `.bin` and `.map`.
 
-Channel status uses the shared `Power_State` enum: `IDLE` means output off with
-no module detected, `DISABLED` means output off with a module detected, `ACTIVE`
-means the eFuse output is commanded on, and `TRIPPED` means a fault is latched.
-`DISABLED` does not inhibit automatic startup in local management mode.
+HEX and ELF carry their addresses. Upload combined binaries at the bootloader
+base and application-only binaries at the application base. NVM is excluded.
 
-Bus status carries this enum in the two bits previously used for `enabled` and
-`tripped`. The packet size is unchanged, but the encoding is incompatible with
-older firmware. Update Backplane and ControlBoard firmware together.
+| Board | Bootloader base | Application base | NVM (4 KB) |
+| --- | --- | --- | --- |
+| Backplane | `0x08000000` | `0x08002000` | `0x0801F000` |
+| Edgework | `0x08000000` | `0x08002000` | `0x0801F000` |
+| Comms | `0x10040000` | `0x10042000` | `0x100BF000` |
 
-## STM32CubeMX
+## Bootloader and image format
 
-**The original project was generated with STM32CubeMX, however it must never be updated with it again.**
+Backplane, Edgework and Comms reserve 8 KB for the bootloader. It validates the
+application descriptor and MSP/reset vector, then enters the reset handler with
+interrupts masked. Invalid applications halt in `Bootloader_InvalidApplication`.
+Application startup installs VTOR and enables interrupts. ControlBoard boots
+directly into its firmware.
 
-I (@pwood) fundementally disagree with the vendoring of STM's code into the codebase, I do not want the HAL libraries copied, and then to rely on CubeMX to bring in other HAL libraries as we need them.
+Each image starts with its complete vector table. Offsets below are bytes from
+the standalone image's base:
 
-I also do not like the layout of the default MX project, or having to fit code between specific comment blocks to avoid failed code regeneration. Further, some peripherals and HAL init will need to be done on a case by case basis later in the code path (i.e. once a module understands what it needs to support) - this would be incompatible with the way MX works.
+| Images | Vector offset | Version offset | Code offset |
+| --- | --- | --- | --- |
+| Cortex-M0+ bootloaders and applications | `0x000` | `0x100` | `0x120` |
+| Cortex-M33 application | `0x000` | `0x300` | `0x320` |
 
-As such, the HAL, CMSIS Core and CMSIS Device libraries are git submodules, and the CMake files have been changed to reference them.
+The packed version descriptor is 18 bytes, followed by 14 bytes of padding.
+Its `image_length` covers the full flash image, including initialised RAM data;
+CRC fields remain uncalculated. Combined binaries fill the unused bootloader
+reservation with `0xFF`.
 
-Some files are required to be copied and modified, such as the FLASH and RAM loader scripts. Those files may be regenerated using STM32CubeMX by pointing the output of the .ioc at a different directory, and then copying the patch files in.
+Change Backplane, Edgework and Comms platform/hardware identity in
+`<Board>/App/Inc/board_identity.h`. Software versions and image types are defined
+in each image's `version.c`. Startup assembly lives in
+`<Board>/Drivers/MCU_Support/Src/`; keep vendor `CMSIS_Device` submodules unmodified.
 
-Interestingly this is closer to STM32CubeMX2 (currently only for the C5 series) with allows copying of snippets from MX2 to your code base.
+Rebuild and upload bootloader and application together after changing the
+descriptor layout; images using different layouts cannot be mixed.
 
-### Adding new HAL features
+To load bootloader symbols alongside the application, source the generated
+script in CLion's GDB console:
 
-* Generate the code using STM32CubeMX into an empty source tree, using the .ioc.
-* Copy the initialisation to logical parts of the BOS code.
-* Remember to update `Core/Inc/stm32*_hal_conf.h` as needed to enable the HAL function, as well as att to `cmake/stm32cubemx/CMakeLists.txt`.
+```gdb
+source "/path/to/STM32/build/Debug/<Board>/<Board>Firmware.gdb"
+```
+
+Substitute the board and configuration being debugged.
