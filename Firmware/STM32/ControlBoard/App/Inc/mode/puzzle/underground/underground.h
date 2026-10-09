@@ -40,6 +40,9 @@ typedef struct {
     bool display_init_failed;
     uint32_t startup_started_ms;
     bool startup_clear_started;
+    uint32_t attract_last_input_ms;
+    UndergroundRouteID attract_route;
+    uint8_t attract_disembark_stop_index;
     IM_EventQueue button_queue;
     IM_DigitalChannelState button_channel_state[1];
     IM_DigitalInputState button_input_state;

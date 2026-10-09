@@ -35,6 +35,9 @@
 #define UNDERGROUND_GAME_MINUTE_SECONDS 3U
 #define UNDERGROUND_TRAIN_MOVE_PERIOD_SECONDS 2U
 #define UNDERGROUND_FORCIBLY_DISEMBARKED_DURATION_SECONDS 3U
+#define UNDERGROUND_ATTRACT_IDLE_MS 10000U
+#define UNDERGROUND_ATTRACT_MIN_STOPS 3U
+#define UNDERGROUND_ATTRACT_MAX_STOPS 6U
 
 typedef struct {
     UndergroundRouteID route_id;
@@ -435,6 +438,7 @@ static void underground_game_on_train_service(FSM *fsm) {
         underground->button_pressed = false;
         game->station = underground_route_stops[
             underground_routes[game->route].stops_offset + game->route_stop_index];
+        game->arriving_route = UNDERGROUND_NO_STATION;
         underground_lamp_set(false);
         FSM_Transition(fsm, UNDERGROUND_GAME_FSM_STATE_AT_STATION);
         return;
@@ -605,10 +609,18 @@ static void underground_startup_service(FSM *fsm) {
     FSM_Transition(fsm, MODE_FSM_STATE_IDLE);
 }
 
+static void underground_idle_enter(FSM *fsm) {
+    /* TEMPORARY: Start attract mode automatically for testing. */
+    FSM_Transition(fsm, MODE_FSM_STATE_ATTRACT);
+}
+
 static void underground_attract_enter(FSM *fsm) {
     (void) fsm;
     IM_EventQueue_Clear(&underground->button_queue);
     underground->button_pressed = false;
+    underground->attract_last_input_ms = HAL_GetTick();
+    underground->attract_route = UNDERGROUND_NO_STATION;
+    underground->attract_disembark_stop_index = UNDERGROUND_NO_VIA_STOP_INDEX;
     do {
         underground->game.station =
             (UndergroundStationID) TRNG_Rand32Range(0U, UNDERGROUND_STATION_COUNT - 1U);
@@ -632,9 +644,95 @@ static void underground_attract_enter(FSM *fsm) {
              UNDERGROUND_GAME_FSM_STATE_AT_STATION, &underground->game);
 }
 
+/* Stop before a terminus or the first stop outside zones 1 and 2. */
+static uint8_t underground_attract_last_stop(const UndergroundRoute *route,
+                                            const uint8_t start_stop_index) {
+    uint8_t last_stop_index = start_stop_index;
+    while (last_stop_index + 1U < route->stops_count &&
+           underground_route_stops[route->stops_offset + last_stop_index] != route->destination &&
+           underground_stations[underground_route_stops[
+               route->stops_offset + last_stop_index + 1U]].in_zone != 0U) {
+        last_stop_index++;
+    }
+    return last_stop_index;
+}
+
+static void underground_attract_choose_route(Underground_Game *game) {
+    const UndergroundStation *const station = &underground_stations[game->station];
+    UndergroundRouteID routes[UNDERGROUND_ROUTE_COUNT];
+    UndergroundLineID lines[UNDERGROUND_LINE_COUNT];
+    uint8_t route_count = 0U;
+    uint8_t line_count = 0U;
+    for (uint8_t index = 0U; index < station->routes_count; index++) {
+        const UndergroundRouteID route_id = underground_station_routes[station->routes_offset + index];
+        const UndergroundRoute *const route = &underground_routes[route_id];
+        const uint8_t stop_index = underground_route_station_stop_index(route, game->station);
+        if (stop_index == UNDERGROUND_NO_VIA_STOP_INDEX ||
+            underground_attract_last_stop(route, stop_index) == stop_index) {
+            continue;
+        }
+        routes[route_count++] = route_id;
+        uint8_t line_index = 0U;
+        while (line_index < line_count && lines[line_index] != route->line) {
+            line_index++;
+        }
+        if (line_index == line_count) {
+            lines[line_count++] = route->line;
+        }
+    }
+    if (route_count == 0U) {
+        return;
+    }
+
+    /* Choose the line first so lines with more route variants are not favoured. */
+    const UndergroundLineID line = lines[TRNG_Rand32Range(0U, line_count - 1U)];
+    uint8_t matching_count = 0U;
+    for (uint8_t index = 0U; index < route_count; index++) {
+        if (underground_routes[routes[index]].line == line) {
+            routes[matching_count++] = routes[index];
+        }
+    }
+    underground->attract_route = routes[TRNG_Rand32Range(0U, matching_count - 1U)];
+}
+
 static void underground_attract_service(FSM *fsm) {
     (void) fsm;
-    FSM_Service(&underground->game.fsm);
+    Underground_Game *const game = &underground->game;
+    if (underground->button_pressed) {
+        underground->attract_last_input_ms = HAL_GetTick();
+        underground->attract_route = UNDERGROUND_NO_STATION;
+        underground->attract_disembark_stop_index = UNDERGROUND_NO_VIA_STOP_INDEX;
+    } else if (HAL_GetTick() - underground->attract_last_input_ms >= UNDERGROUND_ATTRACT_IDLE_MS) {
+        if (game->fsm.current_id == UNDERGROUND_GAME_FSM_STATE_AT_STATION) {
+            underground->attract_disembark_stop_index = UNDERGROUND_NO_VIA_STOP_INDEX;
+            if (underground->attract_route == UNDERGROUND_NO_STATION) {
+                underground_attract_choose_route(game);
+            }
+            underground->button_pressed = underground->attract_route != UNDERGROUND_NO_STATION &&
+                                          game->arriving_route == underground->attract_route;
+        } else if (game->fsm.current_id == UNDERGROUND_GAME_FSM_STATE_ON_TRAIN) {
+            if (underground->attract_disembark_stop_index == UNDERGROUND_NO_VIA_STOP_INDEX) {
+                const UndergroundRoute *const route = &underground_routes[game->route];
+                const uint8_t available_stops =
+                    underground_attract_last_stop(route, game->route_stop_index) - game->route_stop_index;
+                const uint8_t max_stops = available_stops < UNDERGROUND_ATTRACT_MAX_STOPS
+                                             ? available_stops : UNDERGROUND_ATTRACT_MAX_STOPS;
+                const uint8_t min_stops = max_stops < UNDERGROUND_ATTRACT_MIN_STOPS
+                                             ? max_stops : UNDERGROUND_ATTRACT_MIN_STOPS;
+                underground->attract_disembark_stop_index = game->route_stop_index +
+                    TRNG_Rand32Range(min_stops, max_stops);
+            }
+            if (game->train_at_station &&
+                game->route_stop_index >= underground->attract_disembark_stop_index) {
+                underground->button_pressed = true;
+                underground->attract_route = UNDERGROUND_NO_STATION;
+            }
+        } else {
+            underground->attract_route = UNDERGROUND_NO_STATION;
+            underground->attract_disembark_stop_index = UNDERGROUND_NO_VIA_STOP_INDEX;
+        }
+    }
+    FSM_Service(&game->fsm);
 }
 
 static Callbacks underground_state_callbacks[MODE_FSM_STATE_COUNT] = {
@@ -646,7 +744,9 @@ static Callbacks underground_state_callbacks[MODE_FSM_STATE_COUNT] = {
         .enter = underground_startup_enter,
         .service = underground_startup_service,
     },
-    [MODE_FSM_STATE_IDLE] = {0},
+    [MODE_FSM_STATE_IDLE] = {
+        .enter = underground_idle_enter,
+    },
     [MODE_FSM_STATE_ATTRACT] = {
         .enter = underground_attract_enter,
         .service = underground_attract_service,
