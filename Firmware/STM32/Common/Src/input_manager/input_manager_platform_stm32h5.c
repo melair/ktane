@@ -5,11 +5,11 @@
 static ADC_HandleTypeDef adc;
 
 static bool analogue_init(void) {
-    __HAL_RCC_ADCDAC_CONFIG(RCC_ADCDACCLKSOURCE_PLL2R);
+    __HAL_RCC_ADCDAC_CONFIG(RCC_ADCDACCLKSOURCE_HCLK);
     __HAL_RCC_ADC_CLK_ENABLE();
 
     adc.Instance = ADC1;
-    adc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+    adc.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV10;
     adc.Init.Resolution = ADC_RESOLUTION_12B;
     adc.Init.DataAlign = ADC_DATAALIGN_RIGHT;
     adc.Init.ScanConvMode = ADC_SCAN_DISABLE;

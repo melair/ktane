@@ -609,11 +609,6 @@ static void underground_startup_service(FSM *fsm) {
     FSM_Transition(fsm, MODE_FSM_STATE_IDLE);
 }
 
-static void underground_idle_enter(FSM *fsm) {
-    /* TEMPORARY: Start attract mode automatically for testing. */
-    FSM_Transition(fsm, MODE_FSM_STATE_ATTRACT);
-}
-
 static void underground_attract_enter(FSM *fsm) {
     (void) fsm;
     IM_EventQueue_Clear(&underground->button_queue);
@@ -744,9 +739,7 @@ static Callbacks underground_state_callbacks[MODE_FSM_STATE_COUNT] = {
         .enter = underground_startup_enter,
         .service = underground_startup_service,
     },
-    [MODE_FSM_STATE_IDLE] = {
-        .enter = underground_idle_enter,
-    },
+    [MODE_FSM_STATE_IDLE] = {0},
     [MODE_FSM_STATE_ATTRACT] = {
         .enter = underground_attract_enter,
         .service = underground_attract_service,

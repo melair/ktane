@@ -25,6 +25,7 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/node_link.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/fat.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/indicator.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode_fsm.c
@@ -39,6 +40,8 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/can.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rng.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/rtc.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/sdcard.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/sdcard_init.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/argb_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/i2c_config.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/input_manager_config.c
@@ -89,6 +92,9 @@ set(HAL_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_pwr_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rng.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_sd.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_sd_ex.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_ll_sdmmc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rng_ex.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rcc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Drivers/HAL/Src/stm32h5xx_hal_rcc_ex.c

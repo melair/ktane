@@ -114,14 +114,16 @@ void SystemClock_Init(void) {
   * @retval None
   */
 void PeripheralClock_Init(void) {
-    /* Initialise PLL2 primarily for SDMMC, ADC and FDCAN, 80MHz on PLL2Q, 25MHz on PLL2R and 200MHz on PLL2P */
+    /* Initialise PLL2 for SDMMC and FDCAN: 80MHz on PLL2Q and 200MHz on PLL2R.
+     * PLL2P is configured for 200MHz but its output is disabled. ADC uses HCLK.
+     */
     RCC_PLL2InitTypeDef pll2InitStruct = {
         .PLL2Source = RCC_PLL2_SOURCE_HSE,
         .PLL2M = 10,
         .PLL2N = 160,
         .PLL2P = 2,
         .PLL2Q = 5,
-        .PLL2R = 16,
+        .PLL2R = 2,
         .PLL2RGE = RCC_PLL2_VCIRANGE_1,
         .PLL2VCOSEL = RCC_PLL2_VCORANGE_WIDE,
         .PLL2FRACN = 0,

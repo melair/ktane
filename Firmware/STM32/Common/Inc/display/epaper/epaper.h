@@ -75,6 +75,17 @@ typedef struct {
     Epaper_Rotation rotation;
     uint16_t stride;
     uint8_t sequence_complete_state;
+    /* Dirty bounds are unaligned native pixels; refresh_window is byte-aligned. */
+    Epaper_Window dirty_window;
+    Epaper_Window refresh_window;
+    uint16_t transfer_row;
+    bool dirty;
+    bool red_dirty;
+    bool baseline_valid;
+    bool force_next_refresh_full;
+    bool refresh_forced_full;
+    bool partial_refresh;
+    bool synchronizing;
 } Epaper;
 
 bool Epaper_Init(Epaper *epaper, const Epaper_Config *config);
@@ -83,7 +94,22 @@ void Epaper_Service(Epaper *epaper);
 
 bool Epaper_IsReady(const Epaper *epaper);
 
+/*
+ * Select partial refresh below 50% of visible-window area; otherwise full.
+ * The first refresh and any red-plane change always require a full refresh.
+ * Returns true for an accepted refresh, including a clean-frame no-op.
+ * Returns false while busy or in error. Service until IsReady before drawing
+ * or modifying either framebuffer; transfers reference the buffers directly.
+ */
 bool Epaper_Refresh(Epaper *epaper);
+
+/*
+ * Make the next accepted Refresh a full native-panel refresh, even if clean.
+ * Does not start a refresh. May be called while busy to force the following
+ * refresh. Repeated calls coalesce; a failed refresh preserves the request.
+ * Use after direct framebuffer edits. NULL is ignored.
+ */
+void Epaper_ForceNextRefreshFull(Epaper *epaper);
 
 bool Epaper_SetRotation(Epaper *epaper, Epaper_Rotation rotation);
 

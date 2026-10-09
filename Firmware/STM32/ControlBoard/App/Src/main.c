@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "node_link.h"
+#include "fat.h"
 #include "game.h"
 #include "indicator.h"
 #include "mode.h"
@@ -16,6 +17,7 @@
 #include "nvm/nvm.h"
 #include "sys/rng.h"
 #include "sys/rtc.h"
+#include "sys/sdcard.h"
 #include "spi/spi.h"
 #include "sys/sys_clock.h"
 #include "status/status.h"
@@ -67,6 +69,8 @@ int main(void) {
     RTC_Init();
     TRNG_Init();
     SysClock_Init();
+    SDCard_Init();
+    FAT_Init();
 
     /* Enable DMA peripherals. GPDMA1 for core functions, GPDMA2 for submodules. */
     __HAL_RCC_GPDMA1_CLK_ENABLE();
@@ -125,6 +129,10 @@ int main(void) {
         IM_Service();
         /* Service the status LED, and button. */
         Status_Service();
+        /* Service removable SD-card power, startup, and status. */
+        SDCard_Service();
+        /* Deliver FAT completions and observe card readiness. */
+        FAT_Service();
         /* Service SPI. */
         SPI_Service();
         /* Service I2C. */

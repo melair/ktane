@@ -42,7 +42,7 @@ typedef struct {
 #define SDMMC_D0_Port GPIOC
 #define SDMMC_D1_Pin GPIO_PIN_9
 #define SDMMC_D1_Port GPIOC
-#define SDMMC_DET_Pin GPIO_PIN_8
+#define SDMMC_DET_Pin GPIO_PIN_15
 #define SDMMC_DET_Port GPIOA
 #define SDMMC_PWR_Pin GPIO_PIN_10
 #define SDMMC_PWR_Port GPIOD

@@ -4,7 +4,6 @@
 #include <string.h>
 
 #define SSD1680_CMD_DRIVER_OUTPUT_CONTROL        0x01U
-#define SSD1680_CMD_DEEP_SLEEP                   0x10U
 #define SSD1680_CMD_DATA_ENTRY_MODE              0x11U
 #define SSD1680_CMD_SW_RESET                     0x12U
 #define SSD1680_CMD_TEMPERATURE_SENSOR_CONTROL   0x18U
@@ -26,7 +25,6 @@
 #define EPAPER_TEST_CARD_ORIGIN_SIZE_PX 20U
 
 static const uint8_t command_driver_output_control = SSD1680_CMD_DRIVER_OUTPUT_CONTROL;
-static const uint8_t command_deep_sleep = SSD1680_CMD_DEEP_SLEEP;
 static const uint8_t command_data_entry_mode = SSD1680_CMD_DATA_ENTRY_MODE;
 static const uint8_t command_sw_reset = SSD1680_CMD_SW_RESET;
 static const uint8_t command_temperature_sensor_control = SSD1680_CMD_TEMPERATURE_SENSOR_CONTROL;
@@ -57,7 +55,7 @@ typedef enum {
     EPAPER_STATE_RED_DATA_SEND,
     EPAPER_STATE_UPDATE_SEND,
     EPAPER_STATE_WAIT_UPDATE,
-    EPAPER_STATE_SLEEP_SEND,
+    EPAPER_STATE_COMPLETE,
     EPAPER_STATE_ERROR,
 } Epaper_State;
 
@@ -76,11 +74,13 @@ static void epaper_red_command_send_enter(FSM *fsm);
 static void epaper_red_data_send_enter(FSM *fsm);
 static void epaper_update_send_enter(FSM *fsm);
 static void epaper_wait_update_service(FSM *fsm);
-static void epaper_sleep_send_enter(FSM *fsm);
+static void epaper_complete_enter(FSM *fsm);
+static void epaper_error_enter(FSM *fsm);
 
 static const FSM_State epaper_states[] = {
     [EPAPER_STATE_IDLE] = {.service = epaper_idle_service,
-                           .next_mask = FSM_NEXT(EPAPER_STATE_RESET_ASSERT)},
+                           .next_mask = FSM_NEXT(EPAPER_STATE_RESET_ASSERT) |
+                                        FSM_NEXT(EPAPER_STATE_CONFIGURE_SEND)},
     [EPAPER_STATE_RESET_ASSERT] = {.enter = epaper_reset_assert_enter,
                                    .next_mask = FSM_NEXT(EPAPER_STATE_RESET_RELEASE)},
     [EPAPER_STATE_RESET_RELEASE] = {.enter = epaper_reset_release_enter,
@@ -105,23 +105,26 @@ static const FSM_State epaper_states[] = {
                                                    FSM_NEXT(EPAPER_STATE_ERROR)},
     [EPAPER_STATE_BW_DATA_SEND] = {.enter = epaper_bw_data_send_enter,
                                    .next_mask = FSM_NEXT(EPAPER_STATE_RED_COMMAND_SEND) |
+                                                FSM_NEXT(EPAPER_STATE_BW_DATA_SEND) |
+                                                FSM_NEXT(EPAPER_STATE_COMPLETE) |
                                                 FSM_NEXT(EPAPER_STATE_UPDATE_SEND) |
                                                 FSM_NEXT(EPAPER_STATE_ERROR)},
     [EPAPER_STATE_RED_COMMAND_SEND] = {.enter = epaper_red_command_send_enter,
                                        .next_mask = FSM_NEXT(EPAPER_STATE_RED_DATA_SEND) |
                                                     FSM_NEXT(EPAPER_STATE_ERROR)},
     [EPAPER_STATE_RED_DATA_SEND] = {.enter = epaper_red_data_send_enter,
-                                    .next_mask = FSM_NEXT(EPAPER_STATE_UPDATE_SEND) |
+                                    .next_mask = FSM_NEXT(EPAPER_STATE_RED_DATA_SEND) |
+                                                 FSM_NEXT(EPAPER_STATE_UPDATE_SEND) |
                                                  FSM_NEXT(EPAPER_STATE_ERROR)},
     [EPAPER_STATE_UPDATE_SEND] = {.enter = epaper_update_send_enter,
                                   .next_mask = FSM_NEXT(EPAPER_STATE_WAIT_UPDATE) |
                                                FSM_NEXT(EPAPER_STATE_ERROR)},
     [EPAPER_STATE_WAIT_UPDATE] = {.service = epaper_wait_update_service,
-                                  .next_mask = FSM_NEXT(EPAPER_STATE_SLEEP_SEND)},
-    [EPAPER_STATE_SLEEP_SEND] = {.enter = epaper_sleep_send_enter,
-                                 .next_mask = FSM_NEXT(EPAPER_STATE_IDLE) |
-                                              FSM_NEXT(EPAPER_STATE_ERROR)},
-    [EPAPER_STATE_ERROR] = {.next_mask = 0U},
+                                  .next_mask = FSM_NEXT(EPAPER_STATE_WINDOW_SEND) |
+                                               FSM_NEXT(EPAPER_STATE_COMPLETE)},
+    [EPAPER_STATE_COMPLETE] = {.enter = epaper_complete_enter,
+                                .next_mask = FSM_NEXT(EPAPER_STATE_IDLE)},
+    [EPAPER_STATE_ERROR] = {.enter = epaper_error_enter, .next_mask = 0U},
 };
 
 static Epaper *epaper_from_fsm(FSM *fsm) {
@@ -221,10 +224,20 @@ static void epaper_configure_send_enter(FSM *fsm) {
     static const uint8_t temperature_sensor = 0x80U;
     static const uint8_t update_control_2 = 0xB1U;
     const bool is_ssd1683 = epaper->config.controller == EPAPER_CONTROLLER_SSD1683;
-    const uint8_t *const border_waveform =
-        is_ssd1683 ? &ssd1683_border_waveform : &ssd1680_border_waveform;
-    const uint8_t *const update_control_1 =
-        is_ssd1683 ? ssd1683_update_control_1 : ssd1680_update_control_1;
+    static const uint8_t partial_border_waveform = 0x80U;
+    static const uint8_t ssd1680_partial_update_control_1[] = {0x00U, 0x80U};
+    static const uint8_t ssd1683_partial_update_control_1[] = {0x00U, 0x00U};
+    const uint8_t *const border_waveform = epaper->partial_refresh
+        ? &partial_border_waveform
+        : (is_ssd1683 ? &ssd1683_border_waveform : &ssd1680_border_waveform);
+    /* SSD1683 monochrome full refresh bypasses the second RAM plane; colour
+     * panels must use its actual red contents in both display modes. */
+    const uint8_t *const update_control_1 = epaper->partial_refresh
+        ? (is_ssd1683 ? ssd1683_partial_update_control_1 : ssd1680_partial_update_control_1)
+        : (is_ssd1683
+            ? (epaper->config.red_framebuffer != NULL ? ssd1683_partial_update_control_1
+                                                     : ssd1683_update_control_1)
+            : ssd1680_update_control_1);
 
     epaper->driver_output_data[0] = (uint8_t) height;
     epaper->driver_output_data[1] = (uint8_t) (height >> 8U);
@@ -295,7 +308,8 @@ static void epaper_configure_send_enter(FSM *fsm) {
         .size = 1U,
         .prepare = dc_command,
     };
-    queue_or_error(fsm, 13U, EPAPER_STATE_WAIT_CONFIGURE);
+    /* Retained RAM needs no reset or full-mode LUT load between refreshes. */
+    queue_or_error(fsm, epaper->baseline_valid ? 10U : 13U, EPAPER_STATE_WAIT_CONFIGURE);
 }
 
 static void epaper_wait_configure_service(FSM *fsm) {
@@ -306,13 +320,15 @@ static void epaper_wait_configure_service(FSM *fsm) {
 
 static void epaper_window_send_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
-    const uint16_t height = epaper->config.height - 1U;
-    epaper->ram_x_data[0] = 0U;
-    epaper->ram_x_data[1] = (uint8_t) (epaper->stride - 1U);
-    epaper->ram_y_data[0] = 0U;
-    epaper->ram_y_data[1] = 0U;
-    epaper->ram_y_data[2] = (uint8_t) height;
-    epaper->ram_y_data[3] = (uint8_t) (height >> 8U);
+    const Epaper_Window *window = &epaper->refresh_window;
+    const uint16_t end_y = window->y + window->height - 1U;
+    epaper->ram_x_data[0] = (uint8_t) (window->x / 8U);
+    epaper->ram_x_data[1] = (uint8_t) ((window->x + window->width - 1U) / 8U);
+    epaper->ram_y_data[0] = (uint8_t) window->y;
+    epaper->ram_y_data[1] = (uint8_t) (window->y >> 8U);
+    epaper->ram_y_data[2] = (uint8_t) end_y;
+    epaper->ram_y_data[3] = (uint8_t) (end_y >> 8U);
+    epaper->transfer_row = window->y;
 
     epaper->steps[0U] = (SPI_SequenceStep) {
         .data = &command_set_ram_x,
@@ -360,55 +376,86 @@ static void epaper_window_send_enter(FSM *fsm) {
 static void epaper_bw_command_send_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
     epaper->steps[0U] = (SPI_SequenceStep) {
-        .data = &command_write_ram_bw,
+        .data = epaper->synchronizing ? &command_write_ram_red : &command_write_ram_bw,
         .size = 1U,
         .prepare = dc_command,
     };
     queue_or_error(fsm, 1U, EPAPER_STATE_BW_DATA_SEND);
 }
 
+/* Queue bounded batches of rows without a packed-region staging buffer. */
+static void epaper_transfer_rows(FSM *fsm, const uint8_t *framebuffer,
+                                 Epaper_State repeat_state, Epaper_State complete_state) {
+    Epaper *epaper = epaper_from_fsm(fsm);
+    const uint16_t end_row = epaper->refresh_window.y + epaper->refresh_window.height;
+    const uint16_t start_byte = epaper->ram_x_data[0];
+    const uint16_t row_bytes = epaper->ram_x_data[1] - start_byte + 1U;
+    /* Full-width rows are contiguous and can share one DMA transfer. */
+    const uint16_t rows_per_step = row_bytes == epaper->stride
+        ? (uint16_t) (UINT16_MAX / row_bytes) : 1U;
+    uint16_t count = 0U;
+    while ((epaper->transfer_row < end_row) &&
+           (count < sizeof(epaper->steps) / sizeof(epaper->steps[0]))) {
+        const uint16_t remaining_rows = end_row - epaper->transfer_row;
+        const uint16_t rows = remaining_rows < rows_per_step ? remaining_rows : rows_per_step;
+        epaper->steps[count++] = (SPI_SequenceStep) {
+            .data = framebuffer + (uint32_t) epaper->transfer_row * epaper->stride + start_byte,
+            .size = (uint16_t) ((uint32_t) row_bytes * rows),
+            .prepare = dc_data,
+        };
+        epaper->transfer_row += rows;
+    }
+    queue_or_error(fsm, count, epaper->transfer_row < end_row ? repeat_state : complete_state);
+}
+
 static void epaper_bw_data_send_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
-    epaper->steps[0U] = (SPI_SequenceStep) {
-        .data = epaper->config.black_framebuffer,
-        .size = (uint16_t) ((uint32_t) epaper->stride * epaper->config.height),
-        .prepare = dc_data,
-    };
-    queue_or_error(fsm, 1U, epaper->config.red_framebuffer != NULL
-                                ? EPAPER_STATE_RED_COMMAND_SEND
-                                : EPAPER_STATE_UPDATE_SEND);
+    const Epaper_State next = epaper->synchronizing ? EPAPER_STATE_COMPLETE
+        : (epaper->partial_refresh ? EPAPER_STATE_UPDATE_SEND : EPAPER_STATE_RED_COMMAND_SEND);
+    epaper_transfer_rows(fsm, epaper->config.black_framebuffer, EPAPER_STATE_BW_DATA_SEND, next);
 }
 
 static void epaper_red_command_send_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
+    /* Explicitly rewind the cursor before writing the second RAM plane. */
+    epaper->transfer_row = epaper->refresh_window.y;
     epaper->steps[0U] = (SPI_SequenceStep) {
-        .data = &command_write_ram_red,
-        .size = 1U,
-        .prepare = dc_command,
+        .data = &command_set_ram_x_counter, .size = 1U, .prepare = dc_command,
     };
-    queue_or_error(fsm, 1U, EPAPER_STATE_RED_DATA_SEND);
+    epaper->steps[1U] = (SPI_SequenceStep) {
+        .data = epaper->ram_x_data, .size = 1U, .prepare = dc_data,
+    };
+    epaper->steps[2U] = (SPI_SequenceStep) {
+        .data = &command_set_ram_y_counter, .size = 1U, .prepare = dc_command,
+    };
+    epaper->steps[3U] = (SPI_SequenceStep) {
+        .data = epaper->ram_y_data, .size = 2U, .prepare = dc_data,
+    };
+    epaper->steps[4U] = (SPI_SequenceStep) {
+        .data = &command_write_ram_red, .size = 1U, .prepare = dc_command,
+    };
+    queue_or_error(fsm, 5U, EPAPER_STATE_RED_DATA_SEND);
 }
 
 static void epaper_red_data_send_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
-    epaper->steps[0U] = (SPI_SequenceStep) {
-        .data = epaper->config.red_framebuffer,
-        .size = (uint16_t) ((uint32_t) epaper->stride * epaper->config.height),
-        .prepare = dc_data,
-    };
-    queue_or_error(fsm, 1U, EPAPER_STATE_UPDATE_SEND);
+    /* On monochrome panels RAM 0x26 is the previous-image reference. */
+    const uint8_t *framebuffer = epaper->config.red_framebuffer != NULL
+        ? epaper->config.red_framebuffer : epaper->config.black_framebuffer;
+    epaper_transfer_rows(fsm, framebuffer, EPAPER_STATE_RED_DATA_SEND, EPAPER_STATE_UPDATE_SEND);
 }
 
 static void epaper_update_send_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
-    static const uint8_t update_control = 0xF7U;
+    static const uint8_t full_update_control = 0xF7U;
+    static const uint8_t partial_update_control = 0xFFU;
     epaper->steps[0U] = (SPI_SequenceStep) {
         .data = &command_display_update_control_2,
         .size = 1U,
         .prepare = dc_command,
     };
     epaper->steps[1U] = (SPI_SequenceStep) {
-        .data = &update_control,
+        .data = epaper->partial_refresh ? &partial_update_control : &full_update_control,
         .size = 1U,
         .prepare = dc_data,
     };
@@ -421,25 +468,32 @@ static void epaper_update_send_enter(FSM *fsm) {
 }
 
 static void epaper_wait_update_service(FSM *fsm) {
-    if (busy_is_ready(epaper_from_fsm(fsm))) {
-        (void) FSM_Transition(fsm, EPAPER_STATE_SLEEP_SEND);
+    Epaper *epaper = epaper_from_fsm(fsm);
+    if (busy_is_ready(epaper)) {
+        /* Synchronize the old-image RAM only after the displayed image settles.
+         * On colour panels this RAM holds red and must remain untouched. */
+        epaper->synchronizing = epaper->config.red_framebuffer == NULL;
+        (void) FSM_Transition(fsm, epaper->synchronizing
+                                  ? EPAPER_STATE_WINDOW_SEND : EPAPER_STATE_COMPLETE);
     }
 }
 
-static void epaper_sleep_send_enter(FSM *fsm) {
+static void epaper_complete_enter(FSM *fsm) {
     Epaper *epaper = epaper_from_fsm(fsm);
-    static const uint8_t deep_sleep = 0x01U;
-    epaper->steps[0U] = (SPI_SequenceStep) {
-        .data = &command_deep_sleep,
-        .size = 1U,
-        .prepare = dc_command,
-    };
-    epaper->steps[1U] = (SPI_SequenceStep) {
-        .data = &deep_sleep,
-        .size = 1U,
-        .prepare = dc_data,
-    };
-    queue_or_error(fsm, 2U, EPAPER_STATE_IDLE);
+    /* F7/FF disable analog power and the oscillator, retaining accessible RAM. */
+    epaper->refresh_forced_full = false;
+    epaper->baseline_valid = true;
+    epaper->dirty = false;
+    epaper->red_dirty = false;
+    epaper->dirty_window = (Epaper_Window) {0};
+    epaper->synchronizing = false;
+    (void) FSM_Transition(fsm, EPAPER_STATE_IDLE);
+}
+
+static void epaper_error_enter(FSM *fsm) {
+    Epaper *epaper = epaper_from_fsm(fsm);
+    epaper->force_next_refresh_full |= epaper->refresh_forced_full;
+    epaper->refresh_forced_full = false;
 }
 
 bool Epaper_Init(Epaper *epaper, const Epaper_Config *config) {
@@ -530,8 +584,43 @@ bool Epaper_Refresh(Epaper *epaper) {
     if (!Epaper_IsReady(epaper)) {
         return false;
     }
+    const bool force_full = epaper->force_next_refresh_full;
+    if (!force_full && epaper->baseline_valid && !epaper->dirty) {
+        return true;
+    }
 
-    return FSM_Transition(&epaper->fsm, EPAPER_STATE_RESET_ASSERT);
+    const uint32_t dirty_area = (uint32_t) epaper->dirty_window.width * epaper->dirty_window.height;
+    const uint32_t visible_area = (uint32_t) epaper->config.window.width * epaper->config.window.height;
+    epaper->partial_refresh = !force_full && epaper->baseline_valid && !epaper->red_dirty &&
+                             ((uint64_t) dirty_area * 2U < visible_area);
+    epaper->synchronizing = false;
+    if (epaper->partial_refresh) {
+        epaper->refresh_window = epaper->dirty_window;
+        const uint16_t start_x = epaper->dirty_window.x & (uint16_t) ~7U;
+        const uint32_t end_x = ((uint32_t) epaper->dirty_window.x +
+                               epaper->dirty_window.width + 7U) & ~7UL;
+        epaper->refresh_window.x = start_x;
+        epaper->refresh_window.width = (uint16_t) (
+            (end_x > epaper->config.width ? epaper->config.width : end_x) - start_x);
+    } else {
+        epaper->refresh_window = (Epaper_Window) {
+            .width = epaper->config.width, .height = epaper->config.height,
+        };
+    }
+    if (!FSM_Transition(&epaper->fsm, epaper->baseline_valid
+                          ? EPAPER_STATE_CONFIGURE_SEND : EPAPER_STATE_RESET_ASSERT)) {
+        return false;
+    }
+    /* Keep requests made during this transfer pending for the following one. */
+    epaper->refresh_forced_full = force_full;
+    epaper->force_next_refresh_full = false;
+    return true;
+}
+
+void Epaper_ForceNextRefreshFull(Epaper *epaper) {
+    if (epaper != NULL) {
+        epaper->force_next_refresh_full = true;
+    }
 }
 
 bool Epaper_SetRotation(Epaper *epaper, Epaper_Rotation rotation) {
@@ -593,6 +682,32 @@ static bool map_pixel(const Epaper *epaper, uint16_t x, uint16_t y,
     return true;
 }
 
+static void epaper_track_pixel(Epaper *epaper, uint16_t x, uint16_t y,
+                                uint32_t offset, uint8_t old_black, uint8_t old_red) {
+    const bool red_changed = epaper->config.red_framebuffer != NULL &&
+                            old_red != epaper->config.red_framebuffer[offset];
+    if ((old_black == epaper->config.black_framebuffer[offset]) && !red_changed) {
+        return;
+    }
+    epaper->red_dirty |= red_changed;
+    if (!epaper->dirty) {
+        epaper->dirty_window = (Epaper_Window) {x, y, 1U, 1U};
+        epaper->dirty = true;
+        return;
+    }
+    Epaper_Window *bounds = &epaper->dirty_window;
+    const uint16_t end_x = bounds->x + bounds->width;
+    const uint16_t end_y = bounds->y + bounds->height;
+    if (x < bounds->x) {
+        bounds->x = x;
+    }
+    if (y < bounds->y) {
+        bounds->y = y;
+    }
+    bounds->width = (x >= end_x ? x + 1U : end_x) - bounds->x;
+    bounds->height = (y >= end_y ? y + 1U : end_y) - bounds->y;
+}
+
 void Epaper_SetPixel(Epaper *epaper, uint16_t x, uint16_t y, uint8_t colour) {
     uint16_t physical_x;
     uint16_t physical_y;
@@ -604,6 +719,9 @@ void Epaper_SetPixel(Epaper *epaper, uint16_t x, uint16_t y, uint8_t colour) {
 
     const uint32_t offset = ((uint32_t) physical_y * epaper->stride) + (physical_x / 8U);
     const uint8_t bit = (uint8_t) (0x80U >> (physical_x & 7U));
+    const uint8_t old_black = epaper->config.black_framebuffer[offset];
+    const uint8_t old_red = epaper->config.red_framebuffer != NULL
+        ? epaper->config.red_framebuffer[offset] : 0U;
     if (colour == EPAPER_COLOUR_BLACK) {
         epaper->config.black_framebuffer[offset] &= (uint8_t) ~bit;
     } else {
@@ -617,6 +735,7 @@ void Epaper_SetPixel(Epaper *epaper, uint16_t x, uint16_t y, uint8_t colour) {
             epaper->config.red_framebuffer[offset] &= (uint8_t) ~bit;
         }
     }
+    epaper_track_pixel(epaper, physical_x, physical_y, offset, old_black, old_red);
 }
 
 static void epaper_or_pixel(Epaper *epaper, uint16_t x, uint16_t y, Epaper_Colour colour) {
@@ -630,6 +749,9 @@ static void epaper_or_pixel(Epaper *epaper, uint16_t x, uint16_t y, Epaper_Colou
 
     const uint32_t offset = ((uint32_t) physical_y * epaper->stride) + (physical_x / 8U);
     const uint8_t bit = (uint8_t) (0x80U >> (physical_x & 7U));
+    const uint8_t old_black = epaper->config.black_framebuffer[offset];
+    const uint8_t old_red = epaper->config.red_framebuffer != NULL
+        ? epaper->config.red_framebuffer[offset] : 0U;
     switch (colour) {
         case EPAPER_COLOUR_WHITE:
             epaper->config.black_framebuffer[offset] |= bit;
@@ -648,6 +770,7 @@ static void epaper_or_pixel(Epaper *epaper, uint16_t x, uint16_t y, Epaper_Colou
         default:
             break;
     }
+    epaper_track_pixel(epaper, physical_x, physical_y, offset, old_black, old_red);
 }
 
 void Epaper_Fill(Epaper *epaper, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
