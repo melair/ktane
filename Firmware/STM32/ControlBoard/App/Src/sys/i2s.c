@@ -14,6 +14,12 @@
 #define I2S_MCK_Pin GPIO_B4_Pin
 #define I2S_MCK_Port GPIO_B4_Port
 
+typedef struct {
+    AudioBufferCallback callback;
+    void *context;
+} i2s_t;
+
+static i2s_t i2s_data = {0};
 static I2S_HandleTypeDef i2s = {0};
 static DMA_NodeConfTypeDef i2s_dma_node_config = {0};
 static DMA_NodeTypeDef i2s_dma_node = {0};
@@ -29,7 +35,9 @@ static const int16_t i2s_sine_1khz_minus_3db[] = {
     -20089, -18404, -16403, -14122, -11599, -8877, -6004, -3028,
 };
 
-void I2S_Init(AudioData *audio) {
+void I2S_Init(AudioData *audio, AudioBufferCallback callback, void *context) {
+    i2s_data.callback = callback;
+    i2s_data.context = context;
     GPIO_InitTypeDef gpio_init = {0};
 
     __HAL_RCC_SPI1_CONFIG(RCC_SPI1CLKSOURCE_PLL3P);
@@ -115,16 +123,14 @@ void I2S_Init(AudioData *audio) {
     }
 
     if (HAL_I2S_Transmit_DMA(&i2s, (const uint16_t *) audio->buffer,
-                             audio->buffer_size) != HAL_OK) {
+                             (uint16_t) (audio->frame_count * I2S_AUDIO_CHANNEL_COUNT)) != HAL_OK) {
         Error_Handler();
     }
 }
 
-void I2S_Service(AudioData *audio) {
-}
-
 void I2S_Fill_Sine(AudioData *audio) {
-    for (uint16_t sample = 0; sample + 1u < audio->buffer_size; sample += I2S_AUDIO_CHANNEL_COUNT) {
+    const uint32_t sample_count = (uint32_t) audio->frame_count * I2S_AUDIO_CHANNEL_COUNT;
+    for (uint32_t sample = 0; sample + 1u < sample_count; sample += I2S_AUDIO_CHANNEL_COUNT) {
         const int16_t value = i2s_sine_1khz_minus_3db[
             (sample / I2S_AUDIO_CHANNEL_COUNT) % 48u];
         audio->buffer[sample] = value;
@@ -137,7 +143,13 @@ void GPDMA1_Channel3_IRQHandler(void) {
 }
 
 void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s) {
+    if (hi2s == &i2s && i2s_data.callback != NULL) {
+        i2s_data.callback(i2s_data.context, AUDIO_HALF_FIRST);
+    }
 }
 
 void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s) {
+    if (hi2s == &i2s && i2s_data.callback != NULL) {
+        i2s_data.callback(i2s_data.context, AUDIO_HALF_SECOND);
+    }
 }

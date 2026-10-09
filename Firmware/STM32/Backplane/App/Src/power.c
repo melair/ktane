@@ -29,6 +29,7 @@
 #define POWER_POT_UNLOCK_COMMAND 0x1c02
 #define POWER_POT_WRITE_RDAC_COMMAND 0x0400
 #define POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS 2U
+#define POWER_CHASSIS_CURRENT_LIMIT_DECIAMPS 10U
 
 typedef enum {
     POWER_FSM_STATE_INIT = 0,
@@ -106,6 +107,11 @@ _Static_assert(POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS <
                (sizeof(power_current_limit_pot_values) /
                 sizeof(power_current_limit_pot_values[0])),
                "Default current limit is outside the potentiometer lookup table");
+
+_Static_assert(POWER_CHASSIS_CURRENT_LIMIT_DECIAMPS <
+               (sizeof(power_current_limit_pot_values) /
+                sizeof(power_current_limit_pot_values[0])),
+               "Chassis current limit is outside the potentiometer lookup table");
 
 static const Power_ChannelConfig power_channel_configs[POWER_CHANNEL_COUNT] = {
     {
@@ -300,7 +306,10 @@ static void power_fsm_idle_service(FSM *fsm) {
 static void power_fsm_idle_exit(FSM *fsm) {
     Power_Channel *channel = fsm->context;
 
-    channel->current_limit.requested_deciamps = POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS;
+    channel->current_limit.requested_deciamps =
+        Backplane_GetLocation() == BACKPLANE_LOCATION_CHASSIS
+            ? POWER_CHASSIS_CURRENT_LIMIT_DECIAMPS
+            : POWER_DEFAULT_CURRENT_LIMIT_DECIAMPS;
 }
 
 static void power_fsm_set_current_limit_enter(FSM *fsm) {

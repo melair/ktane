@@ -7,6 +7,9 @@
 #include "mode/support/chassis/edgework/manager.h"
 #include "mode/support/chassis/backplane/manager.h"
 #include "sys/i2s.h"
+#include "audio_mixer.h"
+
+#define CHASSIS_AUDIO_CHANNEL_COUNT 8u
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +22,9 @@ typedef struct {
     Backplane_Data backplane;
     AudioData audio;
     int16_t audio_buffer[I2S_AUDIO_BUFFER_SAMPLE_COUNT];
+    AudioMixer audio_mixer;
+    /* Caller supplies channel source buffers and playback settings. */
+    AudioChannel audio_channels[CHASSIS_AUDIO_CHANNEL_COUNT];
 } Chassis_Data;
 
 extern Mode_Definition chassis_mode;

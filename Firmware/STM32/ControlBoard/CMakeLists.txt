@@ -23,6 +23,7 @@ set(CMSIS_INCLUDE_DIRS
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/version.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/audio_mixer.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/node_link.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/fat.c

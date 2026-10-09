@@ -10,8 +10,10 @@ static Chassis_Data *const chassis = &mode_data.mode.chassis;
 
 static void chassis_fsm_init_enter(FSM *fsm) {
     chassis->audio.buffer = chassis->audio_buffer;
-    chassis->audio.buffer_size = I2S_AUDIO_BUFFER_SAMPLE_COUNT;
-    I2S_Init(&chassis->audio);
+    chassis->audio.frame_count = I2S_AUDIO_FRAME_COUNT;
+    AudioMixer_Init(&chassis->audio_mixer, &chassis->audio,
+                    chassis->audio_channels, CHASSIS_AUDIO_CHANNEL_COUNT);
+    I2S_Init(&chassis->audio, AudioMixer_OutputConsumed, &chassis->audio_mixer);
     DAC_Init();
     if (!Edgework_Init() || !Backplane_Init()) {
         Error_Handler();
@@ -28,7 +30,7 @@ static void chassis_fsm_init_service(FSM *fsm) {
 }
 
 static void chassis_always_service(void) {
-    I2S_Service(&chassis->audio);
+    AudioMixer_Service(&chassis->audio_mixer);
     DAC_Service();
     Edgework_Service();
     Backplane_Service();
