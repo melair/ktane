@@ -1,9 +1,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "game.h"
+#include "mode/support/chassis/sound/sound.h"
 #include "mode.h"
 #include "nodes.h"
 #include "protocol.h"
+#include "protocol/node.h"
 #include "sys/can.h"
 #include "fsm/fsm.h"
 #include "sys/mcu_init.h"
@@ -45,8 +47,8 @@ typedef struct {
     void (*callback)(Protocol_Message *message);
 } PacketRegistry;
 
-static void handle_identifier_announce(Protocol_Message *message);
-static void handle_identifier_nak(Protocol_Message *message);
+static void Protocol_IdentifierAnnounce(Protocol_Message *message);
+static void Protocol_IdentifyNack(Protocol_Message *message);
 
 static void protocol_fsm_wait_announce_enter(FSM *fsm);
 static void protocol_fsm_wait_announce_service(FSM *fsm);
@@ -111,22 +113,20 @@ static bool action_is_due(const uint32_t action_at) {
     return (int32_t)(HAL_GetTick() - action_at) >= 0;
 }
 
-static void handle_identifier_announce(Protocol_Message *message) {
+static void Protocol_IdentifierAnnounce(Protocol_Message *message) {
     if ((message->direction != CAN_DIRECTION_IN) ||
         (message->identifier != protocol.identifier)) {
         return;
     }
 
-    Packet nak = {0};
-    nak.node.identifier_nak.serial = UID;
-    Protocol_Send(MODULE_IDENTIFIER_NAK, &nak);
+    Protocol_NodeIdentifierNak(UID);
 
     if (!protocol.identifier_negotiation.identifier_negotiated) {
         protocol.identifier_negotiation.collision_detected = true;
     }
 }
 
-static void handle_identifier_nak(Protocol_Message *message) {
+static void Protocol_IdentifyNack(Protocol_Message *message) {
     if (!protocol.identifier_negotiation.identifier_negotiated &&
         (message->direction == CAN_DIRECTION_IN) &&
         (message->identifier == protocol.identifier)) {
@@ -154,9 +154,7 @@ static void protocol_fsm_announce_enter(FSM *fsm) {
         return;
     }
 
-    Packet announcement = {0};
-    announcement.node.identifier_announce.serial = UID;
-    Protocol_Send(MODULE_IDENTIFIER_ANNOUNCE, &announcement);
+    Protocol_NodeIdentifierAnnounce(UID);
 
     protocol.identifier_negotiation.announcement_count++;
     if (protocol.identifier_negotiation.announcement_count < PROTOCOL_IDENTIFIER_ANNOUNCEMENT_COUNT) {

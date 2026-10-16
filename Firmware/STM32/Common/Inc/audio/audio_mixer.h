@@ -1,7 +1,7 @@
 #ifndef AUDIO_MIXER_H
 #define AUDIO_MIXER_H
 
-#include "audio.h"
+#include "audio/audio.h"
 
 #ifdef __cplusplus
 extern "C" {

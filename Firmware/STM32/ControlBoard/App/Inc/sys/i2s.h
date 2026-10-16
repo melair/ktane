@@ -1,7 +1,7 @@
 #ifndef I2S_H
 #define I2S_H
 
-#include "audio.h"
+#include "audio/audio.h"
 
 #define I2S_AUDIO_FRAME_COUNT 960u
 #define I2S_AUDIO_CHANNEL_COUNT 2u

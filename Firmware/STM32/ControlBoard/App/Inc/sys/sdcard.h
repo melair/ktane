@@ -2,6 +2,8 @@
 #define SDCARD_H
 
 #include <stdbool.h>
+#include <stddef.h>
+#include "block_io/block_io.h"
 #include "stm32h5xx_hal.h"
 
 typedef enum {
@@ -11,34 +13,6 @@ typedef enum {
     SDCARD_STATE_READY,
     SDCARD_STATE_ERROR,
 } SDCard_State;
-
-typedef enum {
-    SDCARD_STATUS_SUCCESS,
-    SDCARD_STATUS_UNAVAILABLE,
-    SDCARD_STATUS_CANCELLED,
-    SDCARD_STATUS_TIMEOUT,
-    SDCARD_STATUS_TRANSFER_ERROR,
-    SDCARD_STATUS_PENDING,
-    SDCARD_STATUS_INVALID,
-} SDCard_Status;
-
-typedef enum {
-    SDCARD_OPERATION_READ,
-    SDCARD_OPERATION_WRITE,
-} SDCard_Operation;
-
-typedef struct SDCard_Transaction SDCard_Transaction;
-
-struct SDCard_Transaction {
-    SDCard_Operation operation;
-    volatile SDCard_Status status;
-    uint32_t sector;
-    uint32_t sector_count;
-    void *data;
-    SDCard_Transaction *(*callback)(SDCard_Transaction *);
-    void *callback_data;
-    SDCard_Transaction *queue_next;
-};
 
 typedef struct {
     uint32_t bus_clock_hz; /* Actual configured SDMMC bus clock after init. */
@@ -78,7 +52,10 @@ const SDCard_Info *SDCard_GetInfo(void);
  * status polling. Card loss clears outstanding work and ignores follow-ons
  * returned by failure callbacks. Do not recursively call Service().
  */
-bool SDCard_Queue(SDCard_Transaction *transaction);
+bool SDCard_Queue(BlockIO_Transaction *transaction);
+
+/* Check DMA-accessible SRAM and four-byte alignment, independent of readiness. */
+bool SDCard_BufferValid(const void *data, size_t size);
 
 /* Handle is available only while ready and present. Do not retain it across
  * service calls or access the peripheral while sector requests are outstanding.

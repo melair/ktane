@@ -2,14 +2,13 @@
 #define CHASSIS_H
 
 #include "mode_fsm.h"
-#include "mode/support/chassis/dac.h"
+#include "mode/support/chassis/sound/dac.h"
+#include "mode/support/chassis/sound/player.h"
 #include "mode/support/chassis/edgework/bus.h"
 #include "mode/support/chassis/edgework/manager.h"
 #include "mode/support/chassis/backplane/manager.h"
 #include "sys/i2s.h"
-#include "audio_mixer.h"
-
-#define CHASSIS_AUDIO_CHANNEL_COUNT 8u
+#include "audio/audio_mixer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,8 +22,7 @@ typedef struct {
     AudioData audio;
     int16_t audio_buffer[I2S_AUDIO_BUFFER_SAMPLE_COUNT];
     AudioMixer audio_mixer;
-    /* Caller supplies channel source buffers and playback settings. */
-    AudioChannel audio_channels[CHASSIS_AUDIO_CHANNEL_COUNT];
+    Player_Data player;
 } Chassis_Data;
 
 extern Mode_Definition chassis_mode;

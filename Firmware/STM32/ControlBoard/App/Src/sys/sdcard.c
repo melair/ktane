@@ -16,7 +16,7 @@
 #define SDCARD_ERROR_HALF_PERIOD_MS 250U
 #define SDCARD_ACTIVITY_MS 25U
 #define SDCARD_INIT_HALF_PERIOD_MS 125U
-#define SDCARD_SECTOR_SIZE 512U
+#define SDCARD_SECTOR_SIZE BLOCK_IO_SECTOR_SIZE
 #define SDCARD_TRANSFER_TIMEOUT_MS 1000U
 
 typedef enum { IO_IDLE, IO_COMMAND, IO_DATA, IO_STOP, IO_READY_WAIT, IO_STATUS } SDCard_IOState;
@@ -35,13 +35,13 @@ static struct {
     bool detecting;
     bool boot_card_present;
     bool activity;
-    SDCard_Transaction *queue_head;
-    SDCard_Transaction *queue_tail;
-    SDCard_Transaction *active_transaction;
+    BlockIO_Transaction *queue_head;
+    BlockIO_Transaction *queue_tail;
+    BlockIO_Transaction *active_transaction;
     uint32_t io_at;
     uint32_t retry_at;
     SDCard_IOState io_state;
-    SDCard_Status failure_status;
+    BlockIO_Status failure_status;
 } sdcard;
 
 static void led_set(bool on) {
@@ -183,10 +183,17 @@ static const FSM_State states[] = {
     },
 };
 
-static bool transaction_valid(const SDCard_Transaction *transaction) {
+bool SDCard_BufferValid(const void *data, size_t size) {
+    const uintptr_t address = (uintptr_t)data;
+    const uintptr_t ram_end = SRAM3_BASE_NS + SRAM3_SIZE;
+    return (address & 3U) == 0U && address >= SRAM1_BASE_NS &&
+        address < ram_end && size != 0 && size <= ram_end - address;
+}
+
+static bool transaction_valid(const BlockIO_Transaction *transaction) {
     if (transaction == NULL ||
-        (transaction->operation != SDCARD_OPERATION_READ &&
-         transaction->operation != SDCARD_OPERATION_WRITE)) {
+        (transaction->operation != BLOCK_IO_OPERATION_READ &&
+         transaction->operation != BLOCK_IO_OPERATION_WRITE)) {
         return false;
     }
     const uint32_t sector = transaction->sector;
@@ -196,10 +203,7 @@ static bool transaction_valid(const SDCard_Transaction *transaction) {
         return false;
     }
     const uint32_t bytes = count * SDCARD_SECTOR_SIZE;
-    const uintptr_t address = (uintptr_t)transaction->data;
-    const uintptr_t ram_end = SRAM3_BASE_NS + SRAM3_SIZE;
-    return (address & 3U) == 0U && address >= SRAM1_BASE_NS &&
-        address < ram_end && bytes <= ram_end - address &&
+    return SDCard_BufferValid(transaction->data, bytes) &&
         sector < sdcard.handle.SdCard.LogBlockNbr &&
         count <= sdcard.handle.SdCard.LogBlockNbr - sector &&
         (sdcard.handle.SdCard.CardType != CARD_SDSC ||
@@ -207,12 +211,12 @@ static bool transaction_valid(const SDCard_Transaction *transaction) {
           count - 1U <= UINT32_MAX / SDCARD_SECTOR_SIZE - sector));
 }
 
-bool SDCard_Queue(SDCard_Transaction *transaction) {
+bool SDCard_Queue(BlockIO_Transaction *transaction) {
     if (SDCard_GetHandle() == NULL || !transaction_valid(transaction)) {
         return false;
     }
     transaction->queue_next = NULL;
-    transaction->status = SDCARD_STATUS_PENDING;
+    transaction->status = BLOCK_IO_STATUS_PENDING;
     if (sdcard.queue_tail == NULL) {
         sdcard.queue_head = transaction;
     } else {
@@ -222,8 +226,8 @@ bool SDCard_Queue(SDCard_Transaction *transaction) {
     return true;
 }
 
-static SDCard_Transaction *dequeue_transaction(void) {
-    SDCard_Transaction *transaction = sdcard.queue_head;
+static BlockIO_Transaction *dequeue_transaction(void) {
+    BlockIO_Transaction *transaction = sdcard.queue_head;
     if (transaction != NULL) {
         sdcard.queue_head = transaction->queue_next;
         if (sdcard.queue_head == NULL) {
@@ -234,23 +238,23 @@ static SDCard_Transaction *dequeue_transaction(void) {
     return transaction;
 }
 
-static void transaction_complete(SDCard_Status status) {
-    SDCard_Transaction *completed = sdcard.active_transaction;
+static void transaction_complete(BlockIO_Status status) {
+    BlockIO_Transaction *completed = sdcard.active_transaction;
     sdcard.active_transaction = NULL;
     sdcard.io_state = IO_IDLE;
     completed->queue_next = NULL;
     completed->status = status;
-    SDCard_Transaction *next = completed->callback != NULL ? completed->callback(completed) : NULL;
+    BlockIO_Transaction *next = completed->callback != NULL ? completed->callback(completed) : NULL;
     /* A callback can report a card error. Ignore follow-ons after shutdown,
      * and leave remaining queued transactions for the next service to cancel. */
     if (next != NULL && SDCard_GetHandle() != NULL) {
         next->queue_next = NULL;
-        next->status = SDCARD_STATUS_PENDING;
+        next->status = BLOCK_IO_STATUS_PENDING;
         sdcard.active_transaction = next;
     }
 }
 
-static void transaction_cancel(SDCard_Transaction *transaction, SDCard_Status status) {
+static void transaction_cancel(BlockIO_Transaction *transaction, BlockIO_Status status) {
     transaction->queue_next = NULL;
     transaction->status = status;
     if (transaction->callback != NULL) {
@@ -262,11 +266,11 @@ static void transaction_cancel(SDCard_Transaction *transaction, SDCard_Status st
 static void queue_clear(void) {
     /* The lifecycle has already stopped/reset the host. Detach everything
      * before callbacks; no request survives into the next card session. */
-    SDCard_Transaction *active = sdcard.active_transaction;
-    SDCard_Transaction *queued = sdcard.queue_head;
+    BlockIO_Transaction *active = sdcard.active_transaction;
+    BlockIO_Transaction *queued = sdcard.queue_head;
     const bool unavailable = !SDCard_IsPresent();
-    const SDCard_Status active_status = unavailable ? SDCARD_STATUS_UNAVAILABLE :
-        (sdcard.io_state != IO_IDLE ? sdcard.failure_status : SDCARD_STATUS_CANCELLED);
+    const BlockIO_Status active_status = unavailable ? BLOCK_IO_STATUS_UNAVAILABLE :
+        (sdcard.io_state != IO_IDLE ? sdcard.failure_status : BLOCK_IO_STATUS_CANCELLED);
     sdcard.active_transaction = NULL;
     sdcard.queue_head = NULL;
     sdcard.queue_tail = NULL;
@@ -275,8 +279,8 @@ static void queue_clear(void) {
         transaction_cancel(active, active_status);
     }
     while (queued != NULL) {
-        SDCard_Transaction *next = queued->queue_next;
-        transaction_cancel(queued, unavailable ? SDCARD_STATUS_UNAVAILABLE : SDCARD_STATUS_CANCELLED);
+        BlockIO_Transaction *next = queued->queue_next;
+        transaction_cancel(queued, unavailable ? BLOCK_IO_STATUS_UNAVAILABLE : BLOCK_IO_STATUS_CANCELLED);
         queued = next;
     }
 }
@@ -284,7 +288,7 @@ static void queue_clear(void) {
 static void io_fail(uint32_t error) {
     sdcard.failure_status = (error & (HAL_SD_ERROR_TIMEOUT | HAL_SD_ERROR_CMD_RSP_TIMEOUT |
                                     HAL_SD_ERROR_DATA_TIMEOUT)) != 0U ?
-        SDCARD_STATUS_TIMEOUT : SDCARD_STATUS_TRANSFER_ERROR;
+        BLOCK_IO_STATUS_TIMEOUT : BLOCK_IO_STATUS_TRANSFER_ERROR;
     init_fail(error);
     FSM_Service(&sdcard.fsm);
     queue_clear();
@@ -334,22 +338,22 @@ static void sector_service(void) {
     if (sdcard.active_transaction == NULL) {
         sdcard.active_transaction = dequeue_transaction();
     }
-    SDCard_Transaction *request = sdcard.active_transaction;
+    BlockIO_Transaction *request = sdcard.active_transaction;
     if (request == NULL) {
         return;
     }
     if (sdcard.io_state == IO_IDLE && !transaction_valid(request)) {
-        transaction_complete(SDCARD_STATUS_INVALID);
+        transaction_complete(BLOCK_IO_STATUS_INVALID);
         return;
     }
-    const bool write = request->operation == SDCARD_OPERATION_WRITE;
+    const bool write = request->operation == BLOCK_IO_OPERATION_WRITE;
     const bool multiple = request->sector_count > 1U;
     const uint32_t command = write ?
         (multiple ? SDMMC_CMD_WRITE_MULT_BLOCK : SDMMC_CMD_WRITE_SINGLE_BLOCK) :
         (multiple ? SDMMC_CMD_READ_MULT_BLOCK : SDMMC_CMD_READ_SINGLE_BLOCK);
     if (sdcard.io_state == IO_IDLE) {
         sdcard.io_at = HAL_GetTick();
-        sdcard.failure_status = SDCARD_STATUS_CANCELLED;
+        sdcard.failure_status = BLOCK_IO_STATUS_CANCELLED;
         sdcard.handle.State = HAL_SD_STATE_BUSY;
         sdcard.handle.ErrorCode = HAL_SD_ERROR_NONE;
         SDMMC1->MASK = 0U;
@@ -458,7 +462,7 @@ static void sector_service(void) {
         }
         sdcard.handle.State = HAL_SD_STATE_READY;
         SDCard_Activity();
-        transaction_complete(SDCARD_STATUS_SUCCESS);
+        transaction_complete(BLOCK_IO_STATUS_SUCCESS);
     }
 }
 

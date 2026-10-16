@@ -18,6 +18,8 @@ extern "C" {
 #define OPCODE_MASK 0x0FFU
 #define MODULE_IDENTIFIER_MASK 0x0FFU
 
+#define PROTOCOL_SOUND_NAME_SIZE 10u
+
 /*
  * Add each packet here once. The list generates both OpCode and the
  * routing metadata consumed by Protocol_Receive(). Replace NULL with the
@@ -27,8 +29,10 @@ extern "C" {
     X(GAME_REQUEST_TRANSITION,      SUBSYS_GAME | 0x00U, game.request_transition,   Game_ReceiveRequestTransition) \
     X(GAME_UPDATE,                  SUBSYS_GAME | 0x01U, game.update,               Game_ReceiveUpdate) \
     X(GAME_EVENT,                   SUBSYS_GAME | 0x02U, game.event,                Game_ReceiveEvent) \
-    X(MODULE_IDENTIFIER_ANNOUNCE,   SUBSYS_NODE | 0x00U, node.identifier_announce, handle_identifier_announce) \
-    X(MODULE_IDENTIFIER_NAK,        SUBSYS_NODE | 0x01U, node.identifier_nak,      handle_identifier_nak) \
+    X(GAME_SOUND_PLAY,              SUBSYS_GAME | 0x10U, game.sound_play,           Sound_ReceivePlay) \
+    X(GAME_SOUND_STOP,              SUBSYS_GAME | 0x11U, game.sound_stop,           Sound_ReceiveStop) \
+    X(MODULE_IDENTIFIER_ANNOUNCE,   SUBSYS_NODE | 0x00U, node.identifier_announce, Protocol_IdentifierAnnounce) \
+    X(MODULE_IDENTIFIER_NAK,        SUBSYS_NODE | 0x01U, node.identifier_nak,      Protocol_IdentifyNack) \
     X(MODULE_ANNOUNCE,              SUBSYS_NODE | 0x10U, node.announce,            Nodes_ReceiveAnnounce)
 
 #define PROTOCOL_DECLARE_OPCODE(opcode, value, member, callback) opcode = value,
@@ -77,6 +81,18 @@ typedef struct {
                 uint8_t event;
                 uint32_t timestamp;
             } event;
+
+            struct {
+                uint16_t request_id;
+                uint8_t mode_id;
+                char name[PROTOCOL_SOUND_NAME_SIZE]; /* NUL padded; all 10 bytes may be used. */
+                uint8_t volume;
+            } sound_play;
+
+            struct {
+                uint16_t request_id;
+                uint16_t fade_ms;
+            } sound_stop;
         } game;
 
         union {

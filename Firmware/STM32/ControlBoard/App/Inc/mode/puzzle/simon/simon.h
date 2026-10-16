@@ -11,6 +11,7 @@ extern "C" {
 
 typedef struct {
     Lamp lamps[4];
+    uint16_t sound_request_id;
     uint8_t startup_lamp_index;
     uint8_t startup_loop_count;
     bool startup_lamp_on;

@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "node_link/protocol.h"
 #include "stm32h5xx_hal.h"
 
 #define MAXIMUM_NODES 16
@@ -24,6 +25,18 @@ typedef struct {
 } Node;
 
 static Node nodes[MAXIMUM_NODES] = {0};
+
+uint8_t Nodes_GetChassisLocation(uint8_t identifier) {
+    const uint32_t now = HAL_GetTick();
+    for (uint8_t index = 0u; index < MAXIMUM_NODES; ++index) {
+        const Node *node = &nodes[index];
+        if (node->identifier == identifier && node->flags.active &&
+            (now - node->last_announcement) < NODE_INACTIVE_TIMEOUT_MS) {
+            return node->chassis_location;
+        }
+    }
+    return NODE_CHASSIS_LOCATION_UNKNOWN;
+}
 
 void Nodes_ReceiveAnnounce(Protocol_Message *message) {
     const uint32_t now = HAL_GetTick();

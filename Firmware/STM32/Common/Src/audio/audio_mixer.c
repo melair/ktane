@@ -1,9 +1,9 @@
-#include "audio_mixer.h"
+#include "audio/audio_mixer.h"
 
 #include <stdbool.h>
 #include <string.h>
 
-#include "stm32h5xx.h"
+#include "cmsis_compiler.h"
 
 static float channel_gain(float volume) {
     /* Also treats NaN as muted. */
@@ -102,7 +102,6 @@ void AudioMixer_Service(AudioMixer *mixer) {
         output += (uint32_t) frame_count * 2u;
     }
 
-    // TODO - Why?
     if (!playing) {
         memset(output, 0, (size_t) frame_count * 2u * sizeof(int16_t));
         return;

@@ -1,6 +1,6 @@
 #include "mode.h"
 #include <stdint.h>
-#include "protocol.h"
+#include "protocol/node.h"
 #include "stm32h5xx_hal.h"
 #include "fsm/fsm.h"
 #include "sys/mcu_init.h"
@@ -80,13 +80,8 @@ void Mode_Service(void) {
     FSM_Service(&mode.fsm);
 
     if (tick_2hz) {
-        Packet announcement = {0};
-        announcement.node.announce.serial = UID;
-        announcement.node.announce.uptime = HAL_GetTick();
-        announcement.node.announce.mode = mode.mode;
-        announcement.node.announce.state = mode.fsm.current_id;
-        announcement.node.announce.flags.chassis_location = mode.chassis_location;
-        Protocol_Send(MODULE_ANNOUNCE, &announcement);
+        Protocol_NodeAnnounce(UID, HAL_GetTick(), mode.mode,
+                              mode.fsm.current_id, mode.chassis_location);
     }
 }
 

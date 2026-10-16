@@ -23,16 +23,16 @@ const (
 
 var notes = []note{
 	{name: "C4", fileStem: "c4", midiNumber: 60},
-	{name: "C#4", fileStem: "csharp4", midiNumber: 61},
+	{name: "C#4", fileStem: "cs4", midiNumber: 61},
 	{name: "D4", fileStem: "d4", midiNumber: 62},
-	{name: "D#4", fileStem: "dsharp4", midiNumber: 63},
+	{name: "D#4", fileStem: "ds4", midiNumber: 63},
 	{name: "E4", fileStem: "e4", midiNumber: 64},
 	{name: "F4", fileStem: "f4", midiNumber: 65},
-	{name: "F#4", fileStem: "fsharp4", midiNumber: 66},
+	{name: "F#4", fileStem: "fs4", midiNumber: 66},
 	{name: "G4", fileStem: "g4", midiNumber: 67},
-	{name: "G#4", fileStem: "gsharp4", midiNumber: 68},
+	{name: "G#4", fileStem: "gs4", midiNumber: 68},
 	{name: "A4", fileStem: "a4", midiNumber: 69},
-	{name: "A#4", fileStem: "asharp4", midiNumber: 70},
+	{name: "A#4", fileStem: "as4", midiNumber: 70},
 	{name: "B4", fileStem: "b4", midiNumber: 71},
 }
 
@@ -86,7 +86,7 @@ func run(opts options, out io.Writer) error {
 	count := 0
 	for _, n := range notes {
 		for _, v := range velocities {
-			path := filepath.Join(opts.outputDir, fmt.Sprintf("%s_%s_vel%d.mid", n.fileStem, v.name, v.value))
+			path := filepath.Join(opts.outputDir, fmt.Sprintf("%s_%s.mid", n.fileStem, v.name))
 			data, err := buildMIDIFile(n, v)
 			if err != nil {
 				return fmt.Errorf("build %s: %w", path, err)

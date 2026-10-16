@@ -1,6 +1,7 @@
 #include "mode/puzzle/simon/simon.h"
 #include "mode.h"
 #include "mode_fsm.h"
+#include "protocol/sound.h"
 #include "pwm/pwm.h"
 #include "sys/gpio.h"
 #include "stm32h5xx_it.h"
@@ -24,10 +25,10 @@
 #define SIMON_RED_LAMP_Pin GPIO_C3_Pin
 #define SIMON_RED_LAMP_Port GPIO_C3_Port
 
-#define SIMON_STARTUP_PULSE_MS 400U
-#define SIMON_STARTUP_GAP_MS 100U
+#define SIMON_STARTUP_LAMP_DURATION_MS 500U
+#define SIMON_STARTUP_GAP_MS 250U
 #define SIMON_STARTUP_LOOP_COUNT 3U
-#define SIMON_ATTRACT_LAMP_DURATION_MS 1000U
+#define SIMON_ATTRACT_LAMP_DURATION_MS 500U
 
 static Simon_Data *const simon = &mode_data.mode.simon;
 static const GPIO_PinDef simon_button_pins[] = {
@@ -41,6 +42,12 @@ static const GPIO_PinDef simon_lamp_pins[] = {
     {SIMON_YELLOW_LAMP_Port, SIMON_YELLOW_LAMP_Pin},
     {SIMON_GREEN_LAMP_Port, SIMON_GREEN_LAMP_Pin},
     {SIMON_RED_LAMP_Port, SIMON_RED_LAMP_Pin},
+};
+static const char simon_sound_names[][7] = {
+    "blue",
+    "yellow",
+    "green",
+    "red",
 };
 
 static void simon_lamp_set(const uint8_t lamp_index, const bool enabled) {
@@ -70,6 +77,7 @@ static void simon_lamps_off(void) {
 }
 
 static void simon_init_enter(FSM *fsm) {
+    simon->sound_request_id = 0U;
     for (uint8_t lamp_index = 0U;
          lamp_index < sizeof(simon_lamp_pins) / sizeof(simon_lamp_pins[0]);
          lamp_index++) {
@@ -113,7 +121,7 @@ static void simon_startup_enter(FSM *fsm) {
     simon->startup_loop_count = 0U;
     simon->startup_lamp_on = true;
     simon_lamp_set(simon->startup_lamp_index, true);
-    simon->startup_next_change_ms = HAL_GetTick() + SIMON_STARTUP_PULSE_MS;
+    simon->startup_next_change_ms = HAL_GetTick() + SIMON_STARTUP_LAMP_DURATION_MS;
 }
 
 static void simon_startup_service(FSM *fsm) {
@@ -142,11 +150,7 @@ static void simon_startup_service(FSM *fsm) {
 
     simon->startup_lamp_on = true;
     simon_lamp_set(simon->startup_lamp_index, true);
-    simon->startup_next_change_ms = now_ms + SIMON_STARTUP_PULSE_MS;
-}
-
-static void simon_idle_enter(FSM *fsm) {
-    FSM_Transition(fsm, MODE_FSM_STATE_ATTRACT);
+    simon->startup_next_change_ms = now_ms + SIMON_STARTUP_LAMP_DURATION_MS;
 }
 
 static void simon_attract_enter(FSM *fsm) {
@@ -171,6 +175,8 @@ static void simon_attract_service(FSM *fsm) {
             continue;
         }
         simon_lamp_set(event.channel, true);
+        Protocol_SoundPlay(simon->sound_request_id++, MODE_PUZZLE_SIMON,
+                           simon_sound_names[event.channel], UINT8_MAX);
         simon->attract_lamp_on[event.channel] = true;
         simon->attract_lamp_until_ms[event.channel] = now_ms + SIMON_ATTRACT_LAMP_DURATION_MS;
     }
@@ -194,9 +200,7 @@ static Callbacks simon_state_callbacks[MODE_FSM_STATE_COUNT] = {
         .enter = simon_startup_enter,
         .service = simon_startup_service,
     },
-    [MODE_FSM_STATE_IDLE] = {
-        .enter = simon_idle_enter,
-    },
+    [MODE_FSM_STATE_IDLE] = {0},
     [MODE_FSM_STATE_ATTRACT] = {
         .enter = simon_attract_enter,
         .service = simon_attract_service,

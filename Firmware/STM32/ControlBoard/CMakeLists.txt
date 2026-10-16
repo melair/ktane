@@ -23,15 +23,16 @@ set(CMSIS_INCLUDE_DIRS
 set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/version.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/main.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/audio_mixer.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/node_link.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/game.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/fat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/fat_platform.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/indicator.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode_fsm.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/nodes.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/protocol.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/protocol/node.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/protocol/sound.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_init.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/mcu_load.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/sys/sys_clock.c
@@ -54,7 +55,9 @@ set(APP_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/whosonfirst/whosonfirst.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/whosonfirst/touch.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/puzzle/whosonfirst/vfd.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/dac.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/sound/dac.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/sound/player.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/sound/sound.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/chassis.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework/bus.c
         ${CMAKE_CURRENT_SOURCE_DIR}/App/Src/mode/support/chassis/edgework/manager.c

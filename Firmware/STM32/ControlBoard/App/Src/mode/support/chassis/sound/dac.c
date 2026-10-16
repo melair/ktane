@@ -1,4 +1,4 @@
-#include "mode/support/chassis/dac.h"
+#include "mode/support/chassis/sound/dac.h"
 #include "mode.h"
 #include "sys/gpio.h"
 #include <string.h>

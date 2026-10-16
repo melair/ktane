@@ -13,6 +13,13 @@ add_library(STM32_Common INTERFACE)
 # INTERFACE sources are compiled separately by each consuming firmware target,
 # so they inherit that board's MCU-specific compiler options.
 target_sources(STM32_Common INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/audio/audio.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/audio/audio_mixer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/audio/audio_mixer.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/block_io/block_io.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Src/fat/fat.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fat/fat.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc/fat/fat_platform.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/backplane_bus/protocol.h
         ${CMAKE_CURRENT_SOURCE_DIR}/Src/backplane_bus/router.c
         ${CMAKE_CURRENT_SOURCE_DIR}/Inc/backplane_bus/router.h

@@ -1,5 +1,5 @@
 #include "mode/support/chassis/chassis.h"
-#include "mode/support/chassis/dac.h"
+#include "mode/support/chassis/sound/dac.h"
 #include "mode/support/chassis/edgework/manager.h"
 #include "mode.h"
 #include "mode_fsm.h"
@@ -11,8 +11,9 @@ static Chassis_Data *const chassis = &mode_data.mode.chassis;
 static void chassis_fsm_init_enter(FSM *fsm) {
     chassis->audio.buffer = chassis->audio_buffer;
     chassis->audio.frame_count = I2S_AUDIO_FRAME_COUNT;
+    Player_Init();
     AudioMixer_Init(&chassis->audio_mixer, &chassis->audio,
-                    chassis->audio_channels, CHASSIS_AUDIO_CHANNEL_COUNT);
+                    chassis->player.channels, PLAYER_CHANNEL_COUNT);
     I2S_Init(&chassis->audio, AudioMixer_OutputConsumed, &chassis->audio_mixer);
     DAC_Init();
     if (!Edgework_Init() || !Backplane_Init()) {
@@ -24,13 +25,14 @@ static void chassis_fsm_init_enter(FSM *fsm) {
 static void chassis_fsm_init_service(FSM *fsm) {
     if (DAC_Ready()) {
         FSM_Transition(fsm, MODE_FSM_STATE_STARTUP);
-        DAC_Volume(-50);
+        DAC_Volume(-20);
         DAC_Mute(false);
     }
 }
 
 static void chassis_always_service(void) {
     AudioMixer_Service(&chassis->audio_mixer);
+    Player_Service();
     DAC_Service();
     Edgework_Service();
     Backplane_Service();

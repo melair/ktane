@@ -1,12 +1,14 @@
-#include "fat.h"
+#include "fat/fat.h"
+#include "fat/fat_platform.h"
 
 #include <stdbool.h>
 #include <string.h>
 
+_Static_assert(sizeof(FAT_Type) == sizeof(uint8_t), "FAT type must occupy one byte");
 _Static_assert(sizeof(FAT_Header) == 8, "FAT header layout changed");
 _Static_assert(sizeof(FAT_Entry) == 24, "FAT entry layout changed");
 _Static_assert(sizeof(FAT_Sector) == FAT_SECTOR_SIZE, "FAT sector layout changed");
-_Static_assert(_Alignof(FAT_SectorBuffer) >= 4, "SD buffer must be aligned");
+_Static_assert(_Alignof(FAT_SectorBuffer) >= 4, "Block I/O buffer must be aligned");
 _Static_assert(FAT_CACHE_CAPACITY > 0, "FAT cache must have entries");
 
 enum {
@@ -41,11 +43,11 @@ static struct {
     FAT_Request *continuation; /* Active follow-on, not an I/O work queue. */
     uint32_t high_water_sector;
     bool watermark_complete;
-    /* SD follow-ons serialize I/O, so only one allocation plan is active. */
+    /* Block I/O follow-ons serialize I/O, so only one allocation plan is active. */
     AllocationPlan allocation;
 } fat;
 
-static SDCard_Transaction *io_complete(SDCard_Transaction *transaction);
+static BlockIO_Transaction *io_complete(BlockIO_Transaction *transaction);
 
 static void invalidate(void) {
     memset(fat.cache, 0, sizeof(fat.cache));
@@ -53,14 +55,14 @@ static void invalidate(void) {
     ++fat.generation;
 }
 
-static const SD_HandleTypeDef *media_handle(void) {
-    const SD_HandleTypeDef *handle = SDCard_GetHandle();
-    const bool ready = handle != NULL;
+static uint32_t media_capacity(void) {
+    const uint32_t capacity = FAT_PLATFORM.sector_count();
+    const bool ready = capacity != 0;
     if (fat.ready && !ready) {
         invalidate();
     }
     fat.ready = ready;
-    return handle;
+    return capacity;
 }
 
 static bool key_equal(const FAT_Key *a, const FAT_Key *b) {
@@ -92,7 +94,7 @@ static CacheEntry *cache_find(const FAT_Key *key) {
 }
 
 static void cache_store(const FAT_File *file) {
-    const uint32_t now = HAL_GetTick();
+    const uint32_t now = FAT_PLATFORM.get_tick();
     CacheEntry *slot = cache_find(&file->key);
     if (slot == NULL) {
         slot = &fat.cache[0];
@@ -149,7 +151,7 @@ static void commit_watermark(const FAT_Request *request) {
     }
 }
 
-static SDCard_Transaction *finish(FAT_Request *request, FAT_Status status) {
+static BlockIO_Transaction *finish(FAT_Request *request, FAT_Status status) {
     if (status == FAT_STATUS_SUCCESS) {
         commit_watermark(request);
         if (request->operation != FAT_OPERATION_FORMAT) {
@@ -175,10 +177,10 @@ static SDCard_Transaction *finish(FAT_Request *request, FAT_Status status) {
     return NULL;
 }
 
-static SDCard_Transaction *transfer(FAT_Request *request, uint32_t sector,
-                                    SDCard_Operation operation, uint8_t phase) {
+static BlockIO_Transaction *transfer(FAT_Request *request, uint32_t sector,
+                                    BlockIO_Operation operation, uint8_t phase) {
     request->internal.phase = phase;
-    SDCard_Transaction *transaction = &request->internal.sd_transaction;
+    BlockIO_Transaction *transaction = &request->internal.transaction;
     transaction->operation = operation;
     transaction->sector = sector;
     transaction->sector_count = 1;
@@ -274,13 +276,13 @@ static bool plan_allocation(const FAT_Request *request, uint32_t capacity,
     return true;
 }
 
-static SDCard_Transaction *write_entry(FAT_Request *request) {
+static BlockIO_Transaction *write_entry(FAT_Request *request) {
     create_entry(request, fat.allocation.entry_index);
-    return transfer(request, fat.allocation.entry_sector, SDCARD_OPERATION_WRITE,
+    return transfer(request, fat.allocation.entry_sector, BLOCK_IO_OPERATION_WRITE,
                     fat.allocation.needs_fat_sector ? PHASE_NEW_WRITE : PHASE_COMMIT_WRITE);
 }
 
-static SDCard_Transaction *allocate(FAT_Request *request, uint32_t capacity) {
+static BlockIO_Transaction *allocate(FAT_Request *request, uint32_t capacity) {
     AllocationPlan plan;
     if (!plan_allocation(request, capacity, &plan)) {
         return finish(request, FAT_STATUS_NO_SPACE);
@@ -296,12 +298,12 @@ static SDCard_Transaction *allocate(FAT_Request *request, uint32_t capacity) {
     if (state->scan_sector == plan.entry_sector) {
         return write_entry(request);
     }
-    return transfer(request, plan.entry_sector, SDCARD_OPERATION_READ, PHASE_TARGET_READ);
+    return transfer(request, plan.entry_sector, BLOCK_IO_OPERATION_READ, PHASE_TARGET_READ);
 }
 
 /* Each block is read once. A NULL query only gathers allocation information;
  * an existing match is retained while the remainder establishes the watermark. */
-static SDCard_Transaction *scan_fat(FAT_Request *request, const FAT_Key *query,
+static BlockIO_Transaction *scan_fat(FAT_Request *request, const FAT_Key *query,
                                   uint32_t capacity) {
     FAT_RequestInternal *state = &request->internal;
     const FAT_Sector *sector = &state->buffer.sector;
@@ -358,25 +360,25 @@ static SDCard_Transaction *scan_fat(FAT_Request *request, const FAT_Key *query,
         return allocate(request, capacity);
     }
     state->scan_sector = next;
-    return transfer(request, next, SDCARD_OPERATION_READ, PHASE_SCAN);
+    return transfer(request, next, BLOCK_IO_OPERATION_READ, PHASE_SCAN);
 }
 
-static SDCard_Transaction *io_complete(SDCard_Transaction *transaction) {
+static BlockIO_Transaction *io_complete(BlockIO_Transaction *transaction) {
     FAT_Request *request = transaction->callback_data;
     FAT_RequestInternal *state = &request->internal;
-    const SDCard_Status status = transaction->status;
-    const SD_HandleTypeDef *handle = media_handle();
-    const bool ready = handle != NULL;
-    if (status != SDCARD_STATUS_SUCCESS) {
-        if (transaction->operation == SDCARD_OPERATION_WRITE ||
+    const BlockIO_Status status = transaction->status;
+    const uint32_t capacity = media_capacity();
+    const bool ready = capacity != 0;
+    if (status != BLOCK_IO_STATUS_SUCCESS) {
+        if (transaction->operation == BLOCK_IO_OPERATION_WRITE ||
             state->phase == PHASE_TAIL_READ) {
             invalidate();
         }
         FAT_Status failure = FAT_STATUS_IO_ERROR;
-        if (status == SDCARD_STATUS_TIMEOUT) {
+        if (status == BLOCK_IO_STATUS_TIMEOUT) {
             failure = FAT_STATUS_TIMEOUT;
-        } else if (!ready || status == SDCARD_STATUS_UNAVAILABLE ||
-                   status == SDCARD_STATUS_CANCELLED) {
+        } else if (!ready || status == BLOCK_IO_STATUS_UNAVAILABLE ||
+                   status == BLOCK_IO_STATUS_CANCELLED) {
             failure = FAT_STATUS_UNAVAILABLE;
         }
         return finish(request, failure);
@@ -385,7 +387,6 @@ static SDCard_Transaction *io_complete(SDCard_Transaction *transaction) {
         return finish(request, FAT_STATUS_UNAVAILABLE);
     }
     fat.continuation = request;
-    const uint32_t capacity = handle->SdCard.LogBlockNbr;
     FAT_Sector *sector = &state->buffer.sector;
     switch (state->phase) {
         case PHASE_SCAN:
@@ -397,7 +398,7 @@ static SDCard_Transaction *io_complete(SDCard_Transaction *transaction) {
             }
             return write_entry(request);
         case PHASE_NEW_WRITE:
-            return transfer(request, state->tail_sector, SDCARD_OPERATION_READ, PHASE_TAIL_READ);
+            return transfer(request, state->tail_sector, BLOCK_IO_OPERATION_READ, PHASE_TAIL_READ);
         case PHASE_TAIL_READ:
             if (!valid_sector(sector, state->tail_sector, capacity) ||
                 sector->header.next_fat_sector != FAT_LAST_SECTOR) {
@@ -405,7 +406,7 @@ static SDCard_Transaction *io_complete(SDCard_Transaction *transaction) {
                 return finish(request, FAT_STATUS_CORRUPT_FAT);
             }
             sector->header.next_fat_sector = state->new_fat_sector;
-            return transfer(request, state->tail_sector, SDCARD_OPERATION_WRITE, PHASE_COMMIT_WRITE);
+            return transfer(request, state->tail_sector, BLOCK_IO_OPERATION_WRITE, PHASE_COMMIT_WRITE);
         case PHASE_COMMIT_WRITE:
             return finish(request, FAT_STATUS_SUCCESS);
         default:
@@ -426,18 +427,18 @@ void FAT_Service(void) {
     if (!fat.initialized) {
         return;
     }
-    const bool ready = media_handle() != NULL;
+    const bool ready = media_capacity() != 0;
     /* Detach this batch so callbacks cannot cause delivery of newly submitted
      * cache hits within the same service pass. */
     FAT_Request *request = fat.completion_head;
     fat.completion_head = NULL;
     fat.completion_tail = NULL;
     /* Removal can occur between our callback returning a follow-on and the
-     * SD driver's readiness check. It then discards the follow-on, leaving
-     * its transaction SUCCESS rather than PENDING and no SD queue reference.
-     * Complete that orphan here; never release a still-pending SD buffer. */
+     * backend's readiness check. It then discards the follow-on, leaving
+     * its transaction SUCCESS rather than PENDING and no backend queue reference.
+     * Complete that orphan here; never release a still-pending I/O buffer. */
     if (fat.continuation != NULL &&
-        fat.continuation->internal.sd_transaction.status != SDCARD_STATUS_PENDING) {
+        fat.continuation->internal.transaction.status != BLOCK_IO_STATUS_PENDING) {
         FAT_Request *orphan = fat.continuation;
         invalidate();
         finish(orphan, FAT_STATUS_UNAVAILABLE);
@@ -445,17 +446,15 @@ void FAT_Service(void) {
     while (request != NULL) {
         FAT_Request *next = request->internal.completion_next;
         finish(request, ready && request->internal.media_generation == fat.generation &&
-               media_handle() != NULL ? FAT_STATUS_SUCCESS : FAT_STATUS_UNAVAILABLE);
+               media_capacity() != 0 ? FAT_STATUS_SUCCESS : FAT_STATUS_UNAVAILABLE);
         request = next;
     }
 }
 
 static FAT_Status submit(FAT_Request *request, FAT_Operation operation) {
     const uintptr_t address = (uintptr_t)request;
-    const uintptr_t ram_end = SRAM3_BASE_NS + SRAM3_SIZE;
     if (request == NULL || address % _Alignof(FAT_Request) != 0 ||
-        address < SRAM1_BASE_NS || address >= ram_end ||
-        sizeof(*request) > ram_end - address ||
+        !FAT_PLATFORM.buffer_valid(request->internal.buffer.words, FAT_SECTOR_SIZE) ||
         (operation == FAT_OPERATION_CREATE && request->size_bytes > FAT_MAX_FILE_SIZE)) {
         return FAT_STATUS_INVALID_ARGUMENT;
     }
@@ -466,14 +465,14 @@ static FAT_Status submit(FAT_Request *request, FAT_Operation operation) {
     if (!fat.initialized) {
         return FAT_STATUS_UNAVAILABLE;
     }
-    const SD_HandleTypeDef *handle = media_handle();
-    if (handle == NULL) {
+    const uint32_t capacity = media_capacity();
+    if (capacity == 0) {
         return FAT_STATUS_UNAVAILABLE;
     }
     if (operation == FAT_OPERATION_FIND) {
         CacheEntry *hit = cache_find(&request->key);
         if (hit != NULL) {
-            hit->tick = HAL_GetTick();
+            hit->tick = FAT_PLATFORM.get_tick();
             request->operation = operation;
             request->status = FAT_STATUS_PENDING;
             request->result = hit->file;
@@ -490,28 +489,41 @@ static FAT_Status submit(FAT_Request *request, FAT_Operation operation) {
             return FAT_STATUS_PENDING;
         }
     }
-    /* SDCard_Queue rejects synchronously. Restore all caller-visible and
-     * internal fields on rejection, as promised by the public contract. */
-    const FAT_Request saved = *request;
-    memset(&request->internal, 0, sizeof(request->internal));
+    /* Queue before initializing the request or its sector buffer. The backend
+     * only accesses the buffer on a later service pass, so rejection needs to
+     * restore just the transaction descriptor, not a sector-sized request. */
+    BlockIO_Transaction *transaction = &request->internal.transaction;
+    const BlockIO_Transaction saved = *transaction;
+    *transaction = (BlockIO_Transaction) {
+        .operation = operation == FAT_OPERATION_FORMAT
+            ? BLOCK_IO_OPERATION_WRITE : BLOCK_IO_OPERATION_READ,
+        .sector = FAT_ROOT_SECTOR,
+        .sector_count = 1,
+        .data = request->internal.buffer.words,
+        .callback = io_complete,
+        .callback_data = request,
+    };
+    if (!FAT_PLATFORM.queue(transaction)) {
+        *transaction = saved;
+        return media_capacity() != 0 ? FAT_STATUS_INVALID_ARGUMENT : FAT_STATUS_UNAVAILABLE;
+    }
+
+    /* Preserve the accepted transaction, including backend queue links. */
+    memset(&request->internal.buffer, 0,
+           sizeof(request->internal) - offsetof(FAT_RequestInternal, buffer));
     request->internal.media_generation = fat.generation;
     request->internal.match_sector = FAT_LAST_SECTOR;
     request->internal.free_entry_sector = FAT_LAST_SECTOR;
     request->internal.new_fat_sector = FAT_LAST_SECTOR;
-    request->internal.traversal_remaining = handle->SdCard.LogBlockNbr;
+    request->internal.traversal_remaining = capacity;
     request->operation = operation;
     request->status = FAT_STATUS_PENDING;
     memset(&request->result, 0, sizeof(request->result));
-    SDCard_Transaction *transaction;
     if (operation == FAT_OPERATION_FORMAT) {
         empty_sector(&request->internal.buffer.sector);
-        transaction = transfer(request, FAT_ROOT_SECTOR, SDCARD_OPERATION_WRITE, PHASE_COMMIT_WRITE);
+        request->internal.phase = PHASE_COMMIT_WRITE;
     } else {
-        transaction = transfer(request, FAT_ROOT_SECTOR, SDCARD_OPERATION_READ, PHASE_SCAN);
-    }
-    if (!SDCard_Queue(transaction)) {
-        *request = saved;
-        return media_handle() != NULL ? FAT_STATUS_INVALID_ARGUMENT : FAT_STATUS_UNAVAILABLE;
+        request->internal.phase = PHASE_SCAN;
     }
     ++fat.outstanding;
     if (operation == FAT_OPERATION_FORMAT) {

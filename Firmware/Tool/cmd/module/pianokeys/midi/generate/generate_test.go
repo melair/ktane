@@ -26,9 +26,9 @@ func TestRunGeneratesAllPianoKeyMIDIFiles(t *testing.T) {
 	}
 
 	expected := []string{
-		"c4_soft_vel24.mid",
-		"csharp4_medium_vel64.mid",
-		"b4_hard_vel112.mid",
+		"c4_soft.mid",
+		"cs4_medium.mid",
+		"b4_hard.mid",
 	}
 	for _, name := range expected {
 		if _, err := os.Stat(filepath.Join(dir, name)); err != nil {

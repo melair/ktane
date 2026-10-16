@@ -3,9 +3,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "sys/sdcard.h"
+#include "block_io/block_io.h"
 
-#define FAT_SECTOR_SIZE 512u
+#define FAT_SECTOR_SIZE BLOCK_IO_SECTOR_SIZE
 #define FAT_ROOT_SECTOR 0u
 #define FAT_MAX_ENTRIES 21u
 #define FAT_NAME_SIZE 10u
@@ -16,6 +16,12 @@
 #ifndef FAT_CACHE_CAPACITY
 #define FAT_CACHE_CAPACITY 32u
 #endif
+
+typedef enum : uint8_t {
+    FAT_TYPE_UNKNOWN = 0x00u,
+    FAT_TYPE_PCM = 0x01u,
+    FAT_TYPE_FIRMWARE = 0xFFu,
+} FAT_Type;
 
 #pragma pack(push, 1)
 
@@ -33,7 +39,7 @@ typedef struct {
         unsigned reserved : 5;
     } compacted;
     uint8_t mode_id;
-    uint8_t type_id;
+    FAT_Type type_id;
     uint8_t meta[4]; /* Interpretation depends on type_id. */
     char name[FAT_NAME_SIZE]; /* NUL padded; all 10 bytes may be used. */
 } FAT_Entry;
@@ -48,7 +54,7 @@ typedef struct {
 /* Runtime types below are naturally aligned, rather than packed. */
 typedef struct {
     uint8_t mode_id;
-    uint8_t type_id;
+    FAT_Type type_id;
     char name[FAT_NAME_SIZE]; /* Exact 10-byte key, NUL padded if shorter. */
 } FAT_Key;
 
@@ -83,8 +89,8 @@ typedef enum {
 
 typedef struct FAT_Request FAT_Request;
 
-/* Request-owned SRAM buffer. The words member ensures the four-byte alignment
- * required by SDCard_Queue(), while sector exposes the packed disk layout.
+/* Request-owned I/O buffer. The words member ensures the four-byte alignment
+ * used by the block-I/O backend, while sector exposes the packed disk layout.
  */
 typedef union {
     FAT_Sector sector;
@@ -92,11 +98,11 @@ typedef union {
 } FAT_SectorBuffer;
 
 /* Library-owned continuation state: callers must not read or modify it.
- * Every I/O request owns its SD transaction and buffer, allowing SDCard's
+ * Every I/O request owns its block transaction and buffer, allowing the backend's
  * queue and callback follow-ons to serialize FAT work without a FAT I/O queue.
  */
 typedef struct {
-    SDCard_Transaction sd_transaction;
+    BlockIO_Transaction transaction;
     FAT_SectorBuffer buffer;
     FAT_Request *completion_next; /* Deferred cache-hit delivery only. */
     uint32_t media_generation;
@@ -129,15 +135,15 @@ struct FAT_Request {
 extern "C" {
 #endif
 
-/* Initialize once before submitting requests. Does not initialize SDCard,
- * access the card, or format it. Do not reinitialize with outstanding work.
+/* Initialize once before submitting requests. Does not initialize the backend,
+ * access media, or format it. Do not reinitialize with outstanding work.
  * All FAT APIs and callbacks are main-loop only.
  */
 void FAT_Init(void);
 
-/* Call after SDCard_Service() on every main-loop pass. Delivers deferred
- * cache-hit completions and observes card readiness. I/O callbacks are
- * delivered by SDCard_Service(). Never invoke either service recursively.
+/* Call after servicing the storage backend on every main-loop pass. Delivers
+ * deferred cache-hit completions and observes media readiness. I/O callbacks
+ * are delivered by the backend service. Never service either recursively.
  * A callback may submit another request, or resubmit its completed request;
  * cache-hit requests submitted there are delivered on a later service pass.
  */
@@ -153,19 +159,20 @@ void FAT_Service(void);
  * - Any other return value rejects submission without changing the request
  *   or invoking its callback. Reject invalid arguments and unavailable cards;
  *   BUSY also covers duplicate submission and formatting exclusivity.
- * - Keep the request in SD-accessible SRAM, alive and unmodified until its
- *   status leaves PENDING. Never submit one request twice while pending.
+ * - Keep the request alive and unmodified until its status leaves PENDING. Its
+ *   sector buffer must satisfy the backend memory/alignment restrictions.
+ *   Never submit one request twice while pending.
  * - Successful results are copied values, independent of cache eviction.
  *   Results are invalid after card removal, formatting or replacement of
- *   that key. Callers perform file payload I/O directly through SDCard.
+ *   that key. Callers perform file payload I/O directly through the storage backend.
  * - Loss of readiness clears the cache and allocation watermark, and completes
  *   outstanding requests as UNAVAILABLE (or TIMEOUT/IO_ERROR for the failing
  *   I/O). Stale media generations must never return success or repopulate the cache.
  *
  * The fixed cache stores successful find/create results in stationary slots.
- * Each access records HAL_GetTick(); eviction selects the greatest unsigned
- * elapsed age, breaking equal-age ties by slot index. Cache hits never need
- * SD I/O. Only their deferred completions use a FAT-owned intrusive list.
+ * Each access records the backend millisecond tick; eviction selects the
+ * greatest unsigned elapsed age, breaking equal-age ties by slot index. Hits need no
+ * block I/O. Only their deferred completions use a FAT-owned intrusive list.
  */
 
 /* Find the first present entry, using the cache first, then reading the FAT
@@ -198,14 +205,14 @@ FAT_Status FAT_Find(FAT_Request *request);
  * If no entry is available, append a FAT sector first, placing new data after
  * it. Initialize unused starting_sector fields to FAT_LAST_SECTOR; write the
  * new FAT sector before linking it from the previous tail. No other FAT I/O
- * operation may interleave this scan/write sequence: use SD callback follow-ons.
+ * operation may interleave this scan/write sequence: use block-I/O callback follow-ons.
  * Success means all required FAT writes completed and present is set to one;
  * it does not mean the caller has written the file payload.
  *
  * size_bytes must be <= FAT_MAX_FILE_SIZE. For nonempty files, sector_count
  * is ceil(size_bytes / 512), and last_sector_bytes_count is 1..512 (512 means
  * a full final sector). Empty files use starting_sector=0, sector_count=0,
- * last_sector_bytes_count=0; callers must skip payload SD I/O. Clear reserved
+ * last_sector_bytes_count=0; callers must skip payload block I/O. Clear reserved
  * bits when writing entries. Insufficient card capacity completes as NO_SPACE.
  * Emptying a file releases its extent without allocating another FAT sector.
  *
@@ -220,7 +227,7 @@ FAT_Status FAT_Create(FAT_Request *request);
  * report SUCCESS only after the root write completes. Payload sectors are not
  * erased, but their old allocations are forgotten and may be overwritten.
  * Reject as BUSY if any FAT request is outstanding; reject find/create while
- * formatting. The caller must also finish external SD I/O and stop using old
+ * formatting. The caller must also finish external block I/O and stop using old
  * file locations before formatting. key/size_bytes/meta are ignored.
  */
 FAT_Status FAT_Format(FAT_Request *request);

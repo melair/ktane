@@ -1,7 +1,7 @@
 #include "main.h"
 
 #include "node_link.h"
-#include "fat.h"
+#include "fat/fat.h"
 #include "game.h"
 #include "indicator.h"
 #include "mode.h"

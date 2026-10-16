@@ -5,6 +5,7 @@ import (
 	"github.com/melair/ktane/Firmware/Tool/cmd/edgework"
 	"github.com/melair/ktane/Firmware/Tool/cmd/font"
 	"github.com/melair/ktane/Firmware/Tool/cmd/module"
+	"github.com/melair/ktane/Firmware/Tool/cmd/sdcard"
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +25,7 @@ func newRootCommand() *cobra.Command {
 	rootCmd.AddCommand(backplane.NewCommand())
 	rootCmd.AddCommand(edgework.NewCommand())
 	rootCmd.AddCommand(module.NewCommand())
+	rootCmd.AddCommand(sdcard.NewCommand())
 
 	return rootCmd
 }
