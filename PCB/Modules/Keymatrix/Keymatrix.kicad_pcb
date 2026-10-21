@@ -363,7 +363,7 @@
 	(footprint "KTANE:KTANEIRL-0505"
 		(layer "F.Cu")
 		(uuid "0db7c920-494e-4b91-bc71-5d9ed768b147")
-		(at 64.8 49.95 90)
+		(at 46.3825 59.195 90)
 		(property "Reference" "G***"
 			(at 0 0 90)
 			(layer "F.SilkS")
@@ -14212,7 +14212,7 @@
 		)
 	)
 	(gr_text "KTANE IRL by Melair\nKeymatrix (B01)"
-		(at 65.3 47.2 90)
+		(at 46.85875 56.81375 90)
 		(layer "F.SilkS")
 		(uuid "00000000-0000-0000-0000-0000609a9498")
 		(effects
