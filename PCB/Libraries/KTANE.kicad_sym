@@ -3486,7 +3486,7 @@
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
 		(property "Reference" "U"
-			(at -13.716 30.988 0)
+			(at -22.352 59.182 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3506,7 +3506,7 @@
 			)
 		)
 		(property "Footprint" "Package_DFN_QFN:VQFN-64-1EP_9x9mm_P0.5mm_EP5.4x5.4mm"
-			(at 0 0 0)
+			(at 0 -0.254 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -3538,23 +3538,20 @@
 				)
 			)
 		)
-		(symbol "BT817Q_0_1"
-			(polyline
-				(pts
-					(xy -13.97 29.21) (xy -13.97 -88.9) (xy 13.97 -88.9) (xy 13.97 29.21) (xy -13.97 29.21)
-				)
+		(symbol "BT817Q_1_1"
+			(rectangle
+				(start -22.86 57.15)
+				(end 21.59 -60.96)
 				(stroke
 					(width 0)
-					(type default)
+					(type solid)
 				)
 				(fill
-					(type none)
+					(type background)
 				)
 			)
-		)
-		(symbol "BT817Q_1_1"
 			(pin output line
-				(at 16.51 22.86 180)
+				(at 24.13 44.45 180)
 				(length 2.54)
 				(name "R0"
 					(effects
@@ -3572,7 +3569,7 @@
 				)
 			)
 			(pin power_in line
-				(at -16.51 -43.18 0)
+				(at 12.7 59.69 270)
 				(length 2.54)
 				(name "VCC1V2"
 					(effects
@@ -3590,7 +3587,7 @@
 				)
 			)
 			(pin input line
-				(at -16.51 22.86 0)
+				(at -25.4 44.45 0)
 				(length 2.54)
 				(name "SCK"
 					(effects
@@ -3608,7 +3605,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 20.32 0)
+				(at -25.4 41.91 0)
 				(length 2.54)
 				(name "MISO"
 					(effects
@@ -3626,7 +3623,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 17.78 0)
+				(at -25.4 39.37 0)
 				(length 2.54)
 				(name "MOSI"
 					(effects
@@ -3644,7 +3641,7 @@
 				)
 			)
 			(pin input line
-				(at -16.51 10.16 0)
+				(at -25.4 31.75 0)
 				(length 2.54)
 				(name "~{CS}"
 					(effects
@@ -3662,7 +3659,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 15.24 0)
+				(at -25.4 36.83 0)
 				(length 2.54)
 				(name "GPIO0/IO2"
 					(effects
@@ -3680,7 +3677,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 12.7 0)
+				(at -25.4 34.29 0)
 				(length 2.54)
 				(name "GPIO1/IO3"
 					(effects
@@ -3698,7 +3695,7 @@
 				)
 			)
 			(pin power_in line
-				(at -16.51 25.4 0)
+				(at -16.51 59.69 270)
 				(length 2.54)
 				(name "VCCIO1"
 					(effects
@@ -3716,7 +3713,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 2.54 0)
+				(at -25.4 24.13 0)
 				(length 2.54)
 				(name "GPIO2"
 					(effects
@@ -3734,7 +3731,7 @@
 				)
 			)
 			(pin output line
-				(at -16.51 7.62 0)
+				(at -25.4 29.21 0)
 				(length 2.54)
 				(name "~{INT}"
 					(effects
@@ -3752,7 +3749,7 @@
 				)
 			)
 			(pin input line
-				(at -16.51 5.08 0)
+				(at -25.4 26.67 0)
 				(length 2.54)
 				(name "~{PD}"
 					(effects
@@ -3770,7 +3767,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 0 0)
+				(at -25.4 21.59 0)
 				(length 2.54)
 				(name "GPIO3"
 					(effects
@@ -3788,7 +3785,7 @@
 				)
 			)
 			(pin output line
-				(at -16.51 -10.16 0)
+				(at -25.4 10.16 0)
 				(length 2.54)
 				(name "SPIM_SCLK"
 					(effects
@@ -3806,7 +3803,7 @@
 				)
 			)
 			(pin output line
-				(at -16.51 -22.86 0)
+				(at -25.4 12.7 0)
 				(length 2.54)
 				(name "~{SPIM_SS}"
 					(effects
@@ -3824,7 +3821,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 -15.24 0)
+				(at -25.4 7.62 0)
 				(length 2.54)
 				(name "SPIM_MOSI"
 					(effects
@@ -3842,7 +3839,7 @@
 				)
 			)
 			(pin power_in line
-				(at -16.51 -7.62 0)
+				(at -8.89 59.69 270)
 				(length 2.54)
 				(name "VCCIO3"
 					(effects
@@ -3860,7 +3857,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 -12.7 0)
+				(at -25.4 5.08 0)
 				(length 2.54)
 				(name "SPIM_MISO"
 					(effects
@@ -3878,7 +3875,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 -17.78 0)
+				(at -25.4 2.54 0)
 				(length 2.54)
 				(name "SPIM_IO2"
 					(effects
@@ -3896,7 +3893,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 -20.32 0)
+				(at -25.4 0 0)
 				(length 2.54)
 				(name "SPIM_IO3"
 					(effects
@@ -3914,7 +3911,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 -30.48 0)
+				(at -25.4 -7.62 0)
 				(length 2.54)
 				(name "X1/CLK"
 					(effects
@@ -3932,7 +3929,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at -16.51 -33.02 0)
+				(at -25.4 -10.16 0)
 				(length 2.54)
 				(name "X2"
 					(effects
@@ -3950,7 +3947,7 @@
 				)
 			)
 			(pin power_in line
-				(at 0 -91.44 90)
+				(at 0 -63.5 90)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -3968,7 +3965,7 @@
 				)
 			)
 			(pin power_in line
-				(at -16.51 -53.34 0)
+				(at 0 58.42 270)
 				(length 2.54)
 				(name "VCC"
 					(effects
@@ -3986,7 +3983,7 @@
 				)
 			)
 			(pin power_out line
-				(at -16.51 -40.64 0)
+				(at 16.51 59.69 270)
 				(length 2.54)
 				(name "VOUT1V2"
 					(effects
@@ -4004,7 +4001,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -66.04 180)
+				(at 24.13 -43.18 180)
 				(length 2.54)
 				(name "AUDIO_L"
 					(effects
@@ -4022,7 +4019,7 @@
 				)
 			)
 			(pin power_in line
-				(at 16.51 -63.5 180)
+				(at 24.13 -40.64 180)
 				(length 2.54)
 				(name "VCCA"
 					(effects
@@ -4040,7 +4037,7 @@
 				)
 			)
 			(pin power_in line
-				(at 16.51 25.4 180)
+				(at -12.7 59.69 270)
 				(length 2.54)
 				(name "VCCIO2"
 					(effects
@@ -4058,7 +4055,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -73.66 180)
+				(at 24.13 -50.8 180)
 				(length 2.54)
 				(name "~{CTP_RST}"
 					(effects
@@ -4076,7 +4073,7 @@
 				)
 			)
 			(pin input line
-				(at 16.51 -76.2 180)
+				(at 24.13 -53.34 180)
 				(length 2.54)
 				(name "~{CTP_INT}"
 					(effects
@@ -4094,7 +4091,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 16.51 -78.74 180)
+				(at 24.13 -55.88 180)
 				(length 2.54)
 				(name "CTP_SCL"
 					(effects
@@ -4112,7 +4109,7 @@
 				)
 			)
 			(pin bidirectional line
-				(at 16.51 -81.28 180)
+				(at 24.13 -58.42 180)
 				(length 2.54)
 				(name "CTP_SDA"
 					(effects
@@ -4130,7 +4127,7 @@
 				)
 			)
 			(pin power_in line
-				(at 0 -91.44 90)
+				(at 0 -63.5 90)
 				(length 2.54)
 				(hide yes)
 				(name "GND"
@@ -4149,7 +4146,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -55.88 180)
+				(at 24.13 -34.29 180)
 				(length 2.54)
 				(name "BACKLIGHT"
 					(effects
@@ -4167,7 +4164,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -49.53 180)
+				(at 24.13 -27.94 180)
 				(length 2.54)
 				(name "DE"
 					(effects
@@ -4185,7 +4182,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -46.99 180)
+				(at 24.13 -25.4 180)
 				(length 2.54)
 				(name "VSYNC"
 					(effects
@@ -4203,7 +4200,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -44.45 180)
+				(at 24.13 -22.86 180)
 				(length 2.54)
 				(name "HSYNC"
 					(effects
@@ -4221,7 +4218,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -52.07 180)
+				(at 24.13 -30.48 180)
 				(length 2.54)
 				(name "DISP"
 					(effects
@@ -4239,7 +4236,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -41.91 180)
+				(at 24.13 -20.32 180)
 				(length 2.54)
 				(name "PCLK"
 					(effects
@@ -4257,7 +4254,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -38.1 180)
+				(at 24.13 -16.51 180)
 				(length 2.54)
 				(name "B7"
 					(effects
@@ -4275,7 +4272,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -35.56 180)
+				(at 24.13 -13.97 180)
 				(length 2.54)
 				(name "B6"
 					(effects
@@ -4293,7 +4290,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -33.02 180)
+				(at 24.13 -11.43 180)
 				(length 2.54)
 				(name "B5"
 					(effects
@@ -4311,7 +4308,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -30.48 180)
+				(at 24.13 -8.89 180)
 				(length 2.54)
 				(name "B4"
 					(effects
@@ -4329,7 +4326,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -27.94 180)
+				(at 24.13 -6.35 180)
 				(length 2.54)
 				(name "B3"
 					(effects
@@ -4347,7 +4344,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -25.4 180)
+				(at 24.13 -3.81 180)
 				(length 2.54)
 				(name "B2"
 					(effects
@@ -4365,7 +4362,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -22.86 180)
+				(at 24.13 -1.27 180)
 				(length 2.54)
 				(name "B1"
 					(effects
@@ -4383,7 +4380,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -20.32 180)
+				(at 24.13 1.27 180)
 				(length 2.54)
 				(name "B0"
 					(effects
@@ -4401,7 +4398,7 @@
 				)
 			)
 			(pin power_in line
-				(at 0 -91.44 90)
+				(at 0 -63.5 90)
 				(length 2.54)
 				(hide yes)
 				(name "GND"
@@ -4420,7 +4417,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -16.51 180)
+				(at 24.13 5.08 180)
 				(length 2.54)
 				(name "G7"
 					(effects
@@ -4438,7 +4435,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -13.97 180)
+				(at 24.13 7.62 180)
 				(length 2.54)
 				(name "G6"
 					(effects
@@ -4456,7 +4453,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -11.43 180)
+				(at 24.13 10.16 180)
 				(length 2.54)
 				(name "G5"
 					(effects
@@ -4474,7 +4471,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -8.89 180)
+				(at 24.13 12.7 180)
 				(length 2.54)
 				(name "G4"
 					(effects
@@ -4492,7 +4489,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -6.35 180)
+				(at 24.13 15.24 180)
 				(length 2.54)
 				(name "G3"
 					(effects
@@ -4510,7 +4507,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -3.81 180)
+				(at 24.13 17.78 180)
 				(length 2.54)
 				(name "G2"
 					(effects
@@ -4528,7 +4525,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 -1.27 180)
+				(at 24.13 20.32 180)
 				(length 2.54)
 				(name "G1"
 					(effects
@@ -4546,7 +4543,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 1.27 180)
+				(at 24.13 22.86 180)
 				(length 2.54)
 				(name "G0"
 					(effects
@@ -4564,7 +4561,7 @@
 				)
 			)
 			(pin power_in line
-				(at -16.51 -45.72 0)
+				(at 8.89 59.69 270)
 				(length 2.54)
 				(name "VCC1V2"
 					(effects
@@ -4582,7 +4579,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 5.08 180)
+				(at 24.13 26.67 180)
 				(length 2.54)
 				(name "R7"
 					(effects
@@ -4600,7 +4597,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 7.62 180)
+				(at 24.13 29.21 180)
 				(length 2.54)
 				(name "R6"
 					(effects
@@ -4618,7 +4615,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 10.16 180)
+				(at 24.13 31.75 180)
 				(length 2.54)
 				(name "R5"
 					(effects
@@ -4636,7 +4633,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 12.7 180)
+				(at 24.13 34.29 180)
 				(length 2.54)
 				(name "R4"
 					(effects
@@ -4654,7 +4651,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 15.24 180)
+				(at 24.13 36.83 180)
 				(length 2.54)
 				(name "R3"
 					(effects
@@ -4672,7 +4669,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 17.78 180)
+				(at 24.13 39.37 180)
 				(length 2.54)
 				(name "R2"
 					(effects
@@ -4690,7 +4687,7 @@
 				)
 			)
 			(pin output line
-				(at 16.51 20.32 180)
+				(at 24.13 41.91 180)
 				(length 2.54)
 				(name "R1"
 					(effects
@@ -4708,7 +4705,7 @@
 				)
 			)
 			(pin power_in line
-				(at 0 -91.44 90)
+				(at 0 -63.5 90)
 				(length 2.54)
 				(hide yes)
 				(name "GND"
