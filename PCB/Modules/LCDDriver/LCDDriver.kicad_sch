@@ -11040,7 +11040,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0860ab99-050c-418c-975c-12809cc373ea")
-		(property "Reference" "C16"
+		(property "Reference" "C1"
 			(at 26.67 233.6862 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11104,7 +11104,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C16")
+					(reference "C1")
 					(unit 1)
 				)
 			)
@@ -11251,7 +11251,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "0f3fcec5-ff6b-4e49-9c76-729fcf98282b")
-		(property "Reference" "R7"
+		(property "Reference" "R3"
 			(at 185.6486 97.8916 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11348,7 +11348,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "R7")
+					(reference "R3")
 					(unit 1)
 				)
 			)
@@ -11365,7 +11365,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "13b5dc21-8672-44da-81f9-c062c35fa788")
-		(property "Reference" "#PWR07"
+		(property "Reference" "#PWR011"
 			(at 48.26 184.15 0)
 			(hide yes)
 			(show_name no)
@@ -11425,7 +11425,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR07")
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -11442,7 +11442,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "15d0f8c6-5d5c-45e3-a183-66ce548ad86f")
-		(property "Reference" "C47"
+		(property "Reference" "C10"
 			(at 191.5668 138.5316 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11572,7 +11572,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C47")
+					(reference "C10")
 					(unit 1)
 				)
 			)
@@ -11669,7 +11669,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1c8f6bdb-8b60-48da-adfb-02662feeb0b2")
-		(property "Reference" "TP3"
+		(property "Reference" "TP5"
 			(at 43.18 95.7579 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11730,7 +11730,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "TP3")
+					(reference "TP5")
 					(unit 1)
 				)
 			)
@@ -11748,7 +11748,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1cd829eb-1e8d-45bc-b290-715597f09944")
-		(property "Reference" "#PWR04"
+		(property "Reference" "#PWR046"
 			(at 276.86 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -11808,7 +11808,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR04")
+					(reference "#PWR046")
 					(unit 1)
 				)
 			)
@@ -11827,7 +11827,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2045d795-0c91-4288-a878-4aa8363370e1")
-		(property "Reference" "J5"
+		(property "Reference" "J1"
 			(at 26.035 43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11916,7 +11916,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "J5")
+					(reference "J1")
 					(unit 1)
 				)
 			)
@@ -11934,7 +11934,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2114670f-0b96-4237-a6cc-18daa2771ea4")
-		(property "Reference" "#PWR033"
+		(property "Reference" "#PWR09"
 			(at 50.8 267.97 0)
 			(hide yes)
 			(show_name no)
@@ -11994,7 +11994,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR033")
+					(reference "#PWR09")
 					(unit 1)
 				)
 			)
@@ -12011,7 +12011,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "26484575-8373-44f7-9fed-f3c215645a7d")
-		(property "Reference" "#PWR0126"
+		(property "Reference" "#PWR036"
 			(at 189.23 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -12071,7 +12071,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0126")
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
@@ -12088,7 +12088,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2851f214-54d2-466a-8dd6-714b5dc810c5")
-		(property "Reference" "C25"
+		(property "Reference" "C14"
 			(at 269.0368 54.7116 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12185,7 +12185,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C25")
+					(reference "C14")
 					(unit 1)
 				)
 			)
@@ -12202,7 +12202,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2a8e4856-86fc-4a73-a997-8f2747867d88")
-		(property "Reference" "RN3"
+		(property "Reference" "RN1"
 			(at 59.69 119.38 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12317,7 +12317,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "RN3")
+					(reference "RN1")
 					(unit 1)
 				)
 			)
@@ -12335,7 +12335,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2a90f7e6-ce12-45da-b55d-55b3b4fe887b")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR012"
 			(at 64.77 30.48 0)
 			(hide yes)
 			(show_name no)
@@ -12395,7 +12395,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR026")
+					(reference "#PWR012")
 					(unit 1)
 				)
 			)
@@ -12505,7 +12505,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2afb5aa7-9acb-433b-bec0-b6664de265a3")
-		(property "Reference" "C46"
+		(property "Reference" "C4"
 			(at 144.5768 97.8916 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12602,7 +12602,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C46")
+					(reference "C4")
 					(unit 1)
 				)
 			)
@@ -12729,7 +12729,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2cb7863e-10a0-4b33-9c2d-530dc9979113")
-		(property "Reference" "#PWR015"
+		(property "Reference" "#PWR01"
 			(at 24.13 233.68 0)
 			(hide yes)
 			(show_name no)
@@ -12789,7 +12789,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR015")
+					(reference "#PWR01")
 					(unit 1)
 				)
 			)
@@ -12807,7 +12807,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2e4f373f-598d-4aa7-83ac-41e68b5c1922")
-		(property "Reference" "#PWR031"
+		(property "Reference" "#PWR021"
 			(at 104.14 29.21 0)
 			(hide yes)
 			(show_name no)
@@ -12867,7 +12867,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR031")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -12884,7 +12884,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "313ad371-5138-4dae-80a9-b34bf663f3db")
-		(property "Reference" "C41"
+		(property "Reference" "C12"
 			(at 253.7968 29.3116 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12981,7 +12981,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C41")
+					(reference "C12")
 					(unit 1)
 				)
 			)
@@ -12999,7 +12999,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "35823f71-c038-4167-bcc2-69a0e9016ca9")
-		(property "Reference" "TP6"
+		(property "Reference" "TP4"
 			(at 34.29 110.9979 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13060,7 +13060,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "TP6")
+					(reference "TP4")
 					(unit 1)
 				)
 			)
@@ -13078,7 +13078,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "3a93848a-f532-44dc-b222-f5f2bb7e04ac")
-		(property "Reference" "#PWR037"
+		(property "Reference" "#PWR050"
 			(at 295.91 161.29 0)
 			(hide yes)
 			(show_name no)
@@ -13138,7 +13138,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR037")
+					(reference "#PWR050")
 					(unit 1)
 				)
 			)
@@ -13270,7 +13270,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "423f5b5a-c966-49dd-9475-056d1bc48fff")
-		(property "Reference" "#PWR045"
+		(property "Reference" "#PWR015"
 			(at 73.66 198.12 0)
 			(hide yes)
 			(show_name no)
@@ -13330,7 +13330,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR045")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -13347,7 +13347,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "46ecf9f3-f303-4617-a186-631e0dda87f6")
-		(property "Reference" "R4"
+		(property "Reference" "R6"
 			(at 297.4086 161.3916 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13444,7 +13444,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "R4")
+					(reference "R6")
 					(unit 1)
 				)
 			)
@@ -13461,7 +13461,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "48e4c470-5fa6-4d13-8090-6e1fabbc452d")
-		(property "Reference" "#PWR0121"
+		(property "Reference" "#PWR039"
 			(at 240.03 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -13521,7 +13521,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0121")
+					(reference "#PWR039")
 					(unit 1)
 				)
 			)
@@ -13538,7 +13538,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4c302fff-3b49-4f74-a1ec-b127870c44bc")
-		(property "Reference" "#PWR03"
+		(property "Reference" "#PWR016"
 			(at 73.66 208.28 0)
 			(hide yes)
 			(show_name no)
@@ -13598,7 +13598,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR03")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -13616,7 +13616,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4d01396d-140c-4659-9d57-e961047a6f5e")
-		(property "Reference" "#PWR042"
+		(property "Reference" "#PWR024"
 			(at 142.24 97.79 0)
 			(hide yes)
 			(show_name no)
@@ -13676,7 +13676,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR042")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -13693,7 +13693,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "4d9faaad-114e-40ab-8317-ae1a2533df68")
-		(property "Reference" "#PWR0120"
+		(property "Reference" "#PWR047"
 			(at 276.86 67.31 0)
 			(hide yes)
 			(show_name no)
@@ -13753,7 +13753,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0120")
+					(reference "#PWR047")
 					(unit 1)
 				)
 			)
@@ -13771,7 +13771,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "524ee0f9-ee73-4b0a-be5c-2f6bb835e0fd")
-		(property "Reference" "TP2"
+		(property "Reference" "TP3"
 			(at 34.29 95.7579 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13832,7 +13832,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "TP2")
+					(reference "TP3")
 					(unit 1)
 				)
 			)
@@ -13849,7 +13849,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "52b408fe-5c8a-4207-b75f-9e877a4ba87a")
-		(property "Reference" "#PWR044"
+		(property "Reference" "#PWR022"
 			(at 104.14 49.53 0)
 			(hide yes)
 			(show_name no)
@@ -13909,7 +13909,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR044")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -13927,7 +13927,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "53520a85-7309-426c-b380-93f6599b862f")
-		(property "Reference" "#PWR0127"
+		(property "Reference" "#PWR045"
 			(at 273.05 163.83 0)
 			(hide yes)
 			(show_name no)
@@ -13987,7 +13987,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0127")
+					(reference "#PWR045")
 					(unit 1)
 				)
 			)
@@ -14005,7 +14005,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "561cef80-2d86-488e-b562-c38b8d434cba")
-		(property "Reference" "#PWR035"
+		(property "Reference" "#PWR049"
 			(at 288.29 161.29 0)
 			(hide yes)
 			(show_name no)
@@ -14065,7 +14065,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR035")
+					(reference "#PWR049")
 					(unit 1)
 				)
 			)
@@ -14082,7 +14082,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "59976a2a-0a65-424e-bfd4-30c58a2cbb06")
-		(property "Reference" "C43"
+		(property "Reference" "C7"
 			(at 181.4068 47.0916 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14179,7 +14179,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C43")
+					(reference "C7")
 					(unit 1)
 				)
 			)
@@ -14196,7 +14196,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5a854f6d-0c73-4e18-b7d9-011e0e9ad175")
-		(property "Reference" "#PWR0118"
+		(property "Reference" "#PWR042"
 			(at 256.54 67.31 0)
 			(hide yes)
 			(show_name no)
@@ -14256,7 +14256,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0118")
+					(reference "#PWR042")
 					(unit 1)
 				)
 			)
@@ -14273,7 +14273,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "60ab3337-9b94-4e59-a119-45a35edf8c67")
-		(property "Reference" "#PWR0129"
+		(property "Reference" "#PWR031"
 			(at 168.91 133.35 0)
 			(hide yes)
 			(show_name no)
@@ -14333,7 +14333,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0129")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -14350,7 +14350,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "61a7e826-b8ef-4339-b493-94b9db1eca70")
-		(property "Reference" "#PWR036"
+		(property "Reference" "#PWR02"
 			(at 24.13 246.38 0)
 			(hide yes)
 			(show_name no)
@@ -14410,7 +14410,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR036")
+					(reference "#PWR02")
 					(unit 1)
 				)
 			)
@@ -14427,7 +14427,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6600e2b2-f8d7-4fd7-a421-603be99636ba")
-		(property "Reference" "C44"
+		(property "Reference" "C9"
 			(at 191.5668 55.9816 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14524,7 +14524,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C44")
+					(reference "C9")
 					(unit 1)
 				)
 			)
@@ -14542,7 +14542,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "68a2b787-b22e-4603-b3bf-beff5a2017fc")
-		(property "Reference" "#PWR012"
+		(property "Reference" "#PWR037"
 			(at 222.25 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -14602,7 +14602,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR012")
+					(reference "#PWR037")
 					(unit 1)
 				)
 			)
@@ -14620,7 +14620,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6925e360-4e29-445e-93c0-65703b469d00")
-		(property "Reference" "#PWR017"
+		(property "Reference" "#PWR08"
 			(at 50.8 233.68 0)
 			(hide yes)
 			(show_name no)
@@ -14680,7 +14680,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR017")
+					(reference "#PWR08")
 					(unit 1)
 				)
 			)
@@ -14698,7 +14698,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "6af14712-3e77-471a-bd60-907ed6facd33")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR04"
 			(at 33.02 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -14758,7 +14758,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR022")
+					(reference "#PWR04")
 					(unit 1)
 				)
 			)
@@ -14775,7 +14775,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "70a65c5e-ecb5-4278-99ac-787bd7d41b06")
-		(property "Reference" "#PWR0119"
+		(property "Reference" "#PWR043"
 			(at 266.7 67.31 0)
 			(hide yes)
 			(show_name no)
@@ -14835,7 +14835,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0119")
+					(reference "#PWR043")
 					(unit 1)
 				)
 			)
@@ -14853,7 +14853,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "70e6c491-ca6e-408f-b2d4-90513bfc485f")
-		(property "Reference" "U3"
+		(property "Reference" "U1"
 			(at 62.23 229.87 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14938,7 +14938,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "U3")
+					(reference "U1")
 					(unit 1)
 				)
 			)
@@ -14955,7 +14955,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "73f54ea4-9e8e-486d-af84-ad4fa1df4b50")
-		(property "Reference" "#PWR0122"
+		(property "Reference" "#PWR027"
 			(at 158.75 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -15015,7 +15015,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0122")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -15032,7 +15032,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "74fbca5a-536c-4958-b75e-5b6aa666dd40")
-		(property "Reference" "#PWR0130"
+		(property "Reference" "#PWR034"
 			(at 184.15 153.67 0)
 			(hide yes)
 			(show_name no)
@@ -15092,7 +15092,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0130")
+					(reference "#PWR034")
 					(unit 1)
 				)
 			)
@@ -15109,7 +15109,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7625f0d6-428c-4841-96af-fbfa744ae669")
-		(property "Reference" "C40"
+		(property "Reference" "C5"
 			(at 161.0868 29.3116 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15206,7 +15206,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C40")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -15224,7 +15224,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "76f8f064-2eb7-4927-a407-0dbc2adb252c")
-		(property "Reference" "#PWR034"
+		(property "Reference" "#PWR048"
 			(at 280.67 161.29 0)
 			(hide yes)
 			(show_name no)
@@ -15284,7 +15284,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR034")
+					(reference "#PWR048")
 					(unit 1)
 				)
 			)
@@ -15380,7 +15380,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "796b358f-ace5-4499-aaa2-243daaa51db0")
-		(property "Reference" "#PWR032"
+		(property "Reference" "#PWR028"
 			(at 167.64 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -15440,7 +15440,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR032")
+					(reference "#PWR028")
 					(unit 1)
 				)
 			)
@@ -15457,7 +15457,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7dbdfead-c870-4ab3-a848-d4c6cd1eb92d")
-		(property "Reference" "#PWR09"
+		(property "Reference" "#PWR014"
 			(at 71.12 184.15 0)
 			(hide yes)
 			(show_name no)
@@ -15517,7 +15517,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR09")
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
@@ -15535,7 +15535,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "7dd03b46-eaa1-41d7-809e-ca142a36e5ac")
-		(property "Reference" "#PWR027"
+		(property "Reference" "#PWR026"
 			(at 158.75 26.67 0)
 			(hide yes)
 			(show_name no)
@@ -15595,7 +15595,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR027")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -15612,7 +15612,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8199d32a-d9f8-4249-9e2d-258587fa46a2")
-		(property "Reference" "R5"
+		(property "Reference" "R7"
 			(at 305.0286 161.3916 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15709,7 +15709,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "R5")
+					(reference "R7")
 					(unit 1)
 				)
 			)
@@ -15726,7 +15726,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "834aa579-f8d1-4e6b-ab02-8136a4bc497e")
-		(property "Reference" "C42"
+		(property "Reference" "C6"
 			(at 171.2468 38.2016 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15823,7 +15823,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C42")
+					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -15841,7 +15841,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8b930705-f175-49b1-99d4-9092882ac906")
-		(property "Reference" "TP5"
+		(property "Reference" "TP8"
 			(at 60.96 95.7579 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15902,7 +15902,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "TP5")
+					(reference "TP8")
 					(unit 1)
 				)
 			)
@@ -15919,7 +15919,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9408ee2c-0fa9-43e4-8fb9-9585e7364864")
-		(property "Reference" "#PWR041"
+		(property "Reference" "#PWR044"
 			(at 273.05 151.13 0)
 			(hide yes)
 			(show_name no)
@@ -15979,7 +15979,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR041")
+					(reference "#PWR044")
 					(unit 1)
 				)
 			)
@@ -15998,7 +15998,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "95aa8361-d59a-4796-88fe-694c5d319eec")
-		(property "Reference" "U1"
+		(property "Reference" "U2"
 			(at 157.48 110.4899 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16080,7 +16080,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "U1")
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -16098,7 +16098,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "95b5d4bb-edc7-4407-a2d0-b41f60e91b9f")
-		(property "Reference" "TP8"
+		(property "Reference" "TP6"
 			(at 43.18 110.9979 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16159,7 +16159,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "TP8")
+					(reference "TP6")
 					(unit 1)
 				)
 			)
@@ -16176,7 +16176,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "95be171e-1a7b-4443-80e5-850246166795")
-		(property "Reference" "#PWR0124"
+		(property "Reference" "#PWR030"
 			(at 168.91 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -16236,7 +16236,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0124")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -16253,7 +16253,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "971db8f8-a6f0-47e3-a047-cc658692f86d")
-		(property "Reference" "#PWR0128"
+		(property "Reference" "#PWR025"
 			(at 142.24 110.49 0)
 			(hide yes)
 			(show_name no)
@@ -16313,7 +16313,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0128")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -16330,7 +16330,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9c9f19ab-b2a8-4fae-95a0-8c1adb33e3a9")
-		(property "Reference" "C18"
+		(property "Reference" "C2"
 			(at 106.68 36.8362 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16394,7 +16394,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C18")
+					(reference "C2")
 					(unit 1)
 				)
 			)
@@ -16520,7 +16520,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "9e5608d5-2d80-4cbd-88f6-2fa5ae89f915")
-		(property "Reference" "C17"
+		(property "Reference" "C3"
 			(at 109.22 243.8462 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16595,7 +16595,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C17")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -16613,7 +16613,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9f8bc647-68cf-4a96-831e-781014346acf")
-		(property "Reference" "#PWR08"
+		(property "Reference" "#PWR05"
 			(at 40.64 49.53 0)
 			(hide yes)
 			(show_name no)
@@ -16673,7 +16673,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR08")
+					(reference "#PWR05")
 					(unit 1)
 				)
 			)
@@ -16691,7 +16691,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a2066dc3-78b4-4463-9b92-aa02963f9387")
-		(property "Reference" "C36"
+		(property "Reference" "C8"
 			(at 176.7332 138.5316 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16821,7 +16821,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C36")
+					(reference "C8")
 					(unit 1)
 				)
 			)
@@ -16839,7 +16839,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a4e3f5d0-5596-4121-a50c-87ab553f0742")
-		(property "Reference" "#PWR011"
+		(property "Reference" "#PWR040"
 			(at 251.46 26.67 0)
 			(hide yes)
 			(show_name no)
@@ -16899,7 +16899,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR011")
+					(reference "#PWR040")
 					(unit 1)
 				)
 			)
@@ -16916,7 +16916,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a698b232-ca89-4b39-9af3-73737a5fe431")
-		(property "Reference" "#PWR014"
+		(property "Reference" "#PWR06"
 			(at 40.64 121.92 0)
 			(hide yes)
 			(show_name no)
@@ -16976,7 +16976,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR014")
+					(reference "#PWR06")
 					(unit 1)
 				)
 			)
@@ -16994,7 +16994,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "abd95eed-8579-4087-9b64-e9b89539263f")
-		(property "Reference" "#PWR040"
+		(property "Reference" "#PWR023"
 			(at 106.68 267.97 0)
 			(hide yes)
 			(show_name no)
@@ -17054,7 +17054,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR040")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -17071,7 +17071,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b019f2fe-c182-476c-aa81-ee2f9ad10fb2")
-		(property "Reference" "#PWR0125"
+		(property "Reference" "#PWR033"
 			(at 179.07 57.15 0)
 			(hide yes)
 			(show_name no)
@@ -17131,7 +17131,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0125")
+					(reference "#PWR033")
 					(unit 1)
 				)
 			)
@@ -17250,7 +17250,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b1268271-85ed-41c3-b2e8-cdf246feae29")
-		(property "Reference" "#PWR0123"
+		(property "Reference" "#PWR041"
 			(at 251.46 41.91 0)
 			(hide yes)
 			(show_name no)
@@ -17310,7 +17310,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR0123")
+					(reference "#PWR041")
 					(unit 1)
 				)
 			)
@@ -17437,7 +17437,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b7a52525-c745-4620-97d4-eafe95c71d49")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR07"
 			(at 44.45 30.48 0)
 			(hide yes)
 			(show_name no)
@@ -17497,7 +17497,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR020")
+					(reference "#PWR07")
 					(unit 1)
 				)
 			)
@@ -17514,7 +17514,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b7f1e406-422d-4955-93ec-17d224c16e62")
-		(property "Reference" "C39"
+		(property "Reference" "C11"
 			(at 242.3668 38.2016 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17611,7 +17611,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C39")
+					(reference "C11")
 					(unit 1)
 				)
 			)
@@ -17629,7 +17629,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b83275e9-4eeb-4098-b3a9-49ffa0ef9089")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR03"
 			(at 33.02 49.53 0)
 			(hide yes)
 			(show_name no)
@@ -17689,7 +17689,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR021")
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -17784,7 +17784,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c39aaaed-c293-40f8-a1a0-6a83fe124c8c")
-		(property "Reference" "U2"
+		(property "Reference" "U3"
 			(at 222.25 85.09 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18035,7 +18035,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "U2")
+					(reference "U3")
 					(unit 1)
 				)
 			)
@@ -18052,7 +18052,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c6341189-adb2-4723-a5d1-3dda4a2d3868")
-		(property "Reference" "FB3"
+		(property "Reference" "FB1"
 			(at 110.49 30.4419 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18125,7 +18125,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "FB3")
+					(reference "FB1")
 					(unit 1)
 				)
 			)
@@ -18142,7 +18142,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "c693a833-ed6f-4c38-8952-82ff8d362d2f")
-		(property "Reference" "RN5"
+		(property "Reference" "RN3"
 			(at 59.69 160.02 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18257,7 +18257,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "RN5")
+					(reference "RN3")
 					(unit 1)
 				)
 			)
@@ -18274,7 +18274,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cbc403f6-0bb6-4950-b6a4-fec80b93a8f2")
-		(property "Reference" "C38"
+		(property "Reference" "C16"
 			(at 279.1968 54.7116 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18371,7 +18371,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C38")
+					(reference "C16")
 					(unit 1)
 				)
 			)
@@ -18388,7 +18388,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cc5e151a-e687-4cba-bb49-8e2eea9e74dd")
-		(property "Reference" "RN4"
+		(property "Reference" "RN2"
 			(at 59.69 139.7 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18503,7 +18503,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "RN4")
+					(reference "RN2")
 					(unit 1)
 				)
 			)
@@ -18521,7 +18521,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cc8133ba-9773-499b-90ab-a4091959cfa4")
-		(property "Reference" "#PWR028"
+		(property "Reference" "#PWR029"
 			(at 168.91 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -18581,7 +18581,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR028")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -18599,7 +18599,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "cd49f010-2cf0-445e-a942-5120eca7285a")
-		(property "Reference" "#PWR039"
+		(property "Reference" "#PWR020"
 			(at 81.28 267.97 0)
 			(hide yes)
 			(show_name no)
@@ -18659,7 +18659,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR039")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -18677,7 +18677,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d66e42c8-2991-4364-a9ce-4d6cc2a62328")
-		(property "Reference" "TP4"
+		(property "Reference" "TP7"
 			(at 52.07 95.7579 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18738,7 +18738,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "TP4")
+					(reference "TP7")
 					(unit 1)
 				)
 			)
@@ -18755,7 +18755,7 @@
 		(in_pos_files yes)
 		(dnp yes)
 		(uuid "d72eb882-a203-4b28-a5d2-608288b590b9")
-		(property "Reference" "R6"
+		(property "Reference" "R4"
 			(at 282.1686 161.3916 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18852,7 +18852,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "R6")
+					(reference "R4")
 					(unit 1)
 				)
 			)
@@ -18869,7 +18869,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "dc87d09f-d300-4317-b1ba-851c0edd914c")
-		(property "Reference" "#PWR02"
+		(property "Reference" "#PWR018"
 			(at 78.74 193.04 0)
 			(hide yes)
 			(show_name no)
@@ -18929,7 +18929,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR02")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -18947,7 +18947,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "decdb660-123c-40f0-92ea-8ff1c45446e6")
-		(property "Reference" "#PWR038"
+		(property "Reference" "#PWR051"
 			(at 303.53 161.29 0)
 			(hide yes)
 			(show_name no)
@@ -19007,7 +19007,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR038")
+					(reference "#PWR051")
 					(unit 1)
 				)
 			)
@@ -19025,7 +19025,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e5bab28b-cd0c-4889-b2d5-f72325c0e4e3")
-		(property "Reference" "#PWR029"
+		(property "Reference" "#PWR032"
 			(at 179.07 44.45 0)
 			(hide yes)
 			(show_name no)
@@ -19085,7 +19085,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR029")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -19212,7 +19212,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "efa25091-3a4f-464e-9f7f-2f9dca491465")
-		(property "Reference" "#PWR06"
+		(property "Reference" "#PWR038"
 			(at 240.03 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -19272,7 +19272,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR06")
+					(reference "#PWR038")
 					(unit 1)
 				)
 			)
@@ -19290,7 +19290,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f051149f-8cf8-47d7-9e65-fcc69028a0cb")
-		(property "Reference" "#PWR030"
+		(property "Reference" "#PWR035"
 			(at 189.23 53.34 0)
 			(hide yes)
 			(show_name no)
@@ -19350,7 +19350,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR030")
+					(reference "#PWR035")
 					(unit 1)
 				)
 			)
@@ -19368,7 +19368,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f55c9f00-9576-4d8f-ab3a-dfe87434da66")
-		(property "Reference" "C45"
+		(property "Reference" "C15"
 			(at 270.7132 153.7716 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19465,7 +19465,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C45")
+					(reference "C15")
 					(unit 1)
 				)
 			)
@@ -19482,7 +19482,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f6db2fcf-0c18-429b-8a54-7dcc15dbb5fa")
-		(property "Reference" "R3"
+		(property "Reference" "R5"
 			(at 289.7886 161.3916 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19579,7 +19579,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "R3")
+					(reference "R5")
 					(unit 1)
 				)
 			)
@@ -19596,7 +19596,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f6e9b2b1-7ab9-4104-92da-0b08b3f2b2f4")
-		(property "Reference" "#PWR01"
+		(property "Reference" "#PWR017"
 			(at 78.74 119.38 0)
 			(hide yes)
 			(show_name no)
@@ -19656,7 +19656,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "#PWR01")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -19674,7 +19674,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f6fcc2de-979f-4ab5-8f63-ffb3b44fc149")
-		(property "Reference" "TP7"
+		(property "Reference" "TP2"
 			(at 24.13 110.9979 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19735,7 +19735,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "TP7")
+					(reference "TP2")
 					(unit 1)
 				)
 			)
@@ -19752,7 +19752,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f72a6bbe-fad0-4e41-b26c-49605472f9cb")
-		(property "Reference" "C24"
+		(property "Reference" "C13"
 			(at 258.8768 54.7116 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -19849,7 +19849,7 @@
 		(instances
 			(project "LCDDriver"
 				(path "/a47ed090-d284-4c9e-8e8e-f04e666795df"
-					(reference "C24")
+					(reference "C13")
 					(unit 1)
 				)
 			)
