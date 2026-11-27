@@ -5941,6 +5941,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 105.41 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -6043,6 +6044,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 120.65 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -6145,6 +6147,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 120.65 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -6247,6 +6250,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 115.57 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -6471,6 +6475,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 118.11 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -6593,7 +6598,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "74HC4051"
+		(property "Value" "74HC4051BQ,115"
 			(at 129.1433 33.02 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6615,7 +6620,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/cd74hc4051.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/74HC_HCT4051.pdf"
 			(at 127 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -6697,6 +6702,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 105.41 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -6921,6 +6927,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 115.57 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7106,6 +7113,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 107.95 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7208,6 +7216,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 120.65 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7310,6 +7319,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 118.11 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7495,6 +7505,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 102.87 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7597,6 +7608,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 107.95 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7699,6 +7711,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 113.03 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -7879,6 +7892,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 110.49 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8064,6 +8078,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 107.95 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8243,6 +8258,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 113.03 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8345,6 +8361,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 120.65 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8601,6 +8618,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 105.41 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8703,6 +8721,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 113.03 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8805,6 +8824,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 110.49 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9063,6 +9083,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 110.49 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9165,6 +9186,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 118.11 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9267,6 +9289,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 110.49 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9369,6 +9392,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 105.41 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9754,6 +9778,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 115.57 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9856,6 +9881,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 115.57 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9958,6 +9984,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 113.03 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10060,6 +10087,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 102.87 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10162,6 +10190,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 107.95 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10264,6 +10293,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 107.95 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10366,6 +10396,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 118.11 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10468,6 +10499,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 118.11 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10692,6 +10724,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 120.65 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -10794,6 +10827,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 147.32 110.49 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11212,6 +11246,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 105.41 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11392,6 +11427,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 99.06 113.03 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11577,6 +11613,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 115.57 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11679,6 +11716,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 243.84 102.87 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11781,6 +11819,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 195.58 102.87 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11961,6 +12000,7 @@
 	(symbol
 		(lib_id "Device:D_Small")
 		(at 50.8 102.87 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
